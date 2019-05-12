@@ -31,4 +31,8 @@ public interface IBugService {
     String insertOrUpdateProject(Project project) throws Exception;
 
     void deleteProject(String id) throws Exception;
+
+    int getCurrentState();
+
+    String getCurrentMessage();
 }

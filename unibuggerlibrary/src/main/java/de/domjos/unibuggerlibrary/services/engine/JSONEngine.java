@@ -37,6 +37,7 @@ public class JSONEngine {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private final OkHttpClient client;
     private String currentMessage;
+    private int state;
 
     public JSONEngine(Authentication authentication) {
         this.authentication = authentication;
@@ -54,40 +55,44 @@ public class JSONEngine {
         return this.currentMessage;
     }
 
+    public int getCurrentState() {
+        return this.state;
+    }
+
     protected int executeRequest(String path) throws Exception {
         Call call = this.initAuthentication(path);
         Response response = call.execute();
-        int status = response.code();
+        this.state = response.code();
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
-        return status;
+        return this.state;
     }
 
     protected int executeRequest(String path, String body, String type) throws Exception {
         Call call = this.initAuthentication(path, body, type);
         Response response = call.execute();
-        int status = response.code();
+        this.state = response.code();
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
-        return status;
+        return this.state;
     }
 
     protected int deleteRequest(String path) throws Exception {
         Call call = this.delete(path);
         Response response = call.execute();
-        int status = response.code();
+        this.state = response.code();
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
-        return status;
+        return this.state;
     }
 
 

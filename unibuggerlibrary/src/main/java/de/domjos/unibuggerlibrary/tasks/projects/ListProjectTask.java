@@ -26,6 +26,7 @@ import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
+import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
 public class ListProjectTask extends AbstractTask<Void, Void, List<Project>> {
 
@@ -45,6 +46,13 @@ public class ListProjectTask extends AbstractTask<Void, Void, List<Project>> {
 
     @Override
     protected List<Project> doInBackground(Void... voids) {
-        return null;
+        try {
+            List<Project> projects = super.bugService.getProjects();
+            super.printMessage();
+            return projects;
+        } catch (Exception ex) {
+            super.activity.runOnUiThread(() -> MessageHelper.printException(ex, super.activity));
+            return null;
+        }
     }
 }

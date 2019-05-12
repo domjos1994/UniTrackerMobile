@@ -19,6 +19,7 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.view.GravityCompat;
@@ -27,6 +28,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -38,15 +41,18 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 import de.domjos.unibuggermobile.settings.Globals;
+import de.domjos.unibuggermobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
     private ImageView ivMainCover;
     private TextView lblMainCommand;
+    private TextView lblAccountTitle;
     private Spinner spMainAccounts;
     private ArrayAdapter<String> accountList;
     private static final int RELOAD_ACCOUNTS = 99;
     public static final Globals globals = new Globals();
+    public static Settings settings;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -57,6 +63,33 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.lblMainCommand.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
+        });
+
+        this.spMainAccounts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String item = accountList.getItem(position);
+                if (item != null) {
+                    if (!item.trim().isEmpty()) {
+                        Authentication authentication = MainActivity.globals.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
+                        if (authentication != null) {
+                            MainActivity.settings.setCurrentAuthentication(authentication);
+                        } else {
+                            MainActivity.settings.setCurrentAuthentication(null);
+                        }
+                    } else {
+                        MainActivity.settings.setCurrentAuthentication(null);
+                    }
+                } else {
+                    MainActivity.settings.setCurrentAuthentication(null);
+                }
+
+                fillFields();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
     }
 
@@ -79,6 +112,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.ivMainCover = navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
+            this.lblAccountTitle = navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
             this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
             this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
@@ -86,6 +120,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
             this.reloadAccounts();
+
+            MainActivity.settings = new Settings(getApplicationContext());
+            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+            if (authentication != null) {
+                this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+            } else {
+                this.spMainAccounts.setSelection(this.accountList.getPosition(""));
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -93,6 +135,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void reloadAccounts() {
         this.accountList.clear();
+        this.accountList.add("");
         for (Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
             this.accountList.add(authentication.getTitle());
         }
@@ -102,6 +145,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     public void onActivityResult(int resultCode, int requestCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
             this.reloadAccounts();
+            this.fillFields();
         }
     }
 
@@ -131,7 +175,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -143,5 +186,22 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
         this.drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void fillFields() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        if (authentication != null) {
+            if (authentication.getCover() != null) {
+                ivMainCover.setImageBitmap(BitmapFactory.decodeByteArray(authentication.getCover(), 0, authentication.getCover().length));
+            } else {
+                ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+            }
+            lblAccountTitle.setText(authentication.getTitle());
+            lblMainCommand.setText(R.string.accounts_change);
+        } else {
+            ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+            lblAccountTitle.setText(R.string.accounts_noAccount);
+            lblMainCommand.setText(R.string.accounts_add);
+        }
     }
 }

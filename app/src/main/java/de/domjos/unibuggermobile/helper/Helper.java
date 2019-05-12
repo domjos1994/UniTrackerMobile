@@ -21,6 +21,9 @@ package de.domjos.unibuggermobile.helper;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -47,5 +50,13 @@ public class Helper {
     public static int getVersionCode(Context context) throws Exception {
         PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         return info.versionCode;
+    }
+
+    public static View getRowView(Context context, ViewGroup parent, int layout) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        if (inflater != null) {
+            return inflater.inflate(layout, parent, false);
+        }
+        return new View(context);
     }
 }

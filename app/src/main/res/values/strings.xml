@@ -24,6 +24,13 @@
     <string name="accounts_noAccount">Kein Account</string>
     <string name="accounts_add">Account hinzufügen</string>
     <string name="accounts_change">Account ändern</string>
+    <string name="accounts_tracker">Tracker</string>
+    <string name="accounts_server">Servername</string>
+    <string name="accounts_user">Benutzername</string>
+    <string name="accounts_pwd">Passwort</string>
+    <string name="accounts_api">API-Schlüssel</string>
+    <string name="accounts_image_url">URL to Image</string>
+    <string name="accounts_image_gallery">Galerie</string>
 
     <string name="projects">Projekte</string>
 
@@ -37,4 +44,7 @@
 
     <string name="general_title">Titel</string>
     <string name="general_description">Beschreibung</string>
+
+    <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>
+    <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
 </resources>

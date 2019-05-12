@@ -18,10 +18,15 @@
 
 package de.domjos.unibuggerlibrary.utils;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -44,15 +49,19 @@ public class Converter {
         return simpleDateFormat.parse(dt);
     }
 
-    public static String convertInputStreamToString(InputStream inputStream) throws Exception {
-        StringBuilder stringBuilder = new StringBuilder();
-        String line = null;
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, Charset.defaultCharset()))) {
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
+    public static Drawable convertStringToImage(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            return Drawable.createFromStream(is, "src name");
+        } catch (Exception e) {
+            return null;
         }
+    }
 
-        return stringBuilder.toString();
+    public static byte[] convertDrawableToByteArray(Drawable drawable) {
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 }

@@ -66,4 +66,14 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService {
     public void deleteProject(String id) throws Exception {
 
     }
+
+    @Override
+    public int getCurrentState() {
+        return 200;
+    }
+
+    @Override
+    public String getCurrentMessage() {
+        return "";
+    }
 }

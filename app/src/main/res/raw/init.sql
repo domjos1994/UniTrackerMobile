@@ -1,10 +1,11 @@
 CREATE TABLE IF NOT EXISTS accounts(
     ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     title VARCHAR(255) NOT NULL,
-    server VARCHAR(5000) NOT NULL,
-    api_key VARCHAR(5000) DEFAULT '',
+    serverName VARCHAR(5000) NOT NULL,
+    apiKey VARCHAR(5000) DEFAULT '',
     userName VARCHAR(5000) DEFAULT '',
     password VARCHAR(5000) DEFAULT '',
     description TEXT DEFAULT '',
-    cover BLOB DEFAULT NULL
+    cover BLOB DEFAULT NULL,
+    tracker VARCHAR(50) NOT NULL
 );

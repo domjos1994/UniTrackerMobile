@@ -43,6 +43,8 @@ public abstract class AbstractActivity extends AppCompatActivity {
         this.initControls();
         this.initValidators();
         this.initActions();
+        this.manageControls(false, true, false);
+        this.reload();
     }
 
     /**
@@ -65,6 +67,24 @@ public abstract class AbstractActivity extends AppCompatActivity {
      * @see #onCreate(Bundle)
      */
     protected void initValidators() {
+
+    }
+
+    /**
+     * Function to manage the controls (optional)
+     *
+     * @param editMode controls are in editMode
+     * @param reset    controls should be reset
+     * @param selected list item is selected
+     */
+    protected void manageControls(boolean editMode, boolean reset, boolean selected) {
+
+    }
+
+    /**
+     * Function to reload List-View
+     */
+    protected void reload() {
 
     }
 }

@@ -22,6 +22,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -53,14 +54,71 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         List<Authentication> authentications = new LinkedList<>();
         Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : ""), null);
         while (cursor.moveToNext()) {
-            Authentication authentication = new Authentication(this.getString(cursor, "server"), this.getString(cursor, "userName"), this.getString(cursor, "password"));
-            authentication.setAPIKey(this.getString(cursor, "api_key"));
+            Authentication authentication = new Authentication(this.getString(cursor, "serverName"), this.getString(cursor, "userName"), this.getString(cursor, "password"));
+            authentication.setAPIKey(this.getString(cursor, "apiKey"));
             authentication.setTitle(this.getString(cursor, "title"));
             authentication.setDescription(this.getString(cursor, "description"));
+            authentication.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
+            authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
+            authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
             authentications.add(authentication);
         }
         cursor.close();
         return authentications;
+    }
+
+    public void insertOrUpdateAccount(Authentication authentication) {
+        if (authentication != null) {
+            SQLiteDatabase db = this.getWritableDatabase();
+            SQLiteStatement stmt;
+            if (authentication.getId() != 0) {
+                stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=? WHERE ID=?");
+                stmt.bindLong(9, authentication.getId());
+            } else {
+                stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker) VALUES(?,?,?,?,?,?,?,?)");
+            }
+            stmt.bindString(1, authentication.getTitle());
+            stmt.bindString(2, authentication.getServer());
+            stmt.bindString(3, authentication.getAPIKey());
+            stmt.bindString(4, authentication.getUserName());
+            stmt.bindString(5, authentication.getPassword());
+            stmt.bindString(6, authentication.getDescription());
+            if (authentication.getCover() != null) {
+                stmt.bindBlob(7, authentication.getCover());
+            } else {
+                stmt.bindNull(7);
+            }
+            if (authentication.getTracker() != null) {
+                stmt.bindString(8, authentication.getTracker().name());
+            } else {
+                stmt.bindString(8, Authentication.Tracker.Local.name());
+            }
+            stmt.execute();
+        }
+    }
+
+    public boolean duplicated(String table, String column, String value, String where) {
+        boolean duplicated = false;
+        SQLiteDatabase db = this.getReadableDatabase();
+        where = where.trim().isEmpty() ? "" : " AND " + where;
+        Cursor cursor = db.rawQuery((String.format("SELECT %s FROM %s WHERE %s=?", column, table, column) + where), new String[]{value});
+        while (cursor.moveToNext()) {
+            duplicated = true;
+        }
+        cursor.close();
+        return duplicated;
+    }
+
+    public void delete(String table, String column, Object value) {
+        if (value == null) {
+            this.getWritableDatabase().execSQL("DELETE FROM " + table);
+        } else {
+            if (value instanceof Integer) {
+                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "=" + value.toString() + "");
+            } else {
+                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "='" + value.toString() + "'");
+            }
+        }
     }
 
     private String getString(Cursor cursor, String key) {

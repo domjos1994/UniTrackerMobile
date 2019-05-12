@@ -56,6 +56,12 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         this.after();
     }
 
+    protected void printMessage() {
+        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+            this.activity.runOnUiThread(() -> MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.activity));
+        }
+    }
+
     protected abstract void before();
 
     protected abstract void after();

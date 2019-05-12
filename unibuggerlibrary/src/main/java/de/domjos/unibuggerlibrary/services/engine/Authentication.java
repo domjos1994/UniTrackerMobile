@@ -26,6 +26,7 @@ public class Authentication extends DescriptionObject {
     private String password;
     private String APIKey;
     private byte[] cover;
+    private Tracker tracker;
 
     public Authentication() {
         this("", "", "", "");
@@ -42,6 +43,7 @@ public class Authentication extends DescriptionObject {
         this.userName = userName;
         this.password = password;
         this.cover = null;
+        this.tracker = null;
     }
 
     public String getServer() {
@@ -82,5 +84,21 @@ public class Authentication extends DescriptionObject {
 
     public void setCover(byte[] cover) {
         this.cover = cover;
+    }
+
+    public Tracker getTracker() {
+        return this.tracker;
+    }
+
+    public void setTracker(Tracker tracker) {
+        this.tracker = tracker;
+    }
+
+    public enum Tracker {
+        Local,
+        YouTrack,
+        MantisBT,
+        RedMine,
+        Bugzilla
     }
 }
