@@ -16,4 +16,33 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unibuggerlibrary'
+package de.domjos.unibuggerlibrary.model.local;
+
+import de.domjos.unibuggerlibrary.model.objects.BaseObject;
+
+public class LocalObject extends BaseObject {
+    private boolean synced;
+    private long last_synced;
+
+    public LocalObject() {
+        super();
+        this.synced = false;
+        this.last_synced = 0L;
+    }
+
+    public boolean isSynced() {
+        return this.synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
+    public long getLast_synced() {
+        return this.last_synced;
+    }
+
+    public void setLast_synced(long last_synced) {
+        this.last_synced = last_synced;
+    }
+}

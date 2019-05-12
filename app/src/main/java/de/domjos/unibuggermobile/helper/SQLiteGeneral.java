@@ -26,7 +26,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.unibugger.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
@@ -34,6 +35,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
 
     public SQLiteGeneral(Context context) throws Exception {
         super(context, "general.db", null, Helper.getVersionCode(context));
+        this.context = context;
     }
 
     @Override
@@ -76,7 +78,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-
+            MessageHelper.printException(ex, this.context);
         }
     }
 
@@ -87,7 +89,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-
+            MessageHelper.printException(ex, this.context);
         }
     }
 }

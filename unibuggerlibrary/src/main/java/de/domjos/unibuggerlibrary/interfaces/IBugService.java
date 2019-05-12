@@ -16,4 +16,19 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unibuggerlibrary'
+package de.domjos.unibuggerlibrary.interfaces;
+
+import java.util.List;
+
+import de.domjos.unibuggerlibrary.model.projects.Project;
+
+public interface IBugService {
+
+    List<Project> getProjects() throws Exception;
+
+    Project getProject(String id) throws Exception;
+
+    String insertOrUpdateProject(Project project) throws Exception;
+
+    void deleteProject(String id) throws Exception;
+}

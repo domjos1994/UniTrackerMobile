@@ -32,7 +32,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import de.domjos.unibugger.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
@@ -49,11 +50,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     public MainActivity() {
         super(R.layout.main_activity);
-        try {
-            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
-        } catch (Exception ex) {
-
-        }
     }
 
     @Override
@@ -66,27 +62,33 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void initControls() {
-        // init Toolbar
-        Toolbar toolbar = this.findViewById(R.id.toolbar);
-        this.setSupportActionBar(toolbar);
+        try {
+            // init Toolbar
+            Toolbar toolbar = this.findViewById(R.id.toolbar);
+            this.setSupportActionBar(toolbar);
 
-        // init Drawer-Layout
-        this.drawerLayout = this.findViewById(R.id.drawer_layout);
+            // init Drawer-Layout
+            this.drawerLayout = this.findViewById(R.id.drawer_layout);
 
-        // init Navigation-View
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, this.drawerLayout, toolbar, R.string.app_name, R.string.app_name);
-        this.drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        navigationView.setNavigationItemSelectedListener(this);
+            // init Navigation-View
+            NavigationView navigationView = findViewById(R.id.nav_view);
+            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, this.drawerLayout, toolbar, R.string.app_name, R.string.app_name);
+            this.drawerLayout.addDrawerListener(toggle);
+            toggle.syncState();
+            navigationView.setNavigationItemSelectedListener(this);
 
-        this.ivMainCover = navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
-        this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
-        this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
-        this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
-        this.spMainAccounts.setAdapter(this.accountList);
-        this.accountList.notifyDataSetChanged();
-        this.reloadAccounts();
+            this.ivMainCover = navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
+            this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
+            this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
+            this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.spMainAccounts.setAdapter(this.accountList);
+            this.accountList.notifyDataSetChanged();
+
+            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
+            this.reloadAccounts();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, MainActivity.this);
+        }
     }
 
     private void reloadAccounts() {

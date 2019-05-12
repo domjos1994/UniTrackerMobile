@@ -16,4 +16,7 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unibuggerlibrary'
+package de.domjos.unibuggerlibrary;
+
+public class UniBugger {
+}

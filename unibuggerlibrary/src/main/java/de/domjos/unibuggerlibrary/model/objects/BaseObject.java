@@ -16,4 +16,32 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unibuggerlibrary'
+package de.domjos.unibuggerlibrary.model.objects;
+
+import java.util.Date;
+
+public class BaseObject {
+    private long id;
+    private long timestamp;
+
+    public BaseObject() {
+        this.id = 0L;
+        this.timestamp = new Date().getTime();
+    }
+
+    public long getId() {
+        return this.id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getTimestamp() {
+        return this.timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+}

@@ -16,4 +16,33 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unibuggerlibrary'
+package de.domjos.unibuggerlibrary.model.objects;
+
+import de.domjos.unibuggerlibrary.model.local.LocalObject;
+
+public class DescriptionObject extends LocalObject {
+    private String title;
+    private String description;
+
+    public DescriptionObject() {
+        super();
+        this.title = "";
+        this.description = "";
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}
