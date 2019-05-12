@@ -36,13 +36,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class RedmineTest  {
+public class RedmineTest {
     private IBugService redmine;
 
     @Before
     public void init() throws Exception {
         this.redmine = new Redmine(Helper.getAuthFromRes(R.raw.test_credentials, "redmine"));
-        for(Project project : this.redmine.getProjects()) {
+        for (Project project : this.redmine.getProjects()) {
             this.redmine.deleteProject(String.valueOf(project.getId()));
         }
     }
@@ -68,8 +68,8 @@ public class RedmineTest  {
         projects = this.redmine.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
-        for(Project current : projects) {
-            if(Integer.parseInt(id)==current.getId()) {
+        for (Project current : projects) {
+            if (Integer.parseInt(id) == current.getId()) {
                 Project selected = this.redmine.getProject(id);
                 assertNotNull(selected);
                 assertEquals("https://newTest.de", selected.getWebsite());

@@ -19,15 +19,14 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.content.Intent;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.MenuItem;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -51,7 +50,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     public MainActivity() {
         super(R.layout.main_activity);
         try {
-           MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
+            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
         } catch (Exception ex) {
 
         }
@@ -92,14 +91,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void reloadAccounts() {
         this.accountList.clear();
-        for(Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
+        for (Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
             this.accountList.add(authentication.getTitle());
         }
     }
 
     @Override
     public void onActivityResult(int resultCode, int requestCode, Intent data) {
-        if(resultCode==RESULT_OK && requestCode==MainActivity.RELOAD_ACCOUNTS) {
+        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
             this.reloadAccounts();
         }
     }

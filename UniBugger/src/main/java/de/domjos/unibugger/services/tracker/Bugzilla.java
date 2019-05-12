@@ -39,10 +39,10 @@ public final class Bugzilla extends JSONEngine implements IBugService {
     public List<Project> getProjects() throws Exception {
         List<Project> projects = new LinkedList<>();
         int status = this.executeRequest("/rest/product_selectable");
-        if(status == 200 || status == 201) {
+        if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("ids");
-            for(int i = 0; i<=jsonArray.length()-1; i++) {
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 projects.add(this.getProject(String.valueOf(jsonArray.getInt(i))));
             }
         }
@@ -52,11 +52,11 @@ public final class Bugzilla extends JSONEngine implements IBugService {
     @Override
     public Project getProject(String id) throws Exception {
         int status = this.executeRequest("/rest/product/" + id);
-        if(status == 200 || status == 201) {
+        if (status == 200 || status == 201) {
             Project project = new Project();
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("products");
-            if(jsonArray.length()==1) {
+            if (jsonArray.length() == 1) {
                 JSONObject projectObject = jsonArray.getJSONObject(0);
                 project.setId(projectObject.getInt("id"));
                 project.setTitle(projectObject.getString("name"));
@@ -71,7 +71,7 @@ public final class Bugzilla extends JSONEngine implements IBugService {
     @Override
     public String insertOrUpdateProject(Project project) throws Exception {
         String url, method;
-        if(project.getId()==0) {
+        if (project.getId() == 0) {
             url = "/rest/product";
             method = "POST";
         } else {
@@ -86,8 +86,8 @@ public final class Bugzilla extends JSONEngine implements IBugService {
         jsonObject.put("has_unconfirmed", false);
         int status = this.executeRequest(url, jsonObject.toString(), method);
 
-        if(status == 200 || status == 201) {
-            if(project.getId()==0) {
+        if (status == 200 || status == 201) {
+            if (project.getId() == 0) {
                 JSONObject object = new JSONObject(this.getCurrentMessage());
                 return String.valueOf(object.getInt("id"));
             } else {

@@ -25,7 +25,10 @@ import de.domjos.unibugger.model.projects.Project;
 public interface IBugService {
 
     List<Project> getProjects() throws Exception;
+
     Project getProject(String id) throws Exception;
+
     String insertOrUpdateProject(Project project) throws Exception;
+
     void deleteProject(String id) throws Exception;
 }

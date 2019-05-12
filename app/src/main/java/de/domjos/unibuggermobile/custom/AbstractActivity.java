@@ -29,6 +29,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     /**
      * Constructor with the Layout-Resource-ID
+     *
      * @param layout The Layout-Resource-ID
      */
     public AbstractActivity(int layout) {
@@ -46,18 +47,21 @@ public abstract class AbstractActivity extends AppCompatActivity {
 
     /**
      * Function to initialize the Controls
+     *
      * @see #onCreate(Bundle)
      */
     protected abstract void initControls();
 
     /**
      * Function to initialize the Actions
+     *
      * @see #onCreate(Bundle)
      */
     protected abstract void initActions();
 
     /**
      * Function to initialize the Validators (optional)
+     *
      * @see #onCreate(Bundle)
      */
     protected void initValidators() {

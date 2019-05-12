@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C)  2019 Domjos
   ~ This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
   ~
@@ -17,8 +16,7 @@
   ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -38,29 +36,34 @@
             android:id="@+id/lvAccounts"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="12"/>
+            android:layout_weight="12" />
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"
             android:background="@drawable/ic_launcher_background">
+
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:weightSum="10">
+
                 <TableRow>
+
                     <TextView
                         android:text="@string/general_title"
                         android:layout_weight="3"
-                        android:layout_width="0dp"/>
+                        android:layout_width="0dp" />
+
                     <EditText
                         android:id="@+id/txtAccountTitle"
                         android:inputType="text"
                         android:hint="@string/general_title"
                         android:layout_weight="7"
-                        android:layout_width="0dp"/>
+                        android:layout_width="0dp" />
                 </TableRow>
+
                 <TableRow>
 
                 </TableRow>

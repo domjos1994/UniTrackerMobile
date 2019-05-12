@@ -42,7 +42,7 @@ public class YouTrackTest {
     @Before
     public void init() throws Exception {
         this.redmine = new YouTrack(Helper.getAuthFromRes(R.raw.test_credentials, "youtrack"));
-        for(Project project : this.redmine.getProjects()) {
+        for (Project project : this.redmine.getProjects()) {
             this.redmine.deleteProject(String.valueOf(project.getId()));
         }
     }
@@ -58,7 +58,7 @@ public class YouTrackTest {
         project.setAlias("test");
         project.setTitle("Test");
         project.setDescription("This is a test!");
-        String  id = this.redmine.insertOrUpdateProject(project);
+        String id = this.redmine.insertOrUpdateProject(project);
         assertNotEquals("0", id);
 
         project.setId(Long.parseLong(id));
@@ -68,8 +68,8 @@ public class YouTrackTest {
         projects = this.redmine.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
-        for(Project current : projects) {
-            if(id.equals(String.valueOf(current.getId()))) {
+        for (Project current : projects) {
+            if (id.equals(String.valueOf(current.getId()))) {
                 Project selected = this.redmine.getProject(String.valueOf(current.getId()));
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());

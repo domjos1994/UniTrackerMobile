@@ -39,10 +39,10 @@ public final class MantisBT extends JSONEngine implements IBugService {
     public List<Project> getProjects() throws Exception {
         List<Project> projects = new LinkedList<>();
         int status = this.executeRequest("/api/rest/projects");
-        if(status == 201 || status == 200) {
+        if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("projects");
-            for(int i = 0; i<=jsonArray.length()-1; i++) {
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 projects.add(this.jsonToProject(jsonArray.getJSONObject(i)));
             }
         }
@@ -52,7 +52,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
     @Override
     public Project getProject(String id) throws Exception {
         int status = this.executeRequest("/api/rest/projects/" + id);
-        if(status == 201 || status == 200) {
+        if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("projects");
             return this.jsonToProject(jsonArray.getJSONObject(0));
@@ -64,7 +64,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
     public String insertOrUpdateProject(Project project) throws Exception {
         String method;
         String url;
-        if(project.getId()!=0) {
+        if (project.getId() != 0) {
             method = "PATCH";
             url = "/api/rest/projects/" + project.getId();
         } else {
@@ -72,9 +72,9 @@ public final class MantisBT extends JSONEngine implements IBugService {
             url = "/api/rest/projects/";
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", project.getId()==0?1:project.getId());
+        jsonObject.put("id", project.getId() == 0 ? 1 : project.getId());
         jsonObject.put("name", project.getTitle());
-        if(project.getId()==0) {
+        if (project.getId() == 0) {
             JSONObject statusObject = new JSONObject();
             statusObject.put("id", "10");
             statusObject.put("name", "development");
@@ -85,7 +85,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
         jsonObject.put("description", project.getDescription());
         jsonObject.put("enabled", project.isEnabled());
         jsonObject.put("file_path", "/tmp/");
-        if(!project.isPrivateProject()) {
+        if (!project.isPrivateProject()) {
             JSONObject privateProject = new JSONObject();
             privateProject.put("id", 10);
             privateProject.put("name", "public");
@@ -94,7 +94,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
         }
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
-        if(status == 201 || status == 200) {
+        if (status == 201 || status == 200) {
             return new JSONObject(this.getCurrentMessage()).getJSONObject("project").getString("id");
         }
         return "";
@@ -112,7 +112,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
         project.setDescription(projectObject.getString("description"));
         project.setEnabled(projectObject.getBoolean("enabled"));
         JSONObject viewState = projectObject.getJSONObject("view_state");
-        project.setPrivateProject(viewState.getInt("id")!=10);
+        project.setPrivateProject(viewState.getInt("id") != 10);
         return project;
     }
 }

@@ -43,9 +43,9 @@ public final class YouTrack extends JSONEngine implements IBugService {
         List<Project> projects = new LinkedList<>();
 
         int status = this.executeRequest("/api/admin/projects?fields=" + YouTrack.PROJECT_FIELDS);
-        if(status==201 || status==200) {
+        if (status == 201 || status == 200) {
             JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
-            for(int i = 0; i<=jsonArray.length()-1; i++) {
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 projects.add(this.jsonObjectToProject(jsonObject));
             }
@@ -56,7 +56,7 @@ public final class YouTrack extends JSONEngine implements IBugService {
     @Override
     public Project getProject(String id) throws Exception {
         int status = this.executeRequest("/api/admin/projects/0-" + id + "?fields=" + YouTrack.PROJECT_FIELDS);
-        if(status==201 || status==200) {
+        if (status == 201 || status == 200) {
             JSONObject projectObject = new JSONObject(this.getCurrentMessage());
             return this.jsonObjectToProject(projectObject);
         }
@@ -66,7 +66,7 @@ public final class YouTrack extends JSONEngine implements IBugService {
     @Override
     public String insertOrUpdateProject(Project project) throws Exception {
         String url, method;
-        if(project.getId()!=0) {
+        if (project.getId() != 0) {
             url = "/api/admin/projects/0-" + project.getId() + "?fields=" + YouTrack.PROJECT_FIELDS;
             method = "POST";
         } else {
@@ -80,13 +80,13 @@ public final class YouTrack extends JSONEngine implements IBugService {
         jsonObject.put("archived", !project.isEnabled());
 
         int userStatus = this.executeRequest("/api/admin/users/me?fields=id,login,name,email");
-        if(userStatus==200 || userStatus==201) {
+        if (userStatus == 200 || userStatus == 201) {
             jsonObject.put("leader", new JSONObject(this.getCurrentMessage()));
         }
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
-        if(status == 200 || status == 201) {
-            if(project.getId()!=0) {
+        if (status == 200 || status == 201) {
+            if (project.getId() != 0) {
                 return String.valueOf(project.getId());
             } else {
                 JSONObject obj = new JSONObject(this.getCurrentMessage());

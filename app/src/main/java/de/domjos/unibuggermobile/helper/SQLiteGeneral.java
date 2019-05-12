@@ -49,7 +49,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
 
     public List<Authentication> getAccounts(String where) {
         List<Authentication> authentications = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM accounts" + (!where.trim().equals("")?" WHERE " + where:""), null);
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : ""), null);
         while (cursor.moveToNext()) {
             Authentication authentication = new Authentication(this.getString(cursor, "server"), this.getString(cursor, "userName"), this.getString(cursor, "password"));
             authentication.setAPIKey(this.getString(cursor, "api_key"));
@@ -62,7 +62,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     }
 
     private String getString(Cursor cursor, String key) {
-        if(cursor.getColumnIndex(key)==-1) {
+        if (cursor.getColumnIndex(key) == -1) {
             return "";
         } else {
             return cursor.getString(cursor.getColumnIndex(key));
@@ -72,7 +72,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     private void initDatabase(SQLiteDatabase db) {
         try {
             String queries = Helper.readStringFromRaw(R.raw.init, context);
-            for(String query : queries.split(";")) {
+            for (String query : queries.split(";")) {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
@@ -83,7 +83,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     private void updateDatabase(SQLiteDatabase db) {
         try {
             String queries = Helper.readStringFromRaw(R.raw.update, context);
-            for(String query : queries.split(";")) {
+            for (String query : queries.split(";")) {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {

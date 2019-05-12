@@ -58,7 +58,7 @@ public class JSONEngine {
         int status = response.code();
 
         ResponseBody responseBody = response.body();
-        if(responseBody!=null) {
+        if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
         return status;
@@ -70,7 +70,7 @@ public class JSONEngine {
         int status = response.code();
 
         ResponseBody responseBody = response.body();
-        if(responseBody!=null) {
+        if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
         return status;
@@ -82,12 +82,11 @@ public class JSONEngine {
         int status = response.code();
 
         ResponseBody responseBody = response.body();
-        if(responseBody!=null) {
+        if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
         return status;
     }
-
 
 
     private Call initAuthentication(String path) {
@@ -96,8 +95,8 @@ public class JSONEngine {
 
     private Call initAuthentication(String path, String body, String type) {
         RequestBody requestBody = RequestBody.create(JSON, "");
-        if(body!=null) {
-            if(!body.trim().isEmpty()) {
+        if (body != null) {
+            if (!body.trim().isEmpty()) {
                 requestBody = RequestBody.create(JSON, body);
             }
         }
@@ -133,20 +132,20 @@ public class JSONEngine {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .authenticator((route, response) -> {
                     String credential;
-                    if(!authentication.getAPIKey().isEmpty()) {
+                    if (!authentication.getAPIKey().isEmpty()) {
                         credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
                     } else {
                         credential = Credentials.basic(authentication.getUserName(), authentication.getPassword());
                     }
                     return response.request().newBuilder().header("Authorization", credential).build();
                 })
-            .build();
+                .build();
     }
 
     private Request.Builder initRequestBuilder(String path) {
         Request.Builder builder = new Request.Builder();
-        if(this.headers!=null) {
-            for(String entry : this.headers) {
+        if (this.headers != null) {
+            for (String entry : this.headers) {
                 builder = builder.addHeader(entry.split(": ")[0], entry.split(": ")[1]);
             }
         }

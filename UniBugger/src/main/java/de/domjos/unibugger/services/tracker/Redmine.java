@@ -41,15 +41,15 @@ public final class Redmine extends JSONEngine implements IBugService {
         List<Project> projects = new LinkedList<>();
         int status = this.executeRequest("/projects.json");
 
-        if(status == 201 || status == 200) {
+        if (status == 201 || status == 200) {
             String json = this.getCurrentMessage();
-            if(json!=null) {
-                if(!json.isEmpty()) {
+            if (json != null) {
+                if (!json.isEmpty()) {
                     JSONObject jsonObject = new JSONObject(json);
                     int count = jsonObject.getInt("total_count");
-                    if(count!=0) {
+                    if (count != 0) {
                         JSONArray jsonArray = jsonObject.getJSONArray("projects");
-                        for(int i = 0;i<=count-1;i++) {
+                        for (int i = 0; i <= count - 1; i++) {
                             JSONObject projectObject = jsonArray.getJSONObject(i);
                             projects.add(this.jsonObjectToProject(projectObject));
                         }
@@ -66,9 +66,9 @@ public final class Redmine extends JSONEngine implements IBugService {
     public Project getProject(String id) throws Exception {
         int status = this.executeRequest("/projects/" + id + ".json");
 
-        if(status == 201 || status == 200) {
+        if (status == 201 || status == 200) {
             String json = this.getCurrentMessage();
-            if(json!=null) {
+            if (json != null) {
                 if (!json.isEmpty()) {
                     JSONObject jsonObject = new JSONObject(json);
                     JSONObject projectObject = jsonObject.getJSONObject("project");
@@ -82,7 +82,7 @@ public final class Redmine extends JSONEngine implements IBugService {
 
     @Override
     public String insertOrUpdateProject(Project project) throws Exception {
-        if(project!=null) {
+        if (project != null) {
             JSONObject jsonObject = new JSONObject();
             JSONObject projectObject = new JSONObject();
             projectObject.put("name", project.getTitle());
@@ -92,13 +92,13 @@ public final class Redmine extends JSONEngine implements IBugService {
             projectObject.put("homepage", project.getWebsite());
             jsonObject.put("project", projectObject);
 
-            if(project.getId()==0) {
+            if (project.getId() == 0) {
                 int status = this.executeRequest("/projects.json", jsonObject.toString(), "POST");
 
-                if(status == 201 || status == 200) {
+                if (status == 201 || status == 200) {
                     String content = this.getCurrentMessage();
                     JSONObject result = new JSONObject(content);
-                    if(result.has("project")) {
+                    if (result.has("project")) {
                         JSONObject resultProject = result.getJSONObject("project");
                         return String.valueOf(resultProject.getInt("id"));
                     }
@@ -106,7 +106,7 @@ public final class Redmine extends JSONEngine implements IBugService {
             } else {
                 int status = this.executeRequest("/projects/" + project.getId() + ".json", jsonObject.toString(), "PUT");
 
-                if(status == 201 || status == 200) {
+                if (status == 201 || status == 200) {
                     return String.valueOf(project.getId());
                 }
             }
@@ -125,7 +125,7 @@ public final class Redmine extends JSONEngine implements IBugService {
         project.setTitle(obj.getString("name"));
         project.setAlias(obj.getString("identifier"));
         project.setDescription(obj.getString("description"));
-        if(obj.has("homepage")) {
+        if (obj.has("homepage")) {
             project.setWebsite(obj.getString("homepage"));
         }
         project.setPrivateProject(!obj.getBoolean("is_public"));

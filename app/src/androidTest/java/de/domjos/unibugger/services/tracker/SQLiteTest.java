@@ -41,7 +41,7 @@ public class SQLiteTest {
     @Before
     public void init() throws Exception {
         this.sqLite = new SQLite(Helper.getContext(), de.domjos.unibuggermobile.helper.Helper.getVersionCode(Helper.getContext()));
-        for(Project project : this.sqLite.getProjects()) {
+        for (Project project : this.sqLite.getProjects()) {
             this.sqLite.deleteProject(String.valueOf(project.getId()));
         }
     }
@@ -57,7 +57,7 @@ public class SQLiteTest {
         project.setAlias("test");
         project.setTitle("Test");
         project.setDescription("This is a test!");
-        String  id = this.sqLite.insertOrUpdateProject(project);
+        String id = this.sqLite.insertOrUpdateProject(project);
         assertNotEquals("0", id);
 
         project.setId(Long.parseLong(id));
@@ -67,8 +67,8 @@ public class SQLiteTest {
         projects = this.sqLite.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
-        for(Project current : projects) {
-            if(id.equals(String.valueOf(current.getId()))) {
+        for (Project current : projects) {
+            if (id.equals(String.valueOf(current.getId()))) {
                 Project selected = this.sqLite.getProject(String.valueOf(current.getId()));
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());

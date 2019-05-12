@@ -42,7 +42,7 @@ public class MantisBTTest {
     @Before
     public void init() throws Exception {
         this.mantisBT = new MantisBT(Helper.getAuthFromRes(R.raw.test_credentials, "mantisbt"));
-        for(Project project : this.mantisBT.getProjects()) {
+        for (Project project : this.mantisBT.getProjects()) {
             this.mantisBT.deleteProject(String.valueOf(project.getId()));
         }
     }
@@ -69,8 +69,8 @@ public class MantisBTTest {
         projects = this.mantisBT.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
-        for(Project current : projects) {
-            if(Integer.parseInt(id)==current.getId()) {
+        for (Project current : projects) {
+            if (Integer.parseInt(id) == current.getId()) {
                 Project selected = this.mantisBT.getProject(id);
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());

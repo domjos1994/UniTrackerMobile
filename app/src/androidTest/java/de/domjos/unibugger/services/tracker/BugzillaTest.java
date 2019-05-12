@@ -42,7 +42,7 @@ public class BugzillaTest {
     @Before
     public void init() throws Exception {
         this.bugzilla = new Bugzilla(Helper.getAuthFromRes(R.raw.test_credentials, "bugzilla"));
-        for(Project project : this.bugzilla.getProjects()) {
+        for (Project project : this.bugzilla.getProjects()) {
             this.bugzilla.deleteProject(String.valueOf(project.getId()));
         }
     }
@@ -69,8 +69,8 @@ public class BugzillaTest {
         projects = this.bugzilla.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
-        for(Project current : projects) {
-            if(Integer.parseInt(id)==current.getId()) {
+        for (Project current : projects) {
+            if (Integer.parseInt(id) == current.getId()) {
                 Project selected = this.bugzilla.getProject(id);
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());

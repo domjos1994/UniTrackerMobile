@@ -77,7 +77,7 @@ public class Authentication extends DescriptionObject {
     }
 
     public byte[] getCover() {
-        return  this.cover;
+        return this.cover;
     }
 
     public void setCover(byte[] cover) {
