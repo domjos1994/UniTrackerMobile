@@ -16,7 +16,7 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibugger.services.tracker;
+package de.domjos.unibuggerlibrary.services.tracker;
 
 import android.support.test.runner.AndroidJUnit4;
 
@@ -26,30 +26,29 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import de.domjos.unibugger.interfaces.IBugService;
-import de.domjos.unibugger.model.projects.Project;
-import de.domjos.unibugger.utils.Helper;
-import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.utils.Helper;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class BugzillaTest {
-    private IBugService bugzilla;
+public class SQLiteTest {
+    private IBugService sqLite;
 
     @Before
     public void init() throws Exception {
-        this.bugzilla = new Bugzilla(Helper.getAuthFromRes(R.raw.test_credentials, "bugzilla"));
-        for (Project project : this.bugzilla.getProjects()) {
-            this.bugzilla.deleteProject(String.valueOf(project.getId()));
+        this.sqLite = new SQLite(Helper.getContext(), Helper.getVersionCode(Helper.getContext()));
+        for (Project project : this.sqLite.getProjects()) {
+            this.sqLite.deleteProject(String.valueOf(project.getId()));
         }
     }
 
     @Test
     public void testProjects() throws Exception {
-        List<Project> projects = this.bugzilla.getProjects();
+        List<Project> projects = this.sqLite.getProjects();
         assertNotNull(projects);
 
         int count = projects.size();
@@ -58,27 +57,26 @@ public class BugzillaTest {
         project.setAlias("test");
         project.setTitle("Test");
         project.setDescription("This is a test!");
-        project.setEnabled(true);
-        String id = this.bugzilla.insertOrUpdateProject(project);
-        assertNotEquals(0, id);
+        String id = this.sqLite.insertOrUpdateProject(project);
+        assertNotEquals("0", id);
 
-        project.setId(Integer.parseInt(id));
+        project.setId(Long.parseLong(id));
         project.setDescription("This is a new test!");
-        id = this.bugzilla.insertOrUpdateProject(project);
+        id = this.sqLite.insertOrUpdateProject(project);
 
-        projects = this.bugzilla.getProjects();
+        projects = this.sqLite.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
         for (Project current : projects) {
-            if (Integer.parseInt(id) == current.getId()) {
-                Project selected = this.bugzilla.getProject(id);
+            if (id.equals(String.valueOf(current.getId()))) {
+                Project selected = this.sqLite.getProject(String.valueOf(current.getId()));
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());
                 break;
             }
         }
 
-        this.bugzilla.deleteProject(String.valueOf(id));
-        assertEquals(count, this.bugzilla.getProjects().size());
+        this.sqLite.deleteProject(id);
+        assertEquals(count, this.sqLite.getProjects().size());
     }
 }

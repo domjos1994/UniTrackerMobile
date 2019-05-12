@@ -16,7 +16,7 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibugger.services.tracker;
+package de.domjos.unibuggerlibrary.services.tracker;
 
 import android.support.test.runner.AndroidJUnit4;
 
@@ -26,10 +26,10 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import de.domjos.unibugger.interfaces.IBugService;
-import de.domjos.unibugger.model.projects.Project;
-import de.domjos.unibugger.utils.Helper;
-import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggerlibrary.R;
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.utils.Helper;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;

@@ -16,7 +16,7 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibugger.services.tracker;
+package de.domjos.unibuggerlibrary.services.tracker;
 
 import android.support.test.runner.AndroidJUnit4;
 
@@ -26,29 +26,30 @@ import org.junit.runner.RunWith;
 
 import java.util.List;
 
-import de.domjos.unibugger.interfaces.IBugService;
-import de.domjos.unibugger.model.projects.Project;
-import de.domjos.unibugger.utils.Helper;
+import de.domjos.unibuggerlibrary.R;
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.utils.Helper;
 
 import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class SQLiteTest {
-    private IBugService sqLite;
+public class YouTrackTest {
+    private IBugService redmine;
 
     @Before
     public void init() throws Exception {
-        this.sqLite = new SQLite(Helper.getContext(), de.domjos.unibuggermobile.helper.Helper.getVersionCode(Helper.getContext()));
-        for (Project project : this.sqLite.getProjects()) {
-            this.sqLite.deleteProject(String.valueOf(project.getId()));
+        this.redmine = new YouTrack(Helper.getAuthFromRes(R.raw.test_credentials, "youtrack"));
+        for (Project project : this.redmine.getProjects()) {
+            this.redmine.deleteProject(String.valueOf(project.getId()));
         }
     }
 
     @Test
     public void testProjects() throws Exception {
-        List<Project> projects = this.sqLite.getProjects();
+        List<Project> projects = this.redmine.getProjects();
         assertNotNull(projects);
 
         int count = projects.size();
@@ -57,26 +58,26 @@ public class SQLiteTest {
         project.setAlias("test");
         project.setTitle("Test");
         project.setDescription("This is a test!");
-        String id = this.sqLite.insertOrUpdateProject(project);
+        String id = this.redmine.insertOrUpdateProject(project);
         assertNotEquals("0", id);
 
         project.setId(Long.parseLong(id));
         project.setDescription("This is a new test!");
-        id = this.sqLite.insertOrUpdateProject(project);
+        id = this.redmine.insertOrUpdateProject(project);
 
-        projects = this.sqLite.getProjects();
+        projects = this.redmine.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
         for (Project current : projects) {
             if (id.equals(String.valueOf(current.getId()))) {
-                Project selected = this.sqLite.getProject(String.valueOf(current.getId()));
+                Project selected = this.redmine.getProject(String.valueOf(current.getId()));
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());
                 break;
             }
         }
 
-        this.sqLite.deleteProject(id);
-        assertEquals(count, this.sqLite.getProjects().size());
+        this.redmine.deleteProject(id);
+        assertEquals(count, this.redmine.getProjects().size());
     }
 }
