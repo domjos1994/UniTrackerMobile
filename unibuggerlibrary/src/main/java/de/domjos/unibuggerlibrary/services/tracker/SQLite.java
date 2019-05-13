@@ -24,27 +24,29 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.utils.Converter;
+import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unibuggerlibrary.utils.Utils;
 
 public final class SQLite extends SQLiteOpenHelper implements IBugService {
-    private String init, update;
+    private Context context;
 
-    public SQLite(Context context, int id) throws Exception {
+    public SQLite(Context context, int id) {
         super(context, "uniBugger.db", null, id);
-        this.init = Converter.convertStreamToString(SQLite.class.getResourceAsStream("/sql/init.sql"));
-        this.update = Converter.convertStreamToString(SQLite.class.getResourceAsStream("/sql/init.sql"));
+        this.context = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-
+        this.initDatabase(sqLiteDatabase);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-
+        this.initDatabase(sqLiteDatabase);
+        this.updateDatabase(sqLiteDatabase);
     }
 
     @Override
@@ -75,5 +77,28 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService {
     @Override
     public String getCurrentMessage() {
         return "";
+    }
+
+
+    private void initDatabase(SQLiteDatabase db) {
+        try {
+            String queries = Utils.readStringFromRaw(R.raw.init, context);
+            for (String query : queries.split(";")) {
+                db.execSQL(query.trim());
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.context);
+        }
+    }
+
+    private void updateDatabase(SQLiteDatabase db) {
+        try {
+            String queries = Utils.readStringFromRaw(R.raw.update, context);
+            for (String query : queries.split(";")) {
+                db.execSQL(query.trim());
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.context);
+        }
     }
 }
