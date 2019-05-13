@@ -21,9 +21,11 @@ package de.domjos.unibuggerlibrary.utils;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
+import android.support.v4.app.NotificationCompat.Builder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import java.util.Random;
 import de.domjos.unibuggerlibrary.R;
 
 public class MessageHelper {
+    private final static String id = "UniBuggerChannel";
 
     public static void printException(Exception ex, Context context) {
         StringBuilder builder = new StringBuilder(ex.getMessage()).append("\n");
@@ -68,8 +71,9 @@ public class MessageHelper {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public static int startProgressNotification(Activity activity, String title, String content, int icon) {
+        MessageHelper.createChannel(activity.getApplicationContext());
         NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder = new Notification.Builder(activity);
+        Builder builder = new Builder(activity, id);
         Notification notification = builder.setContentTitle(title).setContentText(content).setSmallIcon(icon).setProgress(0, 0, true).build();
         Random random = new Random();
         int id = random.nextInt();
@@ -80,5 +84,17 @@ public class MessageHelper {
     public static void stopProgressNotification(Activity activity, int id) {
         NotificationManager manager = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
         manager.cancel(id);
+    }
+
+    private static void createChannel(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = context.getString(R.string.app_name);
+            String description = context.getString(R.string.app_name);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(id, name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
     }
 }

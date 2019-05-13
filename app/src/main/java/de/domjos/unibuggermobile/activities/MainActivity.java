@@ -177,12 +177,19 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.navProjects:
-
+                intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
+                break;
+            default:
+                intent = null;
                 break;
         }
 
+        if (intent != null) {
+            startActivityForResult(intent, 99);
+        }
 
         this.drawerLayout.closeDrawer(GravityCompat.START);
         return true;

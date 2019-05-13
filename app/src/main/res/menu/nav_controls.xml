@@ -19,23 +19,23 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navAccountAdd"
+        android:id="@+id/navAdd"
         android:title="@string/sys_add"
         android:icon="@drawable/ic_add_circle_black_24dp" />
     <item
-        android:id="@+id/navAccountEdit"
+        android:id="@+id/navEdit"
         android:title="@string/sys_edit"
         android:icon="@drawable/ic_edit_black_24dp" />
     <item
-        android:id="@+id/navAccountDelete"
+        android:id="@+id/navDelete"
         android:title="@string/sys_delete"
         android:icon="@drawable/ic_delete_black_24dp" />
     <item
-        android:id="@+id/navAccountCancel"
+        android:id="@+id/navCancel"
         android:title="@string/sys_cancel"
         android:icon="@drawable/ic_cancel_black_24dp" />
     <item
-        android:id="@+id/navAccountSave"
+        android:id="@+id/navSave"
         android:title="@string/sys_save"
         android:icon="@drawable/ic_save_black_24dp" />
 

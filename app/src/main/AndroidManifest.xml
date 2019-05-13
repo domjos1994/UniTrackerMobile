@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C)  2019 Domjos
   ~ This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
   ~
@@ -32,6 +33,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".activities.ProjectActivity"
+            android:label="@string/projects"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
+        </activity>
         <activity
             android:name=".activities.AccountActivity"
             android:label="@string/accounts"

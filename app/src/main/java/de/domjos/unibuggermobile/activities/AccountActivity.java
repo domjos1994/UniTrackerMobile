@@ -135,20 +135,20 @@ public final class AccountActivity extends AbstractActivity {
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
-                case R.id.navAccountAdd:
+                case R.id.navAdd:
                     this.manageControls(true, true, false);
                     break;
-                case R.id.navAccountEdit:
+                case R.id.navEdit:
                     this.manageControls(true, false, false);
                     break;
-                case R.id.navAccountDelete:
+                case R.id.navDelete:
                     MainActivity.globals.getSqLiteGeneral().delete("accounts", "ID", this.currentAccount.getId());
                     this.manageControls(false, true, false);
                     break;
-                case R.id.navAccountCancel:
+                case R.id.navCancel:
                     this.manageControls(false, true, false);
                     break;
-                case R.id.navAccountSave:
+                case R.id.navSave:
                     if (this.accountValidator.getState()) {
                         this.controlsToObject();
                         MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);

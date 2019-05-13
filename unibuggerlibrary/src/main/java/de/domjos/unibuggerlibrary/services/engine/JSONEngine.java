@@ -153,7 +153,10 @@ public class JSONEngine {
         Request.Builder builder = new Request.Builder();
         if (this.headers != null) {
             for (String entry : this.headers) {
-                builder = builder.addHeader(entry.split(": ")[0], entry.split(": ")[1]);
+                String[] fields = entry.split(": ");
+                if (fields.length == 2) {
+                    builder = builder.addHeader(fields[0], fields[1]);
+                }
             }
         }
         return builder.addHeader("Accept", "application/json").url(this.authentication.getServer() + path);
