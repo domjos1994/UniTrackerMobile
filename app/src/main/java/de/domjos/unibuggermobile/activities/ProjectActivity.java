@@ -22,6 +22,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.List;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -31,6 +33,7 @@ import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
 import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
+import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
@@ -56,7 +59,25 @@ public class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
+        this.lvProjects.setOnItemClickListener((parent, view, position, id) -> {
+            try {
+                ListObject listObject = this.listAdapter.getItem(position);
+                if (listObject != null) {
+                    long listID = listObject.getId();
+                    List<Project> projectList = new ListProjectTask(ProjectActivity.this, this.bugService).execute().get();
+                    for (Project project : projectList) {
+                        if (project.getId() == listID) {
+                            this.currentProject = project;
+                            this.objectToControls();
+                            this.manageControls(false, false, true);
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, this.getApplicationContext());
+            }
+        });
     }
 
     @Override
@@ -64,6 +85,7 @@ public class ProjectActivity extends AbstractActivity {
         // init bottom-navigation
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            ProjectTask task = null;
             switch (menuItem.getItemId()) {
                 case R.id.navAdd:
                     this.manageControls(true, false, false);
@@ -72,6 +94,8 @@ public class ProjectActivity extends AbstractActivity {
                     this.manageControls(true, false, false);
                     break;
                 case R.id.navDelete:
+                    task = new ProjectTask(ProjectActivity.this, this.bugService, true);
+                    task.execute(this.currentProject);
                     this.manageControls(false, false, false);
                     break;
                 case R.id.navCancel:
@@ -79,6 +103,9 @@ public class ProjectActivity extends AbstractActivity {
                     break;
                 case R.id.navSave:
                     if (this.projectValidator.getState()) {
+                        this.controlsToObject();
+                        task = new ProjectTask(ProjectActivity.this, this.bugService, false);
+                        task.execute(this.currentProject);
                         this.manageControls(false, false, false);
                     }
                     break;
@@ -128,7 +155,9 @@ public class ProjectActivity extends AbstractActivity {
             ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService);
             this.listAdapter.clear();
             for (Project project : task.execute().get()) {
-                this.listAdapter.add(new ListObject(this.getApplicationContext(), null, project.getTitle(), project.getDescription()));
+                ListObject listObject = new ListObject(this.getApplicationContext(), null, project.getTitle(), project.getDescription());
+                listObject.setId(project.getId());
+                this.listAdapter.add(listObject);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getApplicationContext());

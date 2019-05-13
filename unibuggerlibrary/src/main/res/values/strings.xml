@@ -20,5 +20,6 @@
     <string name="app_name">UniBuggerLibrary</string>
 
     <string name="task_project_list_title">Projekte</string>
-    <string name="task_project_list_content">Projekt-Liste laden...</string>
+    <string name="task_project_list_content">Projekt-Liste laden…</string>
+    <string name="task_project_content">Projekt aktualisieren…</string>
 </resources>
