@@ -19,19 +19,12 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.support.design.widget.BottomNavigationView;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 
-import java.util.List;
-
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
-import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
-import de.domjos.unibuggerlibrary.services.tracker.Redmine;
-import de.domjos.unibuggerlibrary.services.tracker.SQLite;
-import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
@@ -47,7 +40,8 @@ public class ProjectActivity extends AbstractActivity {
     private ListView lvProjects;
     private ListAdapter listAdapter;
 
-    private EditText txtProjectTitle, txtProjectDescription;
+    private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription;
+    private CheckBox chkProjectEnabled, chkProjectPrivate, chkProjectReleased;
 
     private IBugService bugService;
     private Project currentProject;
@@ -64,15 +58,17 @@ public class ProjectActivity extends AbstractActivity {
                 ListObject listObject = this.listAdapter.getItem(position);
                 if (listObject != null) {
                     long listID = listObject.getId();
-                    List<Project> projectList = new ListProjectTask(ProjectActivity.this, this.bugService).execute().get();
-                    for (Project project : projectList) {
-                        if (project.getId() == listID) {
-                            this.currentProject = project;
-                            this.objectToControls();
-                            this.manageControls(false, false, true);
-                            break;
+                    new Thread(() -> {
+                        try {
+                            this.currentProject = this.bugService.getProject(String.valueOf(listID));
+                            runOnUiThread(() -> {
+                                objectToControls();
+                                manageControls(false, false, true);
+                            });
+                        } catch (Exception ex) {
+                            ProjectActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
                         }
-                    }
+                    }).start();
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, this.getApplicationContext());
@@ -85,7 +81,7 @@ public class ProjectActivity extends AbstractActivity {
         // init bottom-navigation
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            ProjectTask task = null;
+            ProjectTask task;
             switch (menuItem.getItemId()) {
                 case R.id.navAdd:
                     this.manageControls(true, false, false);
@@ -94,19 +90,37 @@ public class ProjectActivity extends AbstractActivity {
                     this.manageControls(true, false, false);
                     break;
                 case R.id.navDelete:
-                    task = new ProjectTask(ProjectActivity.this, this.bugService, true);
-                    task.execute(this.currentProject);
-                    this.manageControls(false, false, false);
+                    try {
+                        task = new ProjectTask(ProjectActivity.this, this.bugService, true);
+                        task.execute(this.currentProject).get();
+                        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+                            MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
+                        } else {
+                            this.reload();
+                            this.manageControls(false, false, false);
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, this.getApplicationContext());
+                    }
                     break;
                 case R.id.navCancel:
                     this.manageControls(false, false, false);
                     break;
                 case R.id.navSave:
-                    if (this.projectValidator.getState()) {
-                        this.controlsToObject();
-                        task = new ProjectTask(ProjectActivity.this, this.bugService, false);
-                        task.execute(this.currentProject);
-                        this.manageControls(false, false, false);
+                    try {
+                        if (this.projectValidator.getState()) {
+                            this.controlsToObject();
+                            task = new ProjectTask(ProjectActivity.this, this.bugService, false);
+                            task.execute(this.currentProject).get();
+                            if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+                                MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
+                            } else {
+                                this.reload();
+                                this.manageControls(false, false, false);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, this.getApplicationContext());
                     }
                     break;
             }
@@ -120,9 +134,13 @@ public class ProjectActivity extends AbstractActivity {
         this.listAdapter.notifyDataSetChanged();
 
         this.txtProjectTitle = this.findViewById(R.id.txtProjectTitle);
+        this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
         this.txtProjectDescription = this.findViewById(R.id.txtProjectDescription);
+        this.chkProjectEnabled = this.findViewById(R.id.chkProjectEnabled);
+        this.chkProjectPrivate = this.findViewById(R.id.chkProjectPrivate);
+        this.chkProjectReleased = this.findViewById(R.id.chkProjectReleased);
 
-        this.getCurrentBugService();
+        this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
     }
 
     @Override
@@ -141,7 +159,11 @@ public class ProjectActivity extends AbstractActivity {
 
         this.lvProjects.setEnabled(!editMode);
         this.txtProjectTitle.setEnabled(editMode);
+        this.txtProjectAlias.setEnabled(editMode);
         this.txtProjectDescription.setEnabled(editMode);
+        this.chkProjectPrivate.setEnabled(editMode);
+        this.chkProjectEnabled.setEnabled(editMode);
+        this.chkProjectReleased.setEnabled(editMode);
 
         if (reset) {
             this.currentProject = new Project();
@@ -164,47 +186,25 @@ public class ProjectActivity extends AbstractActivity {
         }
     }
 
-
-    private void getCurrentBugService() {
-        try {
-            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
-            if (authentication != null) {
-                switch (authentication.getTracker()) {
-                    case MantisBT:
-                        this.bugService = new MantisBT(authentication);
-                        break;
-                    case Bugzilla:
-                        this.bugService = new Bugzilla(authentication);
-                        break;
-                    case YouTrack:
-                        this.bugService = new YouTrack(authentication);
-                        break;
-                    case RedMine:
-                        this.bugService = new Redmine(authentication);
-                        break;
-                    default:
-                        this.bugService = new SQLite(this.getApplicationContext(), Helper.getVersionCode(this.getApplicationContext()));
-                        break;
-                }
-            } else {
-                this.bugService = new SQLite(this.getApplicationContext(), Helper.getVersionCode(this.getApplicationContext()));
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getApplicationContext());
-        }
-    }
-
     private void objectToControls() {
         if (this.currentProject != null) {
             this.txtProjectTitle.setText(this.currentProject.getTitle());
+            this.txtProjectAlias.setText(this.currentProject.getAlias());
             this.txtProjectDescription.setText(this.currentProject.getDescription());
+            this.chkProjectEnabled.setChecked(this.currentProject.isEnabled());
+            this.chkProjectReleased.setChecked(this.currentProject.isReleasedProject());
+            this.chkProjectPrivate.setChecked(this.currentProject.isPrivateProject());
         }
     }
 
     private void controlsToObject() {
         if (this.currentProject != null) {
             this.currentProject.setTitle(this.txtProjectTitle.getText().toString());
+            this.currentProject.setAlias(this.txtProjectAlias.getText().toString());
             this.currentProject.setDescription(this.txtProjectDescription.getText().toString());
+            this.currentProject.setEnabled(this.chkProjectEnabled.isEnabled());
+            this.currentProject.setPrivateProject(this.currentProject.isPrivateProject());
+            this.currentProject.setReleasedProject(this.currentProject.isReleasedProject());
         }
     }
 }

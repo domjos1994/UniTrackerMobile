@@ -18,13 +18,20 @@
 
 package de.domjos.unibuggermobile.settings;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggermobile.activities.MainActivity;
 
 public class Settings {
+    private static final String AUTH = "auth_id";
+    private static final String PROJECT = "current_project";
+
     private SharedPreferences preferences;
 
     public Settings(Context context) {
@@ -32,7 +39,7 @@ public class Settings {
     }
 
     public Authentication getCurrentAuthentication() {
-        long authID = this.preferences.getLong("auth_id", 0);
+        long authID = this.preferences.getLong(Settings.AUTH, 0);
         if (authID != 0) {
             return MainActivity.globals.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
         }
@@ -42,10 +49,35 @@ public class Settings {
     public void setCurrentAuthentication(Authentication authentication) {
         SharedPreferences.Editor editor = this.preferences.edit();
         if (authentication != null) {
-            editor.putLong("auth_id", authentication.getId());
+            editor.putLong(Settings.AUTH, authentication.getId());
         } else {
-            editor.putLong("auth_id", 0);
+            editor.putLong(Settings.AUTH, 0);
         }
+        editor.apply();
+    }
+
+    public Project getCurrentProject(Activity activity, IBugService bugService) {
+        try {
+            String title = this.preferences.getString(Settings.PROJECT, "");
+            if (title != null) {
+                if (!title.isEmpty()) {
+                    for (Project project : new ListProjectTask(activity, bugService).execute().get()) {
+                        if (project.getTitle().equals(title)) {
+                            return project;
+                        }
+                    }
+
+                }
+            }
+
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    public void setCurrentProject(String title) {
+        SharedPreferences.Editor editor = this.preferences.edit();
+        editor.putString(Settings.PROJECT, title);
         editor.apply();
     }
 }

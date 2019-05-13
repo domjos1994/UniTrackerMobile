@@ -33,6 +33,9 @@
     <string name="accounts_image_gallery">Galerie</string>
 
     <string name="projects">Projekte</string>
+    <string name="projects_alias">Alias</string>
+    <string name="projects_private">Privat</string>
+    <string name="projects_release">Erschienen</string>
 
     <string name="settings">Einstellungen</string>
 
@@ -43,6 +46,8 @@
     <string name="sys_save">Speichern</string>
 
     <string name="general_title">Titel</string>
+    <string name="general_enabled">Aktiviert</string>
+
     <string name="general_description">Beschreibung</string>
 
     <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>

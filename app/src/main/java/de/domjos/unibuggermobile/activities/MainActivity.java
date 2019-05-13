@@ -32,13 +32,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
+import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
@@ -48,11 +53,16 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private ImageView ivMainCover;
     private TextView lblMainCommand;
     private TextView lblAccountTitle;
-    private Spinner spMainAccounts;
-    private ArrayAdapter<String> accountList;
+    private Spinner spMainAccounts, spMainProjects;
+    private ListView lvMainIssues;
+    private ArrayAdapter<String> accountList, projectList;
+    private IBugService bugService;
+
+    private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
     public static final Globals globals = new Globals();
     public static Settings settings;
+
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -83,8 +93,20 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 } else {
                     MainActivity.settings.setCurrentAuthentication(null);
                 }
-
                 fillFields();
+                reloadProjects();
+                selectProject();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
+
+        this.spMainProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                settings.setCurrentProject(projectList.getItem(position));
             }
 
             @Override
@@ -113,14 +135,22 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.ivMainCover = navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
             this.lblAccountTitle = navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
+
             this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
             this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
             this.accountList.notifyDataSetChanged();
 
-            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
-            this.reloadAccounts();
+            this.spMainProjects = this.findViewById(R.id.spMainProjects);
+            this.projectList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.spMainProjects.setAdapter(this.projectList);
+            this.projectList.notifyDataSetChanged();
 
+            this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
+
+            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
+
+            this.reloadAccounts();
             MainActivity.settings = new Settings(getApplicationContext());
             Authentication authentication = MainActivity.settings.getCurrentAuthentication();
             if (authentication != null) {
@@ -128,6 +158,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 this.spMainAccounts.setSelection(this.accountList.getPosition(""));
             }
+            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+
+            this.reloadProjects();
+            this.selectProject();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -141,11 +175,28 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
+    private void reloadProjects() {
+        try {
+            this.projectList.clear();
+            this.projectList.add("");
+            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            for (Project project : new ListProjectTask(MainActivity.this, this.bugService).execute().get()) {
+                this.projectList.add(project.getTitle());
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, MainActivity.this);
+        }
+    }
+
     @Override
     public void onActivityResult(int resultCode, int requestCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
             this.reloadAccounts();
             this.fillFields();
+        }
+        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_PROJECTS) {
+            this.reloadProjects();
+            this.selectProject();
         }
     }
 
@@ -178,9 +229,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Intent intent;
+        int reload = 0;
         switch (item.getItemId()) {
             case R.id.navProjects:
                 intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
+                reload = MainActivity.RELOAD_PROJECTS;
                 break;
             default:
                 intent = null;
@@ -188,7 +241,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
 
         if (intent != null) {
-            startActivityForResult(intent, 99);
+            startActivityForResult(intent, reload);
         }
 
         this.drawerLayout.closeDrawer(GravityCompat.START);
@@ -209,6 +262,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
             lblAccountTitle.setText(R.string.accounts_noAccount);
             lblMainCommand.setText(R.string.accounts_add);
+        }
+    }
+
+    private void selectProject() {
+        Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
+        if (project != null) {
+            this.spMainProjects.setSelection(this.projectList.getPosition(project.getTitle()));
         }
     }
 }

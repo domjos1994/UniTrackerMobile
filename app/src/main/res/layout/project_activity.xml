@@ -52,7 +52,6 @@
                 android:weightSum="10">
 
                 <TableRow>
-
                     <EditText
                         android:id="@+id/txtProjectTitle"
                         android:inputType="text"
@@ -64,6 +63,40 @@
 
                 <TableRow>
 
+                    <EditText
+                        android:id="@+id/txtProjectAlias"
+                        android:inputType="text"
+                        android:hint="@string/projects_alias"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <CheckBox
+                        android:id="@+id/chkProjectEnabled"
+                        android:text="@string/general_enabled"
+                        android:layout_weight="5"
+                        android:layout_width="0dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <CheckBox
+                        android:id="@+id/chkProjectPrivate"
+                        android:text="@string/projects_private"
+                        android:layout_weight="5"
+                        android:layout_width="0dp" />
+
+                    <CheckBox
+                        android:id="@+id/chkProjectReleased"
+                        android:text="@string/projects_release"
+                        android:layout_weight="5"
+                        android:layout_width="0dp" />
+                </TableRow>
+
+                <TableRow>
                     <EditText
                         android:id="@+id/txtProjectDescription"
                         android:inputType="textMultiLine"

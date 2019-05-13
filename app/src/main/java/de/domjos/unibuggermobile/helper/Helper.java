@@ -28,6 +28,16 @@ import android.view.ViewGroup;
 import java.io.InputStream;
 import java.util.Properties;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
+import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
+import de.domjos.unibuggerlibrary.services.tracker.Redmine;
+import de.domjos.unibuggerlibrary.services.tracker.SQLite;
+import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
+import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unibuggermobile.activities.MainActivity;
+
 public class Helper {
 
     public static Properties readPropertiesFromRaw(int rawID, Context context) throws Exception {
@@ -58,5 +68,36 @@ public class Helper {
             return inflater.inflate(layout, parent, false);
         }
         return new View(context);
+    }
+
+    public static IBugService getCurrentBugService(Context context) {
+        IBugService bugService = null;
+        try {
+            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+            if (authentication != null) {
+                switch (authentication.getTracker()) {
+                    case MantisBT:
+                        bugService = new MantisBT(authentication);
+                        break;
+                    case Bugzilla:
+                        bugService = new Bugzilla(authentication);
+                        break;
+                    case YouTrack:
+                        bugService = new YouTrack(authentication);
+                        break;
+                    case RedMine:
+                        bugService = new Redmine(authentication);
+                        break;
+                    default:
+                        bugService = new SQLite(context, Helper.getVersionCode(context));
+                        break;
+                }
+            } else {
+                bugService = new SQLite(context, Helper.getVersionCode(context));
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, context);
+        }
+        return bugService;
     }
 }
