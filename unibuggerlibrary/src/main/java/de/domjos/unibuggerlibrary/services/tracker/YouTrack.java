@@ -103,12 +103,12 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public List<Version<String>> getVersions() throws Exception {
+    public List<Version<String>> getVersions(String pid) throws Exception {
         return null;
     }
 
     @Override
-    public String insertOrUpdateVersion(Version<String> version) throws Exception {
+    public String insertOrUpdateVersion(String pid, Version<String> version) throws Exception {
         return null;
     }
 

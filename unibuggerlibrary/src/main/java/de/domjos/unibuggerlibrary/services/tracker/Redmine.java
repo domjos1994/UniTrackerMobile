@@ -124,12 +124,12 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions() throws Exception {
+    public List<Version<Long>> getVersions(Long pid) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateVersion(Version<Long> version) throws Exception {
+    public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
         return null;
     }
 

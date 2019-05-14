@@ -136,13 +136,13 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions() throws Exception {
+    public List<Version<Long>> getVersions(Long pid) throws Exception {
         List<Version<Long>> versions = new LinkedList<>();
         return null;
     }
 
     @Override
-    public Long insertOrUpdateVersion(Version<Long> version) throws Exception {
+    public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
         return null;
     }
 
