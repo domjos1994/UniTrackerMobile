@@ -30,6 +30,7 @@ import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBTSpecific.SubProject;
+import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class MantisBT extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
@@ -47,7 +48,7 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("projects");
             for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                projects.add(this.jsonToProject(jsonArray.getJSONObject(i)));
+                projects.add(this.jsonToProject(jsonArray.getJSONObject(i), false));
             }
         }
         return projects;
@@ -55,11 +56,15 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
 
     @Override
     public Project<Long> getProject(Long id) throws Exception {
+        return this.getProject(id, false);
+    }
+
+    private Project<Long> getProject(Long id, boolean version) throws Exception {
         int status = this.executeRequest("/api/rest/projects/" + id);
         if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("projects");
-            return this.jsonToProject(jsonArray.getJSONObject(0));
+            return this.jsonToProject(jsonArray.getJSONObject(0), version);
         }
         return null;
     }
@@ -137,8 +142,12 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Version<Long>> getVersions(Long pid) throws Exception {
-        List<Version<Long>> versions = new LinkedList<>();
-        return null;
+        Project<Long> project = this.getProject(pid, true);
+        if (project == null) {
+            return new LinkedList<>();
+        } else {
+            return project.getVersions();
+        }
     }
 
     @Override
@@ -151,7 +160,7 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
 
     }
 
-    private Project<Long> jsonToProject(JSONObject projectObject) throws Exception {
+    private Project<Long> jsonToProject(JSONObject projectObject, boolean versions) throws Exception {
         Project<Long> project = new Project<>();
         project.setId((long) projectObject.getInt("id"));
         project.setTitle(projectObject.getString("name"));
@@ -165,6 +174,23 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
                 projects.add(this.getProject((long) jsonObject.getInt("id")));
             }
             project.setSubProjects(projects);
+        }
+        if (versions) {
+            project.setVersions(new LinkedList<>());
+            if (projectObject.has("versions")) {
+                JSONArray array = projectObject.getJSONArray("versions");
+                for (int i = 0; i <= array.length() - 1; i++) {
+                    JSONObject jsonObject = array.getJSONObject(i);
+                    Version<Long> version = new Version<>();
+                    version.setId(jsonObject.getLong("id"));
+                    version.setTitle(jsonObject.getString("name"));
+                    version.setDescription(jsonObject.getString("description"));
+                    version.setDeprecatedVersion(jsonObject.getBoolean("obsolete"));
+                    version.setReleasedVersion(jsonObject.getBoolean("released"));
+                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("timestamp"), "yyyy-MM-dd'T'HH:mm:dd").getTime());
+                    project.getVersions().add(version);
+                }
+            }
         }
 
         JSONObject viewState = projectObject.getJSONObject("view_state");

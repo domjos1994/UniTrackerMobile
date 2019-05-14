@@ -28,10 +28,10 @@ import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
-public class ListVersionTask<T> extends AbstractTask<Void, Void, List<Version<T>>> {
-    private T pid;
+public class ListVersionTask extends AbstractTask<Void, Void, List<Version>> {
+    private Object pid;
 
-    public ListVersionTask(Activity activity, IBugService<T> bugService, T pid) {
+    public ListVersionTask(Activity activity, IBugService bugService, Object pid) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_list_content);
     }
 
@@ -46,9 +46,9 @@ public class ListVersionTask<T> extends AbstractTask<Void, Void, List<Version<T>
     }
 
     @Override
-    protected List<Version<T>> doInBackground(Void... voids) {
+    protected List<Version> doInBackground(Void... voids) {
         try {
-            List<Version<T>> versions = super.bugService.getVersions(pid);
+            List<Version> versions = super.bugService.getVersions(pid);
             super.printMessage();
             return versions;
         } catch (Exception ex) {

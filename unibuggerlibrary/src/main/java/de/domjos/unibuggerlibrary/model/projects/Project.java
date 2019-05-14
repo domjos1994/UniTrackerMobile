@@ -30,7 +30,7 @@ public class Project<T> extends DescriptionObject<T> {
     private long releasedAt;
     private long createdAt;
     private long updatedAt;
-    private List<Version> versions;
+    private List<Version<T>> versions;
     private String website;
     private String status;
     private int statusID;
@@ -69,11 +69,11 @@ public class Project<T> extends DescriptionObject<T> {
         this.releasedAt = releasedAt;
     }
 
-    public List<Version> getVersions() {
+    public List<Version<T>> getVersions() {
         return this.versions;
     }
 
-    public void setVersions(List<Version> versions) {
+    public void setVersions(List<Version<T>> versions) {
         this.versions = versions;
     }
 
