@@ -26,18 +26,22 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
+import de.domjos.unibuggerlibrary.services.tracker.MantisBTSpecific.SubProject;
 
-public final class MantisBT extends JSONEngine implements IBugService {
+public final class MantisBT extends JSONEngine implements IBugService<Long> {
+    private Authentication authentication;
 
     public MantisBT(Authentication authentication) {
         super(authentication, "Authorization: " + authentication.getAPIKey());
+        this.authentication = authentication;
     }
 
     @Override
-    public List<Project> getProjects() throws Exception {
-        List<Project> projects = new LinkedList<>();
+    public List<Project<Long>> getProjects() throws Exception {
+        List<Project<Long>> projects = new LinkedList<>();
         int status = this.executeRequest("/api/rest/projects");
         if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
@@ -50,7 +54,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
     }
 
     @Override
-    public Project getProject(String id) throws Exception {
+    public Project<Long> getProject(Long id) throws Exception {
         int status = this.executeRequest("/api/rest/projects/" + id);
         if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
@@ -61,7 +65,7 @@ public final class MantisBT extends JSONEngine implements IBugService {
     }
 
     @Override
-    public String insertOrUpdateProject(Project project) throws Exception {
+    public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         String method;
         String url;
         if (project.getId() != 0) {
@@ -74,43 +78,95 @@ public final class MantisBT extends JSONEngine implements IBugService {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", project.getId() == 0 ? 1 : project.getId());
         jsonObject.put("name", project.getTitle());
-        if (project.getId() == 0) {
+        if (project.getStatusID() != 0 && !project.getStatus().equals("")) {
             JSONObject statusObject = new JSONObject();
-            statusObject.put("id", "10");
-            statusObject.put("name", "development");
-            statusObject.put("label", "development");
+            statusObject.put("id", project.getStatusID());
+            statusObject.put("name", project.getStatus().toLowerCase());
+            statusObject.put("label", project.getStatus().toLowerCase());
             jsonObject.put("status", statusObject);
         }
 
         jsonObject.put("description", project.getDescription());
         jsonObject.put("enabled", project.isEnabled());
         jsonObject.put("file_path", "/tmp/");
+        JSONObject privateProject = new JSONObject();
         if (!project.isPrivateProject()) {
-            JSONObject privateProject = new JSONObject();
             privateProject.put("id", 10);
             privateProject.put("name", "public");
             privateProject.put("label", "public");
-            jsonObject.put("view_state", privateProject);
+        } else {
+            privateProject.put("id", 50);
+            privateProject.put("name", "private");
+            privateProject.put("label", "private");
+        }
+        jsonObject.put("view_state", privateProject);
+
+
+        List<Project<Long>> oldSubs = new LinkedList<>();
+        if (project.getId() != 0) {
+            Project<Long> tmp = this.getProject(project.getId());
+            if (tmp != null) {
+                oldSubs = tmp.getSubProjects();
+            }
         }
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
         if (status == 201 || status == 200) {
-            return new JSONObject(this.getCurrentMessage()).getJSONObject("project").getString("id");
+            project.setId(Long.parseLong(new JSONObject(this.getCurrentMessage()).getJSONObject("project").getString("id")));
+
+            if (project.getId() != 0) {
+                SubProject subProject = new SubProject(this.authentication);
+
+                for (Project sub : oldSubs) {
+                    subProject.deleteSubProject(project, sub);
+                }
+                for (Project sub : project.getSubProjects()) {
+                    subProject.addSubProject(project, sub);
+                }
+            }
+
+            return project.getId();
         }
-        return "";
+        return 0L;
     }
 
     @Override
-    public void deleteProject(String id) throws Exception {
+    public void deleteProject(Long id) throws Exception {
         this.deleteRequest("/api/rest/projects/" + id);
     }
 
-    private Project jsonToProject(JSONObject projectObject) throws Exception {
-        Project project = new Project();
-        project.setId(projectObject.getInt("id"));
+    @Override
+    public List<Version<Long>> getVersions() throws Exception {
+        List<Version<Long>> versions = new LinkedList<>();
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateVersion(Version<Long> version) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteVersion(Long id) throws Exception {
+
+    }
+
+    private Project<Long> jsonToProject(JSONObject projectObject) throws Exception {
+        Project<Long> project = new Project<>();
+        project.setId((long) projectObject.getInt("id"));
         project.setTitle(projectObject.getString("name"));
         project.setDescription(projectObject.getString("description"));
         project.setEnabled(projectObject.getBoolean("enabled"));
+        if (projectObject.has("subProjects")) {
+            JSONArray array = projectObject.getJSONArray("subProjects");
+            List<Project<Long>> projects = new LinkedList<>();
+            for (int i = 0; i <= array.length() - 1; i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                projects.add(this.getProject((long) jsonObject.getInt("id")));
+            }
+            project.setSubProjects(projects);
+        }
+
         JSONObject viewState = projectObject.getJSONObject("view_state");
         project.setPrivateProject(viewState.getInt("id") != 10);
         return project;

@@ -235,6 +235,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
                 reload = MainActivity.RELOAD_PROJECTS;
                 break;
+            case R.id.navVersions:
+                intent = new Intent(this.getApplicationContext(), VersionActivity.class);
+                break;
             default:
                 intent = null;
                 break;

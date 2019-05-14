@@ -26,21 +26,20 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 
-public final class YouTrack extends JSONEngine implements IBugService {
-    private Authentication authentication;
-    private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader";
+public final class YouTrack extends JSONEngine implements IBugService<String> {
+    private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
 
     public YouTrack(Authentication authentication) {
         super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
-        this.authentication = authentication;
     }
 
     @Override
-    public List<Project> getProjects() throws Exception {
-        List<Project> projects = new LinkedList<>();
+    public List<Project<String>> getProjects() throws Exception {
+        List<Project<String>> projects = new LinkedList<>();
 
         int status = this.executeRequest("/api/admin/projects?fields=" + YouTrack.PROJECT_FIELDS);
         if (status == 201 || status == 200) {
@@ -54,8 +53,8 @@ public final class YouTrack extends JSONEngine implements IBugService {
     }
 
     @Override
-    public Project getProject(String id) throws Exception {
-        int status = this.executeRequest("/api/admin/projects/0-" + id + "?fields=" + YouTrack.PROJECT_FIELDS);
+    public Project<String> getProject(String id) throws Exception {
+        int status = this.executeRequest("/api/admin/projects/" + id + "?fields=" + YouTrack.PROJECT_FIELDS);
         if (status == 201 || status == 200) {
             JSONObject projectObject = new JSONObject(this.getCurrentMessage());
             return this.jsonObjectToProject(projectObject);
@@ -64,10 +63,10 @@ public final class YouTrack extends JSONEngine implements IBugService {
     }
 
     @Override
-    public String insertOrUpdateProject(Project project) throws Exception {
+    public String insertOrUpdateProject(Project<String> project) throws Exception {
         String url, method;
-        if (project.getId() != 0) {
-            url = "/api/admin/projects/0-" + project.getId() + "?fields=" + YouTrack.PROJECT_FIELDS;
+        if (project.getId().equals("")) {
+            url = "/api/admin/projects/" + project.getId() + "?fields=" + YouTrack.PROJECT_FIELDS;
             method = "POST";
         } else {
             url = "/api/admin/projects?fields=" + YouTrack.PROJECT_FIELDS;
@@ -78,6 +77,7 @@ public final class YouTrack extends JSONEngine implements IBugService {
         jsonObject.put("name", project.getTitle());
         jsonObject.put("description", project.getDescription());
         jsonObject.put("archived", !project.isEnabled());
+        jsonObject.put("iconUrl", project.getIconUrl());
 
         int userStatus = this.executeRequest("/api/admin/users/me?fields=id,login,name,email");
         if (userStatus == 200 || userStatus == 201) {
@@ -86,11 +86,11 @@ public final class YouTrack extends JSONEngine implements IBugService {
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
         if (status == 200 || status == 201) {
-            if (project.getId() != 0) {
-                return String.valueOf(project.getId());
+            if (project.getId().equals("")) {
+                return project.getId();
             } else {
                 JSONObject obj = new JSONObject(this.getCurrentMessage());
-                return obj.getString("id").split("-")[1].trim();
+                return obj.getString("id");
             }
         } else {
             return "";
@@ -99,16 +99,34 @@ public final class YouTrack extends JSONEngine implements IBugService {
 
     @Override
     public void deleteProject(String id) throws Exception {
-        this.deleteRequest("/api/admin/projects/0-" + id);
+        this.deleteRequest("/api/admin/projects/" + id);
     }
 
-    private Project jsonObjectToProject(JSONObject jsonObject) throws Exception {
-        Project project = new Project();
-        project.setId(Long.parseLong(jsonObject.getString("id").split("-")[1].trim()));
+    @Override
+    public List<Version<String>> getVersions() throws Exception {
+        return null;
+    }
+
+    @Override
+    public String insertOrUpdateVersion(Version<String> version) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteVersion(String id) throws Exception {
+
+    }
+
+    private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {
+        Project<String> project = new Project<>();
+        project.setId(jsonObject.getString("id"));
         project.setTitle(jsonObject.getString("name"));
         project.setDescription(jsonObject.getString("description"));
         project.setAlias(jsonObject.getString("shortName"));
-        project.setEnabled(!jsonObject.getBoolean("archived"));
+        if (jsonObject.has("archived")) {
+            project.setEnabled(!jsonObject.getBoolean("archived"));
+        }
+        project.setIconUrl(jsonObject.getString("iconUrl"));
         return project;
     }
 }

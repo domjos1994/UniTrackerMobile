@@ -20,7 +20,7 @@ package de.domjos.unibuggerlibrary.model.projects;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-public class Version extends DescriptionObject {
+public class Version<T> extends DescriptionObject<T> {
     private boolean releasedVersion;
     private boolean deprecatedVersion;
     private long releasedVersionAt;

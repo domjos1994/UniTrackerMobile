@@ -83,7 +83,7 @@ public class Helper {
                         bugService = new Bugzilla(authentication);
                         break;
                     case YouTrack:
-                        bugService = new YouTrack(authentication);
+                        bugService = new YouTrack(MainActivity.settings.getCurrentAuthentication());
                         break;
                     case RedMine:
                         bugService = new Redmine(authentication);

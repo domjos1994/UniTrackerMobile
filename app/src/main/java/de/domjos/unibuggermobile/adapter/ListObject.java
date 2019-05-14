@@ -26,7 +26,7 @@ import android.graphics.drawable.Drawable;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-public class ListObject extends DescriptionObject {
+public class ListObject extends DescriptionObject<String> {
     private byte[] icon;
     private Drawable drawable;
     private Context context;
@@ -60,8 +60,12 @@ public class ListObject extends DescriptionObject {
 
     public void setIcon(byte[] icon) {
         this.icon = icon;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(this.icon, 0, this.icon.length);
-        this.drawable = new BitmapDrawable(this.context.getResources(), bitmap);
+        if (this.icon != null) {
+            Bitmap bitmap = BitmapFactory.decodeByteArray(this.icon, 0, this.icon.length);
+            this.drawable = new BitmapDrawable(this.context.getResources(), bitmap);
+        } else {
+            this.drawable = null;
+        }
     }
 
     public Drawable getIcon() {

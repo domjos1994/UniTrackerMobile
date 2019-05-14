@@ -35,7 +35,26 @@
     <string name="projects">Projekte</string>
     <string name="projects_alias">Alias</string>
     <string name="projects_private">Privat</string>
-    <string name="projects_release">Erschienen</string>
+    <string name="projects_state">Status</string>
+    <string name="projects_sub">Untergeordnete Projekte</string>
+    <string name="projects_website">Website</string>
+    <string name="projects_icon_url">Icon-Url</string>
+    <string name="projects_version">Version</string>
+    <string name="projects_version_default">unspecified</string>
+    <string-array name="project_state_mantis">
+        <item>Development</item>
+        <item>Release</item>
+        <item>Stable</item>
+        <item>Deprecated</item>
+    </string-array>
+    <string-array name="project_state_mantis_label">
+        <item>Entwicklung</item>
+        <item>Freigabe</item>
+        <item>Stabil</item>
+        <item>Veraltet</item>
+    </string-array>
+
+    <string name="versions">Versionen</string>
 
     <string name="settings">Einstellungen</string>
 

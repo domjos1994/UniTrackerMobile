@@ -20,7 +20,7 @@ package de.domjos.unibuggerlibrary.model.objects;
 
 import de.domjos.unibuggerlibrary.model.local.LocalObject;
 
-public class DescriptionObject extends LocalObject {
+public class DescriptionObject<T> extends LocalObject<T> {
     private String title;
     private String description;
 

@@ -20,7 +20,7 @@ package de.domjos.unibuggerlibrary.services.engine;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-public class Authentication extends DescriptionObject {
+public class Authentication extends DescriptionObject<Long> {
     private String server;
     private String userName;
     private String password;

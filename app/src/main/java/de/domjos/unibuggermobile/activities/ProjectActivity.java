@@ -18,30 +18,52 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.os.Build;
 import android.support.design.widget.BottomNavigationView;
+import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.Spinner;
+import android.widget.TableRow;
+import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
+import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
+import de.domjos.unibuggermobile.custom.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
 
-public class ProjectActivity extends AbstractActivity {
+@SuppressWarnings("unchecked")
+public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private ListView lvProjects;
     private ListAdapter listAdapter;
 
-    private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription;
-    private CheckBox chkProjectEnabled, chkProjectPrivate, chkProjectReleased;
+    private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription, txtProjectWebsite;
+    private EditText txtProjectIconUrl, txtProjectVersion;
+    private TextView lblCreatedAt, lblUpdatedAt;
+    private CheckBox chkProjectEnabled, chkProjectPrivate;
+    private MultiAutoCompleteTextView txtProjectsSubProject;
+    private Spinner spProjectsState;
+    private ArrayAdapter<String> stateAdapter;
+
+    private TableRow rowProjectState, rowSubProjects, rowTimestamps, rowProjectAlias, rowProjectWebsite;
+    private TableRow rowProjectEnabled, rowProjectIcon, rowProjectVersion, rowProjectPrivate;
 
     private IBugService bugService;
     private Project currentProject;
@@ -57,10 +79,15 @@ public class ProjectActivity extends AbstractActivity {
             try {
                 ListObject listObject = this.listAdapter.getItem(position);
                 if (listObject != null) {
-                    long listID = listObject.getId();
+                    Object listID = listObject.getId();
                     new Thread(() -> {
                         try {
-                            this.currentProject = this.bugService.getProject(String.valueOf(listID));
+                            try {
+                                long tmpId = Long.parseLong(String.valueOf(listID));
+                                this.currentProject = this.bugService.getProject(tmpId);
+                            } catch (Exception ex) {
+                                this.currentProject = this.bugService.getProject(listID);
+                            }
                             runOnUiThread(() -> {
                                 objectToControls();
                                 manageControls(false, false, true);
@@ -136,17 +163,48 @@ public class ProjectActivity extends AbstractActivity {
         this.txtProjectTitle = this.findViewById(R.id.txtProjectTitle);
         this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
         this.txtProjectDescription = this.findViewById(R.id.txtProjectDescription);
+        this.txtProjectWebsite = this.findViewById(R.id.txtProjectWebsite);
+        this.txtProjectIconUrl = this.findViewById(R.id.txtProjectIcon);
+        this.txtProjectVersion = this.findViewById(R.id.txtProjectVersion);
+        this.lblCreatedAt = this.findViewById(R.id.lblCreatedAt);
+        this.lblUpdatedAt = this.findViewById(R.id.lblUpdatedAt);
         this.chkProjectEnabled = this.findViewById(R.id.chkProjectEnabled);
         this.chkProjectPrivate = this.findViewById(R.id.chkProjectPrivate);
-        this.chkProjectReleased = this.findViewById(R.id.chkProjectReleased);
+        this.spProjectsState = this.findViewById(R.id.spProjectsState);
+        this.stateAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item, this.getResources().getStringArray(R.array.project_state_mantis_label));
+        this.spProjectsState.setAdapter(this.stateAdapter);
+        this.stateAdapter.notifyDataSetChanged();
+
+        this.txtProjectsSubProject = this.findViewById(R.id.txtSubProjects);
+        this.txtProjectsSubProject.setTokenizer(new CommaTokenizer());
+
+        this.rowProjectState = this.findViewById(R.id.rowProjectState);
+        this.rowSubProjects = this.findViewById(R.id.rowSubProjects);
+        this.rowTimestamps = this.findViewById(R.id.rowTimestamps);
+        this.rowProjectAlias = this.findViewById(R.id.rowProjectAlias);
+        this.rowProjectWebsite = this.findViewById(R.id.rowProjectWebsite);
+        this.rowProjectEnabled = this.findViewById(R.id.rowProjectEnabled);
+        this.rowProjectVersion = this.findViewById(R.id.rowProjectVersion);
+        this.rowProjectIcon = this.findViewById(R.id.rowProjectIcon);
+        this.rowProjectPrivate = this.findViewById(R.id.rowProjectPrivate);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+
+        this.updateUITrackerSpecific();
     }
 
     @Override
     protected void initValidators() {
         this.projectValidator = new Validator(this.getApplicationContext());
         this.projectValidator.addEmptyValidator(this.txtProjectTitle);
+
+        switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
+            case RedMine:
+                this.projectValidator.addEmptyValidator(this.txtProjectAlias);
+                break;
+            case Bugzilla:
+                this.projectValidator.addEmptyValidator(this.txtProjectVersion);
+        }
     }
 
     @Override
@@ -161,9 +219,13 @@ public class ProjectActivity extends AbstractActivity {
         this.txtProjectTitle.setEnabled(editMode);
         this.txtProjectAlias.setEnabled(editMode);
         this.txtProjectDescription.setEnabled(editMode);
+        this.txtProjectWebsite.setEnabled(editMode);
         this.chkProjectPrivate.setEnabled(editMode);
         this.chkProjectEnabled.setEnabled(editMode);
-        this.chkProjectReleased.setEnabled(editMode);
+        this.spProjectsState.setEnabled(editMode);
+        this.txtProjectsSubProject.setEnabled(editMode);
+        this.txtProjectVersion.setEnabled(editMode);
+        this.txtProjectIconUrl.setEnabled(editMode);
 
         if (reset) {
             this.currentProject = new Project();
@@ -176,11 +238,36 @@ public class ProjectActivity extends AbstractActivity {
         try {
             ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService);
             this.listAdapter.clear();
+            ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
             for (Project project : task.execute().get()) {
                 ListObject listObject = new ListObject(this.getApplicationContext(), null, project.getTitle(), project.getDescription());
-                listObject.setId(project.getId());
+                if (project.getIconUrl() != null) {
+                    if (!project.getIconUrl().isEmpty()) {
+                        try {
+                            new Thread(() -> {
+                                try {
+                                    listObject.setIcon(Converter.convertStringToByteArray(project.getIconUrl()));
+                                    if (listObject.getIcon() != null) {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                            listObject.setIcon(Converter.convertSVGToByteArray(getApplicationContext(), project.getIconUrl()));
+                                        } else {
+                                            listObject.setIcon(null);
+                                        }
+                                    }
+                                } catch (Exception ex) {
+                                    runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
+                                }
+                            }).start();
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, this.getApplicationContext());
+                        }
+                    }
+                }
+                listObject.setId(String.valueOf(project.getId()));
+                subProjects.add(listObject.getTitle());
                 this.listAdapter.add(listObject);
             }
+            this.txtProjectsSubProject.setAdapter(subProjects);
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getApplicationContext());
         }
@@ -192,10 +279,35 @@ public class ProjectActivity extends AbstractActivity {
             this.txtProjectAlias.setText(this.currentProject.getAlias());
             this.txtProjectDescription.setText(this.currentProject.getDescription());
             this.chkProjectEnabled.setChecked(this.currentProject.isEnabled());
-            this.chkProjectReleased.setChecked(this.currentProject.isReleasedProject());
+            this.spProjectsState.setSelection(this.stateAdapter.getPosition(this.convertStateToLabel(this.currentProject.getStatus())));
             this.chkProjectPrivate.setChecked(this.currentProject.isPrivateProject());
+            this.txtProjectWebsite.setText(this.currentProject.getWebsite());
+            this.txtProjectIconUrl.setText(this.currentProject.getIconUrl());
+            this.txtProjectVersion.setText(this.currentProject.getDefaultVersion());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
+            if (this.currentProject.getCreatedAt() != 0) {
+                Date dt = new Date();
+                dt.setTime(this.currentProject.getCreatedAt());
+                this.lblCreatedAt.setText(sdf.format(dt));
+            }
+            if (this.currentProject.getUpdatedAt() != 0) {
+                Date dt = new Date();
+                dt.setTime(this.currentProject.getUpdatedAt());
+                this.lblUpdatedAt.setText(sdf.format(dt));
+            }
+
+            StringBuilder builder = new StringBuilder();
+            this.txtProjectsSubProject.setText("");
+            for (Object project : this.currentProject.getSubProjects()) {
+                if (project instanceof Project) {
+                    builder.append(((Project) project).getTitle()).append(",");
+                }
+            }
+            this.txtProjectsSubProject.setText(builder.toString());
         }
     }
+
 
     private void controlsToObject() {
         if (this.currentProject != null) {
@@ -203,8 +315,119 @@ public class ProjectActivity extends AbstractActivity {
             this.currentProject.setAlias(this.txtProjectAlias.getText().toString());
             this.currentProject.setDescription(this.txtProjectDescription.getText().toString());
             this.currentProject.setEnabled(this.chkProjectEnabled.isEnabled());
-            this.currentProject.setPrivateProject(this.currentProject.isPrivateProject());
-            this.currentProject.setReleasedProject(this.currentProject.isReleasedProject());
+            this.currentProject.setPrivateProject(this.chkProjectPrivate.isChecked());
+            this.currentProject.setWebsite(this.txtProjectWebsite.getText().toString());
+            this.currentProject.setDefaultVersion(this.txtProjectVersion.getText().toString());
+            this.currentProject.setIconUrl(this.txtProjectIconUrl.getText().toString());
+
+            this.currentProject.getSubProjects().clear();
+            if (this.txtProjectsSubProject.getText().toString().contains(",")) {
+                for (String text : this.txtProjectsSubProject.getText().toString().split(",")) {
+                    text = text.trim();
+                    for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
+                        ListObject object = this.listAdapter.getItem(i);
+                        if (object != null) {
+                            if (text.equals(object.getTitle())) {
+                                Project project = new Project();
+                                project.setTitle(text);
+                                project.setId(object.getId());
+                                this.currentProject.getSubProjects().add(project);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                String text = this.txtProjectsSubProject.getText().toString().trim();
+                for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
+                    ListObject object = this.listAdapter.getItem(i);
+                    if (object != null) {
+                        if (text.equals(object.getTitle())) {
+                            Project project = new Project();
+                            project.setTitle(text);
+                            project.setId(object.getId());
+                            this.currentProject.getSubProjects().add(project);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            try {
+                String state = this.convertLabelToState(this.stateAdapter.getItem(this.spProjectsState.getSelectedItemPosition()));
+                if (!state.equals("")) {
+                    this.currentProject.setStatus(state.split(":")[1], Integer.parseInt(state.split(":")[0]));
+                }
+            } catch (Exception ex) {
+                this.currentProject.setStatus("", 0);
+            }
+        }
+    }
+
+    private String convertStateToLabel(String state) {
+        String[] labels = this.getResources().getStringArray(R.array.project_state_mantis_label);
+        String[] states = this.getResources().getStringArray(R.array.project_state_mantis);
+        for (int i = 0; i <= states.length - 1; i++) {
+            if (states[i].equals(state)) {
+                return labels[i];
+            }
+        }
+        return "";
+    }
+
+    private String convertLabelToState(String label) {
+        String[] labels = this.getResources().getStringArray(R.array.project_state_mantis_label);
+        String[] states = this.getResources().getStringArray(R.array.project_state_mantis);
+        for (int i = 0; i <= labels.length - 1; i++) {
+            if (labels[i].equals(label)) {
+                switch (states[i]) {
+                    case "Development":
+                        return 10 + ":" + states[i];
+                    case "Release":
+                        return 30 + ":" + states[i];
+                    case "Stable":
+                        return 50 + ":" + states[i];
+                    case "Deprecated":
+                        return 70 + ":" + states[i];
+                }
+            }
+        }
+        return "";
+    }
+
+    private void updateUITrackerSpecific() {
+        this.rowProjectState.setVisibility(View.GONE);
+        this.rowSubProjects.setVisibility(View.GONE);
+        this.rowTimestamps.setVisibility(View.GONE);
+        this.rowProjectAlias.setVisibility(View.GONE);
+        this.rowProjectWebsite.setVisibility(View.GONE);
+        this.rowProjectEnabled.setVisibility(View.GONE);
+        this.rowProjectIcon.setVisibility(View.GONE);
+        this.rowProjectVersion.setVisibility(View.GONE);
+        this.rowProjectPrivate.setVisibility(View.GONE);
+
+        switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
+            case MantisBT:
+                this.rowProjectState.setVisibility(View.VISIBLE);
+                this.rowSubProjects.setVisibility(View.VISIBLE);
+                this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                break;
+            case RedMine:
+                this.rowProjectAlias.setVisibility(View.VISIBLE);
+                this.rowTimestamps.setVisibility(View.VISIBLE);
+                this.rowProjectWebsite.setVisibility(View.VISIBLE);
+                this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                break;
+            case YouTrack:
+                this.rowProjectAlias.setVisibility(View.VISIBLE);
+                this.rowProjectIcon.setVisibility(View.VISIBLE);
+                this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                break;
+            case Bugzilla:
+                this.rowProjectVersion.setVisibility(View.VISIBLE);
+                this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }

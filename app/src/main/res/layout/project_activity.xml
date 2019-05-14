@@ -61,8 +61,7 @@
                         tools:ignore="Autofill" />
                 </TableRow>
 
-                <TableRow>
-
+                <TableRow android:id="@+id/rowProjectAlias">
                     <EditText
                         android:id="@+id/txtProjectAlias"
                         android:inputType="text"
@@ -72,8 +71,7 @@
                         tools:ignore="Autofill" />
                 </TableRow>
 
-                <TableRow>
-
+                <TableRow android:id="@+id/rowProjectEnabled">
                     <CheckBox
                         android:id="@+id/chkProjectEnabled"
                         android:text="@string/general_enabled"
@@ -81,19 +79,82 @@
                         android:layout_width="0dp" />
                 </TableRow>
 
-                <TableRow>
-
+                <TableRow android:id="@+id/rowProjectPrivate">
                     <CheckBox
                         android:id="@+id/chkProjectPrivate"
                         android:text="@string/projects_private"
-                        android:layout_weight="5"
+                        android:layout_weight="10"
                         android:layout_width="0dp" />
+                </TableRow>
 
-                    <CheckBox
-                        android:id="@+id/chkProjectReleased"
-                        android:text="@string/projects_release"
-                        android:layout_weight="5"
-                        android:layout_width="0dp" />
+                <TableRow android:id="@+id/rowProjectState">
+
+                    <TextView
+                        android:text="@string/projects_state"
+                        android:layout_width="0dp"
+                        android:layout_weight="3" />
+
+                    <Spinner
+                        android:id="@+id/spProjectsState"
+                        android:layout_width="0dp"
+                        android:layout_weight="7" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowProjectWebsite">
+
+                    <EditText
+                        android:id="@+id/txtProjectWebsite"
+                        android:inputType="textUri"
+                        android:hint="@string/projects_website"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowSubProjects">
+
+                    <MultiAutoCompleteTextView
+                        android:id="@+id/txtSubProjects"
+                        android:hint="@string/projects_sub"
+                        android:layout_width="0dp"
+                        android:layout_weight="10"
+                        android:inputType="textAutoComplete" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowTimestamps">
+
+                    <TextView
+                        android:id="@+id/lblCreatedAt"
+                        android:layout_width="0dp"
+                        android:layout_weight="5" />
+
+                    <TextView
+                        android:id="@+id/lblUpdatedAt"
+                        android:layout_width="0dp"
+                        android:layout_weight="5" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowProjectIcon">
+
+                    <EditText
+                        android:id="@+id/txtProjectIcon"
+                        android:inputType="textUri"
+                        android:hint="@string/projects_icon_url"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowProjectVersion">
+
+                    <EditText
+                        android:id="@+id/txtProjectVersion"
+                        android:inputType="textUri"
+                        android:hint="@string/projects_version"
+                        android:text="@string/projects_version_default"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
                 </TableRow>
 
                 <TableRow>

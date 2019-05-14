@@ -27,10 +27,11 @@ import java.util.List;
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggerlibrary.utils.Utils;
 
-public final class SQLite extends SQLiteOpenHelper implements IBugService {
+public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> {
     private Context context;
 
     public SQLite(Context context, int id) {
@@ -50,22 +51,37 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService {
     }
 
     @Override
-    public List<Project> getProjects() throws Exception {
+    public List<Project<Long>> getProjects() throws Exception {
         return null;
     }
 
     @Override
-    public Project getProject(String id) throws Exception {
+    public Project<Long> getProject(Long id) throws Exception {
         return null;
     }
 
     @Override
-    public String insertOrUpdateProject(Project project) throws Exception {
+    public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteProject(String id) throws Exception {
+    public void deleteProject(Long id) throws Exception {
+
+    }
+
+    @Override
+    public List<Version<Long>> getVersions() throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateVersion(Version<Long> version) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteVersion(Long id) throws Exception {
 
     }
 

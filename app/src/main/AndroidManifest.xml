@@ -34,6 +34,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".activities.VersionActivity"
+            android:label="@string/versions"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.ProjectActivity"
             android:label="@string/projects"
             android:parentActivityName=".activities.MainActivity">

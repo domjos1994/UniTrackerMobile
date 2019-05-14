@@ -23,27 +23,34 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-public class Project extends DescriptionObject {
+public class Project<T> extends DescriptionObject<T> {
     private String alias;
     private boolean privateProject;
-    private boolean releasedProject;
     private boolean enabled;
     private long releasedAt;
     private long createdAt;
     private long updatedAt;
     private List<Version> versions;
     private String website;
+    private String status;
+    private int statusID;
+    private List<Project<T>> subProjects;
+    private String iconUrl;
+    private String defaultVersion;
 
     public Project() {
         super();
 
         this.alias = "";
         this.privateProject = false;
-        this.releasedProject = false;
         this.releasedAt = 0L;
         this.createdAt = 0L;
         this.updatedAt = 0L;
         this.versions = new LinkedList<>();
+        this.subProjects = new LinkedList<>();
+        this.status = "";
+        this.statusID = 0;
+        this.iconUrl = "";
     }
 
     public boolean isPrivateProject() {
@@ -52,14 +59,6 @@ public class Project extends DescriptionObject {
 
     public void setPrivateProject(boolean privateProject) {
         this.privateProject = privateProject;
-    }
-
-    public boolean isReleasedProject() {
-        return this.releasedProject;
-    }
-
-    public void setReleasedProject(boolean releasedProject) {
-        this.releasedProject = releasedProject;
     }
 
     public long getReleasedAt() {
@@ -116,5 +115,42 @@ public class Project extends DescriptionObject {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getStatus() {
+        return this.status;
+    }
+
+    public void setStatus(String status, int id) {
+        this.status = status;
+        this.statusID = id;
+    }
+
+    public int getStatusID() {
+        return this.statusID;
+    }
+
+    public List<Project<T>> getSubProjects() {
+        return this.subProjects;
+    }
+
+    public void setSubProjects(List<Project<T>> subProjects) {
+        this.subProjects = subProjects;
+    }
+
+    public String getIconUrl() {
+        return this.iconUrl;
+    }
+
+    public void setIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public String getDefaultVersion() {
+        return this.defaultVersion;
+    }
+
+    public void setDefaultVersion(String defaultVersion) {
+        this.defaultVersion = defaultVersion;
     }
 }

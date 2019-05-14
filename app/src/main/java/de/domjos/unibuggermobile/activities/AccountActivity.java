@@ -193,7 +193,7 @@ public final class AccountActivity extends AbstractActivity {
         this.listAdapter.clear();
         for (Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
             ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication.getTitle(), authentication.getUserName());
-            listObject.setId(authentication.getId());
+            listObject.setId(String.valueOf(authentication.getId()));
             this.listAdapter.add(listObject);
         }
     }

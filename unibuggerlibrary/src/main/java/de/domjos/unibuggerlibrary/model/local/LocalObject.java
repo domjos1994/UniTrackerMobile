@@ -20,7 +20,7 @@ package de.domjos.unibuggerlibrary.model.local;
 
 import de.domjos.unibuggerlibrary.model.objects.BaseObject;
 
-public class LocalObject extends BaseObject {
+public class LocalObject<T> extends BaseObject<T> {
     private boolean synced;
     private long last_synced;
 

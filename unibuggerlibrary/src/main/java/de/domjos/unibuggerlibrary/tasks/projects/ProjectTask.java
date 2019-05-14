@@ -49,7 +49,7 @@ public class ProjectTask extends AbstractTask<Project, Void, Void> {
         try {
             for (Project project : projects) {
                 if (this.delete) {
-                    super.bugService.deleteProject(String.valueOf(project.getId()));
+                    super.bugService.deleteProject(project.getId());
                 } else {
                     super.bugService.insertOrUpdateProject(project);
                 }

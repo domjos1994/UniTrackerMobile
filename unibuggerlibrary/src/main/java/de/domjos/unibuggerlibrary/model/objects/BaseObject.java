@@ -20,20 +20,20 @@ package de.domjos.unibuggerlibrary.model.objects;
 
 import java.util.Date;
 
-public class BaseObject {
-    private long id;
+public class BaseObject<T> {
+    private T id;
     private long timestamp;
 
     public BaseObject() {
-        this.id = 0L;
+        this.id = null;
         this.timestamp = new Date().getTime();
     }
 
-    public long getId() {
+    public T getId() {
         return this.id;
     }
 
-    public void setId(long id) {
+    public void setId(T id) {
         this.id = id;
     }
 

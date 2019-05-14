@@ -21,16 +21,23 @@ package de.domjos.unibuggerlibrary.interfaces;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.model.projects.Version;
 
-public interface IBugService {
+public interface IBugService<T> {
 
-    List<Project> getProjects() throws Exception;
+    List<Project<T>> getProjects() throws Exception;
 
-    Project getProject(String id) throws Exception;
+    Project<T> getProject(T id) throws Exception;
 
-    String insertOrUpdateProject(Project project) throws Exception;
+    T insertOrUpdateProject(Project<T> project) throws Exception;
 
-    void deleteProject(String id) throws Exception;
+    void deleteProject(T id) throws Exception;
+
+    List<Version<T>> getVersions() throws Exception;
+
+    T insertOrUpdateVersion(Version<T> version) throws Exception;
+
+    void deleteVersion(T id) throws Exception;
 
     int getCurrentState();
 
