@@ -35,6 +35,7 @@ import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unibuggermobile.helper.Validator;
 
 public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -48,6 +49,8 @@ public final class VersionActivity extends AbstractActivity {
     private IBugService bugService;
     private Project currentProject;
     private Version currentVersion;
+
+    private Validator versionValidator;
 
     public VersionActivity() {
         super(R.layout.version_activity);
@@ -65,19 +68,21 @@ public final class VersionActivity extends AbstractActivity {
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.navAdd:
-
+                    this.manageControls(true, true, false);
                     break;
                 case R.id.navEdit:
-
+                    this.manageControls(true, false, false);
                     break;
                 case R.id.navDelete:
-
+                    this.manageControls(false, true, false);
                     break;
                 case R.id.navCancel:
-
+                    this.manageControls(false, true, false);
                     break;
                 case R.id.navSave:
-
+                    if (this.versionValidator.getState()) {
+                        this.manageControls(false, true, false);
+                    }
                     break;
             }
             return true;
@@ -106,7 +111,8 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initValidators() {
-
+        this.versionValidator = new Validator(this.getApplicationContext());
+        this.versionValidator.addEmptyValidator(this.txtVersionTitle);
     }
 
     @Override
@@ -142,6 +148,10 @@ public final class VersionActivity extends AbstractActivity {
         this.rowVersionReleasedAt = this.findViewById(R.id.rowVersionReleasedAt);
         this.rowVersionReleased = this.findViewById(R.id.rowVersionReleased);
         this.rowVersionDeprecated = this.findViewById(R.id.rowVersionDeprecated);
+
+        if (reset) {
+            this.currentVersion = new Version();
+        }
     }
 
     private void updateUITrackerSpecific() {
