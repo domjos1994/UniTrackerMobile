@@ -33,6 +33,7 @@ public class ListVersionTask extends AbstractTask<Void, Void, List<Version>> {
 
     public ListVersionTask(Activity activity, IBugService bugService, Object pid) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_list_content);
+        this.pid = pid;
     }
 
     @Override
