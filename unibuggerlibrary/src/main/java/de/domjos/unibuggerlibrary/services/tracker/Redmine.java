@@ -38,6 +38,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public String getTrackerVersion() throws Exception {
+        return null;
+    }
+
+    @Override
     public List<Project<Long>> getProjects() throws Exception {
         List<Project<Long>> projects = new LinkedList<>();
         int status = this.executeRequest("/projects.json");

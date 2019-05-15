@@ -37,6 +37,15 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public String getTrackerVersion() throws Exception {
+        int status = this.executeRequest("/rest/version");
+        if (status == 200 || status == 201) {
+            return new JSONObject(this.getCurrentMessage()).getString("version");
+        }
+        return null;
+    }
+
+    @Override
     public List<Project<Long>> getProjects() throws Exception {
         List<Project<Long>> projects = new LinkedList<>();
         int status = this.executeRequest("/rest/product_selectable");

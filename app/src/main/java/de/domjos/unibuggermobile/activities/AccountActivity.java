@@ -68,7 +68,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.setOnItemClickListener((parent, view, position, id) -> {
             ListObject listObject = this.listAdapter.getItem(position);
             if (listObject != null) {
-                this.currentAccount = MainActivity.globals.getSqLiteGeneral().getAccounts("ID=" + listObject.getId()).get(0);
+                this.currentAccount = (Authentication) listObject.getDescriptionObject();
                 this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, "accounts", "title", this.currentAccount.getId());
             }
             this.objectToControls();
@@ -192,8 +192,7 @@ public final class AccountActivity extends AbstractActivity {
     protected void reload() {
         this.listAdapter.clear();
         for (Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
-            ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication.getTitle(), authentication.getUserName());
-            listObject.setId(String.valueOf(authentication.getId()));
+            ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
             this.listAdapter.add(listObject);
         }
     }

@@ -18,11 +18,16 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -41,8 +46,16 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public String getTrackerVersion() throws Exception {
+        int state = this.executeRequest("/api/rest/internal");
+        String content = this.getCurrentMessage();
+        return null;
+    }
+
+    @Override
     public List<Project<Long>> getProjects() throws Exception {
         List<Project<Long>> projects = new LinkedList<>();
+        this.getTrackerVersion();
         int status = this.executeRequest("/api/rest/projects");
         if (status == 201 || status == 200) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
@@ -115,6 +128,26 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
             }
         }
 
+        List<Version<Long>> versions = project.getVersions();
+        if (versions != null) {
+            if (!versions.isEmpty()) {
+                JSONArray array = new JSONArray();
+                for (Version<Long> version : versions) {
+                    JSONObject object = new JSONObject();
+                    object.put("id", version.getId());
+                    object.put("name", version.getTitle());
+                    object.put("description", version.getDescription());
+                    object.put("released", version.isReleasedVersion());
+                    object.put("obsolete", version.isDeprecatedVersion());
+                    Date date = new Date();
+                    date.setTime(version.getReleasedVersionAt());
+                    object.put("timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN).format(date));
+                    array.put(object);
+                }
+                jsonObject.put("versions", array);
+            }
+        }
+
         int status = this.executeRequest(url, jsonObject.toString(), method);
         if (status == 201 || status == 200) {
             project.setId(Long.parseLong(new JSONObject(this.getCurrentMessage()).getJSONObject("project").getString("id")));
@@ -152,6 +185,32 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
 
     @Override
     public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+        if (version.getId() != null) {
+            Project<Long> tmp = this.getProject(pid, true);
+            if (tmp != null) {
+                for (int i = 0; i <= tmp.getVersions().size() - 1; i++) {
+                    if (tmp.getVersions().get(i).getId().equals(version.getId())) {
+                        tmp.getVersions().set(i, version);
+                        break;
+                    }
+                }
+                this.insertOrUpdateProject(tmp);
+                return version.getId();
+            }
+        } else {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", version.getTitle());
+            jsonObject.put("released", version.isReleasedVersion());
+            jsonObject.put("obsolete", version.isDeprecatedVersion());
+            Date date = new Date();
+            date.setTime(version.getReleasedVersionAt());
+            jsonObject.put("timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN).format(date));
+            int state = this.executeRequest("/api/rest/projects/" + pid + "/versions", jsonObject.toString(), "POST");
+            if (state == 200 || state == 201) {
+                String msg = this.getCurrentMessage();
+                Log.v("t", msg);
+            }
+        }
         return null;
     }
 

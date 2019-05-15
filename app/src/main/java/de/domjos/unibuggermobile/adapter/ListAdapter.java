@@ -59,12 +59,14 @@ public class ListAdapter extends ArrayAdapter<ListObject> {
                 }
             }
 
-            if (lblTitle != null) {
-                lblTitle.setText(listObject.getTitle());
-            }
+            if (listObject.getDescriptionObject() != null) {
+                if (lblTitle != null) {
+                    lblTitle.setText(listObject.getDescriptionObject().getTitle());
+                }
 
-            if (lblSubTitle != null) {
-                lblSubTitle.setText(listObject.getDescription());
+                if (lblSubTitle != null) {
+                    lblSubTitle.setText(listObject.getDescriptionObject().getDescription());
+                }
             }
         }
 

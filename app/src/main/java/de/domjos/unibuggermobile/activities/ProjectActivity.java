@@ -79,23 +79,7 @@ public final class ProjectActivity extends AbstractActivity {
             try {
                 ListObject listObject = this.listAdapter.getItem(position);
                 if (listObject != null) {
-                    Object listID = listObject.getId();
-                    new Thread(() -> {
-                        try {
-                            try {
-                                long tmpId = Long.parseLong(String.valueOf(listID));
-                                this.currentProject = this.bugService.getProject(tmpId);
-                            } catch (Exception ex) {
-                                this.currentProject = this.bugService.getProject(listID);
-                            }
-                            runOnUiThread(() -> {
-                                objectToControls();
-                                manageControls(false, false, true);
-                            });
-                        } catch (Exception ex) {
-                            ProjectActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
-                        }
-                    }).start();
+                    this.currentProject = (Project) listObject.getDescriptionObject();
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, this.getApplicationContext());
@@ -240,7 +224,7 @@ public final class ProjectActivity extends AbstractActivity {
             this.listAdapter.clear();
             ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
             for (Project project : task.execute().get()) {
-                ListObject listObject = new ListObject(this.getApplicationContext(), null, project.getTitle(), project.getDescription());
+                ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
                 if (project.getIconUrl() != null) {
                     if (!project.getIconUrl().isEmpty()) {
                         try {
@@ -263,8 +247,7 @@ public final class ProjectActivity extends AbstractActivity {
                         }
                     }
                 }
-                listObject.setId(String.valueOf(project.getId()));
-                subProjects.add(listObject.getTitle());
+                subProjects.add(listObject.getDescriptionObject().getTitle());
                 this.listAdapter.add(listObject);
             }
             this.txtProjectsSubProject.setAdapter(subProjects);
@@ -327,10 +310,10 @@ public final class ProjectActivity extends AbstractActivity {
                     for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
                         ListObject object = this.listAdapter.getItem(i);
                         if (object != null) {
-                            if (text.equals(object.getTitle())) {
+                            if (text.equals(object.getDescriptionObject().getTitle())) {
                                 Project project = new Project();
                                 project.setTitle(text);
-                                project.setId(object.getId());
+                                project.setId(object.getDescriptionObject().getId());
                                 this.currentProject.getSubProjects().add(project);
                                 break;
                             }
@@ -342,10 +325,10 @@ public final class ProjectActivity extends AbstractActivity {
                 for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
                     ListObject object = this.listAdapter.getItem(i);
                     if (object != null) {
-                        if (text.equals(object.getTitle())) {
+                        if (text.equals(object.getDescriptionObject().getTitle())) {
                             Project project = new Project();
                             project.setTitle(text);
-                            project.setId(object.getId());
+                            project.setId(object.getDescriptionObject().getId());
                             this.currentProject.getSubProjects().add(project);
                             break;
                         }

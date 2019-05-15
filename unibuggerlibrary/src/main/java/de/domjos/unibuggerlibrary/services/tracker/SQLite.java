@@ -51,6 +51,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public String getTrackerVersion() throws Exception {
+        return null;
+    }
+
+    @Override
     public List<Project<Long>> getProjects() throws Exception {
         return null;
     }

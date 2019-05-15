@@ -38,9 +38,19 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
+    public String getTrackerVersion() throws Exception {
+        int status = this.executeRequest("/rest/workflow/version");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            return String.format("v %s build %s", jsonObject.getString("version"), jsonObject.getString("build"));
+        }
+        return null;
+    }
+
+    @Override
     public List<Project<String>> getProjects() throws Exception {
         List<Project<String>> projects = new LinkedList<>();
-
+        this.getTrackerVersion();
         int status = this.executeRequest("/api/admin/projects?fields=" + YouTrack.PROJECT_FIELDS);
         if (status == 201 || status == 200) {
             JSONArray jsonArray = new JSONArray(this.getCurrentMessage());

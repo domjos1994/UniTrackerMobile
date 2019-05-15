@@ -56,7 +56,7 @@
 
     <string name="versions">Versionen</string>
     <string name="versions_released">Bereits erschienen</string>
-    <string name="versions_deprecated">Obsolete</string>
+    <string name="versions_deprecated">Bereits veraltet</string>
     <string name="versions_releasedAt">Erscheinungsdatum</string>
 
     <string name="settings">Einstellungen</string>

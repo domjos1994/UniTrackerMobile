@@ -25,10 +25,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TableRow;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.tasks.versions.ListVersionTask;
+import de.domjos.unibuggerlibrary.tasks.versions.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
@@ -58,7 +63,18 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
+        this.lvVersions.setOnItemClickListener((parent, view, position, id) -> {
+            try {
+                ListObject listObject = this.versionAdapter.getItem(position);
+                if (listObject != null) {
+                    this.currentVersion = (Version) listObject.getDescriptionObject();
+                    this.objectToControls();
+                    this.manageControls(false, false, true);
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, VersionActivity.this);
+            }
+        });
     }
 
     @Override
@@ -74,14 +90,27 @@ public final class VersionActivity extends AbstractActivity {
                     this.manageControls(true, false, false);
                     break;
                 case R.id.navDelete:
-                    this.manageControls(false, true, false);
+                    try {
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true).execute(this.currentVersion).get();
+                        this.reload();
+                        this.manageControls(false, true, false);
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, VersionActivity.this);
+                    }
                     break;
                 case R.id.navCancel:
                     this.manageControls(false, true, false);
                     break;
                 case R.id.navSave:
-                    if (this.versionValidator.getState()) {
-                        this.manageControls(false, true, false);
+                    try {
+                        if (this.versionValidator.getState()) {
+                            this.controlsToObject();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false).execute(this.currentVersion).get();
+                            this.reload();
+                            this.manageControls(false, true, false);
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, VersionActivity.this);
                     }
                     break;
             }
@@ -121,8 +150,7 @@ public final class VersionActivity extends AbstractActivity {
             this.versionAdapter.clear();
             ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId());
             for (Version version : versionTask.execute().get()) {
-                ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version.getTitle(), version.getDescription());
-                listObject.setId(String.valueOf(version.getId()));
+                ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
                 this.versionAdapter.add(listObject);
             }
         } catch (Exception ex) {
@@ -151,6 +179,35 @@ public final class VersionActivity extends AbstractActivity {
 
         if (reset) {
             this.currentVersion = new Version();
+            this.objectToControls();
+        }
+    }
+
+    private void objectToControls() {
+        if (this.currentVersion != null) {
+            this.txtVersionTitle.setText(this.currentVersion.getTitle());
+            this.txtVersionDescription.setText(this.currentVersion.getDescription());
+            Date date = new Date();
+            date.setTime(this.currentVersion.getReleasedVersionAt());
+            this.txtVersionReleasedAt.setText(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date));
+            this.chkVersionDeprecated.setChecked(this.currentVersion.isDeprecatedVersion());
+            this.chkVersionReleased.setChecked(this.currentVersion.isReleasedVersion());
+        }
+    }
+
+    private void controlsToObject() {
+        try {
+            if (this.currentVersion != null) {
+                this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
+                this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
+                String strDate = this.txtVersionReleasedAt.getText().toString();
+                Date dt = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).parse(strDate);
+                this.currentVersion.setReleasedVersionAt(dt.getTime());
+                this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
+                this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, VersionActivity.this);
         }
     }
 

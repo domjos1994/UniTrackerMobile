@@ -26,22 +26,22 @@ import android.graphics.drawable.Drawable;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-public class ListObject extends DescriptionObject<String> {
+public class ListObject {
     private byte[] icon;
     private Drawable drawable;
     private Context context;
+    private DescriptionObject descriptionObject;
 
-    public ListObject(Context context, int resID, String title, String description) {
+    public ListObject(Context context, int resID, DescriptionObject descriptionObject) {
         super();
 
         this.context = context;
         this.icon = null;
         this.drawable = this.context.getResources().getDrawable(resID);
-        super.setTitle(title);
-        super.setDescription(description);
+        this.descriptionObject = descriptionObject;
     }
 
-    public ListObject(Context context, byte[] img, String title, String description) {
+    public ListObject(Context context, byte[] img, DescriptionObject descriptionObject) {
         super();
 
         this.context = context;
@@ -53,9 +53,7 @@ public class ListObject extends DescriptionObject<String> {
         } else {
             this.drawable = null;
         }
-
-        super.setTitle(title);
-        super.setDescription(description);
+        this.descriptionObject = descriptionObject;
     }
 
     public void setIcon(byte[] icon) {
@@ -70,5 +68,13 @@ public class ListObject extends DescriptionObject<String> {
 
     public Drawable getIcon() {
         return this.drawable;
+    }
+
+    public DescriptionObject getDescriptionObject() {
+        return this.descriptionObject;
+    }
+
+    public void setDescriptionObject(DescriptionObject descriptionObject) {
+        this.descriptionObject = descriptionObject;
     }
 }

@@ -18,30 +18,21 @@
 
 package de.domjos.unibuggerlibrary.interfaces;
 
-import java.util.List;
+public interface IFunctionImplemented {
 
-import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.model.projects.Version;
+    boolean listProjects();
 
-public interface IBugService<T> {
+    boolean addProjects();
 
-    String getTrackerVersion() throws Exception;
+    boolean updateProjects();
 
-    List<Project<T>> getProjects() throws Exception;
+    boolean deleteProjects();
 
-    Project<T> getProject(T id) throws Exception;
+    boolean listVersions();
 
-    T insertOrUpdateProject(Project<T> project) throws Exception;
+    boolean addVersions();
 
-    void deleteProject(T id) throws Exception;
+    boolean updateVersions();
 
-    List<Version<T>> getVersions(T pid) throws Exception;
-
-    T insertOrUpdateVersion(T pid, Version<T> version) throws Exception;
-
-    void deleteVersion(T id) throws Exception;
-
-    int getCurrentState();
-
-    String getCurrentMessage();
+    boolean deleteVersions();
 }
