@@ -18,8 +18,20 @@
 
 package de.domjos.unibuggerlibrary.services.engine;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import java.io.StringWriter;
 import java.util.concurrent.TimeUnit;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -29,7 +41,8 @@ public class SoapEngine {
     private Authentication authentication;
     private static final MediaType SOAP = MediaType.parse("text/xml");
     private final OkHttpClient client;
-    private final String soapPath;
+    protected final String soapPath;
+    protected Document document;
 
     public SoapEngine(Authentication authentication, String path) {
         this.authentication = authentication;
@@ -37,10 +50,42 @@ public class SoapEngine {
         this.soapPath = this.authentication.getServer() + path;
     }
 
+    protected Element startDocument() throws Exception {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        this.document = documentBuilder.newDocument();
+        this.document.setXmlVersion("1.0");
+        Element element = this.document.createElementNS("http://www.w3.org/2003/05/soap-envelope/", "soap:Envelope");
+        element.setAttributeNS("http://www.w3.org/2000/xmlns/", "soap:encodingStyle", "http://www.w3.org/2003/05/soap-encoding");
+        element.appendChild(this.document.createElement("soap:header"));
+        Element body = this.document.createElement("soap:body");
+        element.appendChild(body);
+        return body;
+    }
 
-    private Request initRequestBuilder(RequestBody body) {
+    protected Call closeDocumentAndSend(Element element, String action) throws Exception {
+        this.document.appendChild(element);
+        return this.client.newCall(this.sendRequest(document, action));
+    }
+
+    private Request sendRequest(Document document, String action) throws Exception {
+        StringWriter writer = new StringWriter();
+        StreamResult result = new StreamResult(writer);
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        transformer.transform(new DOMSource(document), result);
+
+        String content = writer.toString();
+        RequestBody requestBody = RequestBody.create(SOAP, "");
+        if (!content.trim().isEmpty()) {
+            requestBody = RequestBody.create(SOAP, content);
+        }
+
+        return this.initRequestBuilder(requestBody, action);
+    }
+
+    private Request initRequestBuilder(RequestBody body, String action) {
         Request.Builder builder = new Request.Builder();
-        return builder.addHeader("content-type", "text/xml").url(this.soapPath).post(body).build();
+        return builder.addHeader("content-type", "text/xml").url(this.soapPath + "/" + action).post(body).build();
     }
 
     private OkHttpClient getClient() {

@@ -36,12 +36,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4.class)
-public class MantisBTTest {
+public class MantisBTJSONTest {
     private IBugService mantisBT;
 
     @Before
     public void init() throws Exception {
-        this.mantisBT = new MantisBT(Helper.getAuthFromRes(R.raw.test_credentials, "mantisbt"));
+        this.mantisBT = new MantisBTJSON(Helper.getAuthFromRes(R.raw.test_credentials, "mantisbt"));
         for (Project project : this.mantisBT.getProjects()) {
             this.mantisBT.deleteProject(String.valueOf(project.getId()));
         }

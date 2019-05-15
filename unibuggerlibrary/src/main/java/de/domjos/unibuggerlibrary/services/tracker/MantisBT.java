@@ -18,199 +18,64 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
-import android.util.Log;
+import org.w3c.dom.Element;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
-import de.domjos.unibuggerlibrary.services.tracker.MantisBTSpecific.SubProject;
-import de.domjos.unibuggerlibrary.utils.Converter;
+import de.domjos.unibuggerlibrary.services.engine.SoapEngine;
+import okhttp3.Call;
+import okhttp3.Response;
 
-public final class MantisBT extends JSONEngine implements IBugService<Long> {
-    private Authentication authentication;
+public class MantisBT extends SoapEngine implements IBugService<Long> {
+
 
     public MantisBT(Authentication authentication) {
-        super(authentication, "Authorization: " + authentication.getAPIKey());
-        this.authentication = authentication;
+        super(authentication, "/api/soap/mantisconnect.php");
     }
 
     @Override
     public String getTrackerVersion() throws Exception {
-        int state = this.executeRequest("/api/rest/internal");
-        String content = this.getCurrentMessage();
-        return null;
+        Element element = this.startDocument();
+        Element sub = super.document.createElement("n0:mc_version");
+        sub.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:n0", super.soapPath);
+        element.appendChild(sub);
+        Call call = this.closeDocumentAndSend(element, "mc_version");
+        Response response = call.execute();
+        return response.message();
     }
 
     @Override
     public List<Project<Long>> getProjects() throws Exception {
-        List<Project<Long>> projects = new LinkedList<>();
         this.getTrackerVersion();
-        int status = this.executeRequest("/api/rest/projects");
-        if (status == 201 || status == 200) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONArray jsonArray = jsonObject.getJSONArray("projects");
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                projects.add(this.jsonToProject(jsonArray.getJSONObject(i), false));
-            }
-        }
-        return projects;
+        return null;
     }
 
     @Override
     public Project<Long> getProject(Long id) throws Exception {
-        return this.getProject(id, false);
-    }
-
-    private Project<Long> getProject(Long id, boolean version) throws Exception {
-        int status = this.executeRequest("/api/rest/projects/" + id);
-        if (status == 201 || status == 200) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONArray jsonArray = jsonObject.getJSONArray("projects");
-            return this.jsonToProject(jsonArray.getJSONObject(0), version);
-        }
         return null;
     }
 
     @Override
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
-        String method;
-        String url;
-        if (project.getId() != 0) {
-            method = "PATCH";
-            url = "/api/rest/projects/" + project.getId();
-        } else {
-            method = "POST";
-            url = "/api/rest/projects/";
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id", project.getId() == 0 ? 1 : project.getId());
-        jsonObject.put("name", project.getTitle());
-        if (project.getStatusID() != 0 && !project.getStatus().equals("")) {
-            JSONObject statusObject = new JSONObject();
-            statusObject.put("id", project.getStatusID());
-            statusObject.put("name", project.getStatus().toLowerCase());
-            statusObject.put("label", project.getStatus().toLowerCase());
-            jsonObject.put("status", statusObject);
-        }
-
-        jsonObject.put("description", project.getDescription());
-        jsonObject.put("enabled", project.isEnabled());
-        jsonObject.put("file_path", "/tmp/");
-        JSONObject privateProject = new JSONObject();
-        if (!project.isPrivateProject()) {
-            privateProject.put("id", 10);
-            privateProject.put("name", "public");
-            privateProject.put("label", "public");
-        } else {
-            privateProject.put("id", 50);
-            privateProject.put("name", "private");
-            privateProject.put("label", "private");
-        }
-        jsonObject.put("view_state", privateProject);
-
-
-        List<Project<Long>> oldSubs = new LinkedList<>();
-        if (project.getId() != 0) {
-            Project<Long> tmp = this.getProject(project.getId());
-            if (tmp != null) {
-                oldSubs = tmp.getSubProjects();
-            }
-        }
-
-        List<Version<Long>> versions = project.getVersions();
-        if (versions != null) {
-            if (!versions.isEmpty()) {
-                JSONArray array = new JSONArray();
-                for (Version<Long> version : versions) {
-                    JSONObject object = new JSONObject();
-                    object.put("id", version.getId());
-                    object.put("name", version.getTitle());
-                    object.put("description", version.getDescription());
-                    object.put("released", version.isReleasedVersion());
-                    object.put("obsolete", version.isDeprecatedVersion());
-                    Date date = new Date();
-                    date.setTime(version.getReleasedVersionAt());
-                    object.put("timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN).format(date));
-                    array.put(object);
-                }
-                jsonObject.put("versions", array);
-            }
-        }
-
-        int status = this.executeRequest(url, jsonObject.toString(), method);
-        if (status == 201 || status == 200) {
-            project.setId(Long.parseLong(new JSONObject(this.getCurrentMessage()).getJSONObject("project").getString("id")));
-
-            if (project.getId() != 0) {
-                SubProject subProject = new SubProject(this.authentication);
-
-                for (Project sub : oldSubs) {
-                    subProject.deleteSubProject(project, sub);
-                }
-                for (Project sub : project.getSubProjects()) {
-                    subProject.addSubProject(project, sub);
-                }
-            }
-
-            return project.getId();
-        }
-        return 0L;
+        return null;
     }
 
     @Override
     public void deleteProject(Long id) throws Exception {
-        this.deleteRequest("/api/rest/projects/" + id);
+
     }
 
     @Override
     public List<Version<Long>> getVersions(Long pid) throws Exception {
-        Project<Long> project = this.getProject(pid, true);
-        if (project == null) {
-            return new LinkedList<>();
-        } else {
-            return project.getVersions();
-        }
+        return null;
     }
 
     @Override
     public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
-        if (version.getId() != null) {
-            Project<Long> tmp = this.getProject(pid, true);
-            if (tmp != null) {
-                for (int i = 0; i <= tmp.getVersions().size() - 1; i++) {
-                    if (tmp.getVersions().get(i).getId().equals(version.getId())) {
-                        tmp.getVersions().set(i, version);
-                        break;
-                    }
-                }
-                this.insertOrUpdateProject(tmp);
-                return version.getId();
-            }
-        } else {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", version.getTitle());
-            jsonObject.put("released", version.isReleasedVersion());
-            jsonObject.put("obsolete", version.isDeprecatedVersion());
-            Date date = new Date();
-            date.setTime(version.getReleasedVersionAt());
-            jsonObject.put("timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN).format(date));
-            int state = this.executeRequest("/api/rest/projects/" + pid + "/versions", jsonObject.toString(), "POST");
-            if (state == 200 || state == 201) {
-                String msg = this.getCurrentMessage();
-                Log.v("t", msg);
-            }
-        }
         return null;
     }
 
@@ -219,41 +84,13 @@ public final class MantisBT extends JSONEngine implements IBugService<Long> {
 
     }
 
-    private Project<Long> jsonToProject(JSONObject projectObject, boolean versions) throws Exception {
-        Project<Long> project = new Project<>();
-        project.setId((long) projectObject.getInt("id"));
-        project.setTitle(projectObject.getString("name"));
-        project.setDescription(projectObject.getString("description"));
-        project.setEnabled(projectObject.getBoolean("enabled"));
-        if (projectObject.has("subProjects")) {
-            JSONArray array = projectObject.getJSONArray("subProjects");
-            List<Project<Long>> projects = new LinkedList<>();
-            for (int i = 0; i <= array.length() - 1; i++) {
-                JSONObject jsonObject = array.getJSONObject(i);
-                projects.add(this.getProject((long) jsonObject.getInt("id")));
-            }
-            project.setSubProjects(projects);
-        }
-        if (versions) {
-            project.setVersions(new LinkedList<>());
-            if (projectObject.has("versions")) {
-                JSONArray array = projectObject.getJSONArray("versions");
-                for (int i = 0; i <= array.length() - 1; i++) {
-                    JSONObject jsonObject = array.getJSONObject(i);
-                    Version<Long> version = new Version<>();
-                    version.setId(jsonObject.getLong("id"));
-                    version.setTitle(jsonObject.getString("name"));
-                    version.setDescription(jsonObject.getString("description"));
-                    version.setDeprecatedVersion(jsonObject.getBoolean("obsolete"));
-                    version.setReleasedVersion(jsonObject.getBoolean("released"));
-                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("timestamp"), "yyyy-MM-dd'T'HH:mm:dd").getTime());
-                    project.getVersions().add(version);
-                }
-            }
-        }
+    @Override
+    public int getCurrentState() {
+        return 0;
+    }
 
-        JSONObject viewState = projectObject.getJSONObject("view_state");
-        project.setPrivateProject(viewState.getInt("id") != 10);
-        return project;
+    @Override
+    public String getCurrentMessage() {
+        return null;
     }
 }
