@@ -72,7 +72,23 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 project.setTitle(projectObject.getString("name"));
                 project.setDescription(projectObject.getString("description"));
                 project.setEnabled(projectObject.getBoolean("is_active"));
-                project.setDefaultVersion(projectObject.getString("version"));
+
+                if (projectObject.has("version")) {
+                    project.setDefaultVersion(projectObject.getString("version"));
+                }
+
+                if (projectObject.has("versions")) {
+                    JSONArray versionArray = projectObject.getJSONArray("versions");
+                    for (int i = 0; i <= versionArray.length() - 1; i++) {
+                        JSONObject versionObject = versionArray.getJSONObject(i);
+                        Version<Long> version = new Version<>();
+                        version.setId(versionObject.getLong("id"));
+                        version.setTitle(versionObject.getString("name"));
+                        version.setReleasedVersion(!versionObject.getBoolean("is_active"));
+                        project.getVersions().add(version);
+                    }
+                }
+
                 return project;
             }
         }
@@ -115,12 +131,42 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid) throws Exception {
+    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
+        Project<Long> project = this.getProject(pid);
+        if (project != null) {
+            return project.getVersions();
+        }
         return null;
     }
 
     @Override
     public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+//        Long id = null;
+//        Project<Long> project = this.getProject(pid);
+//        if(project!=null) {
+//            if(version.getId()==null) {
+//                project.getVersions().add(version);
+//            } else {
+//                for (int i = 0; i <= project.getVersions().size() - 1; i++) {
+//                    if(version.getId().equals(project.getVersions().get(i).getId())) {
+//                        project.getVersions().set(i, version);
+//                        break;
+//                    }
+//                }
+//            }
+//            project = this.getProject(this.insertOrUpdateProject(project));
+//            if(project!=null) {
+//                for (int i = 0; i <= project.getVersions().size() - 1; i++) {
+//                    if(version.getTitle().equals(project.getVersions().get(i).getTitle())) {
+//                        id = project.getVersions().get(i).getId();
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        return id;
         return null;
     }
 

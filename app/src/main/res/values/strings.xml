@@ -56,8 +56,16 @@
 
     <string name="versions">Versionen</string>
     <string name="versions_released">Bereits erschienen</string>
+    <string name="versions_unReleased">Noch nicht erschienen</string>
     <string name="versions_deprecated">Bereits veraltet</string>
+    <string name="versions_deprecated_redmine">Gesperrt</string>
     <string name="versions_releasedAt">Erscheinungsdatum</string>
+    <string name="versions_filter">Filter</string>
+    <string-array name="versions_filer">
+        <item>@string/versions</item>
+        <item>@string/versions_unReleased</item>
+        <item>@string/versions_released</item>
+    </string-array>
 
     <string name="settings">Einstellungen</string>
 

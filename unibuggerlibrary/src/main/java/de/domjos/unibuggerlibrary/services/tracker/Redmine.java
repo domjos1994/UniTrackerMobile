@@ -21,8 +21,11 @@ package de.domjos.unibuggerlibrary.services.tracker;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -129,18 +132,96 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid) throws Exception {
-        return null;
+    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
+        List<Version<Long>> versions = new LinkedList<>();
+        int status = this.executeRequest("/projects/" + pid + "/versions.json");
+
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray array = jsonObject.getJSONArray("versions");
+            for (int i = 0; i <= jsonObject.getInt("total_count") - 1; i++) {
+                Version<Long> version = new Version<>();
+                JSONObject versionObject = array.getJSONObject(i);
+                version.setId(versionObject.getLong("id"));
+                version.setTitle(versionObject.getString("name"));
+                version.setDescription(versionObject.getString("description"));
+
+                if (versionObject.has("due_date")) {
+                    Date dt = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).parse(versionObject.getString("due_date"));
+                    version.setReleasedVersionAt(dt.getTime());
+                }
+
+                String state = versionObject.getString("status");
+                if (state.equals("locked")) {
+                    version.setDeprecatedVersion(true);
+                    version.setReleasedVersion(true);
+                } else {
+                    version.setDeprecatedVersion(false);
+                    version.setReleasedVersion(!state.equals("open"));
+                }
+                versions.add(version);
+            }
+        }
+
+        return versions;
     }
 
     @Override
     public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+        JSONObject object = new JSONObject();
+        JSONObject versionObject = new JSONObject();
+        versionObject.put("name", version.getTitle());
+        versionObject.put("description", version.getDescription());
+        if (version.isDeprecatedVersion()) {
+            versionObject.put("status", "locked");
+        } else {
+            versionObject.put("status", version.isReleasedVersion() ? "closed" : "open");
+        }
+
+        if (version.getReleasedVersionAt() != 0) {
+            Date date = new Date();
+            date.setTime(version.getReleasedVersionAt());
+            versionObject.put("due_date", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(date));
+        }
+        JSONObject projectObject = new JSONObject();
+        projectObject.put("id", pid);
+        Project<Long> project = this.getProject(pid);
+        if (project != null) {
+            projectObject.put("name", project.getTitle());
+        }
+        versionObject.put("project", projectObject);
+
+        int status;
+        if (version.getId() == null) {
+            object.put("version", versionObject);
+            status = this.executeRequest("/projects/" + pid + "/versions.json", object.toString(), "POST");
+        } else {
+            versionObject.put("id", version.getId());
+            object.put("version", versionObject);
+            status = this.executeRequest("/versions/" + version.getId() + ".json", object.toString(), "PUT");
+        }
+
+        if (status == 200 || status == 201) {
+            String content = this.getCurrentMessage();
+
+            if (version.getId() == null) {
+                JSONObject result = new JSONObject(content);
+                if (result.has("version")) {
+                    JSONObject resultProject = result.getJSONObject("version");
+                    return (long) resultProject.getInt("id");
+                }
+            } else {
+                return version.getId();
+            }
+            return null;
+        }
+
         return null;
     }
 
     @Override
     public void deleteVersion(Long id) throws Exception {
-
+        this.deleteRequest("/versions/" + id + ".json");
     }
 
     private Project<Long> jsonObjectToProject(JSONObject obj) throws Exception {

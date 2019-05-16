@@ -20,9 +20,12 @@ package de.domjos.unibuggermobile.activities;
 
 import android.support.design.widget.BottomNavigationView;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TableRow;
 
 import java.text.SimpleDateFormat;
@@ -49,13 +52,17 @@ public final class VersionActivity extends AbstractActivity {
     private ListAdapter versionAdapter;
     private EditText txtVersionTitle, txtVersionDescription, txtVersionReleasedAt;
     private CheckBox chkVersionReleased, chkVersionDeprecated;
+    private Spinner spVersionFilter;
     private TableRow rowVersionReleased, rowVersionDeprecated, rowVersionReleasedAt;
+    private LinearLayout rowVersionFilter;
 
     private IBugService bugService;
     private Project currentProject;
     private Version currentVersion;
 
     private Validator versionValidator;
+
+    private String filter;
 
     public VersionActivity() {
         super(R.layout.version_activity);
@@ -73,6 +80,19 @@ public final class VersionActivity extends AbstractActivity {
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, VersionActivity.this);
+            }
+        });
+
+        this.spVersionFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                filter = spVersionFilter.getSelectedItem().toString();
+                reload();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
     }
@@ -128,10 +148,12 @@ public final class VersionActivity extends AbstractActivity {
         this.txtVersionReleasedAt = this.findViewById(R.id.txtVersionReleasedAt);
         this.chkVersionReleased = this.findViewById(R.id.chkVersionReleased);
         this.chkVersionDeprecated = this.findViewById(R.id.chkVersionDeprecated);
+        this.spVersionFilter = this.findViewById(R.id.spVersionFilter);
 
         this.rowVersionReleased = this.findViewById(R.id.rowVersionReleased);
         this.rowVersionDeprecated = this.findViewById(R.id.rowVersionDeprecated);
         this.rowVersionReleasedAt = this.findViewById(R.id.rowVersionReleasedAt);
+        this.rowVersionFilter = this.findViewById(R.id.rowVersionFilter);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.currentProject = MainActivity.settings.getCurrentProject(VersionActivity.this, this.bugService);
@@ -147,11 +169,25 @@ public final class VersionActivity extends AbstractActivity {
     @Override
     protected void reload() {
         try {
-            this.versionAdapter.clear();
-            ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId());
-            for (Version version : versionTask.execute().get()) {
-                ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
-                this.versionAdapter.add(listObject);
+            if (this.currentProject != null) {
+                if (this.currentProject.getId() != null) {
+                    this.versionAdapter.clear();
+                    String filterAction = "versions";
+                    if (filter != null) {
+                        if (this.filter.equals(getString(R.string.versions_released))) {
+                            filterAction = "released_versions";
+                        } else if (this.filter.equals(getString(R.string.versions_unReleased))) {
+                            filterAction = "unreleased_versions";
+                        } else {
+                            filterAction = "versions";
+                        }
+                    }
+                    ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction);
+                    for (Version version : versionTask.execute().get()) {
+                        ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
+                        this.versionAdapter.add(listObject);
+                    }
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getApplicationContext());
@@ -167,15 +203,12 @@ public final class VersionActivity extends AbstractActivity {
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
 
         this.lvVersions.setEnabled(!editMode);
+        this.spVersionFilter.setEnabled(!editMode);
         this.txtVersionTitle.setEnabled(editMode);
         this.txtVersionDescription.setEnabled(editMode);
         this.txtVersionReleasedAt.setEnabled(editMode);
         this.chkVersionReleased.setEnabled(editMode);
         this.chkVersionDeprecated.setEnabled(editMode);
-
-        this.rowVersionReleasedAt = this.findViewById(R.id.rowVersionReleasedAt);
-        this.rowVersionReleased = this.findViewById(R.id.rowVersionReleased);
-        this.rowVersionDeprecated = this.findViewById(R.id.rowVersionDeprecated);
 
         if (reset) {
             this.currentVersion = new Version();
@@ -215,15 +248,21 @@ public final class VersionActivity extends AbstractActivity {
         this.rowVersionReleasedAt.setVisibility(View.GONE);
         this.rowVersionReleased.setVisibility(View.GONE);
         this.rowVersionDeprecated.setVisibility(View.GONE);
+        this.rowVersionFilter.setVisibility(View.GONE);
 
         switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
             case MantisBT:
                 this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
                 this.rowVersionReleased.setVisibility(View.VISIBLE);
                 this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                this.rowVersionFilter.setVisibility(View.VISIBLE);
                 break;
             case RedMine:
-
+                this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                this.rowVersionReleased.setVisibility(View.VISIBLE);
+                this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
+                this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
                 break;
             case YouTrack:
 

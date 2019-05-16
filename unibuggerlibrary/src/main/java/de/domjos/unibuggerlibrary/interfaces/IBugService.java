@@ -35,7 +35,7 @@ public interface IBugService<T> {
 
     void deleteProject(T id) throws Exception;
 
-    List<Version<T>> getVersions(T pid) throws Exception;
+    List<Version<T>> getVersions(T pid, String filter) throws Exception;
 
     T insertOrUpdateVersion(T pid, Version<T> version) throws Exception;
 

@@ -18,80 +18,57 @@
 
 package de.domjos.unibuggerlibrary.services.engine;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.MarshalBase64;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
 
-import java.io.StringWriter;
-import java.util.concurrent.TimeUnit;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
+import java.net.Proxy;
 
 public class SoapEngine {
     private Authentication authentication;
-    private static final MediaType SOAP = MediaType.parse("text/xml");
-    private final OkHttpClient client;
     protected final String soapPath;
-    protected Document document;
+
 
     public SoapEngine(Authentication authentication, String path) {
         this.authentication = authentication;
-        this.client = this.getClient();
         this.soapPath = this.authentication.getServer() + path;
     }
 
-    protected Element startDocument() throws Exception {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        this.document = documentBuilder.newDocument();
-        this.document.setXmlVersion("1.0");
-        Element element = this.document.createElementNS("http://www.w3.org/2003/05/soap-envelope/", "soap:Envelope");
-        element.setAttributeNS("http://www.w3.org/2000/xmlns/", "soap:encodingStyle", "http://www.w3.org/2003/05/soap-encoding");
-        element.appendChild(this.document.createElement("soap:header"));
-        Element body = this.document.createElement("soap:body");
-        element.appendChild(body);
-        return body;
-    }
-
-    protected Call closeDocumentAndSend(Element element, String action) throws Exception {
-        this.document.appendChild(element);
-        return this.client.newCall(this.sendRequest(document, action));
-    }
-
-    private Request sendRequest(Document document, String action) throws Exception {
-        StringWriter writer = new StringWriter();
-        StreamResult result = new StreamResult(writer);
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
-        transformer.transform(new DOMSource(document), result);
-
-        String content = writer.toString();
-        RequestBody requestBody = RequestBody.create(SOAP, "");
-        if (!content.trim().isEmpty()) {
-            requestBody = RequestBody.create(SOAP, content);
+    protected Object executeAction(SoapObject request, String action, boolean login) throws Exception {
+        if (login) {
+            if (this.authentication.getAPIKey().isEmpty()) {
+                request.addProperty("username", this.authentication.getUserName());
+                request.addProperty("password", this.authentication.getPassword());
+            } else {
+                request.addProperty("username", this.authentication.getAPIKey());
+                request.addProperty("password", "");
+            }
         }
 
-        return this.initRequestBuilder(requestBody, action);
+        SoapSerializationEnvelope envelope = this.getEnvelope(request);
+        HttpTransportSE transportSE = this.getHttpTransportSE();
+        // initialize MarshalBase for sending files
+        new MarshalBase64().register(envelope);
+        transportSE.call(this.soapPath + "/" + action, envelope);
+        return envelope.getResponse();
     }
 
-    private Request initRequestBuilder(RequestBody body, String action) {
-        Request.Builder builder = new Request.Builder();
-        return builder.addHeader("content-type", "text/xml").url(this.soapPath + "/" + action).post(body).build();
+    private SoapSerializationEnvelope getEnvelope(SoapObject request) {
+        SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
+        envelope.dotNet = false;
+        envelope.implicitTypes = true;
+        envelope.setAddAdornments(false);
+        envelope.encodingStyle = SoapEnvelope.ENC;
+        envelope.setOutputSoapObject(request);
+        return envelope;
     }
 
-    private OkHttpClient getClient() {
-        return new OkHttpClient.Builder()
-                .followRedirects(true)
-                .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS).build();
+    private HttpTransportSE getHttpTransportSE() {
+        HttpTransportSE ht = new HttpTransportSE(Proxy.NO_PROXY, this.soapPath, 60000);
+        ht.debug = true;
+        ht.setXmlVersionTag("<!--?xml version=\"1.0\" encoding= \"UTF-8\" ?-->");
+        return ht;
     }
 }

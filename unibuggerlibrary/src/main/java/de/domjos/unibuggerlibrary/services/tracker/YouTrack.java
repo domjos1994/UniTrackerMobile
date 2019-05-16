@@ -32,6 +32,7 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
+    private final static String VERSION_FIELDS = "name,values(id,name,color(id,background,foreground),description)";
 
     public YouTrack(Authentication authentication) {
         super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
@@ -113,12 +114,60 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public List<Version<String>> getVersions(String pid) throws Exception {
-        return null;
+    public List<Version<String>> getVersions(String pid, String filter) throws Exception {
+        List<Version<String>> versions = new LinkedList<>();
+        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/version?fields=" + YouTrack.VERSION_FIELDS);
+
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+
+            String name = "";
+            Project<String> project = this.getProject(pid);
+            if (project != null) {
+                name = project.getTitle();
+            }
+
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String bundle = jsonObject.getString("name");
+                if (bundle.contains(": ")) {
+                    bundle = bundle.split(": ")[0].trim();
+                }
+                if (bundle.equals(name)) {
+                    if (jsonObject.has("values")) {
+                        JSONArray valueArray = jsonObject.getJSONArray("values");
+                        if (valueArray.length() != 0) {
+                            for (int j = 0; j <= valueArray.length() - 1; j++) {
+                                JSONObject versionObject = valueArray.getJSONObject(j);
+                                Version<String> version = new Version<>();
+                                version.setId(versionObject.getString("id"));
+                                version.setTitle(versionObject.getString("name"));
+                                version.setDescription(versionObject.getString("description"));
+                                versions.add(version);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return versions;
     }
 
     @Override
     public String insertOrUpdateVersion(String pid, Version<String> version) throws Exception {
+        Project<String> project = this.getProject(pid);
+        if (project != null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", project.getTitle() + ": Versions");
+            jsonObject.put("$type", "VersionBundle");
+            JSONArray jsonArray = new JSONArray();
+            JSONObject versionObject = new JSONObject();
+            versionObject.put("name", version.getTitle());
+            versionObject.put("description", version.getDescription());
+            jsonArray.put(versionObject);
+            jsonObject.put("values", jsonArray);
+        }
         return null;
     }
 

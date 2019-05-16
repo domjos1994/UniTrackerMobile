@@ -80,6 +80,8 @@ public final class ProjectActivity extends AbstractActivity {
                 ListObject listObject = this.listAdapter.getItem(position);
                 if (listObject != null) {
                     this.currentProject = (Project) listObject.getDescriptionObject();
+                    this.objectToControls();
+                    this.manageControls(false, false, true);
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, this.getApplicationContext());

@@ -76,7 +76,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid) throws Exception {
+    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
         return null;
     }
 
