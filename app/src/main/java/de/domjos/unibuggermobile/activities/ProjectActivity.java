@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
@@ -66,6 +67,7 @@ public final class ProjectActivity extends AbstractActivity {
     private TableRow rowProjectEnabled, rowProjectIcon, rowProjectVersion, rowProjectPrivate;
 
     private IBugService bugService;
+    private IFunctionImplemented permissions;
     private Project currentProject;
     private Validator projectValidator;
 
@@ -175,6 +177,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowProjectPrivate = this.findViewById(R.id.rowProjectPrivate);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+        this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
 
         this.updateUITrackerSpecific();
     }
@@ -195,9 +198,9 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void manageControls(boolean editMode, boolean reset, boolean selected) {
-        this.navigationView.getMenu().getItem(0).setEnabled(!editMode);
-        this.navigationView.getMenu().getItem(1).setEnabled(!editMode && selected);
-        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected);
+        this.navigationView.getMenu().getItem(0).setEnabled(!editMode && this.permissions.addProjects());
+        this.navigationView.getMenu().getItem(1).setEnabled(!editMode && selected && this.permissions.updateProjects());
+        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected && this.permissions.deleteProjects());
         this.navigationView.getMenu().getItem(3).setEnabled(editMode);
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
 
@@ -222,37 +225,39 @@ public final class ProjectActivity extends AbstractActivity {
     @Override
     protected void reload() {
         try {
-            ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService);
-            this.listAdapter.clear();
-            ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
-            for (Project project : task.execute().get()) {
-                ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
-                if (project.getIconUrl() != null) {
-                    if (!project.getIconUrl().isEmpty()) {
-                        try {
-                            new Thread(() -> {
-                                try {
-                                    listObject.setIcon(Converter.convertStringToByteArray(project.getIconUrl()));
-                                    if (listObject.getIcon() != null) {
-                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                            listObject.setIcon(Converter.convertSVGToByteArray(getApplicationContext(), project.getIconUrl()));
-                                        } else {
-                                            listObject.setIcon(null);
+            if (this.permissions.listProjects()) {
+                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService);
+                this.listAdapter.clear();
+                ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
+                for (Project project : task.execute().get()) {
+                    ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
+                    if (project.getIconUrl() != null) {
+                        if (!project.getIconUrl().isEmpty()) {
+                            try {
+                                new Thread(() -> {
+                                    try {
+                                        listObject.setIcon(Converter.convertStringToByteArray(project.getIconUrl()));
+                                        if (listObject.getIcon() != null) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                                listObject.setIcon(Converter.convertSVGToByteArray(getApplicationContext(), project.getIconUrl()));
+                                            } else {
+                                                listObject.setIcon(null);
+                                            }
                                         }
+                                    } catch (Exception ex) {
+                                        runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
                                     }
-                                } catch (Exception ex) {
-                                    runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
-                                }
-                            }).start();
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, this.getApplicationContext());
+                                }).start();
+                            } catch (Exception ex) {
+                                MessageHelper.printException(ex, this.getApplicationContext());
+                            }
                         }
                     }
+                    subProjects.add(listObject.getDescriptionObject().getTitle());
+                    this.listAdapter.add(listObject);
                 }
-                subProjects.add(listObject.getDescriptionObject().getTitle());
-                this.listAdapter.add(listObject);
+                this.txtProjectsSubProject.setAdapter(subProjects);
             }
-            this.txtProjectsSubProject.setAdapter(subProjects);
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getApplicationContext());
         }
@@ -394,7 +399,7 @@ public final class ProjectActivity extends AbstractActivity {
         switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
             case MantisBT:
                 this.rowProjectState.setVisibility(View.VISIBLE);
-                this.rowSubProjects.setVisibility(View.VISIBLE);
+                //this.rowSubProjects.setVisibility(View.VISIBLE);
                 this.rowProjectEnabled.setVisibility(View.VISIBLE);
                 this.rowProjectPrivate.setVisibility(View.VISIBLE);
                 break;

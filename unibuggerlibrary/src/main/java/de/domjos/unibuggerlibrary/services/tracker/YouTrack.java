@@ -76,7 +76,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public String insertOrUpdateProject(Project<String> project) throws Exception {
         String url, method;
-        if (project.getId().equals("")) {
+        if (project.getId() != null) {
             url = "/api/admin/projects/" + project.getId() + "?fields=" + YouTrack.PROJECT_FIELDS;
             method = "POST";
         } else {
@@ -97,7 +97,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
         if (status == 200 || status == 201) {
-            if (project.getId().equals("")) {
+            if (project.getId() != null) {
                 return project.getId();
             } else {
                 JSONObject obj = new JSONObject(this.getCurrentMessage());
@@ -167,13 +167,25 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             versionObject.put("description", version.getDescription());
             jsonArray.put(versionObject);
             jsonObject.put("values", jsonArray);
+
+            String url;
+            if (version.getId() == null) {
+                url = "/api/admin/customFieldSettings/bundles/version?fields=id,name,fieldType(presentation,id),values(id,name,description,$type)";
+            } else {
+                url = "/api/admin/customFieldSettings/bundles/version/" + version.getId() + "?fields=id,name,fieldType(presentation,id),values(id,name,description,$type)";
+            }
+            int status = this.executeRequest(url, jsonObject.toString(), "POST");
+            if (status == 200 || status == 201) {
+
+            }
+
         }
         return null;
     }
 
     @Override
     public void deleteVersion(String id) throws Exception {
-
+        this.deleteRequest("/api/admin/customFieldSettings/bundles/version/" + id);
     }
 
     private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {

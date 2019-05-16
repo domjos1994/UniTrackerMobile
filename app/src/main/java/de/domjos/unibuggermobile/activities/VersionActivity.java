@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.tasks.versions.ListVersionTask;
@@ -57,6 +58,7 @@ public final class VersionActivity extends AbstractActivity {
     private LinearLayout rowVersionFilter;
 
     private IBugService bugService;
+    private IFunctionImplemented permissions;
     private Project currentProject;
     private Version currentVersion;
 
@@ -156,6 +158,7 @@ public final class VersionActivity extends AbstractActivity {
         this.rowVersionFilter = this.findViewById(R.id.rowVersionFilter);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+        this.permissions = Helper.getCurrentPermissions(VersionActivity.this);
         this.currentProject = MainActivity.settings.getCurrentProject(VersionActivity.this, this.bugService);
         this.updateUITrackerSpecific();
     }
@@ -169,23 +172,25 @@ public final class VersionActivity extends AbstractActivity {
     @Override
     protected void reload() {
         try {
-            if (this.currentProject != null) {
-                if (this.currentProject.getId() != null) {
-                    this.versionAdapter.clear();
-                    String filterAction = "versions";
-                    if (filter != null) {
-                        if (this.filter.equals(getString(R.string.versions_released))) {
-                            filterAction = "released_versions";
-                        } else if (this.filter.equals(getString(R.string.versions_unReleased))) {
-                            filterAction = "unreleased_versions";
-                        } else {
-                            filterAction = "versions";
+            if (this.permissions.listVersions()) {
+                if (this.currentProject != null) {
+                    if (this.currentProject.getId() != null) {
+                        this.versionAdapter.clear();
+                        String filterAction = "versions";
+                        if (filter != null) {
+                            if (this.filter.equals(getString(R.string.versions_released))) {
+                                filterAction = "released_versions";
+                            } else if (this.filter.equals(getString(R.string.versions_unReleased))) {
+                                filterAction = "unreleased_versions";
+                            } else {
+                                filterAction = "versions";
+                            }
                         }
-                    }
-                    ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction);
-                    for (Version version : versionTask.execute().get()) {
-                        ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
-                        this.versionAdapter.add(listObject);
+                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction);
+                        for (Version version : versionTask.execute().get()) {
+                            ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
+                            this.versionAdapter.add(listObject);
+                        }
                     }
                 }
             }
@@ -196,9 +201,9 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void manageControls(boolean editMode, boolean reset, boolean selected) {
-        this.navigationView.getMenu().getItem(0).setEnabled(!editMode);
-        this.navigationView.getMenu().getItem(1).setEnabled(!editMode && selected);
-        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected);
+        this.navigationView.getMenu().getItem(0).setEnabled(!editMode && this.permissions.addVersions());
+        this.navigationView.getMenu().getItem(1).setEnabled(!editMode && selected && this.permissions.updateVersions());
+        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected && this.permissions.deleteVersions());
         this.navigationView.getMenu().getItem(3).setEnabled(editMode);
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
 
