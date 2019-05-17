@@ -20,6 +20,7 @@ package de.domjos.unibuggermobile.activities;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
 import android.support.v4.view.GravityCompat;
@@ -37,11 +38,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.issues.ListIssueTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.adapter.ListAdapter;
+import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
@@ -49,14 +55,17 @@ import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
+    private FloatingActionButton cmdIssuesAdd;
     private DrawerLayout drawerLayout;
     private ImageView ivMainCover;
     private TextView lblMainCommand;
     private TextView lblAccountTitle;
     private Spinner spMainAccounts, spMainProjects;
     private ListView lvMainIssues;
+    private ListAdapter issueAdapter;
     private ArrayAdapter<String> accountList, projectList;
     private IBugService bugService;
+    private IFunctionImplemented permissions;
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
@@ -96,6 +105,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 fillFields();
                 reloadProjects();
                 selectProject();
+                reload();
             }
 
             @Override
@@ -112,6 +122,26 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
+        });
+
+        this.lvMainIssues.setOnItemClickListener((parent, view, position, id) -> {
+
+        });
+
+        this.lvMainIssues.setOnItemLongClickListener((parent, view, position, id) -> {
+            try {
+                if (this.permissions.deleteIssues()) {
+                    ListObject listObject = this.issueAdapter.getItem(position);
+                    if (listObject != null) {
+                        if (listObject.getDescriptionObject() != null) {
+                            this.bugService.deleteIssue(listObject.getDescriptionObject().getId());
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, this.getApplicationContext());
+            }
+            return true;
         });
     }
 
@@ -136,6 +166,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
             this.lblAccountTitle = navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
 
+            this.cmdIssuesAdd = this.findViewById(R.id.cmdIssueAdd);
             this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
             this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
@@ -147,6 +178,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.notifyDataSetChanged();
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
+            this.issueAdapter = new ListAdapter(this.getApplicationContext(), R.mipmap.ic_launcher_round);
+            this.lvMainIssues.setAdapter(this.issueAdapter);
+            this.issueAdapter.notifyDataSetChanged();
 
             MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
 
@@ -159,9 +193,31 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 this.spMainAccounts.setSelection(this.accountList.getPosition(""));
             }
             this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
+            if (this.permissions.addIssues()) {
+                this.cmdIssuesAdd.show();
+            } else {
+                this.cmdIssuesAdd.hide();
+            }
+
 
             this.reloadProjects();
             this.selectProject();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, MainActivity.this);
+        }
+    }
+
+    @Override
+    protected void reload() {
+        try {
+            this.issueAdapter.clear();
+            if (this.permissions.listIssues()) {
+                ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId());
+                for (Object issue : listIssueTask.execute().get()) {
+                    this.issueAdapter.add(new ListObject(MainActivity.this, R.mipmap.ic_launcher_round, (Issue) issue));
+                }
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -180,6 +236,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.clear();
             this.projectList.add("");
             this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
+            if (this.permissions.addIssues()) {
+                this.cmdIssuesAdd.show();
+            } else {
+                this.cmdIssuesAdd.hide();
+            }
             for (Project project : new ListProjectTask(MainActivity.this, this.bugService).execute().get()) {
                 this.projectList.add(project.getTitle());
             }

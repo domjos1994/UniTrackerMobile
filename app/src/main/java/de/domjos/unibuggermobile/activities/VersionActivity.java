@@ -36,6 +36,8 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.tracker.Github;
 import de.domjos.unibuggerlibrary.tasks.versions.ListVersionTask;
 import de.domjos.unibuggerlibrary.tasks.versions.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
@@ -113,6 +115,9 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
+                        if (MainActivity.settings.getCurrentAuthentication().getTracker() == Authentication.Tracker.Github) {
+                            ((Github) this.bugService).setTitle(currentProject.getAlias());
+                        }
                         new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true).execute(this.currentVersion).get();
                         this.reload();
                         this.manageControls(false, true, false);
@@ -250,31 +255,50 @@ public final class VersionActivity extends AbstractActivity {
     }
 
     private void updateUITrackerSpecific() {
+        Authentication.Tracker tracker;
+        if (MainActivity.settings.getCurrentAuthentication() != null) {
+            tracker = MainActivity.settings.getCurrentAuthentication().getTracker();
+        } else {
+            return;
+        }
+
         this.rowVersionReleasedAt.setVisibility(View.GONE);
         this.rowVersionReleased.setVisibility(View.GONE);
         this.rowVersionDeprecated.setVisibility(View.GONE);
         this.rowVersionFilter.setVisibility(View.GONE);
 
-        switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
-            case MantisBT:
-                this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                this.rowVersionReleased.setVisibility(View.VISIBLE);
-                this.rowVersionDeprecated.setVisibility(View.VISIBLE);
-                this.rowVersionFilter.setVisibility(View.VISIBLE);
-                break;
-            case RedMine:
-                this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                this.rowVersionReleased.setVisibility(View.VISIBLE);
-                this.rowVersionDeprecated.setVisibility(View.VISIBLE);
-                this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
-                this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
-                break;
-            case YouTrack:
+        if (tracker != null) {
+            switch (tracker) {
+                case MantisBT:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.rowVersionFilter.setVisibility(View.VISIBLE);
+                    break;
+                case RedMine:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
+                    this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
+                    break;
+                case YouTrack:
 
-                break;
-            case Bugzilla:
-
-                break;
+                    break;
+                case Bugzilla:
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    break;
+                case Github:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    break;
+                case Local:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.rowVersionFilter.setVisibility(View.VISIBLE);
+                    break;
+            }
         }
     }
 }

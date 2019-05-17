@@ -1,0 +1,32 @@
+CREATE TABLE IF NOT EXISTS projects(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(1000) NOT NULL,
+    shortTitle VARCHAR(255) DEFAULT '',
+    privateProject TINYINT DEFAULT 0,
+    enabledProject TINYINT NOT NULL DEFAULT 1,
+    website VARCHAR(1000) DEFAULT '',
+    statusText VARCHAR(50) DEFAULT '',
+    statusID INTEGER DEFAULT 0,
+    iconUrl VARCHAR(1000) DEFAULT '',
+    defaultVersion VARCHAR(1000) DEFAULT '',
+    description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS subProjects(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    parentProject INTEGER NOT NULL,
+    childProject INTEGER NOT NULL,
+    FOREIGN KEY(parentProject) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY(childProject) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS versions(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(1000) NOT NULL,
+    releasedVersion TINYINT DEFAULT 0,
+    deprecatedVersion TINYINT NOT NULL DEFAULT 1,
+    releasedVersionAt LONG DEFAULT 0,
+    description TEXT,
+    project INTEGER NOT NULL,
+    FOREIGN KEY(project) REFERENCES projects(id) ON DELETE CASCADE ON UPDATE CASCADE
+);

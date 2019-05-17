@@ -20,6 +20,7 @@ package de.domjos.unibuggerlibrary.interfaces;
 
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 
@@ -44,4 +45,12 @@ public interface IBugService<T> {
     int getCurrentState();
 
     String getCurrentMessage();
+
+    List<Issue<T>> getIssues(T pid) throws Exception;
+
+    Issue<T> getIssue(T id) throws Exception;
+
+    T insertOrUpdateIssue(T pid, Issue<T> issue) throws Exception;
+
+    void deleteIssue(T id) throws Exception;
 }

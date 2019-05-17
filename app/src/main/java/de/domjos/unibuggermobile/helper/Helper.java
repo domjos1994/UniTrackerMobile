@@ -31,12 +31,14 @@ import java.util.Properties;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.permissions.BugzillaPermissions;
+import de.domjos.unibuggerlibrary.permissions.GithubPermissions;
 import de.domjos.unibuggerlibrary.permissions.MantisBTPermissions;
 import de.domjos.unibuggerlibrary.permissions.RedminePermissions;
 import de.domjos.unibuggerlibrary.permissions.SQLitePermissions;
 import de.domjos.unibuggerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
+import de.domjos.unibuggerlibrary.services.tracker.Github;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
 import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
@@ -94,6 +96,9 @@ public class Helper {
                     case RedMine:
                         bugService = new Redmine(authentication);
                         break;
+                    case Github:
+                        bugService = new Github(authentication);
+                        break;
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context));
                         break;
@@ -124,6 +129,9 @@ public class Helper {
                         break;
                     case RedMine:
                         functionImplemented = new RedminePermissions(authentication);
+                        break;
+                    case Github:
+                        functionImplemented = new GithubPermissions(authentication);
                         break;
                     default:
                         functionImplemented = new SQLitePermissions();

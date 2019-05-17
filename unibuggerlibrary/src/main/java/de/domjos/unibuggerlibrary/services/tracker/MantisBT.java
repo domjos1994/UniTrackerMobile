@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Vector;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -212,6 +213,44 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     @Override
     public String getCurrentMessage() {
         return this.currentMessage;
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid) throws Exception {
+        SoapObject request = new SoapObject();
+        request.addProperty("project_id", Integer.parseInt(String.valueOf(pid)));
+        request.addProperty("page_number", 1);
+        request.addProperty("per_page", -1);
+
+        Object object = this.executeAction(request, "mc_project_get_issue_headers", true);
+        object = this.getResult(object);
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                if (vector.get(i) instanceof SoapObject) {
+                    SoapObject soapObject = (SoapObject) vector.get(i);
+
+                }
+            }
+        }
+
+
+        return null;
+    }
+
+    @Override
+    public Issue<Long> getIssue(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteIssue(Long id) throws Exception {
+
     }
 
     private Object getResult(Object object) {

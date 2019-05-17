@@ -16,31 +16,9 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggerlibrary.interfaces;
+package de.domjos.unibuggerlibrary.model.issues;
 
-public interface IFunctionImplemented {
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-    boolean listProjects();
-
-    boolean addProjects();
-
-    boolean updateProjects();
-
-    boolean deleteProjects();
-
-    boolean listVersions();
-
-    boolean addVersions();
-
-    boolean updateVersions();
-
-    boolean deleteVersions();
-
-    boolean listIssues();
-
-    boolean addIssues();
-
-    boolean updateIssues();
-
-    boolean deleteIssues();
+public class Issue<T> extends DescriptionObject<T> {
 }

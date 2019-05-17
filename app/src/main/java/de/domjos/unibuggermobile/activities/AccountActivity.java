@@ -82,6 +82,8 @@ public final class AccountActivity extends AbstractActivity {
                     if (txtAccountServer.getText().toString().isEmpty()) {
                         txtAccountServer.setText(Authentication.Tracker.Local.name());
                     }
+                } else if (trackerAdapter.getItem(position) == Authentication.Tracker.Github) {
+                    txtAccountServer.setText(getString(R.string.accounts_github_server));
                 } else {
                     if (txtAccountServer.getText().toString().equals(Authentication.Tracker.Local.name())) {
                         txtAccountServer.setText("");
@@ -178,6 +180,8 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountImageURL = this.findViewById(R.id.txtAccountImageURL);
         this.txtAccountDescription = this.findViewById(R.id.txtAccountDescription);
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
+
+        this.txtAccountServer.setText(Authentication.Tracker.Local.name());
     }
 
     @Override

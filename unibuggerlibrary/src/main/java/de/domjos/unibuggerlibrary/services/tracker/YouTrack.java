@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -186,6 +187,26 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public void deleteVersion(String id) throws Exception {
         this.deleteRequest("/api/admin/customFieldSettings/bundles/version/" + id);
+    }
+
+    @Override
+    public List<Issue<String>> getIssues(String pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Issue<String> getIssue(String id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String insertOrUpdateIssue(String pid, Issue<String> issue) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteIssue(String id) throws Exception {
+
     }
 
     private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {

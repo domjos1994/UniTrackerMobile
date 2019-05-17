@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -216,6 +217,26 @@ public final class MantisBTJSON extends JSONEngine implements IBugService<Long> 
 
     @Override
     public void deleteVersion(Long id) throws Exception {
+
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Issue<Long> getIssue(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteIssue(Long id) throws Exception {
 
     }
 

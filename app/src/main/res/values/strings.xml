@@ -31,6 +31,7 @@
     <string name="accounts_api">API-Schlüssel</string>
     <string name="accounts_image_url">URL to Image</string>
     <string name="accounts_image_gallery">Galerie</string>
+    <string name="accounts_github_server">https://api.github.com</string>
 
     <string name="projects">Projekte</string>
     <string name="projects_alias">Alias</string>

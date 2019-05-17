@@ -41,12 +41,15 @@ public class MessageHelper {
     private final static String id = "UniBuggerChannel";
 
     public static void printException(Exception ex, Context context) {
-        StringBuilder builder = new StringBuilder(ex.getMessage()).append("\n");
-        for (StackTraceElement element : ex.getStackTrace()) {
-            builder.append(String.format("%s.%s#%s(%s)%n", element.getFileName(), element.getClassName(), element.getMethodName(), element.getLineNumber()));
+        try {
+            StringBuilder builder = new StringBuilder(ex.getMessage()).append("\n");
+            for (StackTraceElement element : ex.getStackTrace()) {
+                builder.append(String.format("%s.%s#%s(%s)%n", element.getFileName(), element.getClassName(), element.getMethodName(), element.getLineNumber()));
+            }
+            MessageHelper.printMessage(ex.toString(), context);
+        } catch (Exception ignored) {
         }
-        Log.e("Exception", builder.toString(), ex);
-        MessageHelper.printMessage(ex.toString(), context);
+        Log.e("Exception", "Error", ex);
     }
 
     public static void printMessage(String message, Context context) {

@@ -21,10 +21,10 @@ package de.domjos.unibuggerlibrary.permissions;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 
-public class MantisBTPermissions implements IFunctionImplemented {
+public class GithubPermissions implements IFunctionImplemented {
     private Authentication authentication;
 
-    public MantisBTPermissions(Authentication authentication) {
+    public GithubPermissions(Authentication authentication) {
         this.authentication = authentication;
     }
 
@@ -40,12 +40,12 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteProjects() {
-        return true;
+        return false;
     }
 
     @Override
@@ -55,22 +55,22 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean listIssues() {
-        return true;
+        return false;
     }
 
     @Override

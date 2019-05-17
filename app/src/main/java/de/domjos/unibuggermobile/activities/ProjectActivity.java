@@ -37,6 +37,7 @@ import java.util.Locale;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.Converter;
@@ -386,6 +387,13 @@ public final class ProjectActivity extends AbstractActivity {
     }
 
     private void updateUITrackerSpecific() {
+        Authentication.Tracker tracker;
+        if (MainActivity.settings.getCurrentAuthentication() != null) {
+            tracker = MainActivity.settings.getCurrentAuthentication().getTracker();
+        } else {
+            return;
+        }
+
         this.rowProjectState.setVisibility(View.GONE);
         this.rowSubProjects.setVisibility(View.GONE);
         this.rowTimestamps.setVisibility(View.GONE);
@@ -396,28 +404,48 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowProjectVersion.setVisibility(View.GONE);
         this.rowProjectPrivate.setVisibility(View.GONE);
 
-        switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
-            case MantisBT:
-                this.rowProjectState.setVisibility(View.VISIBLE);
-                //this.rowSubProjects.setVisibility(View.VISIBLE);
-                this.rowProjectEnabled.setVisibility(View.VISIBLE);
-                this.rowProjectPrivate.setVisibility(View.VISIBLE);
-                break;
-            case RedMine:
-                this.rowProjectAlias.setVisibility(View.VISIBLE);
-                this.rowTimestamps.setVisibility(View.VISIBLE);
-                this.rowProjectWebsite.setVisibility(View.VISIBLE);
-                this.rowProjectPrivate.setVisibility(View.VISIBLE);
-                break;
-            case YouTrack:
-                this.rowProjectAlias.setVisibility(View.VISIBLE);
-                this.rowProjectIcon.setVisibility(View.VISIBLE);
-                this.rowProjectEnabled.setVisibility(View.VISIBLE);
-                break;
-            case Bugzilla:
-                this.rowProjectVersion.setVisibility(View.VISIBLE);
-                this.rowProjectEnabled.setVisibility(View.VISIBLE);
-                break;
+        if (tracker != null) {
+            switch (tracker) {
+                case MantisBT:
+                    this.rowProjectState.setVisibility(View.VISIBLE);
+                    //this.rowSubProjects.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    break;
+                case RedMine:
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.rowTimestamps.setVisibility(View.VISIBLE);
+                    this.rowProjectWebsite.setVisibility(View.VISIBLE);
+                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    break;
+                case YouTrack:
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.rowProjectIcon.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    break;
+                case Bugzilla:
+                    this.rowProjectVersion.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    break;
+                case Github:
+                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowProjectWebsite.setVisibility(View.VISIBLE);
+                    this.rowTimestamps.setVisibility(View.VISIBLE);
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    break;
+                case Local:
+                    this.rowProjectState.setVisibility(View.VISIBLE);
+                    this.rowSubProjects.setVisibility(View.VISIBLE);
+                    this.rowTimestamps.setVisibility(View.VISIBLE);
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.rowProjectWebsite.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowProjectIcon.setVisibility(View.VISIBLE);
+                    this.rowProjectVersion.setVisibility(View.VISIBLE);
+                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    break;
+            }
         }
     }
 }

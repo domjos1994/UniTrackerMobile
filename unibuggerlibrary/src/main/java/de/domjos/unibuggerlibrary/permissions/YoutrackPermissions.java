@@ -67,4 +67,24 @@ public class YoutrackPermissions implements IFunctionImplemented {
     public boolean deleteVersions() {
         return false;
     }
+
+    @Override
+    public boolean listIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean addIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean updateIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteIssues() {
+        return false;
+    }
 }

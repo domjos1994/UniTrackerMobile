@@ -65,4 +65,24 @@ public class SQLitePermissions implements IFunctionImplemented {
     public boolean deleteVersions() {
         return true;
     }
+
+    @Override
+    public boolean listIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean addIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean updateIssues() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteIssues() {
+        return false;
+    }
 }

@@ -99,6 +99,7 @@ public class Authentication extends DescriptionObject<Long> {
         YouTrack,
         MantisBT,
         RedMine,
-        Bugzilla
+        Bugzilla,
+        Github
     }
 }
