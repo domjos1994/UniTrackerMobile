@@ -68,6 +68,14 @@
         <item>@string/versions_released</item>
     </string-array>
 
+    <string name="issues">Fehler</string>
+    <string name="issues_general">Generell</string>
+    <string name="issues_general_summary">Zusammenfassung</string>
+
+    <string name="issues_descriptions">Beschreibungen</string>
+    <string name="issues_notes">Notizen</string>
+    <string name="issues_attachments">Anhänge</string>
+
     <string name="settings">Einstellungen</string>
 
     <string name="sys_add">Hinzufügen</string>

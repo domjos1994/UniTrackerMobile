@@ -69,27 +69,13 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             Vector vector = (Vector) result;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject soapObject = (SoapObject) vector.get(i);
-                Project<Long> project = this.soapToProject(soapObject);
-
-                Vector subProjects = (Vector) soapObject.getProperty("subprojects");
-                for (int j = 0; j <= subProjects.size() - 1; j++) {
-                    project.getSubProjects().add(this.soapToProject((SoapObject) subProjects.get(j)));
-                }
-
-                projects.add(project);
+                projects.add(this.soapToProject(soapObject, null));
             }
         }
 
         List<Project<Long>> projectsAndSubs = new LinkedList<>();
-        int counter = 0;
         for (int i = 0; i <= projects.size() - 1; i++) {
-            projectsAndSubs.add(counter, projects.get(i));
-            counter++;
-            for (Project<Long> sub : projects.get(i).getSubProjects()) {
-                sub.setTitle("--- " + sub.getTitle());
-                projectsAndSubs.add(counter, sub);
-                counter++;
-            }
+            projectsAndSubs = this.getProject(projects.get(i), "", projectsAndSubs);
         }
 
         return projectsAndSubs;
@@ -217,7 +203,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        SoapObject request = new SoapObject();
+        List<Issue<Long>> issues = new LinkedList<>();
+
+        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
         request.addProperty("project_id", Integer.parseInt(String.valueOf(pid)));
         request.addProperty("page_number", 1);
         request.addProperty("per_page", -1);
@@ -228,19 +216,36 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             Vector vector = (Vector) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 if (vector.get(i) instanceof SoapObject) {
+                    Issue<Long> issue = new Issue<>();
                     SoapObject soapObject = (SoapObject) vector.get(i);
-
+                    issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
+                    issue.setDescription(soapObject.getPropertyAsString("status"));
+                    issue.setTitle(soapObject.getPropertyAsString("summary"));
+                    issues.add(issue);
                 }
             }
         }
 
 
-        return null;
+        return issues;
     }
 
     @Override
     public Issue<Long> getIssue(Long id) throws Exception {
-        return null;
+        Issue<Long> issue = new Issue<>();
+
+        SoapObject request = new SoapObject(super.soapPath, "mc_issue_get");
+        request.addProperty("issue_id", Integer.parseInt(String.valueOf(id)));
+        Object object = this.executeAction(request, "mc_issue_get", true);
+        object = this.getResult(object);
+        if (object instanceof SoapObject) {
+            SoapObject soapObject = (SoapObject) object;
+            issue.setTitle(soapObject.getPropertyAsString("summary"));
+            issue.setDescription(soapObject.getPropertyAsString("description"));
+            issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
+        }
+
+        return issue;
     }
 
     @Override
@@ -263,8 +268,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return object;
     }
 
-    private Project<Long> soapToProject(SoapObject soapObject) {
-        Project<Long> project = new Project<>();
+    private Project<Long> soapToProject(SoapObject soapObject, Project<Long> project) {
+        if (project == null) {
+            project = new Project<>();
+        }
+
         project.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
         project.setTitle(soapObject.getPropertyAsString("name"));
         project.setDescription(soapObject.getPropertyAsString("description"));
@@ -278,7 +286,28 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         name = status.getPropertyAsString("name").trim().toLowerCase();
         int id = Integer.parseInt(status.getPropertyAsString("id").trim().toLowerCase());
         project.setStatus(name, id);
+
+        if (soapObject.hasProperty("subprojects")) {
+            Vector vector = (Vector) soapObject.getProperty("subprojects");
+
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                project.getSubProjects().add(new Project<>());
+                project.getSubProjects().set(i, this.soapToProject((SoapObject) vector.get(i), project.getSubProjects().get(i)));
+            }
+        }
+
         return project;
+    }
+
+    private List<Project<Long>> getProject(Project<Long> project, String path, List<Project<Long>> ls) {
+        project.setTitle(path + project.getTitle());
+        ls.add(project);
+        path = "-" + path;
+
+        for (Project<Long> subProject : project.getSubProjects()) {
+            ls = this.getProject(subProject, path, ls);
+        }
+        return ls;
     }
 
     private SoapObject projectToSoap(Project<Long> project) {

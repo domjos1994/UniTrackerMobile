@@ -69,6 +69,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
+    private static final int RELOAD_ISSUES = 101;
     public static final Globals globals = new Globals();
     public static Settings settings;
 
@@ -125,7 +126,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         });
 
         this.lvMainIssues.setOnItemClickListener((parent, view, position, id) -> {
-
+            ListObject ls = this.issueAdapter.getItem(position);
+            if (ls != null) {
+                Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
+                intent.putExtra("id", String.valueOf(ls.getDescriptionObject().getId()));
+                this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+            }
         });
 
         this.lvMainIssues.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -259,6 +265,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_PROJECTS) {
             this.reloadProjects();
             this.selectProject();
+        }
+
+        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ISSUES) {
+            this.reload();
         }
     }
 

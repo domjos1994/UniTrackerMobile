@@ -16,31 +16,17 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+package de.domjos.unibuggermobile.fragments;
 
-buildscript {
-    repositories {
-        google()
-        jcenter()
-        
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
-        
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
+import android.support.v4.app.Fragment;
 
-allprojects {
-    repositories {
-        google()
-        jcenter()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
-    }
-}
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+public abstract class AbstractFragment extends Fragment {
+
+    public abstract void setObject(DescriptionObject descriptionObject);
+
+    public abstract DescriptionObject getObject(DescriptionObject descriptionObject);
+
+    public abstract void manageControls(boolean editMode, boolean reset, boolean selected);
 }

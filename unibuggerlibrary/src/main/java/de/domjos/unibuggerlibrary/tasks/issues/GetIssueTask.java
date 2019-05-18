@@ -20,20 +20,15 @@ package de.domjos.unibuggerlibrary.tasks.issues;
 
 import android.app.Activity;
 
-import java.util.List;
-
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
-public class ListIssueTask extends AbstractTask<Void, Void, List<Issue>> {
-    private Object pid;
-
-    public ListIssueTask(Activity activity, IBugService bugService, Object pid) {
-        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issues_list_content);
-        this.pid = pid;
+public class GetIssueTask extends AbstractTask<String, Void, Issue> {
+    public GetIssueTask(Activity activity, IBugService bugService) {
+        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issue_load);
     }
 
     @Override
@@ -47,14 +42,16 @@ public class ListIssueTask extends AbstractTask<Void, Void, List<Issue>> {
     }
 
     @Override
-    protected List<Issue> doInBackground(Void... voids) {
+    protected Issue doInBackground(String[] objects) {
         try {
-            List<Issue> issues = super.bugService.getIssues(pid);
-            super.printMessage();
-            return issues;
+            return super.bugService.getIssue(objects[0]);
         } catch (Exception ex) {
-            super.activity.runOnUiThread(() -> MessageHelper.printException(ex, super.activity));
-            return null;
+            try {
+                return super.bugService.getIssue(Long.parseLong(objects[0]));
+            } catch (Exception e) {
+                super.activity.runOnUiThread(() -> MessageHelper.printException(e, super.activity));
+                return null;
+            }
         }
     }
 }
