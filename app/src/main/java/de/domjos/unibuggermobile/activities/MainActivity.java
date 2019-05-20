@@ -130,6 +130,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (ls != null) {
                 Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
                 intent.putExtra("id", String.valueOf(ls.getDescriptionObject().getId()));
+                intent.putExtra("pid", String.valueOf(MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId()));
                 this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
             }
         });
@@ -148,6 +149,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 MessageHelper.printException(ex, this.getApplicationContext());
             }
             return true;
+        });
+
+        this.cmdIssuesAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
+            intent.putExtra("id", "");
+            intent.putExtra("pid", String.valueOf(MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId()));
+            this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
         });
     }
 

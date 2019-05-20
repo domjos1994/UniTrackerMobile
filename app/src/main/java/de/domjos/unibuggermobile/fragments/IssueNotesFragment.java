@@ -23,14 +23,38 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.adapter.ListAdapter;
+import de.domjos.unibuggermobile.adapter.ListObject;
+import de.domjos.unibuggermobile.helper.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public final class IssueNotesFragment extends AbstractFragment {
+    private ListView lvIssueNotes;
+    private ListAdapter notesAdapter;
+    private ImageButton cmdIssueNotesAdd, cmdIssueNotesEdit, cmdIssueNotesDelete, cmdIssueNotesCancel, cmdIssueNotesSave;
+    private EditText txtIssueNotesText;
+    private TextView txtIssueNotesSubmitDate, txtIssueNotesLastUpdated;
+    private Spinner spIssueNotesView;
+
+    private View root;
+    private Issue issue;
+    private boolean editMode;
+    private Note currentNote;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,23 +63,201 @@ public final class IssueNotesFragment extends AbstractFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.issue_fragment_notes, container, false);
+        this.root = inflater.inflate(R.layout.issue_fragment_notes, container, false);
 
-        return root;
+        this.lvIssueNotes = this.root.findViewById(R.id.lvIssuesNote);
+        if (this.getContext() != null) {
+            this.notesAdapter = new ListAdapter(this.getContext(), R.mipmap.ic_launcher_round);
+            this.lvIssueNotes.setAdapter(this.notesAdapter);
+            this.notesAdapter.notifyDataSetChanged();
+        }
+        this.cmdIssueNotesAdd = this.root.findViewById(R.id.cmdIssueNotesAdd);
+        this.cmdIssueNotesEdit = this.root.findViewById(R.id.cmdIssueNotesEdit);
+        this.cmdIssueNotesDelete = this.root.findViewById(R.id.cmdIssueNotesDelete);
+        this.cmdIssueNotesCancel = this.root.findViewById(R.id.cmdIssueNotesCancel);
+        this.cmdIssueNotesSave = this.root.findViewById(R.id.cmdIssueNotesSave);
+        this.txtIssueNotesText = this.root.findViewById(R.id.txtIssueNotesContent);
+        this.txtIssueNotesSubmitDate = this.root.findViewById(R.id.txtIssueNotesSubmitDate);
+        this.txtIssueNotesLastUpdated = this.root.findViewById(R.id.txtIssueNotesLastUpdated);
+        this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
+
+        this.lvIssueNotes.setOnItemClickListener((parent, view, position, id) -> {
+            ListObject object = this.notesAdapter.getItem(position);
+            if (object != null) {
+                this.currentNote = (Note) object.getDescriptionObject();
+                this.noteToFields();
+            }
+            this.manageNoteControls(false, false, true);
+        });
+
+        this.cmdIssueNotesAdd.setOnClickListener(v -> {
+            this.currentNote = new Note();
+            this.noteToFields();
+            this.manageNoteControls(true, true, false);
+        });
+
+        this.cmdIssueNotesEdit.setOnClickListener(v -> this.manageNoteControls(true, false, false));
+
+        this.cmdIssueNotesDelete.setOnClickListener(v -> {
+            Object id = this.currentNote.getId();
+            for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
+                ListObject listObject = this.notesAdapter.getItem(i);
+                if (listObject != null) {
+                    if (id != null) {
+                        if (id.equals(listObject.getDescriptionObject().getId())) {
+                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
+                            break;
+                        }
+                    } else {
+                        if (this.currentNote.getDescription().equals(listObject.getDescriptionObject().getDescription())) {
+                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
+                            break;
+                        }
+                    }
+                }
+            }
+            this.currentNote = new Note();
+            this.noteToFields();
+            this.manageNoteControls(false, true, false);
+        });
+
+        this.cmdIssueNotesCancel.setOnClickListener(v -> {
+            this.currentNote = new Note();
+            this.noteToFields();
+        });
+
+        this.cmdIssueNotesSave.setOnClickListener(v -> {
+            this.fieldsToNote();
+            Object id = this.currentNote.getId();
+            if (id != null) {
+                for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
+                    ListObject listObject = this.notesAdapter.getItem(i);
+                    if (listObject != null) {
+                        if (id.equals(listObject.getDescriptionObject().getId())) {
+                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
+                            this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+                            break;
+                        }
+                    }
+                }
+            } else {
+                this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+            }
+            this.manageNoteControls(false, true, false);
+        });
+
+        this.initData();
+        this.manageControls(this.editMode);
+        return this.root;
     }
 
     @Override
     public void setObject(DescriptionObject descriptionObject) {
-
+        this.issue = (Issue) descriptionObject;
     }
 
     @Override
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
-        return null;
+        Issue issue = (Issue) descriptionObject;
+
+        if (this.root != null) {
+            issue.getNotes().clear();
+            for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
+                ListObject object = this.notesAdapter.getItem(i);
+                if (object != null) {
+                    issue.getNotes().add(object.getDescriptionObject());
+                }
+            }
+        }
+        return issue;
     }
 
     @Override
-    public void manageControls(boolean editMode, boolean reset, boolean selected) {
+    public void manageControls(boolean editMode) {
+        this.editMode = editMode;
 
+        if (this.root != null) {
+            this.cmdIssueNotesSave.setEnabled(this.editMode);
+            this.manageNoteControls(false, true, false);
+        }
+    }
+
+    @Override
+    protected void initData() {
+        this.notesAdapter.clear();
+        for (Object note : this.issue.getNotes()) {
+            this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, (Note) note));
+        }
+    }
+
+    @Override
+    public Validator initValidator() {
+        Validator validator = new Validator(this.getContext());
+        if (this.root != null) {
+
+        }
+        return validator;
+    }
+
+    private void noteToFields() {
+        if (this.currentNote != null) {
+            this.txtIssueNotesText.setText(this.currentNote.getDescription());
+            this.setValueOfEnum(Integer.parseInt(this.currentNote.getState().getKey().toString()), R.array.issues_general_view_ids, this.spIssueNotesView);
+
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+            if (this.currentNote.getLastUpdated() != null) {
+                this.txtIssueNotesLastUpdated.setText(sdf.format(this.currentNote.getLastUpdated()));
+            }
+            if (this.currentNote.getSubmitDate() != null) {
+                this.txtIssueNotesSubmitDate.setText(sdf.format(this.currentNote.getSubmitDate()));
+            }
+
+        }
+    }
+
+    private void fieldsToNote() {
+        if (this.currentNote != null) {
+            this.currentNote.setDescription(this.txtIssueNotesText.getText().toString());
+            this.currentNote.setState(this.getIdOfEnum(this.spIssueNotesView, R.array.issues_general_view_ids), this.spIssueNotesView.getSelectedItem().toString());
+            if (this.currentNote.getDescription().length() > 50) {
+                this.currentNote.setTitle(this.currentNote.getDescription().substring(0, 50));
+            } else {
+                this.currentNote.setTitle(this.currentNote.getDescription());
+            }
+        }
+    }
+
+    private int getIdOfEnum(Spinner spinner, int idResource) {
+        int[] array = this.getResources().getIntArray(idResource);
+        if (array.length - 1 >= spinner.getSelectedItemPosition()) {
+            return array[spinner.getSelectedItemPosition()];
+        }
+        return 0;
+    }
+
+    private void setValueOfEnum(int id, int idResource, Spinner spinner) {
+        int[] idArray = this.getResources().getIntArray(idResource);
+        for (int i = 0; i <= idArray.length - 1; i++) {
+            if (id == idArray[i]) {
+                spinner.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    private void manageNoteControls(boolean editMode, boolean reset, boolean selected) {
+        this.txtIssueNotesText.setEnabled(editMode);
+        this.spIssueNotesView.setEnabled(editMode);
+        this.lvIssueNotes.setEnabled(!editMode);
+        this.cmdIssueNotesAdd.setEnabled(!editMode && this.editMode);
+        this.cmdIssueNotesEdit.setEnabled(!editMode && selected && this.editMode);
+        this.cmdIssueNotesDelete.setEnabled(!editMode && selected && this.editMode);
+        this.cmdIssueNotesCancel.setEnabled(editMode);
+        this.cmdIssueNotesSave.setEnabled(editMode);
+
+        if (reset) {
+            this.currentNote = new Note();
+            this.noteToFields();
+        }
     }
 }

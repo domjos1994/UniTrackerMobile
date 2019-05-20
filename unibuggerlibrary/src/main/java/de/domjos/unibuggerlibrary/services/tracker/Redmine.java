@@ -245,6 +245,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     }
 
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
+
     private Project<Long> jsonObjectToProject(JSONObject obj) throws Exception {
         Project<Long> project = new Project<>();
         project.setId((long) obj.getInt("id"));

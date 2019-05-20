@@ -71,11 +71,15 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    public void manageControls(boolean editMode, boolean reset, boolean selected) {
-        this.general.manageControls(editMode, reset, selected);
-        this.descriptions.manageControls(editMode, reset, selected);
-        this.notes.manageControls(editMode, reset, selected);
-        this.attachments.manageControls(editMode, reset, selected);
+    public void setPid(String pid) {
+        this.general.setPid(pid);
+    }
+
+    public void manageControls(boolean editMode) {
+        this.general.manageControls(editMode);
+        this.descriptions.manageControls(editMode);
+        this.notes.manageControls(editMode);
+        this.attachments.manageControls(editMode);
     }
 
     public void setObject(DescriptionObject object) {
@@ -90,6 +94,10 @@ public class PagerAdapter extends FragmentPagerAdapter {
         object = this.descriptions.getObject(object);
         object = this.notes.getObject(object);
         return this.attachments.getObject(object);
+    }
+
+    public boolean validate() {
+        return this.general.initValidator().getState() && this.descriptions.initValidator().getState() && this.attachments.initValidator().getState() && this.notes.initValidator().getState();
     }
 
     @Nullable

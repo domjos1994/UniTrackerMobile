@@ -240,6 +240,11 @@ public final class MantisBTJSON extends JSONEngine implements IBugService<Long> 
 
     }
 
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
+
     private Project<Long> jsonToProject(JSONObject projectObject, boolean versions) throws Exception {
         Project<Long> project = new Project<>();
         project.setId((long) projectObject.getInt("id"));

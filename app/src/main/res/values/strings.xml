@@ -71,6 +71,120 @@
     <string name="issues">Fehler</string>
     <string name="issues_general">Generell</string>
     <string name="issues_general_summary">Zusammenfassung</string>
+    <string name="issues_general_category">Kategorie</string>
+    <string name="issues_general_version">Produktversion</string>
+    <string name="issues_general_targetVersion">Zielversion</string>
+    <string name="issues_general_fixedInVersion">Behoben in Version</string>
+    <string name="issues_general_submitted">Meldungsdatum</string>
+    <string name="issues_general_lastUpdated">Zuletzt aktualisiert</string>
+    <string name="issues_general_dueDate">Fälligkeitsdatum</string>
+    <string name="issues_general_view">Sichtbarkeit</string>
+    <string-array name="issues_general_view_values">
+        <item>öffentlich</item>
+        <item>privat</item>
+    </string-array>
+    <integer-array name="issues_general_view_ids">
+        <item>10</item>
+        <item>50</item>
+    </integer-array>
+    <string name="issues_general_reproducibility">Reproduzierbarkeit</string>
+    <string-array name="issues_general_reproducibility_values">
+        <item>immer</item>
+        <item>manchmal</item>
+        <item>zufällig</item>
+        <item>nicht getestet</item>
+        <item>nicht reproduzierbar</item>
+        <item>N/A</item>
+    </string-array>
+    <integer-array name="issues_general_reproducibility_ids">
+        <item>10</item>
+        <item>30</item>
+        <item>50</item>
+        <item>70</item>
+        <item>90</item>
+        <item>100</item>
+    </integer-array>
+    <string name="issues_general_severity">Auswirkung</string>
+    <string-array name="issues_general_severity_values">
+        <item>Feature-Wunsch</item>
+        <item>Trivial</item>
+        <item>Fehler im Text</item>
+        <item>Unschönheit</item>
+        <item>kleinerer Fehler</item>
+        <item>schwerer Fehler</item>
+        <item>Absturz</item>
+        <item>Blocker</item>
+    </string-array>
+    <integer-array name="issues_general_severity_ids">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+    </integer-array>
+    <string name="issues_general_priority">Priorität</string>
+    <string-array name="issues_general_priority_values">
+        <item>keine</item>
+        <item>niedrig</item>
+        <item>normal</item>
+        <item>hoch</item>
+        <item>dringend</item>
+        <item>sofort</item>
+    </string-array>
+    <integer-array name="issues_general_priority_ids">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+    </integer-array>
+    <string name="issues_general_status">Status</string>
+    <string-array name="issues_general_status_values">
+        <item>Neu</item>
+        <item>Rückmeldung</item>
+        <item>anerkannt</item>
+        <item>bestätigt</item>
+        <item>zugewiesen</item>
+        <item>erledigt</item>
+        <item>geschlossen</item>
+    </string-array>
+    <integer-array name="issues_general_status_ids">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>80</item>
+        <item>90</item>
+    </integer-array>
+    <string name="issues_general_resolution">Lösung</string>
+    <string-array name="issues_general_resolution_values">
+        <item>offen</item>
+        <item>erledigt</item>
+        <item>wiedereröffnet</item>
+        <item>nicht reproduzierbar</item>
+        <item>unlösbar</item>
+        <item>doppelt</item>
+        <item>keine Änderung notwendig</item>
+        <item>aufgeschoben</item>
+        <item>wird nicht behoben</item>
+    </string-array>
+    <integer-array name="issues_general_resolution_ids">
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>60</item>
+        <item>70</item>
+        <item>80</item>
+        <item>90</item>
+    </integer-array>
+
 
     <string name="issues_descriptions">Beschreibungen</string>
     <string name="issues_notes">Notizen</string>

@@ -53,4 +53,6 @@ public interface IBugService<T> {
     T insertOrUpdateIssue(T pid, Issue<T> issue) throws Exception;
 
     void deleteIssue(T id) throws Exception;
+
+    List<String> getCategories(T pid) throws Exception;
 }

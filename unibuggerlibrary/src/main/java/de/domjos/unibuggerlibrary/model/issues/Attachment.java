@@ -16,26 +16,44 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggermobile.fragments;
-
-import android.support.v4.app.Fragment;
+package de.domjos.unibuggerlibrary.model.issues;
 
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggermobile.helper.Validator;
 
-public abstract class AbstractFragment extends Fragment {
+public class Attachment<T> extends DescriptionObject<T> {
+    private String filename;
+    private String downloadUrl;
+    private byte[] content;
 
-    public abstract void setObject(DescriptionObject descriptionObject);
+    public Attachment() {
+        super();
 
-    public abstract DescriptionObject getObject(DescriptionObject descriptionObject);
+        this.filename = "";
+        this.downloadUrl = "";
+    }
 
-    public abstract void manageControls(boolean editMode);
+    public String getFilename() {
+        return this.filename;
+    }
 
-    protected abstract void initData();
+    public void setFilename(String filename) {
+        this.filename = filename;
+        this.setTitle(this.filename);
+    }
 
-    public abstract Validator initValidator();
+    public String getDownloadUrl() {
+        return this.downloadUrl;
+    }
 
-    public void setPid(String pid) {
+    public void setDownloadUrl(String downloadUrl) {
+        this.downloadUrl = downloadUrl;
+    }
 
+    public byte[] getContent() {
+        return this.content;
+    }
+
+    public void setContent(byte[] content) {
+        this.content = content;
     }
 }

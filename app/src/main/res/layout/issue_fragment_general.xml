@@ -29,11 +29,166 @@
         android:weightSum="10">
 
         <TableRow>
-
             <EditText
                 android:id="@+id/txtIssueGeneralSummary"
                 android:hint="@string/issues_general_summary"
+                android:inputType="textMultiLine"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralCategory"
+                android:hint="@string/issues_general_category"
                 android:inputType="text"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_reproducibility" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralReproducibilitty"
+                android:entries="@array/issues_general_reproducibility_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_view" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralView"
+                android:entries="@array/issues_general_view_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_severity" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralSeverity"
+                android:entries="@array/issues_general_severity_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_priority" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralPriority"
+                android:entries="@array/issues_general_priority_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_status" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralStatus"
+                android:entries="@array/issues_general_status_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_resolution" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralResolution"
+                android:entries="@array/issues_general_resolution_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralVersion"
+                android:hint="@string/issues_general_version"
+                android:inputType="text"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralTargetVersion"
+                android:hint="@string/issues_general_targetVersion"
+                android:inputType="text"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralFixedInVersion"
+                android:hint="@string/issues_general_fixedInVersion"
+                android:inputType="text"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txtIssueGeneralSubmitDate"
+                android:hint="@string/issues_general_submitted"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+
+            <TextView
+                android:id="@+id/txtIssueGeneralLastUpdated"
+                android:hint="@string/issues_general_lastUpdated"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtIssueGeneralDueDate"
+                android:hint="@string/issues_general_dueDate"
+                android:inputType="datetime"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 tools:ignore="Autofill" />

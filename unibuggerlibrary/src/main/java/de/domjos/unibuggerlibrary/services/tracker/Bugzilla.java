@@ -195,4 +195,9 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     public void deleteIssue(Long id) throws Exception {
 
     }
+
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
 }

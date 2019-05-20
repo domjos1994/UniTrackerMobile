@@ -16,8 +16,104 @@
   ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</android.support.constraint.ConstraintLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10">
+
+        <TableRow>
+
+            <ListView
+                android:id="@+id/lvIssuesNote"
+                android:layout_width="0dp"
+                android:layout_weight="10"
+                android:layout_height="250dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <ImageButton
+                android:id="@+id/cmdIssueNotesAdd"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_add_circle_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/cmdIssueNotesEdit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/cmdIssueNotesDelete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_delete_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/cmdIssueNotesCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_cancel_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/cmdIssueNotesSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                app:srcCompat="@drawable/ic_save_black_24dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtIssueNotesContent"
+                android:hint="@string/general_description"
+                android:inputType="textMultiLine"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/txtIssueNotesSubmitDate"
+                android:hint="@string/issues_general_submitted"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+
+            <TextView
+                android:id="@+id/txtIssueNotesLastUpdated"
+                android:hint="@string/issues_general_lastUpdated"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
+                android:text="@string/issues_general_view" />
+
+            <Spinner
+                android:id="@+id/spIssueNotesView"
+                android:entries="@array/issues_general_view_values"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+    </TableLayout>
+</ScrollView>

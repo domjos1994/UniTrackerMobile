@@ -210,6 +210,11 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     }
 
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
+
     public void setTitle(String pTitle) {
         this.title = pTitle;
     }

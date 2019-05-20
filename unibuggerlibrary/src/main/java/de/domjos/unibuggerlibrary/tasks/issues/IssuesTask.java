@@ -49,6 +49,10 @@ public class IssuesTask extends AbstractTask<Issue, Void, Void> {
     @Override
     protected Void doInBackground(Issue... issues) {
         try {
+            pid = Long.parseLong(String.valueOf(pid));
+        } catch (Exception ignored) {
+        }
+        try {
             for (Issue issue : issues) {
                 if (this.delete) {
                     super.bugService.deleteIssue(issue.getId());

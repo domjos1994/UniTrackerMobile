@@ -23,14 +23,22 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 
+import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.helper.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public final class IssueDescriptionsFragment extends AbstractFragment {
+    private EditText txtIssueDescriptionsDescription;
+
+    private View root;
+    private Issue issue;
+    private boolean editMode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,23 +47,51 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.issue_fragment_descriptions, container, false);
+        this.root = inflater.inflate(R.layout.issue_fragment_descriptions, container, false);
 
-        return root;
+        this.txtIssueDescriptionsDescription = this.root.findViewById(R.id.txtIssueDescriptionsDescription);
+
+        this.initData();
+        this.manageControls(this.editMode);
+        this.initValidator();
+        return this.root;
     }
 
     @Override
     public void setObject(DescriptionObject descriptionObject) {
-
+        this.issue = (Issue) descriptionObject;
     }
 
     @Override
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
-        return null;
+        Issue issue = (Issue) descriptionObject;
+
+        if (this.root != null) {
+            issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());
+        }
+        return issue;
     }
 
     @Override
-    public void manageControls(boolean editMode, boolean reset, boolean selected) {
+    public void manageControls(boolean editMode) {
+        this.editMode = editMode;
 
+        if (this.root != null) {
+            this.txtIssueDescriptionsDescription.setEnabled(this.editMode);
+        }
+    }
+
+    @Override
+    protected void initData() {
+        this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+    }
+
+    @Override
+    public Validator initValidator() {
+        Validator validator = new Validator(this.getContext());
+        if (this.root != null) {
+            validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
+        }
+        return validator;
     }
 }

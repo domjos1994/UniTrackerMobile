@@ -229,6 +229,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     }
 
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
+
 
     private void initDatabase(SQLiteDatabase db) {
         try {

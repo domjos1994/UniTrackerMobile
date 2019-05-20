@@ -209,6 +209,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     }
 
+    @Override
+    public List<String> getCategories(String pid) throws Exception {
+        return null;
+    }
+
     private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {
         Project<String> project = new Project<>();
         project.setId(jsonObject.getString("id"));

@@ -16,21 +16,8 @@
   ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <ListView
-        android:id="@+id/lvIssueAttachments"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/cmdIssueAttachmentAdd" />
-
-    <ImageButton
-        android:id="@+id/cmdIssueAttachmentAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:srcCompat="@drawable/ic_file_upload_black_24dp" />
-</RelativeLayout>
+<paths>
+    <external-path
+        name="external_files"
+        path="." />
+</paths>

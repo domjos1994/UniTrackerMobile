@@ -23,18 +23,22 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.tasks.issues.GetIssueTask;
+import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.PagerAdapter;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 
-public class IssueActivity extends AbstractActivity {
+public final class IssueActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private PagerAdapter pagerAdapter;
-    private String id;
+    private String id, pid;
+    private Issue issue;
+    private IBugService bugService;
 
     public IssueActivity() {
         super(R.layout.issue_activity);
@@ -47,15 +51,19 @@ public class IssueActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
-        Intent intent = this.getIntent();
-        this.id = intent.getStringExtra("id");
-        boolean newItem = this.id.equals("");
+        try {
+            Intent intent = this.getIntent();
+            this.id = intent.getStringExtra("id");
+            this.pid = intent.getStringExtra("pid");
+            this.bugService = Helper.getCurrentBugService(IssueActivity.this);
+            this.issue = new GetIssueTask(IssueActivity.this, this.bugService).execute(this.id).get();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, IssueActivity.this);
+        }
 
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
-        this.navigationView.getMenu().getItem(0).setVisible(false);
-        this.navigationView.getMenu().getItem(2).setVisible(false);
-        this.navigationView.getMenu().getItem(1).setVisible(newItem);
+        this.hideFieldsOfNavView();
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.navEdit:
@@ -66,10 +74,18 @@ public class IssueActivity extends AbstractActivity {
                     this.finish();
                     break;
                 case R.id.navSave:
-                    Issue issue = (Issue) this.pagerAdapter.getObject();
-                    this.manageControls(false, true, false);
-                    this.setResult(RESULT_OK);
-                    this.finish();
+                    try {
+                        if (this.pagerAdapter.validate()) {
+                            this.issue = (Issue) this.pagerAdapter.getObject();
+                            this.issue.setId(this.id.equals("") ? null : this.id);
+                            new IssuesTask(IssueActivity.this, this.bugService, pid, false).execute(this.issue).get();
+                            this.manageControls(false, true, false);
+                            this.setResult(RESULT_OK);
+                            this.finish();
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, this.getApplicationContext());
+                    }
                     break;
             }
             return false;
@@ -81,12 +97,8 @@ public class IssueActivity extends AbstractActivity {
         viewPager.setAdapter(this.pagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
-
-        try {
-            this.pagerAdapter.setObject(new GetIssueTask(IssueActivity.this, Helper.getCurrentBugService(IssueActivity.this)).execute(this.id).get());
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, IssueActivity.this);
-        }
+        this.pagerAdapter.setObject(this.issue);
+        this.pagerAdapter.setPid(pid);
     }
 
 
@@ -96,7 +108,12 @@ public class IssueActivity extends AbstractActivity {
         this.navigationView.getMenu().getItem(3).setEnabled(editMode);
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
 
-        this.pagerAdapter.manageControls(editMode, reset, selected);
+        this.pagerAdapter.manageControls(editMode);
+    }
 
+    private void hideFieldsOfNavView() {
+        this.navigationView.getMenu().getItem(0).setVisible(false);
+        this.navigationView.getMenu().getItem(2).setVisible(false);
+        this.navigationView.getMenu().getItem(1).setVisible(!this.id.equals(""));
     }
 }
