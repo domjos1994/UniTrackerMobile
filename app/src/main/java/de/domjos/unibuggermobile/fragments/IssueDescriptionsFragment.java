@@ -34,7 +34,7 @@ import de.domjos.unibuggermobile.helper.Validator;
  * A placeholder fragment containing a simple view.
  */
 public final class IssueDescriptionsFragment extends AbstractFragment {
-    private EditText txtIssueDescriptionsDescription;
+    private EditText txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
 
     private View root;
     private Issue issue;
@@ -50,6 +50,8 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         this.root = inflater.inflate(R.layout.issue_fragment_descriptions, container, false);
 
         this.txtIssueDescriptionsDescription = this.root.findViewById(R.id.txtIssueDescriptionsDescription);
+        this.txtIssueDescriptionsSteps = this.root.findViewById(R.id.txtIssueDescriptionsSteps);
+        this.txtIssueDescriptionsAdditional = this.root.findViewById(R.id.txtIssueDescriptionsAdditional);
 
         this.initData();
         this.manageControls(this.editMode);
@@ -68,6 +70,8 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
         if (this.root != null) {
             issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());
+            issue.setStepsToReproduce(this.txtIssueDescriptionsSteps.getText().toString());
+            issue.setAdditionalInformation(this.txtIssueDescriptionsAdditional.getText().toString());
         }
         return issue;
     }
@@ -78,12 +82,18 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
         if (this.root != null) {
             this.txtIssueDescriptionsDescription.setEnabled(this.editMode);
+            this.txtIssueDescriptionsAdditional.setEnabled(this.editMode);
+            this.txtIssueDescriptionsSteps.setEnabled(this.editMode);
         }
     }
 
     @Override
     protected void initData() {
-        this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+        if (this.issue != null) {
+            this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+            this.txtIssueDescriptionsSteps.setText(this.issue.getStepsToReproduce());
+            this.txtIssueDescriptionsAdditional.setText(this.issue.getAdditionalInformation());
+        }
     }
 
     @Override

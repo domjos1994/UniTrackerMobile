@@ -75,6 +75,7 @@
     <string name="issues_general_category">Kategorie</string>
     <string name="issues_general_version">Produktversion</string>
     <string name="issues_general_targetVersion">Zielversion</string>
+    <string name="issues_general_tags">Tags</string>
     <string name="issues_general_fixedInVersion">Behoben in Version</string>
     <string name="issues_general_submitted">Meldungsdatum</string>
     <string name="issues_general_lastUpdated">Zuletzt aktualisiert</string>
@@ -143,6 +144,7 @@
         <item>50</item>
         <item>60</item>
     </integer-array>
+    <string name="issue_general_handler">Bearbeitung durch</string>
     <string name="issues_general_status">Status</string>
     <string-array name="issues_general_status_values">
         <item>Neu</item>
@@ -188,6 +190,8 @@
 
 
     <string name="issues_descriptions">Beschreibungen</string>
+    <string name="issues_descriptions_steps">Schritte zur Reproduktion</string>
+    <string name="issues_descriptions_additional">Zusätzliche Informationen</string>
     <string name="issues_notes">Notizen</string>
     <string name="issues_attachments">Anhänge</string>
 

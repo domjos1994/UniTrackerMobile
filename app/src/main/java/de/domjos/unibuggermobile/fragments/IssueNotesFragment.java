@@ -67,7 +67,7 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         this.lvIssueNotes = this.root.findViewById(R.id.lvIssuesNote);
         if (this.getContext() != null) {
-            this.notesAdapter = new ListAdapter(this.getContext(), R.mipmap.ic_launcher_round);
+            this.notesAdapter = new ListAdapter(this.getContext(), R.drawable.ic_note_black_24dp);
             this.lvIssueNotes.setAdapter(this.notesAdapter);
             this.notesAdapter.notifyDataSetChanged();
         }
@@ -186,7 +186,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     protected void initData() {
         this.notesAdapter.clear();
         for (Object note : this.issue.getNotes()) {
-            this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, (Note) note));
+            this.notesAdapter.add(new ListObject(this.getContext(), R.drawable.ic_note_black_24dp, (Note) note));
         }
     }
 

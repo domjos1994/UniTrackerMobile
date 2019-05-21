@@ -42,6 +42,7 @@ import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
 import de.domjos.unibuggerlibrary.tasks.issues.ListIssueTask;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
@@ -118,6 +119,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 settings.setCurrentProject(projectList.getItem(position));
+                reload();
             }
 
             @Override
@@ -141,7 +143,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     ListObject listObject = this.issueAdapter.getItem(position);
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
-                            this.bugService.deleteIssue(listObject.getDescriptionObject().getId());
+                            Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
+                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true).execute((Issue) listObject.getDescriptionObject()).get();
+                            reload();
                         }
                     }
                 }
@@ -192,7 +196,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.notifyDataSetChanged();
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
-            this.issueAdapter = new ListAdapter(this.getApplicationContext(), R.mipmap.ic_launcher_round);
+            this.issueAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_bug_report_black_24dp);
             this.lvMainIssues.setAdapter(this.issueAdapter);
             this.issueAdapter.notifyDataSetChanged();
 
@@ -227,9 +231,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             this.issueAdapter.clear();
             if (this.permissions.listIssues()) {
-                ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId());
-                for (Object issue : listIssueTask.execute().get()) {
-                    this.issueAdapter.add(new ListObject(MainActivity.this, R.mipmap.ic_launcher_round, (Issue) issue));
+                Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
+                if (project != null) {
+                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId());
+                    for (Object issue : listIssueTask.execute().get()) {
+                        this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                    }
                 }
             }
         } catch (Exception ex) {

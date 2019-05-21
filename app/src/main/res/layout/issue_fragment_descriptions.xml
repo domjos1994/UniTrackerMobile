@@ -36,5 +36,27 @@
                 android:layout_width="0dp"
                 tools:ignore="Autofill" />
         </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtIssueDescriptionsSteps"
+                android:hint="@string/issues_descriptions_steps"
+                android:inputType="textMultiLine"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:id="@+id/txtIssueDescriptionsAdditional"
+                android:hint="@string/issues_descriptions_additional"
+                android:inputType="textMultiLine"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
     </TableLayout>
 </ScrollView>

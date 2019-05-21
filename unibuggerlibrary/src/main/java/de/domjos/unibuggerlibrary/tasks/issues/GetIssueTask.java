@@ -43,15 +43,19 @@ public class GetIssueTask extends AbstractTask<String, Void, Issue> {
 
     @Override
     protected Issue doInBackground(String[] objects) {
-        try {
-            return super.bugService.getIssue(objects[0]);
-        } catch (Exception ex) {
+        if (!objects[0].equals("")) {
             try {
-                return super.bugService.getIssue(Long.parseLong(objects[0]));
-            } catch (Exception e) {
-                super.activity.runOnUiThread(() -> MessageHelper.printException(e, super.activity));
-                return null;
+                return super.bugService.getIssue(objects[0]);
+            } catch (Exception ex) {
+                try {
+                    return super.bugService.getIssue(Long.parseLong(objects[0]));
+                } catch (Exception e) {
+                    super.activity.runOnUiThread(() -> MessageHelper.printException(e, super.activity));
+                    return null;
+                }
             }
+        } else {
+            return null;
         }
     }
 }

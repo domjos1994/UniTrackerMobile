@@ -20,6 +20,7 @@ package de.domjos.unibuggerlibrary.model.issues;
 
 import java.util.AbstractMap;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,11 @@ public class Issue<T> extends DescriptionObject<T> {
     private String targetVersion;
     private List<Note<T>> notes;
     private List<Attachment<T>> attachments;
+    private Map<CustomField<T>, String> customFields;
+    private User<T> handler;
+    private String tags;
+    private String stepsToReproduce;
+    private String additionalInformation;
 
     public Issue() {
         super();
@@ -55,6 +61,11 @@ public class Issue<T> extends DescriptionObject<T> {
         this.dueDate = null;
         this.notes = new LinkedList<>();
         this.attachments = new LinkedList<>();
+        this.customFields = new LinkedHashMap<>();
+        this.handler = null;
+        this.tags = "";
+        this.stepsToReproduce = "";
+        this.additionalInformation = "";
     }
 
     public String getCategory() {
@@ -167,5 +178,41 @@ public class Issue<T> extends DescriptionObject<T> {
 
     public List<Attachment<T>> getAttachments() {
         return this.attachments;
+    }
+
+    public Map<CustomField<T>, String> getCustomFields() {
+        return customFields;
+    }
+
+    public User<T> getHandler() {
+        return handler;
+    }
+
+    public void setHandler(User<T> handler) {
+        this.handler = handler;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getStepsToReproduce() {
+        return stepsToReproduce;
+    }
+
+    public void setStepsToReproduce(String stepsToReproduce) {
+        this.stepsToReproduce = stepsToReproduce;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 }

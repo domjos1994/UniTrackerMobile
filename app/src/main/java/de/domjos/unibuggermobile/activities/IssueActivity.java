@@ -22,8 +22,10 @@ import android.content.Intent;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.tasks.issues.GetIssueTask;
 import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
@@ -46,7 +48,6 @@ public final class IssueActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
     }
 
     @Override
@@ -57,6 +58,9 @@ public final class IssueActivity extends AbstractActivity {
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
             this.issue = new GetIssueTask(IssueActivity.this, this.bugService).execute(this.id).get();
+            if (this.issue == null) {
+                this.issue = new Issue();
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, IssueActivity.this);
         }
@@ -104,11 +108,16 @@ public final class IssueActivity extends AbstractActivity {
 
     @Override
     protected void manageControls(boolean editMode, boolean reset, boolean selected) {
-        this.navigationView.getMenu().getItem(1).setEnabled(!editMode);
-        this.navigationView.getMenu().getItem(3).setEnabled(editMode);
-        this.navigationView.getMenu().getItem(4).setEnabled(editMode);
+        IFunctionImplemented iFunctionImplemented = Helper.getCurrentPermissions(this.getApplicationContext());
+        boolean isVisible = this.navigationView.getMenu().getItem(1).isVisible();
+        boolean canUpdate = iFunctionImplemented.updateIssues();
+        this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);
 
-        this.pagerAdapter.manageControls(editMode);
+        this.navigationView.getMenu().getItem(1).setEnabled(!editMode);
+        this.navigationView.getMenu().getItem(3).setEnabled(editMode || !isVisible);
+        this.navigationView.getMenu().getItem(4).setEnabled(editMode || !isVisible);
+
+        this.pagerAdapter.manageControls(editMode || !isVisible);
     }
 
     private void hideFieldsOfNavView() {

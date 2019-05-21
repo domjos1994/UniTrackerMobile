@@ -21,6 +21,8 @@ package de.domjos.unibuggerlibrary.interfaces;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Tag;
+import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 
@@ -55,4 +57,8 @@ public interface IBugService<T> {
     void deleteIssue(T id) throws Exception;
 
     List<String> getCategories(T pid) throws Exception;
+
+    List<User<T>> getUsers(T pid) throws Exception;
+
+    List<Tag<T>> getTags() throws Exception;
 }

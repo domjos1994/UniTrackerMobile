@@ -21,11 +21,14 @@ package de.domjos.unibuggerlibrary.services.tracker;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Tag;
+import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -34,6 +37,7 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "name,values(id,name,color(id,background,foreground),description)";
+    private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
 
     public YouTrack(Authentication authentication) {
         super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
@@ -191,12 +195,60 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<Issue<String>> getIssues(String pid) throws Exception {
-        return null;
+        List<Issue<String>> issues = new LinkedList<>();
+        Project<String> project = this.getProject(pid);
+        if (project != null) {
+            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + "&fields=id,summary,description");
+            if (status == 200 || status == 201) {
+                JSONArray response = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= response.length() - 1; i++) {
+                    JSONObject jsonObject = response.getJSONObject(i);
+                    Issue<String> issue = new Issue<>();
+                    issue.setId(jsonObject.getString("id"));
+                    issue.setDescription(jsonObject.getString("description"));
+                    issue.setTitle(jsonObject.getString("summary"));
+                    issues.add(issue);
+                }
+            }
+        }
+        return issues;
     }
 
     @Override
     public Issue<String> getIssue(String id) throws Exception {
-        return null;
+        Issue<String> issue = new Issue<>();
+        int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            issue.setId(jsonObject.getString("id"));
+            issue.setTitle(jsonObject.getString("summary"));
+            issue.setDescription(jsonObject.getString("description"));
+
+            if (jsonObject.has("created")) {
+                long created = jsonObject.getLong("created");
+                if (created != 0) {
+                    Date date = new Date();
+                    date.setTime(created);
+                    issue.setSubmitDate(date);
+                }
+            }
+            if (jsonObject.has("updated")) {
+                long updated = jsonObject.getLong("updated");
+                if (updated != 0) {
+                    Date date = new Date();
+                    date.setTime(updated);
+                    issue.setLastUpdated(date);
+                }
+            }
+
+            JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
+            for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                JSONObject customFieldObject = customFieldArray.getJSONObject(i);
+                JSONObject fieldDescription = customFieldObject.getJSONObject("projectCustomField");
+                JSONObject valueObject = customFieldObject.getJSONObject("value");
+            }
+        }
+        return issue;
     }
 
     @Override
@@ -211,6 +263,16 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<String> getCategories(String pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<User<String>> getUsers(String pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<Tag<String>> getTags() throws Exception {
         return null;
     }
 

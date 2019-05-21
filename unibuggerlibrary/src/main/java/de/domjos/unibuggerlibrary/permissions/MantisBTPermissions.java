@@ -75,16 +75,16 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteIssues() {
-        return false;
+        return true;
     }
 }

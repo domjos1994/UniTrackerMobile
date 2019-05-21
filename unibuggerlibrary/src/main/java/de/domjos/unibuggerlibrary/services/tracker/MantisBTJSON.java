@@ -31,6 +31,8 @@ import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Tag;
+import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -242,6 +244,16 @@ public final class MantisBTJSON extends JSONEngine implements IBugService<Long> 
 
     @Override
     public List<String> getCategories(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<User<Long>> getUsers(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<Tag<Long>> getTags() throws Exception {
         return null;
     }
 

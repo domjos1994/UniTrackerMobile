@@ -70,7 +70,7 @@ public class YoutrackPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listIssues() {
-        return false;
+        return true;
     }
 
     @Override

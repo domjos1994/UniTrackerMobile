@@ -19,11 +19,15 @@
 package de.domjos.unibuggermobile.adapter;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.DynamicDrawableSpan;
+import android.text.style.ImageSpan;
 
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -40,11 +44,7 @@ import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
  * one of the sections/tabs/pages.
  */
 public class PagerAdapter extends FragmentPagerAdapter {
-
-    @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.issues_general, R.string.issues_descriptions, R.string.issues_notes, R.string.issues_attachments, R.string.issues_custom};
     private final Context context;
-
     private AbstractFragment general, notes, descriptions, attachments, custom;
 
     public PagerAdapter(Context context, FragmentManager fm) {
@@ -105,14 +105,40 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     public boolean validate() {
         return this.general.initValidator().getState() && this.descriptions.initValidator().getState()
-                && this.attachments.initValidator().getState() && this.notes.initValidator().getState()
-                && this.custom.initValidator().getState();
+                && this.attachments.initValidator().getState() && this.notes.initValidator().getState();
     }
 
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        return this.context.getResources().getString(PagerAdapter.TAB_TITLES[position]);
+        Drawable drawable;
+
+        switch (position) {
+            case 0:
+                drawable = context.getResources().getDrawable(R.drawable.ic_bug_report_black_24dp);
+                break;
+            case 1:
+                drawable = context.getResources().getDrawable(R.drawable.ic_description_black_24dp);
+                break;
+            case 2:
+                drawable = context.getResources().getDrawable(R.drawable.ic_note_black_24dp);
+                break;
+            case 3:
+                drawable = context.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp);
+                break;
+            default:
+                drawable = context.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
+                break;
+        }
+
+        SpannableStringBuilder sb = new SpannableStringBuilder("   ");
+        try {
+            drawable.setBounds(5, 5, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+            ImageSpan span = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE);
+            sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        } catch (Exception ignored) {
+        }
+        return sb;
     }
 
     @Override

@@ -26,12 +26,16 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Vector;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Tag;
+import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -221,7 +225,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     Issue<Long> issue = new Issue<>();
                     SoapObject soapObject = (SoapObject) vector.get(i);
                     issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
-                    issue.setDescription(soapObject.getPropertyAsString("status"));
+                    issue.setDescription(soapObject.getPropertyAsString("category"));
                     issue.setTitle(soapObject.getPropertyAsString("summary"));
                     issues.add(issue);
                 }
@@ -246,7 +250,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             issue.setDescription(soapObject.getPropertyAsString("description"));
             issue.setCategory(soapObject.getPropertyAsString("category"));
             issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
-            issue.setVersion(soapObject.getPropertyAsString("version"));
+            if (soapObject.hasProperty("version")) {
+                issue.setVersion(soapObject.getPropertyAsString("version"));
+            }
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
             if (soapObject.hasProperty("date_submitted")) {
                 issue.setSubmitDate(sdf.parse(soapObject.getPropertyAsString("date_submitted")));
@@ -297,6 +303,24 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             if (soapObject.hasProperty("resolution")) {
                 SoapObject resolutionObject = (SoapObject) soapObject.getProperty("resolution");
                 issue.setReproducibility(Integer.parseInt(resolutionObject.getPropertyAsString("id")), resolutionObject.getPropertyAsString("name"));
+            }
+
+            if (soapObject.hasProperty("steps_to_reproduce")) {
+                issue.setStepsToReproduce(soapObject.getPropertyAsString("steps_to_reproduce"));
+            }
+
+            if (soapObject.hasProperty("additional_information")) {
+                issue.setAdditionalInformation(soapObject.getPropertyAsString("additional_information"));
+            }
+
+            if (soapObject.hasProperty("handler")) {
+                SoapObject handlerObject = (SoapObject) soapObject.getProperty("handler");
+                User<Long> user = new User<>();
+                user.setId(Long.parseLong(handlerObject.getPropertyAsString("id")));
+                user.setTitle(handlerObject.getPropertyAsString("name"));
+                user.setRealName(handlerObject.getPropertyAsString("real_name"));
+                user.setEmail(handlerObject.getPropertyAsString("email"));
+                issue.setHandler(user);
             }
 
             if (soapObject.hasProperty("notes")) {
@@ -358,7 +382,29 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
 
             if (soapObject.hasProperty("custom_fields")) {
+                SoapObject projectObject = (SoapObject) soapObject.getProperty("project");
+                List<CustomField<Long>> customFields = this.getCustomFields(Long.parseLong(projectObject.getPropertyAsString("id")));
+                Vector vector = (Vector) soapObject.getProperty("custom_fields");
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    SoapObject fieldObject = (SoapObject) vector.get(i);
+                    SoapObject fieldData = (SoapObject) fieldObject.getProperty("field");
+                    Long fieldId = Long.parseLong(fieldData.getPropertyAsString("id"));
+                    String value = fieldObject.getPropertyAsString("value");
 
+                    for (CustomField<Long> customField : customFields) {
+                        if (customField.getId().equals(fieldId)) {
+                            issue.getCustomFields().put(customField, value);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (soapObject.hasProperty("tags")) {
+                Vector vector = (Vector) soapObject.getProperty("tags");
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    issue.setTags(issue.getTags() + ((SoapObject) vector.get(i)).getPropertyAsString("name") + ", ");
+                }
             }
         }
 
@@ -378,9 +424,14 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             request = new SoapObject(super.soapPath, action);
         }
         SoapObject issueObject = new SoapObject(NAMESPACE, "IssueData");
+        if (action.equals("mc_issue_add")) {
+            issueObject.addProperty("id", 0);
+        }
         issueObject.addProperty("category", issue.getCategory());
         issueObject.addProperty("summary", issue.getTitle());
         issueObject.addProperty("description", issue.getDescription());
+        issueObject.addProperty("steps_to_reproduce", issue.getStepsToReproduce());
+        issueObject.addProperty("additional_information", issue.getAdditionalInformation());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
         if (issue.getDueDate() != null) {
             issueObject.addProperty("due_date", sdf.format(issue.getDueDate()));
@@ -436,6 +487,45 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         resolutionObject.addProperty("name", issue.getResolution().getValue());
         issueObject.addProperty("resolution", resolutionObject);
 
+        if (issue.getHandler() != null) {
+            SoapObject handlerObject = new SoapObject(NAMESPACE, "AccountData");
+            handlerObject.addProperty("id", issue.getHandler().getId());
+            handlerObject.addProperty("name", issue.getHandler().getTitle());
+            handlerObject.addProperty("real_name", issue.getHandler().getRealName());
+            handlerObject.addProperty("email", issue.getHandler().getEmail());
+            issueObject.addProperty("handler", handlerObject);
+        }
+
+        if (!issue.getCustomFields().isEmpty()) {
+            Vector<SoapObject> customFieldVector = new Vector<>();
+            for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
+                SoapObject soapObject = new SoapObject(NAMESPACE, "CustomFieldValueForIssueData");
+                SoapObject fieldObject = new SoapObject(NAMESPACE, "ObjectRef");
+                fieldObject.addProperty("id", entry.getKey().getId());
+                fieldObject.addProperty("name", entry.getKey().getTitle());
+                soapObject.addProperty("field", fieldObject);
+                soapObject.addProperty("value", entry.getValue());
+                customFieldVector.add(soapObject);
+            }
+            issueObject.addProperty("custom_fields", customFieldVector);
+        }
+
+        if (!issue.getTags().isEmpty()) {
+            List<Tag<Long>> tags = this.getTags();
+            Vector<SoapObject> tagVector = new Vector<>();
+            for (String strTag : issue.getTags().split(",")) {
+                for (Tag tag : tags) {
+                    if (strTag.trim().equals(tag.getTitle())) {
+                        SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
+                        tagObject.addProperty("id", tag.getId());
+                        tagObject.addProperty("name", tag.getTitle());
+                        tagVector.add(tagObject);
+                    }
+                }
+            }
+            issueObject.addProperty("tags", tagVector);
+        }
+
         request.addProperty("issue", issueObject);
         Object object = this.executeAction(request, action, true);
         object = this.getResult(object);
@@ -444,7 +534,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         if (issue.getId() != null) {
             id = Long.parseLong(String.valueOf(issue.getId()));
         } else {
-            id = (Long) object;
+            id = Long.parseLong(String.valueOf(object));
         }
 
         List<Note<Long>> oldNotes = new LinkedList<>();
@@ -549,6 +639,82 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
         return categories;
     }
+
+    @Override
+    public List<User<Long>> getUsers(Long pid) throws Exception {
+        List<User<Long>> users = new LinkedList<>();
+        SoapObject request = new SoapObject(NAMESPACE, "mc_project_get_users");
+        request.addProperty("project_id", pid);
+        request.addProperty("access", 0);
+        Object object = this.executeAction(request, "mc_project_get_users", true);
+        object = this.getResult(object);
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                SoapObject soapObject = (SoapObject) vector.get(i);
+                User<Long> user = new User<>();
+                user.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
+                user.setTitle(soapObject.getPropertyAsString("name"));
+                user.setRealName(soapObject.getPropertyAsString("real_name"));
+                user.setEmail(soapObject.getPropertyAsString("email"));
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
+    @Override
+    public List<Tag<Long>> getTags() throws Exception {
+        List<Tag<Long>> tags = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_tag_get_all");
+        request.addProperty("page_number", 1);
+        request.addProperty("per_page", -1);
+        Object object = this.executeAction(request, "mc_tag_get_all", true);
+        object = this.getResult(object);
+        SoapObject soapObject = (SoapObject) object;
+        Vector vector = (Vector) soapObject.getProperty("results");
+        for (int i = 0; i <= vector.size() - 1; i++) {
+            SoapObject tagObject = (SoapObject) vector.get(i);
+            Tag<Long> tag = new Tag<>();
+            tag.setId(Long.parseLong(tagObject.getPropertyAsString("id")));
+            tag.setTitle(tagObject.getPropertyAsString("name"));
+            tag.setDescription(tagObject.getPropertyAsString("description"));
+            tags.add(tag);
+        }
+
+        return tags;
+    }
+
+    private List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+        List<CustomField<Long>> customFields = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_custom_fields");
+        request.addProperty("project_id", pid);
+        Object object = this.executeAction(request, "mc_project_get_custom_fields", true);
+        object = this.getResult(object);
+
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                Object field = vector.get(i);
+                if (field instanceof SoapObject) {
+                    CustomField<Long> customField = new CustomField<>();
+                    SoapObject fieldObject = (SoapObject) field;
+                    SoapObject fld = (SoapObject) fieldObject.getProperty("field");
+                    customField.setId(Long.parseLong(fld.getPropertyAsString("id")));
+                    customField.setTitle(fld.getPropertyAsString("name"));
+                    customField.setType(Integer.parseInt(fieldObject.getPropertyAsString("type")));
+                    customField.setPossibleValues(fieldObject.getPropertyAsString("possible_values"));
+                    customField.setDefaultValue(fieldObject.getPropertyAsString("default_value"));
+                    customField.setMinLength(Integer.parseInt(fieldObject.getPropertyAsString("length_min")));
+                    customField.setMaxLength(Integer.parseInt(fieldObject.getPropertyAsString("length_max")));
+                    customFields.add(customField);
+                }
+            }
+        }
+        return customFields;
+    }
+
+
 
     private Object getResult(Object object) {
         if (object instanceof SoapFault) {

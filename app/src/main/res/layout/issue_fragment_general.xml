@@ -124,6 +124,19 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:text="@string/issue_general_handler" />
+
+            <Spinner
+                android:id="@+id/spIssueGeneralHandler"
+                android:layout_width="0dp"
+                android:layout_weight="7" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="3"
                 android:text="@string/issues_general_resolution" />
 
             <Spinner
@@ -189,6 +202,16 @@
                 android:id="@+id/txtIssueGeneralDueDate"
                 android:hint="@string/issues_general_dueDate"
                 android:inputType="datetime"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
+        <TableRow>
+
+            <MultiAutoCompleteTextView
+                android:id="@+id/txtIssueGeneralTags"
+                android:hint="@string/issues_general_tags"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 tools:ignore="Autofill" />
