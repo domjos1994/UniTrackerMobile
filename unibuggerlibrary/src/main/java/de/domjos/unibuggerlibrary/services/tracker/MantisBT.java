@@ -355,6 +355,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 }
                 issue.getAttachments().set(i, attachment);
             }
+
+
+            if (soapObject.hasProperty("custom_fields")) {
+
+            }
         }
 
         return issue;

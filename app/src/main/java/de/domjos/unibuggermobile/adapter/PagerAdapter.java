@@ -30,6 +30,7 @@ import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.fragments.AbstractFragment;
 import de.domjos.unibuggermobile.fragments.IssueAttachmentsFragment;
+import de.domjos.unibuggermobile.fragments.IssueCustomFragment;
 import de.domjos.unibuggermobile.fragments.IssueDescriptionsFragment;
 import de.domjos.unibuggermobile.fragments.IssueGeneralFragment;
 import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
@@ -41,10 +42,10 @@ import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
 public class PagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.issues_general, R.string.issues_descriptions, R.string.issues_notes, R.string.issues_attachments};
+    private static final int[] TAB_TITLES = new int[]{R.string.issues_general, R.string.issues_descriptions, R.string.issues_notes, R.string.issues_attachments, R.string.issues_custom};
     private final Context context;
 
-    private AbstractFragment general, notes, descriptions, attachments;
+    private AbstractFragment general, notes, descriptions, attachments, custom;
 
     public PagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -53,6 +54,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.notes = new IssueNotesFragment();
         this.descriptions = new IssueDescriptionsFragment();
         this.attachments = new IssueAttachmentsFragment();
+        this.custom = new IssueCustomFragment();
     }
 
     @Override
@@ -66,6 +68,8 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 return this.notes;
             case 3:
                 return this.attachments;
+            case 4:
+                return this.custom;
             default:
                 return null;
         }
@@ -80,6 +84,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions.manageControls(editMode);
         this.notes.manageControls(editMode);
         this.attachments.manageControls(editMode);
+        this.custom.manageControls(editMode);
     }
 
     public void setObject(DescriptionObject object) {
@@ -87,17 +92,21 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions.setObject(object);
         this.notes.setObject(object);
         this.attachments.setObject(object);
+        this.custom.setObject(object);
     }
 
     public DescriptionObject getObject() {
         DescriptionObject object = this.general.getObject(new Issue());
         object = this.descriptions.getObject(object);
         object = this.notes.getObject(object);
-        return this.attachments.getObject(object);
+        object = this.attachments.getObject(object);
+        return this.custom.getObject(object);
     }
 
     public boolean validate() {
-        return this.general.initValidator().getState() && this.descriptions.initValidator().getState() && this.attachments.initValidator().getState() && this.notes.initValidator().getState();
+        return this.general.initValidator().getState() && this.descriptions.initValidator().getState()
+                && this.attachments.initValidator().getState() && this.notes.initValidator().getState()
+                && this.custom.initValidator().getState();
     }
 
     @Nullable
@@ -108,6 +117,6 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 5;
     }
 }
