@@ -27,7 +27,9 @@ import android.widget.EditText;
 
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.helper.Validator;
 
 /**
@@ -53,6 +55,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         this.txtIssueDescriptionsSteps = this.root.findViewById(R.id.txtIssueDescriptionsSteps);
         this.txtIssueDescriptionsAdditional = this.root.findViewById(R.id.txtIssueDescriptionsAdditional);
 
+        this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
         this.initValidator();
@@ -103,5 +106,16 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
             validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
         }
         return validator;
+    }
+
+    @Override
+    public void updateUITrackerSpecific() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+
+        switch (authentication.getTracker()) {
+            case MantisBT:
+
+                break;
+        }
     }
 }

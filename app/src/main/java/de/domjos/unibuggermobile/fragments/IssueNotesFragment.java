@@ -35,7 +35,9 @@ import java.util.Locale;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.helper.Validator;
@@ -146,6 +148,7 @@ public final class IssueNotesFragment extends AbstractFragment {
             this.manageNoteControls(false, true, false);
         });
 
+        this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
         return this.root;
@@ -199,10 +202,21 @@ public final class IssueNotesFragment extends AbstractFragment {
         return validator;
     }
 
+    @Override
+    public void updateUITrackerSpecific() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+
+        switch (authentication.getTracker()) {
+            case MantisBT:
+
+                break;
+        }
+    }
+
     private void noteToFields() {
         if (this.currentNote != null) {
             this.txtIssueNotesText.setText(this.currentNote.getDescription());
-            this.setValueOfEnum(Integer.parseInt(this.currentNote.getState().getKey().toString()), R.array.issues_general_view_ids, this.spIssueNotesView);
+            this.setValueOfEnum(Integer.parseInt(this.currentNote.getState().getKey().toString()), R.array.issues_general_view_values, this.spIssueNotesView);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.currentNote.getLastUpdated() != null) {
@@ -218,7 +232,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private void fieldsToNote() {
         if (this.currentNote != null) {
             this.currentNote.setDescription(this.txtIssueNotesText.getText().toString());
-            this.currentNote.setState(this.getIdOfEnum(this.spIssueNotesView, R.array.issues_general_view_ids), this.spIssueNotesView.getSelectedItem().toString());
+            this.currentNote.setState(this.getIdOfEnum(this.spIssueNotesView, R.array.issues_general_view_values), this.spIssueNotesView.getSelectedItem().toString());
             if (this.currentNote.getDescription().length() > 50) {
                 this.currentNote.setTitle(this.currentNote.getDescription().substring(0, 50));
             } else {

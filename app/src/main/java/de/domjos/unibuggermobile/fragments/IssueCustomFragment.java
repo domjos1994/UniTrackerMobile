@@ -42,7 +42,9 @@ import java.util.Map;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.custom.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Validator;
 
@@ -65,6 +67,7 @@ public final class IssueCustomFragment extends AbstractFragment {
 
         this.tblCustomFields = this.root.findViewById(R.id.tblCustomFields);
 
+        this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
         return root;
@@ -269,5 +272,16 @@ public final class IssueCustomFragment extends AbstractFragment {
     @Override
     public Validator initValidator() {
         return null;
+    }
+
+    @Override
+    public void updateUITrackerSpecific() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+
+        switch (authentication.getTracker()) {
+            case MantisBT:
+
+                break;
+        }
     }
 }

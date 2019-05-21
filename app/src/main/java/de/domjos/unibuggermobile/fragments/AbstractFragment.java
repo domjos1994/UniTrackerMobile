@@ -35,6 +35,8 @@ public abstract class AbstractFragment extends Fragment {
 
     public abstract Validator initValidator();
 
+    public abstract void updateUITrackerSpecific();
+
     public void setPid(String pid) {
 
     }

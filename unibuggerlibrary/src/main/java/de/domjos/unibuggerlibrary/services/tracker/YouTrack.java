@@ -245,7 +245,23 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             for (int i = 0; i <= customFieldArray.length() - 1; i++) {
                 JSONObject customFieldObject = customFieldArray.getJSONObject(i);
                 JSONObject fieldDescription = customFieldObject.getJSONObject("projectCustomField");
-                JSONObject valueObject = customFieldObject.getJSONObject("value");
+
+                if (customFieldObject.has("value")) {
+                    if (!customFieldObject.isNull("value")) {
+                        if (customFieldObject.get("value") instanceof JSONObject) {
+                            JSONObject valueObject = customFieldObject.getJSONObject("value");
+
+                            if (fieldDescription.has("name")) {
+                                String name = fieldDescription.getString("name");
+                                switch (name) {
+                                    case "Priority":
+
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         return issue;
@@ -263,17 +279,23 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<String> getCategories(String pid) throws Exception {
-        return null;
+        List<String> categories = new LinkedList<>();
+
+        return categories;
     }
 
     @Override
     public List<User<String>> getUsers(String pid) throws Exception {
-        return null;
+        List<User<String>> users = new LinkedList<>();
+
+        return users;
     }
 
     @Override
     public List<Tag<String>> getTags() throws Exception {
-        return null;
+        List<Tag<String>> tags = new LinkedList<>();
+
+        return tags;
     }
 
     private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {

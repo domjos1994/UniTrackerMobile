@@ -35,8 +35,10 @@ import java.io.InputStream;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.helper.Validator;
@@ -109,6 +111,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             startActivityForResult(intent, PICKFILE_REQUEST_CODE);
         });
 
+        this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
         return this.root;
@@ -197,5 +200,16 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
         }
         return validator;
+    }
+
+    @Override
+    public void updateUITrackerSpecific() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+
+        switch (authentication.getTracker()) {
+            case MantisBT:
+
+                break;
+        }
     }
 }
