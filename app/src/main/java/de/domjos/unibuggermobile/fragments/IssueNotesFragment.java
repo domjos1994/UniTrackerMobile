@@ -40,6 +40,8 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
+import de.domjos.unibuggermobile.helper.ArrayHelper;
+import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
 
 /**
@@ -189,6 +191,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     protected void initData() {
         this.notesAdapter.clear();
         for (Object note : this.issue.getNotes()) {
+            this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
             this.notesAdapter.add(new ListObject(this.getContext(), R.drawable.ic_note_black_24dp, (Note) note));
         }
     }
@@ -216,7 +219,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private void noteToFields() {
         if (this.currentNote != null) {
             this.txtIssueNotesText.setText(this.currentNote.getDescription());
-            this.setValueOfEnum(Integer.parseInt(this.currentNote.getState().getKey().toString()), R.array.issues_general_view_values, this.spIssueNotesView);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.currentNote.getState().getKey().toString()), "issues_general_view_values", this.spIssueNotesView);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.currentNote.getLastUpdated() != null) {
@@ -232,29 +235,11 @@ public final class IssueNotesFragment extends AbstractFragment {
     private void fieldsToNote() {
         if (this.currentNote != null) {
             this.currentNote.setDescription(this.txtIssueNotesText.getText().toString());
-            this.currentNote.setState(this.getIdOfEnum(this.spIssueNotesView, R.array.issues_general_view_values), this.spIssueNotesView.getSelectedItem().toString());
+            this.currentNote.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueNotesView, "issues_general_view_values"), this.spIssueNotesView.getSelectedItem().toString());
             if (this.currentNote.getDescription().length() > 50) {
                 this.currentNote.setTitle(this.currentNote.getDescription().substring(0, 50));
             } else {
                 this.currentNote.setTitle(this.currentNote.getDescription());
-            }
-        }
-    }
-
-    private int getIdOfEnum(Spinner spinner, int idResource) {
-        int[] array = this.getResources().getIntArray(idResource);
-        if (array.length - 1 >= spinner.getSelectedItemPosition()) {
-            return array[spinner.getSelectedItemPosition()];
-        }
-        return 0;
-    }
-
-    private void setValueOfEnum(int id, int idResource, Spinner spinner) {
-        int[] idArray = this.getResources().getIntArray(idResource);
-        for (int i = 0; i <= idArray.length - 1; i++) {
-            if (id == idArray[i]) {
-                spinner.setSelection(i);
-                break;
             }
         }
     }

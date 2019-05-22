@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TableRow;
 
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -37,6 +38,7 @@ import de.domjos.unibuggermobile.helper.Validator;
  */
 public final class IssueDescriptionsFragment extends AbstractFragment {
     private EditText txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
+    private TableRow rowIssueDescriptionsSteps, rowIssueDescriptionsAdditional;
 
     private View root;
     private Issue issue;
@@ -50,6 +52,9 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.root = inflater.inflate(R.layout.issue_fragment_descriptions, container, false);
+
+        this.rowIssueDescriptionsSteps = this.root.findViewById(R.id.rowDescriptionsSteps);
+        this.rowIssueDescriptionsAdditional = this.root.findViewById(R.id.rowDescriptionsAdditional);
 
         this.txtIssueDescriptionsDescription = this.root.findViewById(R.id.txtIssueDescriptionsDescription);
         this.txtIssueDescriptionsSteps = this.root.findViewById(R.id.txtIssueDescriptionsSteps);
@@ -111,10 +116,13 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     @Override
     public void updateUITrackerSpecific() {
         Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        this.rowIssueDescriptionsAdditional.setVisibility(View.GONE);
+        this.rowIssueDescriptionsSteps.setVisibility(View.GONE);
 
         switch (authentication.getTracker()) {
             case MantisBT:
-
+                this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
+                this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
                 break;
         }
     }

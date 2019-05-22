@@ -18,15 +18,21 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.util.Base64;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -37,10 +43,12 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "name,values(id,name,color(id,background,foreground),description)";
-    private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
+    private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,comments(id,text,created,updated),attachments(id,name,base64Content,url),customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
+    private Authentication authentication;
 
     public YouTrack(Authentication authentication) {
         super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
+        this.authentication = authentication;
     }
 
     @Override
@@ -246,21 +254,97 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 JSONObject customFieldObject = customFieldArray.getJSONObject(i);
                 JSONObject fieldDescription = customFieldObject.getJSONObject("projectCustomField");
 
-                if (customFieldObject.has("value")) {
-                    if (!customFieldObject.isNull("value")) {
-                        if (customFieldObject.get("value") instanceof JSONObject) {
-                            JSONObject valueObject = customFieldObject.getJSONObject("value");
+                if (fieldDescription.has("field")) {
+                    JSONObject fieldObject = fieldDescription.getJSONObject("field");
 
-                            if (fieldDescription.has("name")) {
-                                String name = fieldDescription.getString("name");
-                                switch (name) {
-                                    case "Priority":
-
-                                        break;
+                    String valueId = "", valueName = "";
+                    if (customFieldObject.has("value")) {
+                        if (!customFieldObject.isNull("value")) {
+                            if (customFieldObject.get("value") instanceof JSONObject) {
+                                JSONObject valueObject = customFieldObject.getJSONObject("value");
+                                valueId = valueObject.getString("id");
+                                valueName = valueObject.getString("name");
+                            } else if (customFieldObject.get("value") instanceof JSONArray) {
+                                JSONArray valueArray = customFieldObject.getJSONArray("value");
+                                if (valueArray.length() >= 1) {
+                                    JSONObject valueObject = valueArray.getJSONObject(0);
+                                    valueId = valueObject.getString("id");
+                                    valueName = valueObject.getString("name");
                                 }
                             }
                         }
                     }
+
+
+                    if (fieldObject.has("name")) {
+                        String name = fieldObject.getString("name");
+                        switch (name) {
+                            case "Priority":
+                                issue.setPriority(Integer.parseInt(valueId.split("-")[1]), valueName);
+                                break;
+                            case "Type":
+                                issue.setSeverity(Integer.parseInt(valueId.split("-")[1]), valueName);
+                                break;
+                            case "State":
+                                issue.setStatus(Integer.parseInt(valueId.split("-")[1]), valueName);
+                                break;
+                            case "Assignee":
+                                if (!valueName.equals("")) {
+                                    User<String> user = new User<>();
+                                    user.setTitle(valueName);
+                                    user.setId(valueId);
+                                    issue.setHandler(user);
+                                }
+                                break;
+                            case "Fix versions":
+                                issue.setFixedInVersion(valueName);
+                                break;
+                            case "Affected versions":
+                                issue.setVersion(valueName);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            if (jsonObject.has("comments")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("comments");
+                for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                    JSONObject commentObject = jsonArray.getJSONObject(i);
+                    Note<String> note = new Note<>();
+                    note.setId(commentObject.getString("id"));
+                    note.setDescription(commentObject.getString("text"));
+                    if (note.getDescription().length() >= 50) {
+                        note.setTitle(note.getDescription().substring(0, 50));
+                    } else {
+                        note.setTitle(note.getDescription());
+                    }
+                    if (commentObject.has("created")) {
+                        Date date = new Date();
+                        date.setTime(commentObject.getLong("created"));
+                        note.setSubmitDate(date);
+                    }
+                    if (commentObject.has("updated")) {
+                        if (!commentObject.isNull("updated")) {
+                            Date date = new Date();
+                            date.setTime(commentObject.getLong("updated"));
+                            note.setLastUpdated(date);
+                        }
+                    }
+                    issue.getNotes().add(note);
+                }
+            }
+
+            if (jsonObject.has("attachments")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("attachments");
+                for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                    JSONObject attachmentObject = jsonArray.getJSONObject(i);
+                    Attachment<String> attachment = new Attachment<>();
+                    attachment.setId(attachmentObject.getString("id"));
+                    attachment.setFilename(attachmentObject.getString("name"));
+                    attachment.setDownloadUrl(this.authentication.getServer() + attachmentObject.getString("url"));
+                    attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
+                    issue.getAttachments().add(attachment);
                 }
             }
         }
@@ -269,12 +353,114 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public String insertOrUpdateIssue(String pid, Issue<String> issue) throws Exception {
-        return null;
+        JSONObject jsonObject = new JSONObject();
+        JSONObject projectObject = new JSONObject();
+        projectObject.put("id", pid);
+        jsonObject.put("project", projectObject);
+        jsonObject.put("summary", issue.getTitle());
+        jsonObject.put("description", issue.getDescription());
+
+        Map<String, String> fields = this.getCustomFields();
+        Map<String, String> localized = this.getValuesFromLocalized();
+        JSONArray customFieldsArray = new JSONArray();
+        int i = 0;
+        customFieldsArray.put(i++, this.putCustomField(localized.get(issue.getPriority().getValue()), "Priority", fields.get("Priority"), "SingleEnumIssueCustomField"));
+        customFieldsArray.put(i++, this.putCustomField(localized.get(issue.getSeverity().getValue()), "Type", fields.get("Type"), "SingleEnumIssueCustomField"));
+        //customFieldsArray.put(2, this.putCustomField(localized.get(issue.getPriority().getValue()), "State", fields.get("State"), "StateProjectCustomField"));
+        if (issue.getHandler() != null) {
+            if (!issue.getHandler().getTitle().isEmpty()) {
+                customFieldsArray.put(i++, this.putCustomField(issue.getHandler().getTitle(), "Assignee", "", "SingleUserIssueCustomField"));
+            }
+        }
+        if (!issue.getFixedInVersion().isEmpty()) {
+            customFieldsArray.put(i++, this.putCustomField(issue.getFixedInVersion(), "Fix versions", "", "MultiVersionIssueCustomField"));
+        }
+        if (!issue.getVersion().isEmpty()) {
+            customFieldsArray.put(i, this.putCustomField(issue.getVersion(), "Affected versions", "", "MultiVersionIssueCustomField"));
+        }
+
+        jsonObject.put("customFields", customFieldsArray);
+
+        int status;
+        if (issue.getId() != null) {
+            status = this.executeRequest("/api/issues/" + issue.getId() + "?fields=idReadable", jsonObject.toString(), "POST");
+        } else {
+            status = this.executeRequest("/api/issues?fields=idReadable", jsonObject.toString(), "POST");
+        }
+
+        if (status == 200 || status == 201) {
+            JSONObject response = new JSONObject(this.getCurrentMessage());
+            return response.getString("idReadable");
+        }
+        return "";
+    }
+
+    private Map<String, String> getCustomFields() throws Exception {
+        Map<String, String> fields = new LinkedHashMap<>();
+        int status = this.executeRequest("/api/admin/customFieldSettings/customFields?fields=id,name");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                status = this.executeRequest("/api/admin/customFieldSettings/customFields/" + jsonObject.getString("id") + "/instances?fields=id,name");
+                if (status == 200 || status == 201) {
+                    JSONArray realId = new JSONArray(this.getCurrentMessage());
+                    if (realId.length() >= 1) {
+                        fields.put(jsonObject.getString("name"), realId.getJSONObject(0).getString("id"));
+                    }
+                }
+            }
+        }
+        return fields;
+    }
+
+    private Map<String, String> getValuesFromLocalized() throws Exception {
+        Map<String, String> fields = new LinkedHashMap<>();
+        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/enum?fields=values(name,localizedName)");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject valuesObject = jsonArray.getJSONObject(i);
+                JSONArray valuesArray = valuesObject.getJSONArray("values");
+                for (int j = 0; j <= valuesArray.length() - 1; j++) {
+                    JSONObject valueObject = valuesArray.getJSONObject(j);
+                    fields.put(valueObject.getString("localizedName"), valueObject.getString("name"));
+                }
+            }
+        }
+        return fields;
+    }
+
+    private JSONObject putCustomField(String valueId, String name, String id, String type) throws Exception {
+        JSONObject customObject = new JSONObject();
+        JSONObject valueObject = new JSONObject();
+        switch (type) {
+            case "SingleEnumIssueCustomField":
+                valueObject.put("name", valueId);
+                customObject.put("value", valueObject);
+                break;
+            case "SingleUserIssueCustomField":
+                valueObject.put("login", valueId);
+                customObject.put("value", valueObject);
+                break;
+            case "MultiVersionIssueCustomField":
+                JSONArray arrayObject = new JSONArray();
+                valueObject.put("name", valueId);
+                arrayObject.put(0, valueObject);
+                customObject.put("values", arrayObject);
+        }
+
+        customObject.put("name", name);
+        if (!id.isEmpty()) {
+            customObject.put("id", id);
+        }
+        customObject.put("$type", type);
+        return customObject;
     }
 
     @Override
     public void deleteIssue(String id) throws Exception {
-
+        this.deleteRequest("/api/issues/" + id);
     }
 
     @Override
@@ -287,7 +473,17 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public List<User<String>> getUsers(String pid) throws Exception {
         List<User<String>> users = new LinkedList<>();
-
+        int status = this.executeRequest("/rest/admin/user?" + pid);
+        if (status == 200 || status == 201) {
+            JSONArray usersArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= usersArray.length() - 1; i++) {
+                User<String> user = new User<>();
+                JSONObject jsonObject = usersArray.getJSONObject(i);
+                user.setTitle(jsonObject.getString("login"));
+                user.setId(jsonObject.getString("ringId"));
+                users.add(user);
+            }
+        }
         return users;
     }
 

@@ -18,7 +18,6 @@
 
 package de.domjos.unibuggermobile.fragments;
 
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -33,7 +32,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -50,6 +48,7 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.custom.CommaTokenizer;
+import de.domjos.unibuggermobile.helper.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
 
@@ -66,7 +65,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private ArrayAdapter<User> userAdapter;
     private ArrayAdapter<String> tagAdapter;
 
-    private int priorityValueArray;
+    private String priorityValueArray, statusValueArray, severityValueArray;
     private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory, rowIssueGeneralVersion, rowIssueGeneralTargetVersion, rowIssueGeneralFixedInVersion, rowIssueGeneralTags;
     private TableRow rowIssueGeneralView, rowIssueGeneralSeverity, rowIssueGeneralReproducibility, rowIssueGeneralPriority, rowIssueGeneralStatus, rowIssueGeneralResolution, rowIssueGeneralHandler;
 
@@ -207,12 +206,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
         if (this.root != null) {
             issue.setTitle(this.txtIssueGeneralSummary.getText().toString());
             issue.setCategory(this.txtIssueGeneralCategory.getText().toString());
-            issue.setState(this.getIdOfEnum(this.spIssueGeneralView, R.array.issues_general_view_values), this.spIssueGeneralView.getSelectedItem().toString());
-            issue.setSeverity(this.getIdOfEnum(this.spIssueGeneralSeverity, R.array.issues_general_severity_values), this.spIssueGeneralSeverity.getSelectedItem().toString());
-            issue.setReproducibility(this.getIdOfEnum(this.spIssueGeneralSeverity, R.array.issues_general_reproducibility_values), this.spIssueGeneralReproducibility.getSelectedItem().toString());
-            issue.setPriority(this.getIdOfEnum(this.spIssueGeneralPriority, this.priorityValueArray), this.spIssueGeneralPriority.getSelectedItem().toString());
-            issue.setStatus(this.getIdOfEnum(this.spIssueGeneralStatus, R.array.issues_general_status_values), this.spIssueGeneralStatus.getSelectedItem().toString());
-            issue.setResolution(this.getIdOfEnum(this.spIssueGeneralResolution, R.array.issues_general_resolution_values), this.spIssueGeneralResolution.getSelectedItem().toString());
+            issue.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralView, "issues_general_view_values"), this.spIssueGeneralView.getSelectedItem().toString());
+            issue.setSeverity(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, this.severityValueArray), this.spIssueGeneralSeverity.getSelectedItem().toString());
+            issue.setReproducibility(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, "issues_general_reproducibility_values"), this.spIssueGeneralReproducibility.getSelectedItem().toString());
+            issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.spIssueGeneralPriority.getSelectedItem().toString());
+            issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.spIssueGeneralStatus.getSelectedItem().toString());
+            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, "issues_general_resolution_values"), this.spIssueGeneralResolution.getSelectedItem().toString());
             issue.setVersion(this.txtIssueGeneralVersion.getText().toString());
             issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
             issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
@@ -257,12 +256,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
         if (this.issue != null) {
             this.txtIssueGeneralSummary.setText(this.issue.getTitle());
             this.txtIssueGeneralCategory.setText(this.issue.getCategory());
-            this.setValueOfEnum(Integer.parseInt(this.issue.getState().getKey().toString()), R.array.issues_general_view_values, spIssueGeneralView);
-            this.setValueOfEnum(Integer.parseInt(this.issue.getSeverity().getKey().toString()), R.array.issues_general_severity_values, spIssueGeneralSeverity);
-            this.setValueOfEnum(Integer.parseInt(this.issue.getReproducibility().getKey().toString()), R.array.issues_general_reproducibility_values, spIssueGeneralReproducibility);
-            this.setValueOfEnum(Integer.parseInt(this.issue.getPriority().getKey().toString()), this.priorityValueArray, spIssueGeneralPriority);
-            this.setValueOfEnum(Integer.parseInt(this.issue.getStatus().getKey().toString()), R.array.issues_general_status_values, spIssueGeneralStatus);
-            this.setValueOfEnum(Integer.parseInt(this.issue.getResolution().getKey().toString()), R.array.issues_general_resolution_values, spIssueGeneralResolution);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getState().getKey().toString()), "issues_general_view_values", spIssueGeneralView);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getSeverity().getKey().toString()), this.severityValueArray, spIssueGeneralSeverity);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getReproducibility().getKey().toString()), "issues_general_reproducibility_values", spIssueGeneralReproducibility);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getStatus().getKey().toString()), this.statusValueArray, spIssueGeneralStatus);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getResolution().getKey().toString()), "issues_general_resolution_values", spIssueGeneralResolution);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getPriority().getKey().toString()), this.priorityValueArray, spIssueGeneralPriority);
             this.spIssueGeneralHandler.setSelection(this.userAdapter.getPosition(this.issue.getHandler()));
             this.txtIssueGeneralVersion.setText(this.issue.getVersion());
             this.txtIssueGeneralTargetVersion.setText(this.issue.getTargetVersion());
@@ -283,11 +282,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
         Validator validator = new Validator(this.getContext());
         if (this.root != null) {
             validator.addEmptyValidator(this.txtIssueGeneralSummary);
-            validator.addEmptyValidator(this.txtIssueGeneralCategory);
-            validator.addEmptyValidator(this.txtIssueGeneralTargetVersion);
+
+            if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
+                validator.addEmptyValidator(this.txtIssueGeneralCategory);
+                validator.addEmptyValidator(this.txtIssueGeneralTargetVersion);
+            }
         }
         return validator;
     }
@@ -326,22 +329,30 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralResolution.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
-                this.priorityValueArray = R.array.issues_general_priority_mantisbt_values;
+                this.priorityValueArray = "issues_general_priority_mantisbt_values";
+                this.statusValueArray = "issues_general_status_mantisbt_values";
+                this.severityValueArray = "issues_general_severity_mantisbt_values";
                 break;
             case YouTrack:
                 this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
-                this.priorityValueArray = R.array.issues_general_priority_youtrack_values;
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_youtrack_values";
+                this.statusValueArray = "issues_general_status_youtrack_values";
+                this.severityValueArray = "issues_general_severity_youtrack_values";
                 break;
         }
 
-        if (this.getActivity() != null) {
-            int spItem = android.R.layout.simple_spinner_item;
-            String[] array = this.getResources().getStringArray(this.priorityValueArray);
-
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), spItem, Arrays.asList(array));
-            this.spIssueGeneralPriority.setAdapter(arrayAdapter);
-        }
+        this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));
+        this.spIssueGeneralView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
+        this.spIssueGeneralResolution.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_resolution_values"));
+        this.spIssueGeneralStatus.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
+        this.spIssueGeneralReproducibility.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_reproducibility_values"));
+        this.spIssueGeneralSeverity.setAdapter(Helper.setAdapter(this.getContext(), this.severityValueArray));
     }
 
     private void initCategories() {
@@ -382,29 +393,5 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralTargetVersion.setAdapter(arrayAdapter);
             this.txtIssueGeneralFixedInVersion.setAdapter(arrayAdapter);
         }
-    }
-
-    private int getIdOfEnum(Spinner spinner, int resource) {
-        int id = 0;
-        int position = spinner.getSelectedItemPosition();
-        TypedArray typedArray = this.getResources().obtainTypedArray(resource);
-        for (int i = 0; i <= typedArray.length() - 1; i++) {
-            if (position == i) {
-                id = typedArray.getResourceId(i, 0);
-            }
-        }
-        typedArray.recycle();
-        return id;
-    }
-
-    private void setValueOfEnum(int id, int resource, Spinner spinner) {
-        TypedArray typedArray = this.getResources().obtainTypedArray(resource);
-        for (int i = 0; i <= typedArray.length() - 1; i++) {
-            if (id == typedArray.getResourceId(i, 0)) {
-                spinner.setSelection(i);
-                break;
-            }
-        }
-        typedArray.recycle();
     }
 }
