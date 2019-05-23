@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C)  2019 Domjos
+  ~ This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
+  ~
+  ~ UniBuggerMobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <array name="issues_general_view_values_0">
+        <item>10</item>
+        <item>öffentlich</item>
+    </array>
+    <array name="issues_general_view_values_1">
+        <item>50</item>
+        <item>privat</item>
+    </array>
+
+
+    <array name="issues_general_reproducibility_values_0">
+        <item>10</item>
+        <item>immer</item>
+    </array>
+    <array name="issues_general_reproducibility_values_1">
+        <item>30</item>
+        <item>manchmal</item>
+    </array>
+    <array name="issues_general_reproducibility_values_2">
+        <item>50</item>
+        <item>zufällig</item>
+    </array>
+    <array name="issues_general_reproducibility_values_3">
+        <item>70</item>
+        <item>nicht getestet</item>
+    </array>
+    <array name="issues_general_reproducibility_values_4">
+        <item>90</item>
+        <item>nicht reproduzierbar</item>
+    </array>
+    <array name="issues_general_reproducibility_values_5">
+        <item>100</item>
+        <item>N/A</item>
+    </array>
+
+
+    <array name="issues_general_severity_mantisbt_values_0">
+        <item>10</item>
+        <item>Feature-Wunsch</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_1">
+        <item>20</item>
+        <item>Trivial</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_2">
+        <item>30</item>
+        <item>Fehler im Text</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_3">
+        <item>40</item>
+        <item>Unschönheit</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_4">
+        <item>50</item>
+        <item>kleinerer Fehler</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_5">
+        <item>60</item>
+        <item>schwerer Fehler</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_6">
+        <item>70</item>
+        <item>Absturz</item>
+    </array>
+    <array name="issues_general_severity_mantisbt_values_7">
+        <item>80</item>
+        <item>Blocker</item>
+    </array>
+
+    <array name="issues_general_severity_youtrack_values_0">
+        <item>5</item>
+        <item>Bug</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_1">
+        <item>6</item>
+        <item>Kosmetik</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_2">
+        <item>7</item>
+        <item>Ausnahme</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_3">
+        <item>8</item>
+        <item>Feature</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_4">
+        <item>9</item>
+        <item>Aufgabe</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_5">
+        <item>10</item>
+        <item>Bedienungsproblem</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_6">
+        <item>11</item>
+        <item>Leistungsproblem</item>
+    </array>
+    <array name="issues_general_severity_youtrack_values_7">
+        <item>12</item>
+        <item>Epic</item>
+    </array>
+
+    <array name="issues_general_severity_redmine_values_0">
+        <item>1</item>
+        <item>Bug</item>
+    </array>
+    <array name="issues_general_severity_redmine_values_1">
+        <item>2</item>
+        <item>Feature</item>
+    </array>
+    <array name="issues_general_severity_redmine_values_2">
+        <item>3</item>
+        <item>Support</item>
+    </array>
+
+
+    <array name="issues_general_priority_mantisbt_values_0">
+        <item>10</item>
+        <item>keine</item>
+    </array>
+    <array name="issues_general_priority_mantisbt_values_1">
+        <item>20</item>
+        <item>niedrig</item>
+    </array>
+    <array name="issues_general_priority_mantisbt_values_2">
+        <item>30</item>
+        <item>normal</item>
+    </array>
+    <array name="issues_general_priority_mantisbt_values_3">
+        <item>40</item>
+        <item>hoch</item>
+    </array>
+    <array name="issues_general_priority_mantisbt_values_4">
+        <item>50</item>
+        <item>dringend</item>
+    </array>
+    <array name="issues_general_priority_mantisbt_values_5">
+        <item>60</item>
+        <item>sofort</item>
+    </array>
+
+    <array name="issues_general_priority_youtrack_values_0">
+        <item>0</item>
+        <item>Showstopper</item>
+    </array>
+    <array name="issues_general_priority_youtrack_values_1">
+        <item>1</item>
+        <item>Kritisch</item>
+    </array>
+    <array name="issues_general_priority_youtrack_values_2">
+        <item>2</item>
+        <item>Hoch</item>
+    </array>
+    <array name="issues_general_priority_youtrack_values_3">
+        <item>3</item>
+        <item>Normal</item>
+    </array>
+    <array name="issues_general_priority_youtrack_values_4">
+        <item>4</item>
+        <item>Niedrig</item>
+    </array>
+
+    <array name="issues_general_priority_redmine_values_0">
+        <item>1</item>
+        <item>Low</item>
+    </array>
+    <array name="issues_general_priority_redmine_values_1">
+        <item>2</item>
+        <item>Normal</item>
+    </array>
+    <array name="issues_general_priority_redmine_values_2">
+        <item>3</item>
+        <item>High</item>
+    </array>
+    <array name="issues_general_priority_redmine_values_3">
+        <item>4</item>
+        <item>Urgent</item>
+    </array>
+    <array name="issues_general_priority_redmine_values_4">
+        <item>5</item>
+        <item>Immediate</item>
+    </array>
+
+
+    <array name="issues_general_status_mantisbt_values_0">
+        <item>10</item>
+        <item>Neu</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_1">
+        <item>20</item>
+        <item>Rückmeldung</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_2">
+        <item>30</item>
+        <item>anerkannt</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_3">
+        <item>40</item>
+        <item>bestätigt</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_4">
+        <item>50</item>
+        <item>zugewiesen</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_5">
+        <item>80</item>
+        <item>erledigt</item>
+    </array>
+    <array name="issues_general_status_mantisbt_values_6">
+        <item>90</item>
+        <item>geschlossen</item>
+    </array>
+
+    <array name="issues_general_status_youtrack_values_0">
+        <item>0</item>
+        <item>Erfasst</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_1">
+        <item>1</item>
+        <item>Offen</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_2">
+        <item>2</item>
+        <item>In Bearbeitung</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_3">
+        <item>3</item>
+        <item>Zu besprechen</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_4">
+        <item>4</item>
+        <item>Wiedereröffnet</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_5">
+        <item>5</item>
+        <item>Nicht reproduzierbar</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_6">
+        <item>6</item>
+        <item>Duplikat</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_7">
+        <item>7</item>
+        <item>Behoben</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_8">
+        <item>8</item>
+        <item>Wird nicht behoben</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_9">
+        <item>9</item>
+        <item>Unvollständig</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_10">
+        <item>10</item>
+        <item>Veraltet</item>
+    </array>
+    <array name="issues_general_status_youtrack_values_11">
+        <item>11</item>
+        <item>Verifiziert</item>
+    </array>
+
+    <array name="issues_general_status_redmine_values_0">
+        <item>1</item>
+        <item>New</item>
+    </array>
+    <array name="issues_general_status_redmine_values_1">
+        <item>2</item>
+        <item>In Progress</item>
+    </array>
+    <array name="issues_general_status_redmine_values_2">
+        <item>3</item>
+        <item>Resolved</item>
+    </array>
+    <array name="issues_general_status_redmine_values_3">
+        <item>4</item>
+        <item>Feedback</item>
+    </array>
+    <array name="issues_general_status_redmine_values_4">
+        <item>5</item>
+        <item>Closed</item>
+    </array>
+    <array name="issues_general_status_redmine_values_5">
+        <item>6</item>
+        <item>Rejected</item>
+    </array>
+
+
+    <array name="issues_general_resolution_values_0">
+        <item>10</item>
+        <item>offen</item>
+    </array>
+    <array name="issues_general_resolution_values_1">
+        <item>20</item>
+        <item>erledigt</item>
+    </array>
+    <array name="issues_general_resolution_values_2">
+        <item>30</item>
+        <item>wiedereröffnet</item>
+    </array>
+    <array name="issues_general_resolution_values_3">
+        <item>40</item>
+        <item>nicht reproduzierbar</item>
+    </array>
+    <array name="issues_general_resolution_values_4">
+        <item>50</item>
+        <item>unlösbar</item>
+    </array>
+    <array name="issues_general_resolution_values_5">
+        <item>60</item>
+        <item>doppelt</item>
+    </array>
+    <array name="issues_general_resolution_values_6">
+        <item>70</item>
+        <item>keine Änderung notwendig</item>
+    </array>
+    <array name="issues_general_resolution_values_7">
+        <item>80</item>
+        <item>aufgeschoben</item>
+    </array>
+    <array name="issues_general_resolution_values_8">
+        <item>90</item>
+        <item>wird nicht behoben</item>
+    </array>
+</resources>

@@ -37,10 +37,13 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.List;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.permissions.NOPERMISSION;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
 import de.domjos.unibuggerlibrary.tasks.issues.ListIssueTask;
@@ -207,20 +210,22 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Authentication authentication = MainActivity.settings.getCurrentAuthentication();
             if (authentication != null) {
                 this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+                this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+                this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
+                if (this.permissions.addIssues()) {
+                    this.cmdIssuesAdd.show();
+                } else {
+                    this.cmdIssuesAdd.hide();
+                }
+
+
+                this.reloadProjects();
+                this.selectProject();
             } else {
                 this.spMainAccounts.setSelection(this.accountList.getPosition(""));
-            }
-            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-            this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
-            if (this.permissions.addIssues()) {
-                this.cmdIssuesAdd.show();
-            } else {
-                this.cmdIssuesAdd.hide();
+                this.permissions = new NOPERMISSION();
             }
 
-
-            this.reloadProjects();
-            this.selectProject();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -263,8 +268,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 this.cmdIssuesAdd.hide();
             }
-            for (Project project : new ListProjectTask(MainActivity.this, this.bugService).execute().get()) {
-                this.projectList.add(project.getTitle());
+            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService).execute().get();
+            if (projects != null) {
+                for (Project project : projects) {
+                    this.projectList.add(project.getTitle());
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);

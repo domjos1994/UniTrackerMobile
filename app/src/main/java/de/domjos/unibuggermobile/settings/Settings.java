@@ -43,7 +43,9 @@ public class Settings {
         if (authID != 0) {
             return MainActivity.globals.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
         }
-        return null;
+        Authentication authentication = new Authentication();
+        authentication.setTracker(Authentication.Tracker.Local);
+        return authentication;
     }
 
     public void setCurrentAuthentication(Authentication authentication) {

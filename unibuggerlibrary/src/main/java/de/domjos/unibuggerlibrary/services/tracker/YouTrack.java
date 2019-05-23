@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
@@ -390,9 +391,66 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
         if (status == 200 || status == 201) {
             JSONObject response = new JSONObject(this.getCurrentMessage());
-            return response.getString("idReadable");
+            issue.setId(response.getString("idReadable"));
         }
-        return "";
+
+        Issue<String> oldIssue = this.getIssue(issue.getId());
+        List<Note<String>> notes = oldIssue.getNotes();
+        List<Attachment<String>> attachments = oldIssue.getAttachments();
+        for (Note<String> note : notes) {
+            boolean available = false;
+            for (Note<String> newNote : issue.getNotes()) {
+                if (note.getId().equals(newNote.getId())) {
+                    available = true;
+                    break;
+                }
+            }
+            if (!available) {
+                this.deleteRequest("/api/issues/" + issue.getId() + "/comments/" + note.getId());
+            }
+        }
+
+        if (!issue.getNotes().isEmpty()) {
+            for (Note<String> note : issue.getNotes()) {
+                JSONObject noteObject = new JSONObject();
+                noteObject.put("text", note.getDescription());
+
+                if (note.getId() == null) {
+                    this.executeRequest("/api/issues/" + issue.getId() + "/comments?fields=id", noteObject.toString(), "POST");
+                } else {
+                    this.executeRequest("/api/issues/" + issue.getId() + "/comments/" + note.getId() + "?fields=id", noteObject.toString(), "POST");
+                }
+            }
+        }
+
+        for (Attachment<String> attachment : attachments) {
+            boolean available = false;
+            for (Attachment<String> newAttachment : issue.getAttachments()) {
+                if (attachment.getId().equals(newAttachment.getId())) {
+                    available = true;
+                    break;
+                }
+            }
+            if (!available) {
+                this.deleteRequest("/api/issues/" + issue.getId() + "/attachments/" + attachment.getId());
+            }
+        }
+
+        if (!issue.getAttachments().isEmpty()) {
+            for (Attachment<String> attachment : issue.getAttachments()) {
+                JSONObject attachmentObject = new JSONObject();
+                attachmentObject.put("name", UUID.randomUUID().toString());
+                attachmentObject.put("base64Content", Base64.encodeToString(attachment.getContent(), Base64.DEFAULT));
+
+                if (attachment.getId() == null) {
+                    this.executeRequest("/api/issues/" + issue.getId() + "/attachments?fields=id", attachmentObject.toString(), "POST");
+                } else {
+                    this.executeRequest("/api/issues/" + issue.getId() + "/attachments/" + attachment.getId() + "?fields=id", attachmentObject.toString(), "POST");
+                }
+            }
+        }
+
+        return issue.getId();
     }
 
     private Map<String, String> getCustomFields() throws Exception {

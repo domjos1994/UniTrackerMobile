@@ -19,72 +19,65 @@
 package de.domjos.unibuggerlibrary.permissions;
 
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
 
-public class RedminePermissions implements IFunctionImplemented {
-    private Authentication authentication;
-
-    public RedminePermissions(Authentication authentication) {
-        this.authentication = authentication;
-    }
-
+public class NOPERMISSION implements IFunctionImplemented {
     @Override
     public boolean listProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean addProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean listVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean addVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean listIssues() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean addIssues() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateIssues() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteIssues() {
-        return true;
+        return false;
     }
 }

@@ -345,6 +345,20 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.statusValueArray = "issues_general_status_youtrack_values";
                 this.severityValueArray = "issues_general_severity_youtrack_values";
                 break;
+            case RedMine:
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralCategory.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralView.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_redmine_values";
+                this.statusValueArray = "issues_general_status_redmine_values";
+                this.severityValueArray = "issues_general_severity_redmine_values";
+                break;
         }
 
         this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));

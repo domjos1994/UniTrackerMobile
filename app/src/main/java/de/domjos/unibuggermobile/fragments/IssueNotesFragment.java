@@ -59,6 +59,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private Issue issue;
     private boolean editMode;
     private Note currentNote;
+    private String statusValueArray;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -84,6 +85,7 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.txtIssueNotesSubmitDate = this.root.findViewById(R.id.txtIssueNotesSubmitDate);
         this.txtIssueNotesLastUpdated = this.root.findViewById(R.id.txtIssueNotesLastUpdated);
         this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
+        this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
 
         this.lvIssueNotes.setOnItemClickListener((parent, view, position, id) -> {
             ListObject object = this.notesAdapter.getItem(position);
@@ -211,7 +213,10 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         switch (authentication.getTracker()) {
             case MantisBT:
-
+                this.statusValueArray = "issues_general_view_values";
+                break;
+            case YouTrack:
+                this.statusValueArray = "issues_general_view_values";
                 break;
         }
     }
@@ -219,7 +224,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private void noteToFields() {
         if (this.currentNote != null) {
             this.txtIssueNotesText.setText(this.currentNote.getDescription());
-            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.currentNote.getState().getKey().toString()), "issues_general_view_values", this.spIssueNotesView);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.currentNote.getState().getKey().toString()), this.statusValueArray, this.spIssueNotesView);
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.currentNote.getLastUpdated() != null) {
@@ -235,7 +240,9 @@ public final class IssueNotesFragment extends AbstractFragment {
     private void fieldsToNote() {
         if (this.currentNote != null) {
             this.currentNote.setDescription(this.txtIssueNotesText.getText().toString());
-            this.currentNote.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueNotesView, "issues_general_view_values"), this.spIssueNotesView.getSelectedItem().toString());
+            if (this.spIssueNotesView.getSelectedItem() != null) {
+                this.currentNote.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueNotesView, this.statusValueArray), this.spIssueNotesView.getSelectedItem().toString());
+            }
             if (this.currentNote.getDescription().length() > 50) {
                 this.currentNote.setTitle(this.currentNote.getDescription().substring(0, 50));
             } else {

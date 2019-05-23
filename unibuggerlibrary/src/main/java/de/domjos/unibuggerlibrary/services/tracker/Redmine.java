@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,7 +30,9 @@ import java.util.List;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -44,7 +48,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public String getTrackerVersion() throws Exception {
+    public String getTrackerVersion() {
         return null;
     }
 
@@ -150,8 +154,10 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 version.setDescription(versionObject.getString("description"));
 
                 if (versionObject.has("due_date")) {
-                    Date dt = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).parse(versionObject.getString("due_date"));
-                    version.setReleasedVersionAt(dt.getTime());
+                    if (!versionObject.isNull("due_date")) {
+                        Date dt = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).parse(versionObject.getString("due_date"));
+                        version.setReleasedVersionAt(dt.getTime());
+                    }
                 }
 
                 String state = versionObject.getString("status");
@@ -229,51 +235,291 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        return null;
+        List<Issue<Long>> issues = new LinkedList<>();
+        int status = this.executeRequest("/issues.json?project_id=" + pid);
+        if (status == 200 || status == 201) {
+            JSONObject resultObject = new JSONObject(this.getCurrentMessage());
+            JSONArray resultArray = resultObject.getJSONArray("issues");
+            for (int i = 0; i <= resultArray.length() - 1; i++) {
+                JSONObject issueObject = resultArray.getJSONObject(i);
+                Issue<Long> issue = new Issue<>();
+                issue.setId(issueObject.getLong("id"));
+                issue.setTitle(issueObject.getString("subject"));
+                issue.setDescription(issueObject.getString("description"));
+                issues.add(issue);
+            }
+        }
+        return issues;
     }
 
     @Override
     public Issue<Long> getIssue(Long id) throws Exception {
-        return null;
+        Issue<Long> issue = new Issue<>();
+        int status = this.executeRequest("/issues/" + id + ".json?include=attachments,journals");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage()).getJSONObject("issue");
+            issue.setId(jsonObject.getLong("id"));
+            issue.setTitle(jsonObject.getString("subject"));
+            if (jsonObject.has("description")) {
+                issue.setDescription(jsonObject.getString("description"));
+            }
+            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_on"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_on"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            if (jsonObject.has("due_date")) {
+                if (!jsonObject.isNull("due_date")) {
+                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("due_date"), "yyyy-MM-dd"));
+                }
+            }
+            if (jsonObject.has("status")) {
+                if (!jsonObject.isNull("status")) {
+                    JSONObject statusObject = jsonObject.getJSONObject("status");
+                    issue.setStatus(statusObject.getInt("id"), statusObject.getString("name"));
+                }
+            }
+            if (jsonObject.has("priority")) {
+                if (!jsonObject.isNull("priority")) {
+                    JSONObject priorityObject = jsonObject.getJSONObject("priority");
+                    issue.setPriority(priorityObject.getInt("id"), priorityObject.getString("name"));
+                }
+            }
+            if (jsonObject.has("tracker")) {
+                if (!jsonObject.isNull("tracker")) {
+                    JSONObject trackerObject = jsonObject.getJSONObject("tracker");
+                    issue.setSeverity(trackerObject.getInt("id"), trackerObject.getString("name"));
+                }
+            }
+            if (jsonObject.has("assigned_to")) {
+                if (!jsonObject.isNull("assigned_to")) {
+                    JSONObject assignedObject = jsonObject.getJSONObject("assigned_to");
+                    List<User<Long>> users = this.getUsers(0L);
+                    for (User<Long> user : users) {
+                        if (user.getId() == assignedObject.getLong("id")) {
+                            issue.setHandler(user);
+                            break;
+                        }
+                    }
+                }
+            }
+            if (jsonObject.has("fixed_version")) {
+                if (!jsonObject.isNull("fixed_version")) {
+                    JSONObject versionObject = jsonObject.getJSONObject("fixed_version");
+                    issue.setFixedInVersion(versionObject.getString("name"));
+                }
+            }
+            if (jsonObject.has("is_private")) {
+                if (!jsonObject.isNull("is_private")) {
+                    boolean isPrivate = jsonObject.getBoolean("is_private");
+                    if (isPrivate) {
+                        issue.setState(50, "private");
+                    } else {
+                        issue.setState(10, "public");
+                    }
+                }
+            }
+            if (jsonObject.has("category")) {
+                if (!jsonObject.isNull("category")) {
+                    issue.setCategory(jsonObject.getJSONObject("category").getString("name"));
+                }
+            }
+
+
+            if (jsonObject.has("journals")) {
+                if (!jsonObject.isNull("journals")) {
+                    JSONArray journalArray = jsonObject.getJSONArray("journals");
+                    for (int i = 0; i <= journalArray.length() - 1; i++) {
+                        JSONObject journalObject = journalArray.getJSONObject(i);
+                        if (journalObject.has("notes")) {
+                            if (!journalObject.isNull("notes")) {
+                                if (journalObject.get("notes") != null) {
+                                    Note<Long> note = new Note<>();
+                                    note.setId(journalObject.getLong("id"));
+                                    String notes = journalObject.getString("notes");
+                                    if (notes.length() >= 50) {
+                                        note.setTitle(notes.substring(0, 50));
+                                    } else {
+                                        note.setTitle(notes);
+                                    }
+                                    note.setDescription(notes);
+                                    issue.getNotes().add(note);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (jsonObject.has("attachments")) {
+                if (!jsonObject.isNull("attachments")) {
+                    JSONArray attachmentArray = jsonObject.getJSONArray("attachments");
+                    for (int i = 0; i <= attachmentArray.length() - 1; i++) {
+                        JSONObject attachmentObject = attachmentArray.getJSONObject(i);
+                        Attachment<Long> attachment = new Attachment<>();
+                        attachment.setId(attachmentObject.getLong("id"));
+                        attachment.setFilename(attachmentObject.getString("filename"));
+                        attachment.setDownloadUrl(attachmentObject.getString("content_url"));
+                        attachment.setContent(Converter.convertStringToByteArray(attachment.getDownloadUrl()));
+                        issue.getAttachments().add(attachment);
+                    }
+                }
+            }
+        }
+        return issue;
     }
 
     @Override
     public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
-        return null;
+        JSONObject requestObject = new JSONObject();
+        JSONObject issueObject = new JSONObject();
+        issueObject.put("project_id", pid);
+        if (issue.getSeverity() != null) {
+            issueObject.put("tracker_id", issue.getSeverity().getKey());
+            issueObject.put("tracker", issue.getSeverity().getValue());
+        }
+        if (issue.getStatus() != null) {
+            issueObject.put("status_id", issue.getStatus().getKey());
+        }
+        if (issue.getPriority() != null) {
+            issueObject.put("priority_id", issue.getPriority().getKey());
+        }
+        issueObject.put("subject", issue.getTitle());
+        issueObject.put("description", issue.getDescription());
+        if (issue.getState() != null) {
+            issueObject.put("is_private", issue.getState().getKey() != 10);
+        }
+        if (issue.getHandler() != null) {
+            issueObject.put("assigned_to_id", issue.getHandler().getId());
+        }
+        if (!issue.getCategory().equals("")) {
+            issueObject.put("category_id", this.getCategoryId(issue.getCategory(), pid));
+        }
+        if (!issue.getVersion().equals("")) {
+            List<Version<Long>> versions = this.getVersions(pid, "");
+            for (Version<Long> version : versions) {
+                if (version.getTitle().equals(issue.getVersion())) {
+                    issueObject.put("fixed_version_id", version.getId());
+                }
+            }
+        }
+        requestObject.put("issue", issueObject);
+
+        int status;
+        if (issue.getId() != null) {
+            status = this.executeRequest("/issues/" + issue.getId() + ".json", requestObject.toString(), "POST");
+        } else {
+            status = this.executeRequest("/issues.json", requestObject.toString(), "POST");
+        }
+
+        if (status == 200 || status == 201) {
+            String content = this.getCurrentMessage();
+
+            if (issue.getId() == null) {
+                JSONObject result = new JSONObject(content);
+                if (result.has("issue")) {
+                    JSONObject resultProject = result.getJSONObject("issue");
+                    issue.setId(resultProject.getLong("id"));
+                }
+            }
+        }
+
+        if (issue.getId() != null) {
+            if (!issue.getNotes().isEmpty()) {
+                for (Note<Long> note : issue.getNotes()) {
+                    if (note.getId() == null) {
+                        JSONObject jsonObject = new JSONObject();
+                        JSONObject issueNoteObject = new JSONObject();
+                        issueNoteObject.put("notes", note.getDescription());
+                        jsonObject.put("issue", issueNoteObject);
+                        this.executeRequest("/issues/" + issue.getId() + ".json", jsonObject.toString(), "PUT");
+                    }
+                }
+            }
+
+            if (!issue.getAttachments().isEmpty()) {
+
+            }
+        }
+
+        return Long.parseLong(String.valueOf(issue.getId()));
     }
 
     @Override
     public void deleteIssue(Long id) throws Exception {
-
+        this.deleteRequest("/issues/" + id + ".json");
     }
 
     @Override
     public List<String> getCategories(Long pid) throws Exception {
-        return null;
+        List<String> categories = new LinkedList<>();
+        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject category = jsonArray.getJSONObject(i);
+                categories.add(category.getString("name"));
+            }
+        }
+        return categories;
+    }
+
+    private Long getCategoryId(String name, Long pid) throws Exception {
+        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject category = jsonArray.getJSONObject(i);
+                if (category.getString("name").equals(name)) {
+                    return category.getLong("id");
+                }
+            }
+        }
+        return 0L;
     }
 
     @Override
     public List<User<Long>> getUsers(Long pid) throws Exception {
-        return null;
+        List<User<Long>> users = new LinkedList<>();
+        int status = this.executeRequest("/users.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("users");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject userobject = jsonArray.getJSONObject(i);
+                User<Long> user = new User<>();
+                user.setId(userobject.getLong("id"));
+                user.setTitle(userobject.getString("login"));
+                user.setRealName(userobject.getString("firstname") + " " + userobject.getString("lastname"));
+                user.setEmail(userobject.getString("mail"));
+                users.add(user);
+            }
+        }
+        return users;
     }
 
     @Override
-    public List<Tag<Long>> getTags() throws Exception {
-        return null;
+    public List<Tag<Long>> getTags() {
+        return new LinkedList<>();
     }
 
-    private Project<Long> jsonObjectToProject(JSONObject obj) throws Exception {
+    private Project<Long> jsonObjectToProject(JSONObject obj) {
         Project<Long> project = new Project<>();
-        project.setId((long) obj.getInt("id"));
-        project.setTitle(obj.getString("name"));
-        project.setAlias(obj.getString("identifier"));
-        project.setDescription(obj.getString("description"));
-        if (obj.has("homepage")) {
-            project.setWebsite(obj.getString("homepage"));
+        try {
+            project.setId((long) obj.getInt("id"));
+            project.setTitle(obj.getString("name"));
+            project.setAlias(obj.getString("identifier"));
+            if (obj.has("description")) {
+                project.setDescription(obj.getString("description"));
+            }
+            if (obj.has("homepage")) {
+                project.setWebsite(obj.getString("homepage"));
+            }
+            project.setPrivateProject(!obj.getBoolean("is_public"));
+            project.setCreatedAt(Converter.convertStringToDate(obj.getString("created_on"), "yyyy-MM-dd'T'HH:mm:ss'Z'").getTime());
+            project.setUpdatedAt(Converter.convertStringToDate(obj.getString("updated_on"), "yyyy-MM-dd'T'HH:mm:ss'Z'").getTime());
+        } catch (Exception ex) {
+            Log.e("error", "error", ex);
         }
-        project.setPrivateProject(!obj.getBoolean("is_public"));
-        project.setCreatedAt(Converter.convertStringToDate(obj.getString("created_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").getTime());
-        project.setUpdatedAt(Converter.convertStringToDate(obj.getString("updated_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").getTime());
         return project;
     }
 }
