@@ -26,8 +26,31 @@ import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 
+/**
+ * Interface for all Bug-Tracker-Classes
+ * NOTICE: Don't forget to add new Bug-Tracker-Classes to enum in Authentication-Class.
+ *
+ * @param <T> DataType of ID
+ * @author Dominic Joas
+ * @version 1.0
+ * @see de.domjos.unibuggerlibrary.services.engine.Authentication
+ * @see de.domjos.unibuggerlibrary.services
+ */
 public interface IBugService<T> {
 
+    /**
+     * The connection will be tested with the selected Authentication
+     *
+     * @return connection was successfully
+     * @throws Exception Exception from Soap- or JSON-Engine
+     */
+    boolean testConnection() throws Exception;
+
+    /**
+     * Returns the Version of the Tracker
+     * @return the Tracker-Version
+     * @throws Exception Exception from Soap- or JSON-Engine
+     */
     String getTrackerVersion() throws Exception;
 
     List<Project<T>> getProjects() throws Exception;

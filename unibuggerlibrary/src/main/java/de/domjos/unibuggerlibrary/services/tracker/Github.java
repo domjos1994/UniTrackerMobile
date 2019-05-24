@@ -45,6 +45,11 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return false;
+    }
+
+    @Override
     public String getTrackerVersion() {
         return "";
     }

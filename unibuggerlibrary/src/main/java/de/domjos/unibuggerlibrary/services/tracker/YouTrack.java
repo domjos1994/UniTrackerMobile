@@ -53,6 +53,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return false;
+    }
+
+    @Override
     public String getTrackerVersion() throws Exception {
         int status = this.executeRequest("/rest/workflow/version");
         if (status == 200 || status == 201) {

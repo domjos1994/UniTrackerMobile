@@ -49,6 +49,11 @@ public final class MantisBTJSON extends JSONEngine implements IBugService<Long> 
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return false;
+    }
+
+    @Override
     public String getTrackerVersion() throws Exception {
         int state = this.executeRequest("/api/rest/internal");
         String content = this.getCurrentMessage();

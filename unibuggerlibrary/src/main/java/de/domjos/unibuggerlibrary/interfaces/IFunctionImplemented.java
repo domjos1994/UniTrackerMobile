@@ -28,6 +28,7 @@ public interface IFunctionImplemented {
 
     boolean deleteProjects();
 
+
     boolean listVersions();
 
     boolean addVersions();
@@ -36,6 +37,7 @@ public interface IFunctionImplemented {
 
     boolean deleteVersions();
 
+
     boolean listIssues();
 
     boolean addIssues();
@@ -43,4 +45,22 @@ public interface IFunctionImplemented {
     boolean updateIssues();
 
     boolean deleteIssues();
+
+
+    boolean listNotes();
+
+    boolean addNotes();
+
+    boolean editNotes();
+
+    boolean updateNotes();
+
+
+    boolean listAttachments();
+
+    boolean addAttachments();
+
+    boolean updateAttachments();
+
+    boolean deleteAttachments();
 }

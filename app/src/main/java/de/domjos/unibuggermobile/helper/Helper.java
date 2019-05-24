@@ -80,9 +80,12 @@ public class Helper {
     }
 
     public static IBugService getCurrentBugService(Context context) {
+        return Helper.getCurrentBugService(MainActivity.settings.getCurrentAuthentication(), context);
+    }
+
+    public static IBugService getCurrentBugService(Authentication authentication, Context context) {
         IBugService bugService = null;
         try {
-            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
             if (authentication != null) {
                 switch (authentication.getTracker()) {
                     case MantisBT:

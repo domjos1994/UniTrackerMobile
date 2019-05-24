@@ -354,7 +354,23 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
             }
-            lblAccountTitle.setText(authentication.getTitle());
+
+
+            final StringBuilder tracker = new StringBuilder();
+            tracker.append(authentication.getTitle());
+            tracker.append(" (");
+            tracker.append(authentication.getTracker().name());
+            tracker.append(" ");
+            new Thread(() -> {
+                try {
+                    IBugService bugService = Helper.getCurrentBugService(this.getApplicationContext());
+                    tracker.append(bugService.getTrackerVersion());
+                    tracker.append(")");
+                    MainActivity.this.runOnUiThread(() -> lblAccountTitle.setText(tracker.toString()));
+                } catch (Exception ignored) {
+                }
+            }).start();
+
             lblMainCommand.setText(R.string.accounts_change);
         } else {
             ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));

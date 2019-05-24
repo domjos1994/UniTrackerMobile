@@ -48,6 +48,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return false;
+    }
+
+    @Override
     public String getTrackerVersion() {
         return null;
     }

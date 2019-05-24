@@ -34,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
@@ -41,6 +42,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
+import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unibuggermobile.helper.Validator;
 
@@ -151,11 +153,29 @@ public final class AccountActivity extends AbstractActivity {
                     this.manageControls(false, true, false);
                     break;
                 case R.id.navSave:
-                    if (this.accountValidator.getState()) {
-                        this.controlsToObject();
-                        MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
-                        this.manageControls(false, true, false);
-                        this.reload();
+                    try {
+                        if (this.accountValidator.getState()) {
+                            this.controlsToObject();
+                            IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+                            new Thread(() -> {
+                                try {
+                                    if (bugService.testConnection()) {
+                                        AccountActivity.this.runOnUiThread(() -> {
+                                            MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), AccountActivity.this);
+                                            MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
+                                            this.manageControls(false, true, false);
+                                            this.reload();
+                                        });
+                                    } else {
+                                        MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this);
+                                    }
+                                } catch (Exception ex) {
+                                    AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+                                }
+                            }).start();
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, AccountActivity.this);
                     }
                     break;
             }

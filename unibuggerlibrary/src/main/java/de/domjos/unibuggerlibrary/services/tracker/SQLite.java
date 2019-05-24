@@ -59,6 +59,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return true;
+    }
+
+    @Override
     public String getTrackerVersion() {
         return String.valueOf(this.id);
     }

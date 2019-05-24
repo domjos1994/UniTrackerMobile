@@ -40,6 +40,11 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public boolean testConnection() throws Exception {
+        return false;
+    }
+
+    @Override
     public String getTrackerVersion() throws Exception {
         int status = this.executeRequest("/rest/version");
         if (status == 200 || status == 201) {
