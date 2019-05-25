@@ -359,6 +359,30 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.statusValueArray = "issues_general_status_redmine_values";
                 this.severityValueArray = "issues_general_severity_redmine_values";
                 break;
+            case Bugzilla:
+
+                break;
+            case Github:
+
+                break;
+            case Local:
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralCategory.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTargetVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralView.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralReproducibility.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralResolution.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_mantisbt_values";
+                this.statusValueArray = "issues_general_status_mantisbt_values";
+                this.severityValueArray = "issues_general_severity_mantisbt_values";
+                break;
         }
 
         this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));

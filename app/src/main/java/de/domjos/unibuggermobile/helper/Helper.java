@@ -104,11 +104,11 @@ public class Helper {
                         bugService = new Github(authentication);
                         break;
                     default:
-                        bugService = new SQLite(context, Helper.getVersionCode(context));
+                        bugService = new SQLite(context, Helper.getVersionCode(context), authentication);
                         break;
                 }
             } else {
-                bugService = new SQLite(context, Helper.getVersionCode(context));
+                bugService = new SQLite(context, Helper.getVersionCode(context), new Authentication());
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, context);

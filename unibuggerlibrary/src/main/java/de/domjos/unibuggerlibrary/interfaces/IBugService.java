@@ -42,19 +42,27 @@ public interface IBugService<T> {
      * The connection will be tested with the selected Authentication
      *
      * @return connection was successfully
-     * @throws Exception Exception from Soap- or JSON-Engine
      */
     boolean testConnection() throws Exception;
 
     /**
      * Returns the Version of the Tracker
      * @return the Tracker-Version
-     * @throws Exception Exception from Soap- or JSON-Engine
      */
     String getTrackerVersion() throws Exception;
 
+    /**
+     * Returns a List of Projects
+     *
+     * @return List of Project
+     */
     List<Project<T>> getProjects() throws Exception;
 
+    /**
+     * Returns Data of a Project with the ID
+     * @param id th ID of a Project
+     * @return the Project
+     */
     Project<T> getProject(T id) throws Exception;
 
     T insertOrUpdateProject(Project<T> project) throws Exception;

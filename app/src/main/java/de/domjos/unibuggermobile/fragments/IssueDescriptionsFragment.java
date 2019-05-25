@@ -124,6 +124,10 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
                 this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
                 this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
                 break;
+            case Local:
+                this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
+                this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
+                break;
         }
     }
 }
