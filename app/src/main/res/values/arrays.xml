@@ -133,6 +133,35 @@
         <item>Support</item>
     </array>
 
+    <array name="issues_general_severity_bugzilla_values_0">
+        <item>1</item>
+        <item>blocker</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_1">
+        <item>2</item>
+        <item>critical</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_2">
+        <item>3</item>
+        <item>major</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_3">
+        <item>4</item>
+        <item>normal</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_4">
+        <item>5</item>
+        <item>minor</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_5">
+        <item>6</item>
+        <item>trivial</item>
+    </array>
+    <array name="issues_general_severity_bugzilla_values_6">
+        <item>7</item>
+        <item>enhancement</item>
+    </array>
+
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>
@@ -201,6 +230,30 @@
         <item>Immediate</item>
     </array>
 
+    <array name="issues_general_priority_bugzilla_values_0">
+        <item>1</item>
+        <item>Highest</item>
+    </array>
+    <array name="issues_general_priority_bugzilla_values_1">
+        <item>2</item>
+        <item>High</item>
+    </array>
+    <array name="issues_general_priority_bugzilla_values_2">
+        <item>3</item>
+        <item>Normal</item>
+    </array>
+    <array name="issues_general_priority_bugzilla_values_3">
+        <item>4</item>
+        <item>Low</item>
+    </array>
+    <array name="issues_general_priority_bugzilla_values_4">
+        <item>5</item>
+        <item>Lowest</item>
+    </array>
+    <array name="issues_general_priority_bugzilla_values_5">
+        <item>6</item>
+        <item>---</item>
+    </array>
 
     <array name="issues_general_status_mantisbt_values_0">
         <item>10</item>
@@ -303,6 +356,19 @@
     <array name="issues_general_status_redmine_values_5">
         <item>6</item>
         <item>Rejected</item>
+    </array>
+
+    <array name="issues_general_status_bugzilla_values_0">
+        <item>1</item>
+        <item>CONFIRMED</item>
+    </array>
+    <array name="issues_general_status_bugzilla_values_1">
+        <item>2</item>
+        <item>IN_PROGRESS</item>
+    </array>
+    <array name="issues_general_status_bugzilla_values_2">
+        <item>3</item>
+        <item>RESOLVED</item>
     </array>
 
 

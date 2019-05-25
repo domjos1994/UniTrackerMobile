@@ -153,9 +153,11 @@ public class JSONEngine {
         Request.Builder builder = new Request.Builder();
         if (this.headers != null) {
             for (String entry : this.headers) {
-                String[] fields = entry.split(": ");
-                if (fields.length == 2) {
-                    builder = builder.addHeader(fields[0], fields[1]);
+                if (entry.contains(": ")) {
+                    String[] fields = entry.split(": ");
+                    if (fields.length == 2) {
+                        builder = builder.addHeader(fields[0], "'" + fields[1] + "'");
+                    }
                 }
             }
         }

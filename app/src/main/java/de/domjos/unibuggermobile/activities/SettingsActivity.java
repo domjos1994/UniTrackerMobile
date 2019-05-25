@@ -37,7 +37,7 @@ import java.util.List;
 
 import de.domjos.unibuggermobile.R;
 
-public class SettingsActivity extends PreferenceActivity {
+public final class SettingsActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
 
     @Override

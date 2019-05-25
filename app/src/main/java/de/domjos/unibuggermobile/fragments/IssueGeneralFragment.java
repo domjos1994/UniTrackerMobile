@@ -360,7 +360,17 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.severityValueArray = "issues_general_severity_redmine_values";
                 break;
             case Bugzilla:
-
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_bugzilla_values";
+                this.statusValueArray = "issues_general_status_bugzilla_values";
+                this.severityValueArray = "issues_general_severity_bugzilla_values";
                 break;
             case Github:
 
