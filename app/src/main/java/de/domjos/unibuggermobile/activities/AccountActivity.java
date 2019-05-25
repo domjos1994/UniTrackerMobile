@@ -258,6 +258,7 @@ public final class AccountActivity extends AbstractActivity {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(this.currentAccount.getTracker()));
             } else {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(Authentication.Tracker.Local));
+                this.txtAccountServer.setText(Authentication.Tracker.Local.name());
             }
             if (this.currentAccount.getCover() != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(this.currentAccount.getCover(), 0, this.currentAccount.getCover().length);

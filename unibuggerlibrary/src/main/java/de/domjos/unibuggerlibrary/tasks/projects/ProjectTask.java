@@ -29,8 +29,8 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 public class ProjectTask extends AbstractTask<Project, Void, Void> {
     private boolean delete;
 
-    public ProjectTask(Activity activity, IBugService bugService, boolean delete) {
-        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content);
+    public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications) {
+        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications);
         this.delete = delete;
     }
 

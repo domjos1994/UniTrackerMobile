@@ -30,8 +30,8 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
 public class ListProjectTask extends AbstractTask<Void, Void, List<Project>> {
 
-    public ListProjectTask(Activity activity, IBugService bugService) {
-        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_list_content);
+    public ListProjectTask(Activity activity, IBugService bugService, boolean showNotifications) {
+        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_list_content, showNotifications);
     }
 
     @Override

@@ -31,28 +31,34 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     private final int icon;
     private int id;
     private final String title, content;
+    private boolean showNotifications;
 
-    public AbstractTask(Activity activity, IBugService bugService, int title, int content) {
+    public AbstractTask(Activity activity, IBugService bugService, int title, int content, boolean showNotifications) {
         super();
         this.activity = activity;
         this.icon = R.mipmap.ic_launcher_round;
         this.title = this.activity.getString(title);
         this.content = this.activity.getString(content);
         this.bugService = bugService;
+        this.showNotifications = showNotifications;
     }
 
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        this.id = MessageHelper.startProgressNotification(this.activity, this.title, this.content, this.icon);
+        if (this.showNotifications) {
+            this.id = MessageHelper.startProgressNotification(this.activity, this.title, this.content, this.icon);
+        }
         this.before();
     }
 
     @Override
     protected void onPostExecute(Result result) {
         super.onPostExecute(result);
-        MessageHelper.stopProgressNotification(this.activity, this.id);
+        if (this.showNotifications) {
+            MessageHelper.stopProgressNotification(this.activity, this.id);
+        }
         this.after();
     }
 

@@ -74,6 +74,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
     private static final int RELOAD_ISSUES = 101;
+    private static final int RELOAD_SETTINGS = 102;
     public static final Globals globals = new Globals();
     public static Settings settings;
 
@@ -147,7 +148,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
                             Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
-                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true).execute((Issue) listObject.getDescriptionObject()).get();
+                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true, MainActivity.settings.showNotifications()).execute((Issue) listObject.getDescriptionObject()).get();
                             reload();
                         }
                     }
@@ -238,7 +239,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (this.permissions.listIssues()) {
                 Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
                 if (project != null) {
-                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId());
+                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId(), MainActivity.settings.showNotifications());
                     for (Object issue : listIssueTask.execute().get()) {
                         this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
                     }
@@ -268,7 +269,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 this.cmdIssuesAdd.hide();
             }
-            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService).execute().get();
+            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute().get();
             if (projects != null) {
                 for (Project project : projects) {
                     this.projectList.add(project.getTitle());
@@ -312,10 +313,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.menSettings:
-
+                intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
                 break;
+            default:
+                intent = null;
+                break;
+        }
+
+        if (intent != null) {
+            startActivityForResult(intent, MainActivity.RELOAD_SETTINGS);
         }
 
         return super.onOptionsItemSelected(item);

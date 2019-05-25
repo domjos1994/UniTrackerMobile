@@ -30,8 +30,8 @@ public class VersionTask extends AbstractTask<Version, Void, Void> {
     private boolean delete;
     private Object pid;
 
-    public VersionTask(Activity activity, IBugService bugService, Object pid, boolean delete) {
-        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content);
+    public VersionTask(Activity activity, IBugService bugService, Object pid, boolean delete, boolean showNotifications) {
+        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
         this.delete = delete;
         this.pid = pid;
     }

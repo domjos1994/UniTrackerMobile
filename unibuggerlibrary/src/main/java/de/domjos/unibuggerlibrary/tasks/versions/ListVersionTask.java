@@ -32,8 +32,8 @@ public class ListVersionTask extends AbstractTask<Void, Void, List<Version>> {
     private Object pid;
     private String filter;
 
-    public ListVersionTask(Activity activity, IBugService bugService, Object pid, String filter) {
-        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_list_content);
+    public ListVersionTask(Activity activity, IBugService bugService, Object pid, String filter, boolean showNotifications) {
+        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_list_content, showNotifications);
         this.pid = pid;
         this.filter = filter;
     }

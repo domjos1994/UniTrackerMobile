@@ -31,8 +31,8 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 public class ListIssueTask extends AbstractTask<Void, Void, List<Issue>> {
     private Object pid;
 
-    public ListIssueTask(Activity activity, IBugService bugService, Object pid) {
-        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issues_list_content);
+    public ListIssueTask(Activity activity, IBugService bugService, Object pid, boolean showNotifications) {
+        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issues_list_content, showNotifications);
         this.pid = pid;
     }
 

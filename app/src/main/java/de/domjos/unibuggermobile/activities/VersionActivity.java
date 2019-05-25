@@ -118,7 +118,7 @@ public final class VersionActivity extends AbstractActivity {
                         if (MainActivity.settings.getCurrentAuthentication().getTracker() == Authentication.Tracker.Github) {
                             ((Github) this.bugService).setTitle(currentProject.getAlias());
                         }
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true).execute(this.currentVersion).get();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true, MainActivity.settings.showNotifications()).execute(this.currentVersion).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -132,7 +132,7 @@ public final class VersionActivity extends AbstractActivity {
                     try {
                         if (this.versionValidator.getState()) {
                             this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false).execute(this.currentVersion).get();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false, MainActivity.settings.showNotifications()).execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -191,7 +191,7 @@ public final class VersionActivity extends AbstractActivity {
                                 filterAction = "versions";
                             }
                         }
-                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction);
+                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction, MainActivity.settings.showNotifications());
                         for (Version version : versionTask.execute().get()) {
                             ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
                             this.versionAdapter.add(listObject);

@@ -419,7 +419,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new ListVersionTask(this.getActivity(), this.bugService, this.pid, "versions").execute().get();
+                    List<Version> versions = new ListVersionTask(this.getActivity(), this.bugService, this.pid, "versions", MainActivity.settings.showNotifications()).execute().get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

@@ -57,7 +57,7 @@ public final class IssueActivity extends AbstractActivity {
             this.id = intent.getStringExtra("id");
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
-            this.issue = new GetIssueTask(IssueActivity.this, this.bugService).execute(this.id).get();
+            this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute(this.id).get();
             if (this.issue == null) {
                 this.issue = new Issue();
             }
@@ -82,7 +82,7 @@ public final class IssueActivity extends AbstractActivity {
                         if (this.pagerAdapter.validate()) {
                             this.issue = (Issue) this.pagerAdapter.getObject();
                             this.issue.setId(this.id.equals("") ? null : this.id);
-                            new IssuesTask(IssueActivity.this, this.bugService, pid, false).execute(this.issue).get();
+                            new IssuesTask(IssueActivity.this, this.bugService, pid, false, MainActivity.settings.showNotifications()).execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();

@@ -107,7 +107,7 @@ public final class ProjectActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        task = new ProjectTask(ProjectActivity.this, this.bugService, true);
+                        task = new ProjectTask(ProjectActivity.this, this.bugService, true, MainActivity.settings.showNotifications());
                         task.execute(this.currentProject).get();
                         if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                             MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -126,7 +126,7 @@ public final class ProjectActivity extends AbstractActivity {
                     try {
                         if (this.projectValidator.getState()) {
                             this.controlsToObject();
-                            task = new ProjectTask(ProjectActivity.this, this.bugService, false);
+                            task = new ProjectTask(ProjectActivity.this, this.bugService, false, MainActivity.settings.showNotifications());
                             task.execute(this.currentProject).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                                 MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -227,7 +227,7 @@ public final class ProjectActivity extends AbstractActivity {
     protected void reload() {
         try {
             if (this.permissions.listProjects()) {
-                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService);
+                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService, MainActivity.settings.showNotifications());
                 this.listAdapter.clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute().get()) {

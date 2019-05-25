@@ -27,8 +27,8 @@ import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
 public class GetIssueTask extends AbstractTask<String, Void, Issue> {
-    public GetIssueTask(Activity activity, IBugService bugService) {
-        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issue_load);
+    public GetIssueTask(Activity activity, IBugService bugService, boolean showNotifications) {
+        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issue_load, showNotifications);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class IssuesTask extends AbstractTask<Issue, Void, Void> {
     private boolean delete;
     private Object pid;
 
-    public IssuesTask(Activity activity, IBugService bugService, Object pid, boolean delete) {
-        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content);
+    public IssuesTask(Activity activity, IBugService bugService, Object pid, boolean delete, boolean showNotifications) {
+        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
         this.delete = delete;
         this.pid = pid;
     }

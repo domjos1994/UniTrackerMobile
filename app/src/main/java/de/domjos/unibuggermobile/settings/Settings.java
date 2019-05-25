@@ -21,6 +21,7 @@ package de.domjos.unibuggermobile.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -33,9 +34,13 @@ public class Settings {
     private static final String PROJECT = "current_project";
 
     private SharedPreferences preferences;
+    private SharedPreferences userPreferences;
+    private Context context;
 
     public Settings(Context context) {
-        this.preferences = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
+        this.context = context;
+        this.preferences = context.getSharedPreferences(this.context.getPackageName(), Context.MODE_PRIVATE);
+        this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     public Authentication getCurrentAuthentication() {
@@ -63,7 +68,7 @@ public class Settings {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (title != null) {
                 if (!title.isEmpty()) {
-                    for (Project project : new ListProjectTask(activity, bugService).execute().get()) {
+                    for (Project project : new ListProjectTask(activity, bugService, MainActivity.settings.showNotifications()).execute().get()) {
                         if (project.getTitle().equals(title)) {
                             return project;
                         }
@@ -81,5 +86,9 @@ public class Settings {
         SharedPreferences.Editor editor = this.preferences.edit();
         editor.putString(Settings.PROJECT, title);
         editor.apply();
+    }
+
+    public boolean showNotifications() {
+        return this.userPreferences.getBoolean("swtNotifications", false);
     }
 }
