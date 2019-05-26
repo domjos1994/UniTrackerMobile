@@ -23,12 +23,21 @@ import android.app.Activity;
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.services.tracker.Github;
 import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
 public class GetIssueTask extends AbstractTask<String, Void, Issue> {
+    private String title;
+
     public GetIssueTask(Activity activity, IBugService bugService, boolean showNotifications) {
         super(activity, bugService, R.string.task_issues_list_title, R.string.task_issue_load, showNotifications);
+        this.title = "";
+    }
+
+    public GetIssueTask(Activity activity, IBugService bugService, boolean showNotifications, String title) {
+        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issue_load, showNotifications);
+        this.title = title;
     }
 
     @Override
@@ -45,10 +54,18 @@ public class GetIssueTask extends AbstractTask<String, Void, Issue> {
     protected Issue doInBackground(String[] objects) {
         if (!objects[0].equals("")) {
             try {
-                return super.bugService.getIssue(objects[0]);
+                if (this.title.isEmpty()) {
+                    return super.bugService.getIssue(objects[0]);
+                } else {
+                    return ((Github) super.bugService).getIssue(Long.parseLong(objects[0]), this.title);
+                }
             } catch (Exception ex) {
                 try {
-                    return super.bugService.getIssue(Long.parseLong(objects[0]));
+                    if (this.title.isEmpty()) {
+                        return super.bugService.getIssue(Long.parseLong(objects[0]));
+                    } else {
+                        return ((Github) super.bugService).getIssue(Long.parseLong(objects[0]), this.title);
+                    }
                 } catch (Exception e) {
                     super.activity.runOnUiThread(() -> MessageHelper.printException(e, super.activity));
                     return null;

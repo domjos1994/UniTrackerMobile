@@ -101,6 +101,7 @@ public class Helper {
                         bugService = new Redmine(authentication);
                         break;
                     case Github:
+                        authentication.setToken(MainActivity.settings.getGithubToken());
                         bugService = new Github(authentication);
                         break;
                     default:

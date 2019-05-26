@@ -106,9 +106,12 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
+        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
         Validator validator = new Validator(this.getContext());
         if (this.root != null) {
-            validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
+            if (authentication.getTracker() != Authentication.Tracker.Bugzilla) {
+                validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
+            }
         }
         return validator;
     }
@@ -123,6 +126,9 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
             case MantisBT:
                 this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
                 this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
+                break;
+            case Bugzilla:
+                this.txtIssueDescriptionsDescription.setText(this.getString(R.string.issues_descriptions_website));
                 break;
             case Local:
                 this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);

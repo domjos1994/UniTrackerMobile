@@ -91,6 +91,7 @@
     <string name="issues_general_resolution">Lösung</string>
 
     <string name="issues_descriptions">Beschreibungen</string>
+    <string name="issues_descriptions_website">Website</string>
     <string name="issues_descriptions_steps">Schritte zur Reproduktion</string>
     <string name="issues_descriptions_additional">Zusätzliche Informationen</string>
     <string name="issues_notes">Notizen</string>

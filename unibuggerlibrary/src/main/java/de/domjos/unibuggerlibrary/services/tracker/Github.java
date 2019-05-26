@@ -32,16 +32,18 @@ import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
+import de.domjos.unibuggerlibrary.services.engine.JSONEngineOAuth;
 import de.domjos.unibuggerlibrary.utils.Converter;
 
-public final class Github extends JSONEngine implements IBugService<Long> {
+public final class Github extends JSONEngineOAuth implements IBugService<Long> {
     private Authentication authentication;
     private String title;
+    private String project;
 
-    public Github(Authentication authentication) {
+    public Github(Authentication authentication) throws Exception {
         super(authentication);
         this.authentication = authentication;
+
     }
 
     @Override
@@ -51,7 +53,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public String getTrackerVersion() {
-        return "";
+        return "v3";
     }
 
     @Override
@@ -119,8 +121,8 @@ public final class Github extends JSONEngine implements IBugService<Long> {
             url = "/user/repos";
             method = "POST";
         } else {
-            url = "/repos/" + this.authentication.getUserName() + "/" + project.getAlias();
-            method = "PATCH";
+            url = "/repos/" + project.getTitle();
+            method = "POST";
         }
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
@@ -135,25 +137,30 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     @Override
     public void deleteProject(Long id) throws Exception {
         Project<Long> project = this.getProject(id);
-        this.deleteRequest("/repos/" + project.getTitle());
+        if (project != null) {
+            this.deleteRequest("/repos/" + project.getTitle());
+        }
     }
 
     @Override
     public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
         List<Version<Long>> versions = new LinkedList<>();
-        int status = this.executeRequest("/repos/" + this.authentication.getUserName() + "/" + this.getProject(pid).getAlias() + "/releases");
+        Project<Long> project = this.getProject(pid);
+        if (project != null) {
+            int status = this.executeRequest("/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases");
 
-        if (status == 200 || status == 201) {
-            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                Version<Long> version = new Version<>();
-                version.setTitle(jsonObject.getString("name"));
-                version.setDescription(jsonObject.getString("body"));
-                version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("published_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'").getTime());
-                version.setId(jsonObject.getLong("id"));
-                version.setReleasedVersion(jsonObject.getBoolean("prerelease"));
-                versions.add(version);
+            if (status == 200 || status == 201) {
+                JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    Version<Long> version = new Version<>();
+                    version.setTitle(jsonObject.getString("name"));
+                    version.setDescription(jsonObject.getString("body"));
+                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("published_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'").getTime());
+                    version.setId(jsonObject.getLong("id"));
+                    version.setReleasedVersion(jsonObject.getBoolean("prerelease"));
+                    versions.add(version);
+                }
             }
         }
 
@@ -199,12 +206,45 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        return null;
+        List<Issue<Long>> issues = new LinkedList<>();
+        Project<Long> project = this.getProject(pid);
+
+        if (project != null) {
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues");
+            if (status == 200 || status == 201) {
+                JSONArray issueArray = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= issueArray.length() - 1; i++) {
+                    Issue<Long> issue = new Issue<>();
+                    JSONObject issueObject = issueArray.getJSONObject(i);
+                    issue.setId(issueObject.getLong("number"));
+                    issue.setTitle(issueObject.getString("title"));
+                    issue.setDescription(issueObject.getString("body"));
+                    issues.add(issue);
+                }
+            }
+        }
+        return issues;
+    }
+
+    public Issue<Long> getIssue(Long id, String title) throws Exception {
+        this.project = title;
+        return this.getIssue(id);
     }
 
     @Override
     public Issue<Long> getIssue(Long id) throws Exception {
-        return null;
+        Issue<Long> issue = new Issue<>();
+        int status = this.executeRequest("/repos/" + this.project + "/issues/" + id);
+        if (status == 200 || status == 201) {
+            JSONObject issueObject = new JSONObject(this.getCurrentMessage());
+            issue.setId(issueObject.getLong("number"));
+            issue.setTitle(issueObject.getString("title"));
+            issue.setDescription(issueObject.getString("body"));
+            issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+            issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
+        }
+        return issue;
     }
 
     @Override
@@ -224,7 +264,22 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<User<Long>> getUsers(Long pid) throws Exception {
-        return null;
+        List<User<Long>> users = new LinkedList<>();
+        int status = this.executeRequest("/user/followers");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                users.add(this.getUser(jsonArray.getJSONObject(i)));
+            }
+        }
+        return users;
+    }
+
+    private User<Long> getUser(JSONObject jsonObject) throws Exception {
+        User<Long> user = new User<>();
+        user.setId(jsonObject.getLong("id"));
+        user.setTitle(jsonObject.getString("login"));
+        return user;
     }
 
     @Override

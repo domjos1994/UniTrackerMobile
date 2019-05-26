@@ -18,15 +18,14 @@
 
 package de.domjos.unibuggerlibrary.services.engine;
 
-import java.util.Arrays;
+import org.json.JSONObject;
+
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import de.domjos.unibuggerlibrary.utils.Converter;
 import okhttp3.Call;
-import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -34,24 +33,19 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class JSONEngine {
+public class JSONEngineOAuth {
     private Authentication authentication;
     private final List<String> headers;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-    private final OkHttpClient client;
+    private OkHttpClient client;
     private String currentMessage;
     private int state;
 
-    public JSONEngine(Authentication authentication) {
+    public JSONEngineOAuth(Authentication authentication) throws Exception {
         this.authentication = authentication;
         this.headers = new LinkedList<>();
-        this.client = this.getClient();
-    }
-
-    public JSONEngine(Authentication authentication, String... headers) {
-        this.authentication = authentication;
-        this.headers = new LinkedList<>();
-        this.headers.addAll(Arrays.asList(headers));
+        JSONObject object = new JSONObject(authentication.getToken());
+        this.headers.add("Authorization: token " + object.getString("access_token"));
         this.client = this.getClient();
     }
 
@@ -99,10 +93,6 @@ public class JSONEngine {
         return this.state;
     }
 
-    protected void addHeader(String header) {
-        this.headers.add(header);
-    }
-
     private Call initAuthentication(String path) {
         return this.initAuthentication(path, "", "");
     }
@@ -139,20 +129,12 @@ public class JSONEngine {
         return this.initAuthentication(path, "", "DELETE");
     }
 
+
     private OkHttpClient getClient() {
         return new OkHttpClient.Builder()
                 .followRedirects(true)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .authenticator((route, response) -> {
-                    String credential;
-                    if (!authentication.getAPIKey().isEmpty()) {
-                        credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
-                    } else {
-                        credential = Credentials.basic(authentication.getUserName(), authentication.getPassword());
-                    }
-                    return response.request().newBuilder().header("Authorization", credential).build();
-                })
                 .build();
     }
 

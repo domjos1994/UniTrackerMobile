@@ -373,7 +373,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.severityValueArray = "issues_general_severity_bugzilla_values";
                 break;
             case Github:
-
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
                 break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);

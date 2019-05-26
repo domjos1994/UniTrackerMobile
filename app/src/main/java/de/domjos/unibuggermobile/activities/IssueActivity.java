@@ -27,6 +27,7 @@ import android.view.View;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.issues.GetIssueTask;
 import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
@@ -57,7 +58,13 @@ public final class IssueActivity extends AbstractActivity {
             this.id = intent.getStringExtra("id");
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
-            this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute(this.id).get();
+            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+            if (authentication.getTracker() == Authentication.Tracker.Github) {
+                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications(), MainActivity.settings.getCurrentProject(IssueActivity.this, bugService).getTitle()).execute(this.id).get();
+            } else {
+                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute(this.id).get();
+            }
+
             if (this.issue == null) {
                 this.issue = new Issue();
             }

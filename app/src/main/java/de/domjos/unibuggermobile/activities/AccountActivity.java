@@ -23,6 +23,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.design.widget.BottomNavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,6 +35,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
+
+import com.google.api.client.auth.oauth2.BearerToken;
+import com.google.api.client.auth.oauth2.ClientParametersAuthentication;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.json.jackson.JacksonFactory;
+import com.wuman.android.auth.AuthorizationFlow;
+import com.wuman.android.auth.AuthorizationUIController;
+import com.wuman.android.auth.DialogFragmentController;
+import com.wuman.android.auth.OAuthManager;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -156,18 +169,23 @@ public final class AccountActivity extends AbstractActivity {
                     try {
                         if (this.accountValidator.getState()) {
                             this.controlsToObject();
-                            IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+
                             new Thread(() -> {
                                 try {
-                                    if (bugService.testConnection()) {
-                                        AccountActivity.this.runOnUiThread(() -> {
-                                            MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), AccountActivity.this);
-                                            MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
-                                            this.manageControls(false, true, false);
-                                            this.reload();
-                                        });
+                                    IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+                                    if (this.currentAccount.getTracker() == Authentication.Tracker.Github) {
+                                        this.getAccessToken();
                                     } else {
-                                        MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this);
+                                        if (bugService.testConnection()) {
+                                            AccountActivity.this.runOnUiThread(() -> {
+                                                MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), AccountActivity.this);
+                                                MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
+                                                this.manageControls(false, true, false);
+                                                this.reload();
+                                            });
+                                        } else {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this));
+                                        }
                                     }
                                 } catch (Exception ex) {
                                     AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
@@ -202,6 +220,60 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+    }
+
+    private void getAccessToken() {
+        AuthorizationFlow.Builder builder = new AuthorizationFlow.Builder(BearerToken.authorizationHeaderAccessMethod(), AndroidHttp.newCompatibleTransport(), new JacksonFactory(),
+                new GenericUrl("https://github.com/login/oauth/access_token"), new ClientParametersAuthentication("812f07f45f6be1f81c5e", "704ef8f0001add99c7df73107797a2926173e549"),
+                "812f07f45f6be1f81c5e", "https://github.com/login/oauth/authorize");
+        builder.setCredentialStore(MainActivity.settings.getCredentialStore());
+        AuthorizationFlow flow = builder.build();
+
+        AuthorizationUIController controller = new DialogFragmentController(getFragmentManager()) {
+            @Override
+            public String getRedirectUri() {
+                return "https://unibuggermobile.domjos.de/auth.html";
+            }
+
+            @Override
+            public boolean isJavascriptEnabledForWebView() {
+                return true;
+            }
+
+            @Override
+            public boolean disableWebViewCache() {
+                return false;
+            }
+
+            @Override
+            public boolean removePreviousCookie() {
+                return false;
+            }
+
+        };
+
+        OAuthManager oauth = new OAuthManager(flow, controller);
+        OAuthManager.OAuthCallback<Credential> callback = future -> {
+            try {
+                Credential credential = future.getResult();
+                String token = credential.getAccessToken();
+                if (!token.isEmpty()) {
+                    AccountActivity.this.runOnUiThread(() -> {
+
+                        MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), AccountActivity.this);
+                        MainActivity.globals.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
+                        this.manageControls(false, true, false);
+                        this.reload();
+                    });
+                }
+            } catch (Exception ex) {
+                AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+            }
+        };
+        HandlerThread handlerThread = new HandlerThread("MyHandlerThread");
+        handlerThread.start();
+        Handler handler = new Handler(handlerThread.getLooper());
+        oauth.authorizeExplicitly("userId", callback, handler);
     }
 
     @Override

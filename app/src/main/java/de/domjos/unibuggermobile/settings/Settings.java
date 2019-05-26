@@ -23,11 +23,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.api.client.json.jackson.JacksonFactory;
+import com.wuman.android.auth.oauth2.store.SharedPreferencesCredentialStore;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
 import de.domjos.unibuggermobile.activities.MainActivity;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Settings {
     private static final String AUTH = "auth_id";
@@ -35,12 +40,14 @@ public class Settings {
 
     private SharedPreferences preferences;
     private SharedPreferences userPreferences;
+    private SharedPreferencesCredentialStore credentialStore;
     private Context context;
 
     public Settings(Context context) {
         this.context = context;
-        this.preferences = context.getSharedPreferences(this.context.getPackageName(), Context.MODE_PRIVATE);
+        this.preferences = context.getSharedPreferences(this.context.getPackageName(), MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.credentialStore = new SharedPreferencesCredentialStore(this.context, "credStore", new JacksonFactory());
     }
 
     public Authentication getCurrentAuthentication() {
@@ -90,5 +97,13 @@ public class Settings {
 
     public boolean showNotifications() {
         return this.userPreferences.getBoolean("swtNotifications", false);
+    }
+
+    public SharedPreferencesCredentialStore getCredentialStore() {
+        return this.credentialStore;
+    }
+
+    public String getGithubToken() {
+        return this.context.getSharedPreferences("credStore", MODE_PRIVATE).getString("userId", "");
     }
 }
