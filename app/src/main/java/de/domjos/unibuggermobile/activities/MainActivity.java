@@ -56,11 +56,11 @@ import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 import de.domjos.unibuggermobile.settings.Globals;
-import de.domjos.unibuggermobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
     private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
     private ImageView ivMainCover;
     private TextView lblMainCommand;
     private TextView lblAccountTitle;
@@ -75,9 +75,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private static final int RELOAD_ACCOUNTS = 99;
     private static final int RELOAD_ISSUES = 101;
     private static final int RELOAD_SETTINGS = 102;
-    public static final Globals globals = new Globals();
-    public static Settings settings;
-
+    public static final Globals GLOBALS = new Globals();
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -96,21 +94,21 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 String item = accountList.getItem(position);
                 if (item != null) {
                     if (!item.trim().isEmpty()) {
-                        Authentication authentication = MainActivity.globals.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
+                        Authentication authentication = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
                         if (authentication != null) {
-                            MainActivity.settings.setCurrentAuthentication(authentication);
+                            MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(authentication);
                         } else {
-                            MainActivity.settings.setCurrentAuthentication(null);
+                            MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
                         }
                     } else {
-                        MainActivity.settings.setCurrentAuthentication(null);
+                        MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
                     }
                 } else {
-                    MainActivity.settings.setCurrentAuthentication(null);
+                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
                 }
+
+                changeAuthentication();
                 fillFields();
-                reloadProjects();
-                selectProject();
                 reload();
             }
 
@@ -122,7 +120,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.spMainProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                settings.setCurrentProject(projectList.getItem(position));
+                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(projectList.getItem(position));
+                changeAuthentication();
                 reload();
             }
 
@@ -136,7 +135,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (ls != null) {
                 Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
                 intent.putExtra("id", String.valueOf(ls.getDescriptionObject().getId()));
-                intent.putExtra("pid", String.valueOf(MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId()));
+                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService).getId()));
                 this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
             }
         });
@@ -147,8 +146,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     ListObject listObject = this.issueAdapter.getItem(position);
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
-                            Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
-                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true, MainActivity.settings.showNotifications()).execute((Issue) listObject.getDescriptionObject()).get();
+                            Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
+                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true, MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications()).execute((Issue) listObject.getDescriptionObject()).get();
                             reload();
                         }
                     }
@@ -162,7 +161,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.cmdIssuesAdd.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
             intent.putExtra("id", "");
-            intent.putExtra("pid", String.valueOf(MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService).getId()));
+            intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService).getId()));
             this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
         });
     }
@@ -178,18 +177,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.drawerLayout = this.findViewById(R.id.drawer_layout);
 
             // init Navigation-View
-            NavigationView navigationView = findViewById(R.id.nav_view);
+            this.navigationView = findViewById(R.id.nav_view);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, this.drawerLayout, toolbar, R.string.app_name, R.string.app_name);
             this.drawerLayout.addDrawerListener(toggle);
             toggle.syncState();
-            navigationView.setNavigationItemSelectedListener(this);
+            this.navigationView.setNavigationItemSelectedListener(this);
 
-            this.ivMainCover = navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
-            this.lblMainCommand = navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
-            this.lblAccountTitle = navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
+            this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
+            this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
+            this.lblAccountTitle = this.navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
 
             this.cmdIssuesAdd = this.findViewById(R.id.cmdIssueAdd);
-            this.spMainAccounts = navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
+            this.spMainAccounts = this.navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
             this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
             this.accountList.notifyDataSetChanged();
@@ -204,31 +203,45 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues.setAdapter(this.issueAdapter);
             this.issueAdapter.notifyDataSetChanged();
 
-            MainActivity.globals.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
+            MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
 
             this.reloadAccounts();
-            MainActivity.settings = new Settings(getApplicationContext());
-            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
-            if (authentication != null) {
-                this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
-                this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-                this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
-                if (this.permissions.addIssues()) {
-                    this.cmdIssuesAdd.show();
-                } else {
-                    this.cmdIssuesAdd.hide();
-                }
-
-
-                this.reloadProjects();
-                this.selectProject();
-            } else {
-                this.spMainAccounts.setSelection(this.accountList.getPosition(""));
-                this.permissions = new NOPERMISSION();
-            }
-
+            this.changeAuthentication();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
+        }
+    }
+
+    private void changeAuthentication() {
+        Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
+        if (authentication != null) {
+            this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            if (authentication.getServer().equals("")) {
+                this.permissions = new NOPERMISSION();
+            } else {
+                this.permissions = this.bugService.getPermissions();
+            }
+
+            if (this.permissions.addIssues() && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0) {
+                this.cmdIssuesAdd.show();
+            } else {
+                this.cmdIssuesAdd.hide();
+            }
+            this.navigationView.getMenu().findItem(R.id.navProjects).setVisible((this.permissions.addProjects() || this.permissions.updateProjects() || this.permissions.deleteProjects()));
+            this.navigationView.getMenu().findItem(R.id.navVersions).setVisible((this.permissions.addVersions() || this.permissions.updateVersions() || this.permissions.deleteVersions()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
+            this.navigationView.getMenu().findItem(R.id.navUsers).setVisible((this.permissions.addUsers() || this.permissions.updateUsers() || this.permissions.deleteUsers()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
+            this.navigationView.getMenu().findItem(R.id.navFields).setVisible((this.permissions.addCustomFields() || this.permissions.updateCustomFields() || this.permissions.deleteCustomFields()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
+
+            this.reloadProjects();
+            this.selectProject();
+        } else {
+            this.navigationView.getMenu().findItem(R.id.navProjects).setVisible(false);
+            this.navigationView.getMenu().findItem(R.id.navVersions).setVisible(false);
+            this.navigationView.getMenu().findItem(R.id.navUsers).setVisible(false);
+            this.navigationView.getMenu().findItem(R.id.navFields).setVisible(false);
+            this.spMainAccounts.setSelection(this.accountList.getPosition(""));
+            this.permissions = new NOPERMISSION();
         }
     }
 
@@ -237,9 +250,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             this.issueAdapter.clear();
             if (this.permissions.listIssues()) {
-                Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
+                Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
                 if (project != null) {
-                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId(), MainActivity.settings.showNotifications());
+                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId(), MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications());
                     for (Object issue : listIssueTask.execute().get()) {
                         this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
                     }
@@ -253,7 +266,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void reloadAccounts() {
         this.accountList.clear();
         this.accountList.add("");
-        for (Authentication authentication : MainActivity.globals.getSqLiteGeneral().getAccounts("")) {
+        for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
             this.accountList.add(authentication.getTitle());
         }
     }
@@ -262,14 +275,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             this.projectList.clear();
             this.projectList.add("");
-            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-            this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
-            if (this.permissions.addIssues()) {
-                this.cmdIssuesAdd.show();
-            } else {
-                this.cmdIssuesAdd.hide();
-            }
-            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute().get();
+
+            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService, MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications()).execute().get();
             if (projects != null) {
                 for (Project project : projects) {
                     this.projectList.add(project.getTitle());
@@ -314,13 +321,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
-        switch (item.getItemId()) {
-            case R.id.menSettings:
-                intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-                break;
-            default:
-                intent = null;
-                break;
+        if (item.getItemId() == R.id.menSettings) {
+            intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+        } else {
+            intent = null;
         }
 
         if (intent != null) {
@@ -342,6 +346,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             case R.id.navVersions:
                 intent = new Intent(this.getApplicationContext(), VersionActivity.class);
                 break;
+            case R.id.navUsers:
+                intent = new Intent(this.getApplicationContext(), UserActivity.class);
+                break;
+            case R.id.navFields:
+                intent = new Intent(this.getApplicationContext(), FieldActivity.class);
+                break;
             default:
                 intent = null;
                 break;
@@ -356,31 +366,37 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     private void fillFields() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
-            if (authentication.getCover() != null) {
-                ivMainCover.setImageBitmap(BitmapFactory.decodeByteArray(authentication.getCover(), 0, authentication.getCover().length));
-            } else {
+            if (authentication.getServer().equals("")) {
                 ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
-            }
-
-
-            final StringBuilder tracker = new StringBuilder();
-            tracker.append(authentication.getTitle());
-            tracker.append(" (");
-            tracker.append(authentication.getTracker().name());
-            tracker.append(" ");
-            new Thread(() -> {
-                try {
-                    IBugService bugService = Helper.getCurrentBugService(this.getApplicationContext());
-                    tracker.append(bugService.getTrackerVersion());
-                    tracker.append(")");
-                    MainActivity.this.runOnUiThread(() -> lblAccountTitle.setText(tracker.toString()));
-                } catch (Exception ignored) {
+                lblAccountTitle.setText(R.string.accounts_noAccount);
+                lblMainCommand.setText(R.string.accounts_add);
+            } else {
+                if (authentication.getCover() != null) {
+                    ivMainCover.setImageBitmap(BitmapFactory.decodeByteArray(authentication.getCover(), 0, authentication.getCover().length));
+                } else {
+                    ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
                 }
-            }).start();
 
-            lblMainCommand.setText(R.string.accounts_change);
+
+                final StringBuilder tracker = new StringBuilder();
+                tracker.append(authentication.getTitle());
+                tracker.append(" (");
+                tracker.append(authentication.getTracker().name());
+                tracker.append(" ");
+                new Thread(() -> {
+                    try {
+                        IBugService bugService = Helper.getCurrentBugService(this.getApplicationContext());
+                        tracker.append(bugService.getTrackerVersion());
+                        tracker.append(")");
+                        MainActivity.this.runOnUiThread(() -> lblAccountTitle.setText(tracker.toString()));
+                    } catch (Exception ignored) {
+                    }
+                }).start();
+
+                lblMainCommand.setText(R.string.accounts_change);
+            }
         } else {
             ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
             lblAccountTitle.setText(R.string.accounts_noAccount);
@@ -389,7 +405,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     private void selectProject() {
-        Project project = MainActivity.settings.getCurrentProject(MainActivity.this, this.bugService);
+        Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
         if (project != null) {
             this.spMainProjects.setSelection(this.projectList.getPosition(project.getTitle()));
         }
