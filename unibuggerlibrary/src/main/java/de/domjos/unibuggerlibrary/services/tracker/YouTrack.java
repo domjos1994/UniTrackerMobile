@@ -48,6 +48,7 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "id,name,values(id,name,description,released,releaseDate,archived)";
+    private final static String CUSTOM_FIELDS = "id,name,localizedName,fieldType(id),isAutoAttached,isDisplayedInIssueList,aliases,isUpdateable,fieldDefaults(canBeEmpty,emptyFieldText,isPublic)";
     private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,comments(id,text,created,updated),attachments(id,name,base64Content,url),customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
     private final static String USER_FIELDS = "id,login,fullName,email";
     private Authentication authentication;
