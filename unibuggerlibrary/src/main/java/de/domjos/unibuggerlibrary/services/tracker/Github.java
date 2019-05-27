@@ -26,29 +26,32 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.permissions.GithubPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.engine.JSONEngineOAuth;
+import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.utils.Converter;
 
-public final class Github extends JSONEngineOAuth implements IBugService<Long> {
+public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
     private String title;
     private String project;
 
-    public Github(Authentication authentication) throws Exception {
+    public Github(Authentication authentication) {
         super(authentication);
         this.authentication = authentication;
 
     }
 
     @Override
-    public boolean testConnection() throws Exception {
-        return false;
+    public boolean testConnection() {
+        return true;
     }
 
     @Override
@@ -275,6 +278,46 @@ public final class Github extends JSONEngineOAuth implements IBugService<Long> {
         return users;
     }
 
+    @Override
+    public User<Long> getUser(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public CustomField<Long> getCustomField(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(Long id) throws Exception {
+
+    }
+
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new GithubPermissions(this.authentication);
+    }
+
     private User<Long> getUser(JSONObject jsonObject) throws Exception {
         User<Long> user = new User<>();
         user.setId(jsonObject.getLong("id"));
@@ -282,6 +325,11 @@ public final class Github extends JSONEngineOAuth implements IBugService<Long> {
         return user;
     }
 
+    /**
+     * @return List of tags
+     * @throws Exception
+     * @see <a href="https://developer.github.com/v3/issues/labels/">Github Reference</a>
+     */
     @Override
     public List<Tag<Long>> getTags() throws Exception {
         return null;

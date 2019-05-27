@@ -25,7 +25,6 @@ public class Authentication extends DescriptionObject<Long> {
     private String userName;
     private String password;
     private String APIKey;
-    private String token;
     private byte[] cover;
     private Tracker tracker;
 
@@ -45,7 +44,6 @@ public class Authentication extends DescriptionObject<Long> {
         this.password = password;
         this.cover = null;
         this.tracker = null;
-        this.token = "";
     }
 
     public String getServer() {
@@ -94,14 +92,6 @@ public class Authentication extends DescriptionObject<Long> {
 
     public void setTracker(Tracker tracker) {
         this.tracker = tracker;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public enum Tracker {

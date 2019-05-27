@@ -30,13 +30,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.permissions.BugzillaPermissions;
-import de.domjos.unibuggerlibrary.permissions.GithubPermissions;
-import de.domjos.unibuggerlibrary.permissions.MantisBTPermissions;
-import de.domjos.unibuggerlibrary.permissions.RedminePermissions;
-import de.domjos.unibuggerlibrary.permissions.SQLitePermissions;
-import de.domjos.unibuggerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
 import de.domjos.unibuggerlibrary.services.tracker.Github;
@@ -80,7 +73,7 @@ public class Helper {
     }
 
     public static IBugService getCurrentBugService(Context context) {
-        return Helper.getCurrentBugService(MainActivity.settings.getCurrentAuthentication(), context);
+        return Helper.getCurrentBugService(MainActivity.GLOBALS.getSettings(context).getCurrentAuthentication(), context);
     }
 
     public static IBugService getCurrentBugService(Authentication authentication, Context context) {
@@ -95,13 +88,12 @@ public class Helper {
                         bugService = new Bugzilla(authentication);
                         break;
                     case YouTrack:
-                        bugService = new YouTrack(MainActivity.settings.getCurrentAuthentication());
+                        bugService = new YouTrack(authentication);
                         break;
                     case RedMine:
                         bugService = new Redmine(authentication);
                         break;
                     case Github:
-                        authentication.setToken(MainActivity.settings.getGithubToken());
                         bugService = new Github(authentication);
                         break;
                     default:
@@ -116,41 +108,6 @@ public class Helper {
         }
         return bugService;
     }
-
-    public static IFunctionImplemented getCurrentPermissions(Context context) {
-        IFunctionImplemented functionImplemented = null;
-        try {
-            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
-            if (authentication != null) {
-                switch (authentication.getTracker()) {
-                    case MantisBT:
-                        functionImplemented = new MantisBTPermissions(authentication);
-                        break;
-                    case Bugzilla:
-                        functionImplemented = new BugzillaPermissions(authentication);
-                        break;
-                    case YouTrack:
-                        functionImplemented = new YoutrackPermissions(authentication);
-                        break;
-                    case RedMine:
-                        functionImplemented = new RedminePermissions(authentication);
-                        break;
-                    case Github:
-                        functionImplemented = new GithubPermissions(authentication);
-                        break;
-                    default:
-                        functionImplemented = new SQLitePermissions();
-                        break;
-                }
-            } else {
-                functionImplemented = new SQLitePermissions();
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, context);
-        }
-        return functionImplemented;
-    }
-
 
     public static ArrayAdapter<String> setAdapter(Context context, String key) {
         if (context != null) {

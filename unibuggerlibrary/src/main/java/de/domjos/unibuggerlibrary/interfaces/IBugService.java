@@ -20,6 +20,7 @@ package de.domjos.unibuggerlibrary.interfaces;
 
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
@@ -91,5 +92,21 @@ public interface IBugService<T> {
 
     List<User<T>> getUsers(T pid) throws Exception;
 
+    User<T> getUser(T id) throws Exception;
+
+    T insertOrUpdateUser(User<T> user) throws Exception;
+
+    void deleteUser(T id) throws Exception;
+
+    List<CustomField<T>> getCustomFields(T pid) throws Exception;
+
+    CustomField<T> getCustomField(T id) throws Exception;
+
+    T insertOrUpdateCustomField(CustomField<T> user) throws Exception;
+
+    void deleteCustomField(T id) throws Exception;
+
     List<Tag<T>> getTags() throws Exception;
+
+    IFunctionImplemented getPermissions();
 }

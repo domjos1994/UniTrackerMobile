@@ -63,4 +63,22 @@ public interface IFunctionImplemented {
     boolean updateAttachments();
 
     boolean deleteAttachments();
+
+
+    boolean listUsers();
+
+    boolean addUsers();
+
+    boolean updateUsers();
+
+    boolean deleteUsers();
+
+
+    boolean listCustomFields();
+
+    boolean addCustomFields();
+
+    boolean updateCustomFields();
+
+    boolean deleteCustomFields();
 }

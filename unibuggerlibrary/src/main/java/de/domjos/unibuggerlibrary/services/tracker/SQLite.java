@@ -31,6 +31,7 @@ import java.util.Map;
 
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -39,6 +40,7 @@ import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.permissions.SQLitePermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggerlibrary.utils.Utils;
@@ -487,6 +489,41 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public User<Long> getUser(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public CustomField<Long> getCustomField(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(Long id) throws Exception {
+
+    }
+
+    @Override
     public List<Tag<Long>> getTags() {
         List<Tag<Long>> tags = new LinkedList<>();
         List<String> strTags = new LinkedList<>();
@@ -530,6 +567,10 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         return tags;
     }
 
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new SQLitePermissions();
+    }
 
     private void initDatabase(SQLiteDatabase db) {
         try {

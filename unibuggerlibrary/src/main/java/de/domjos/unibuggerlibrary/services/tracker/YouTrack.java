@@ -23,6 +23,7 @@ import android.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.AbstractMap;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -31,20 +32,24 @@ import java.util.Map;
 import java.util.UUID;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
-    private final static String VERSION_FIELDS = "name,values(id,name,color(id,background,foreground),description)";
+    private final static String VERSION_FIELDS = "id,name,values(id,name,description,released,releaseDate,archived)";
     private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,comments(id,text,created,updated),attachments(id,name,base64Content,url),customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
+    private final static String USER_FIELDS = "id,login,fullName,email";
     private Authentication authentication;
 
     public YouTrack(Authentication authentication) {
@@ -54,6 +59,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public boolean testConnection() throws Exception {
+        int status = this.executeRequest("/api/admin/users/me?fields=" + YouTrack.USER_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            return this.authentication.getUserName().equals(jsonObject.getString("login"));
+        }
         return false;
     }
 
@@ -135,36 +145,22 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public List<Version<String>> getVersions(String pid, String filter) throws Exception {
         List<Version<String>> versions = new LinkedList<>();
-        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/version?fields=" + YouTrack.VERSION_FIELDS);
-
-        if (status == 200 || status == 201) {
-            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
-
-            String name = "";
-            Project<String> project = this.getProject(pid);
-            if (project != null) {
-                name = project.getTitle();
-            }
-
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String bundle = jsonObject.getString("name");
-                if (bundle.contains(": ")) {
-                    bundle = bundle.split(": ")[0].trim();
-                }
-                if (bundle.equals(name)) {
-                    if (jsonObject.has("values")) {
-                        JSONArray valueArray = jsonObject.getJSONArray("values");
-                        if (valueArray.length() != 0) {
-                            for (int j = 0; j <= valueArray.length() - 1; j++) {
-                                JSONObject versionObject = valueArray.getJSONObject(j);
-                                Version<String> version = new Version<>();
-                                version.setId(versionObject.getString("id"));
-                                version.setTitle(versionObject.getString("name"));
-                                version.setDescription(versionObject.getString("description"));
-                                versions.add(version);
-                            }
-                        }
+        Project<String> project = this.getProject(pid);
+        if (project != null) {
+            Map.Entry<String, JSONArray> entry = this.getBundle(project.getTitle(), false);
+            if (entry != null) {
+                JSONArray valueArray = entry.getValue();
+                if (valueArray.length() != 0) {
+                    for (int j = 0; j <= valueArray.length() - 1; j++) {
+                        JSONObject versionObject = valueArray.getJSONObject(j);
+                        Version<String> version = new Version<>();
+                        version.setId(versionObject.getString("id"));
+                        version.setTitle(versionObject.getString("name"));
+                        version.setDescription(versionObject.getString("description"));
+                        version.setReleasedVersionAt(versionObject.getLong("releaseDate"));
+                        version.setReleasedVersion(versionObject.getBoolean("released"));
+                        version.setDeprecatedVersion(versionObject.getBoolean("archived"));
+                        versions.add(version);
                     }
                 }
             }
@@ -177,34 +173,84 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     public String insertOrUpdateVersion(String pid, Version<String> version) throws Exception {
         Project<String> project = this.getProject(pid);
         if (project != null) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("name", project.getTitle() + ": Versions");
-            jsonObject.put("$type", "VersionBundle");
-            JSONArray jsonArray = new JSONArray();
-            JSONObject versionObject = new JSONObject();
-            versionObject.put("name", version.getTitle());
-            versionObject.put("description", version.getDescription());
-            jsonArray.put(versionObject);
-            jsonObject.put("values", jsonArray);
-
-            String url;
-            if (version.getId() == null) {
-                url = "/api/admin/customFieldSettings/bundles/version?fields=id,name,fieldType(presentation,id),values(id,name,description,$type)";
-            } else {
-                url = "/api/admin/customFieldSettings/bundles/version/" + version.getId() + "?fields=id,name,fieldType(presentation,id),values(id,name,description,$type)";
+            Map.Entry<String, JSONArray> entry = this.getBundle(project.getTitle(), false);
+            if (entry != null) {
+                String id = entry.getKey();
+                if (version.getId() == null) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("name", version.getTitle());
+                    jsonObject.put("description", version.getDescription());
+                    jsonObject.put("released", version.isReleasedVersion());
+                    jsonObject.put("archived", version.isDeprecatedVersion());
+                    jsonObject.put("releaseDate", version.getReleasedVersionAt());
+                    entry.getValue().put(jsonObject);
+                } else {
+                    for (int i = 0; i <= entry.getValue().length() - 1; i++) {
+                        JSONObject jsonObject = entry.getValue().getJSONObject(i);
+                        if (jsonObject.getString("id").equals(version.getId())) {
+                            entry.getValue().getJSONObject(i).put("id", "");
+                            entry.getValue().getJSONObject(i).put("name", version.getTitle());
+                            entry.getValue().getJSONObject(i).put("description", version.getDescription());
+                            entry.getValue().getJSONObject(i).put("released", version.isReleasedVersion());
+                            entry.getValue().getJSONObject(i).put("archived", version.isDeprecatedVersion());
+                            entry.getValue().getJSONObject(i).put("releaseDate", version.getReleasedVersionAt());
+                        }
+                    }
+                }
+                JSONObject rootObject = new JSONObject();
+                rootObject.put("values", entry.getValue());
+                this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + id, rootObject.toString(), "POST");
             }
-            int status = this.executeRequest(url, jsonObject.toString(), "POST");
-            if (status == 200 || status == 201) {
+        }
+        return null;
+    }
 
+    private Map.Entry<String, JSONArray> getBundle(String projectName, boolean id) throws Exception {
+        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/version?fields=" + YouTrack.VERSION_FIELDS);
+
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String bundle = jsonObject.getString("name");
+                String version = jsonObject.getString("id");
+                if (bundle.contains(": ")) {
+                    bundle = bundle.split(": ")[0].trim();
+                }
+                if (!id) {
+                    if (bundle.equals(projectName)) {
+                        if (jsonObject.has("values")) {
+                            return new AbstractMap.SimpleEntry<>(version, jsonObject.getJSONArray("values"));
+                        }
+                    }
+                } else {
+                    JSONArray array = jsonObject.getJSONArray("values");
+                    for (int j = 0; j <= array.length() - 1; j++) {
+                        if (projectName.equals(array.getJSONObject(j).getString("id"))) {
+                            return new AbstractMap.SimpleEntry<>(version, jsonObject.getJSONArray("values"));
+                        }
+                    }
+                }
             }
-
         }
         return null;
     }
 
     @Override
     public void deleteVersion(String id) throws Exception {
-        this.deleteRequest("/api/admin/customFieldSettings/bundles/version/" + id);
+        Map.Entry<String, JSONArray> entry = this.getBundle(id, true);
+        if (entry != null) {
+            JSONArray array = new JSONArray();
+            for (int i = 0; i <= entry.getValue().length() - 1; i++) {
+                if (!entry.getValue().getJSONObject(i).getString("id").equals(id)) {
+                    array.put(entry.getValue().getJSONObject(i));
+                }
+            }
+            JSONObject rootObject = new JSONObject();
+            rootObject.put("values", array);
+            this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + entry.getKey(), rootObject.toString(), "POST");
+        }
     }
 
     @Override
@@ -551,10 +597,50 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
+    public User<String> getUser(String id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String insertOrUpdateUser(User<String> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<String>> getCustomFields(String pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public CustomField<String> getCustomField(String id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public String insertOrUpdateCustomField(CustomField<String> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(String id) throws Exception {
+
+    }
+
+    @Override
     public List<Tag<String>> getTags() throws Exception {
         List<Tag<String>> tags = new LinkedList<>();
 
         return tags;
+    }
+
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new YoutrackPermissions(this.authentication);
     }
 
     private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {
@@ -566,7 +652,17 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         if (jsonObject.has("archived")) {
             project.setEnabled(!jsonObject.getBoolean("archived"));
         }
-        project.setIconUrl(jsonObject.getString("iconUrl"));
+        String iconUrl = jsonObject.getString("iconUrl");
+        if (iconUrl != null) {
+            iconUrl = iconUrl.trim();
+            if (!iconUrl.isEmpty()) {
+                if (iconUrl.startsWith("/")) {
+                    project.setIconUrl(this.authentication.getServer() + jsonObject.getString("iconUrl"));
+                } else {
+                    project.setIconUrl(jsonObject.getString("iconUrl"));
+                }
+            }
+        }
         return project;
     }
 }

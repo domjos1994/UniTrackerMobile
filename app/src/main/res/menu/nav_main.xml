@@ -29,5 +29,13 @@
             android:id="@+id/navVersions"
             android:icon="@drawable/ic_update_black_24dp"
             android:title="@string/versions" />
+        <item
+            android:id="@+id/navUsers"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="@string/users" />
+        <item
+            android:id="@+id/navFields"
+            android:icon="@drawable/ic_text_fields_black_24dp"
+            android:title="@string/users" />
     </group>
 </menu>

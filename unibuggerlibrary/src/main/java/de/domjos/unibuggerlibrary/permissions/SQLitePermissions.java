@@ -125,4 +125,44 @@ public class SQLitePermissions implements IFunctionImplemented {
     public boolean deleteAttachments() {
         return true;
     }
+
+    @Override
+    public boolean listUsers() {
+        return false;
+    }
+
+    @Override
+    public boolean addUsers() {
+        return false;
+    }
+
+    @Override
+    public boolean updateUsers() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteUsers() {
+        return false;
+    }
+
+    @Override
+    public boolean listCustomFields() {
+        return false;
+    }
+
+    @Override
+    public boolean addCustomFields() {
+        return false;
+    }
+
+    @Override
+    public boolean updateCustomFields() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteCustomFields() {
+        return false;
+    }
 }

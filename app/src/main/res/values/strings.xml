@@ -70,6 +70,10 @@
         <item>@string/versions_released</item>
     </string-array>
 
+    <string name="users">Benutzer</string>
+
+    <string name="fields">Felder</string>
+
     <string name="issues">Fehler</string>
     <string name="issues_general">Generell</string>
     <string name="issues_custom">Benutzerdefiniert</string>
@@ -115,4 +119,5 @@
 
     <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>
     <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
+    <string name="validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
 </resources>

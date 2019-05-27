@@ -35,6 +35,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.PagerAdapter;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unibuggermobile.settings.Settings;
 
 public final class IssueActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -42,6 +43,7 @@ public final class IssueActivity extends AbstractActivity {
     private String id, pid;
     private Issue issue;
     private IBugService bugService;
+    private Settings settings;
 
     public IssueActivity() {
         super(R.layout.issue_activity);
@@ -54,15 +56,16 @@ public final class IssueActivity extends AbstractActivity {
     @Override
     protected void initControls() {
         try {
+            this.settings = MainActivity.GLOBALS.getSettings(getApplicationContext());
             Intent intent = this.getIntent();
             this.id = intent.getStringExtra("id");
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
-            Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+            Authentication authentication = this.settings.getCurrentAuthentication();
             if (authentication.getTracker() == Authentication.Tracker.Github) {
-                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications(), MainActivity.settings.getCurrentProject(IssueActivity.this, bugService).getTitle()).execute(this.id).get();
+                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, this.settings.showNotifications(), this.settings.getCurrentProject(IssueActivity.this, bugService).getTitle()).execute(this.id).get();
             } else {
-                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, MainActivity.settings.showNotifications()).execute(this.id).get();
+                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, this.settings.showNotifications()).execute(this.id).get();
             }
 
             if (this.issue == null) {
@@ -89,7 +92,7 @@ public final class IssueActivity extends AbstractActivity {
                         if (this.pagerAdapter.validate()) {
                             this.issue = (Issue) this.pagerAdapter.getObject();
                             this.issue.setId(this.id.equals("") ? null : this.id);
-                            new IssuesTask(IssueActivity.this, this.bugService, pid, false, MainActivity.settings.showNotifications()).execute(this.issue).get();
+                            new IssuesTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications()).execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();
@@ -115,7 +118,7 @@ public final class IssueActivity extends AbstractActivity {
 
     @Override
     protected void manageControls(boolean editMode, boolean reset, boolean selected) {
-        IFunctionImplemented iFunctionImplemented = Helper.getCurrentPermissions(this.getApplicationContext());
+        IFunctionImplemented iFunctionImplemented = this.bugService.getPermissions();
         boolean isVisible = this.navigationView.getMenu().getItem(1).isVisible();
         boolean canUpdate = iFunctionImplemented.updateIssues();
         this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);

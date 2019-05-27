@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -38,6 +39,7 @@ import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.permissions.MantisBTPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.SoapEngine;
 import de.domjos.unibuggerlibrary.utils.Converter;
@@ -46,10 +48,12 @@ import static org.ksoap2.serialization.MarshalHashtable.NAMESPACE;
 
 public final class MantisBT extends SoapEngine implements IBugService<Long> {
     private String currentMessage;
+    private Authentication authentication;
     private int state;
 
     public MantisBT(Authentication authentication) {
         super(authentication, "/api/soap/mantisconnect.php");
+        this.authentication = authentication;
         this.currentMessage = "";
         this.state = 0;
     }
@@ -671,6 +675,21 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
+    public User<Long> getUser(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) throws Exception {
+
+    }
+
+    @Override
     public List<Tag<Long>> getTags() throws Exception {
         List<Tag<Long>> tags = new LinkedList<>();
         SoapObject request = new SoapObject(super.soapPath, "mc_tag_get_all");
@@ -692,7 +711,8 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return tags;
     }
 
-    private List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+    @Override
+    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
         List<CustomField<Long>> customFields = new LinkedList<>();
         SoapObject request = new SoapObject(super.soapPath, "mc_project_get_custom_fields");
         request.addProperty("project_id", pid);
@@ -721,7 +741,25 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return customFields;
     }
 
+    @Override
+    public CustomField<Long> getCustomField(Long id) throws Exception {
+        return null;
+    }
 
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(Long id) throws Exception {
+
+    }
+
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new MantisBTPermissions(this.authentication);
+    }
 
     private Object getResult(Object object) {
         if (object instanceof SoapFault) {

@@ -209,7 +209,7 @@ public final class IssueNotesFragment extends AbstractFragment {
 
     @Override
     public void updateUITrackerSpecific() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
 
         switch (authentication.getTracker()) {
             case MantisBT:

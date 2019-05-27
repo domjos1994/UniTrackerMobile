@@ -282,7 +282,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         Validator validator = new Validator(this.getContext());
         if (this.root != null) {
             validator.addEmptyValidator(this.txtIssueGeneralSummary);
@@ -297,7 +297,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
     @Override
     public void updateUITrackerSpecific() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         this.rowIssueGeneralDueDate.setVisibility(View.GONE);
         this.rowIssueGeneralDates.setVisibility(View.GONE);
         this.rowIssueGeneralCategory.setVisibility(View.GONE);
@@ -430,7 +430,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new ListVersionTask(this.getActivity(), this.bugService, this.pid, "versions", MainActivity.settings.showNotifications()).execute().get();
+                    List<Version> versions = new ListVersionTask(this.getActivity(), this.bugService, this.pid, "versions", MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications()).execute().get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

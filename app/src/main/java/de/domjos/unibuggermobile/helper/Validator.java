@@ -26,6 +26,8 @@ import android.widget.EditText;
 import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
@@ -66,6 +68,25 @@ public class Validator {
         this.executeLater.put(txt.getId(), new AbstractMap.SimpleEntry<>(txt, table + ":" + column + ":" + id));
     }
 
+    public void addValueEqualsRegex(EditText txt, String regex) {
+        this.controlFieldEqualsRegex(txt, regex);
+
+        txt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                controlFieldEqualsRegex(txt, regex);
+            }
+        });
+    }
+
     public boolean getState() {
         for (Map.Entry<Integer, Map.Entry<EditText, String>> entry : this.executeLater.entrySet()) {
             String[] field = entry.getValue().getValue().split(":");
@@ -102,7 +123,7 @@ public class Validator {
     private boolean controlFieldIsDuplicated(EditText txt, String table, String column, long id) {
         if (txt != null) {
             if (txt.getText() != null) {
-                if (MainActivity.globals.getSqLiteGeneral().duplicated(table, column, txt.getText().toString(), "ID<>" + id)) {
+                if (MainActivity.GLOBALS.getSqLiteGeneral().duplicated(table, column, txt.getText().toString(), "ID<>" + id)) {
                     MessageHelper.printMessage(String.format(this.context.getString(R.string.validator_duplicated), txt.getText().toString(), txt.getHint()), this.context);
                     return false;
                 }
@@ -110,4 +131,21 @@ public class Validator {
         }
         return true;
     }
+
+    private void controlFieldEqualsRegex(EditText txt, String regex) {
+        if (txt != null) {
+            if (txt.getText() != null) {
+                Pattern pattern = Pattern.compile(regex);
+                Matcher matcher = pattern.matcher(txt.getText().toString());
+                if (!matcher.matches()) {
+                    txt.setError(String.format(this.context.getString(R.string.validator_matches), txt.getHint()));
+                    this.states.put(txt.getId(), false);
+                    return;
+                }
+            }
+            txt.setError(null);
+            this.states.put(txt.getId(), true);
+        }
+    }
+
 }

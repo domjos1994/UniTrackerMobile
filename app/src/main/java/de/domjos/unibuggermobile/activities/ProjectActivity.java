@@ -20,6 +20,7 @@ package de.domjos.unibuggermobile.activities;
 
 import android.os.Build;
 import android.support.design.widget.BottomNavigationView;
+import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
@@ -49,6 +50,7 @@ import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.custom.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.unibuggermobile.settings.Settings;
 
 @SuppressWarnings("unchecked")
 public final class ProjectActivity extends AbstractActivity {
@@ -71,6 +73,7 @@ public final class ProjectActivity extends AbstractActivity {
     private IFunctionImplemented permissions;
     private Project currentProject;
     private Validator projectValidator;
+    private Settings settings;
 
     public ProjectActivity() {
         super(R.layout.project_activity);
@@ -94,6 +97,8 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
+
         // init bottom-navigation
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -107,7 +112,7 @@ public final class ProjectActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        task = new ProjectTask(ProjectActivity.this, this.bugService, true, MainActivity.settings.showNotifications());
+                        task = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
                         task.execute(this.currentProject).get();
                         if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                             MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -126,7 +131,7 @@ public final class ProjectActivity extends AbstractActivity {
                     try {
                         if (this.projectValidator.getState()) {
                             this.controlsToObject();
-                            task = new ProjectTask(ProjectActivity.this, this.bugService, false, MainActivity.settings.showNotifications());
+                            task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
                             task.execute(this.currentProject).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                                 MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -178,7 +183,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowProjectPrivate = this.findViewById(R.id.rowProjectPrivate);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-        this.permissions = Helper.getCurrentPermissions(this.getApplicationContext());
+        this.permissions = this.bugService.getPermissions();
 
         this.updateUITrackerSpecific();
     }
@@ -188,12 +193,16 @@ public final class ProjectActivity extends AbstractActivity {
         this.projectValidator = new Validator(this.getApplicationContext());
         this.projectValidator.addEmptyValidator(this.txtProjectTitle);
 
-        switch (MainActivity.settings.getCurrentAuthentication().getTracker()) {
+        switch (this.settings.getCurrentAuthentication().getTracker()) {
             case RedMine:
                 this.projectValidator.addEmptyValidator(this.txtProjectAlias);
                 break;
             case Bugzilla:
                 this.projectValidator.addEmptyValidator(this.txtProjectVersion);
+                break;
+            case YouTrack:
+                this.projectValidator.addValueEqualsRegex(this.txtProjectAlias, "^[a-zA-Z0-9_]{1,}$");
+                break;
         }
     }
 
@@ -227,7 +236,7 @@ public final class ProjectActivity extends AbstractActivity {
     protected void reload() {
         try {
             if (this.permissions.listProjects()) {
-                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService, MainActivity.settings.showNotifications());
+                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService, this.settings.showNotifications());
                 this.listAdapter.clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute().get()) {
@@ -305,7 +314,7 @@ public final class ProjectActivity extends AbstractActivity {
             this.currentProject.setTitle(this.txtProjectTitle.getText().toString());
             this.currentProject.setAlias(this.txtProjectAlias.getText().toString());
             this.currentProject.setDescription(this.txtProjectDescription.getText().toString());
-            this.currentProject.setEnabled(this.chkProjectEnabled.isEnabled());
+            this.currentProject.setEnabled(this.chkProjectEnabled.isChecked());
             this.currentProject.setPrivateProject(this.chkProjectPrivate.isChecked());
             this.currentProject.setWebsite(this.txtProjectWebsite.getText().toString());
             this.currentProject.setDefaultVersion(this.txtProjectVersion.getText().toString());
@@ -388,8 +397,8 @@ public final class ProjectActivity extends AbstractActivity {
 
     private void updateUITrackerSpecific() {
         Authentication.Tracker tracker;
-        if (MainActivity.settings.getCurrentAuthentication() != null) {
-            tracker = MainActivity.settings.getCurrentAuthentication().getTracker();
+        if (this.settings.getCurrentAuthentication() != null) {
+            tracker = this.settings.getCurrentAuthentication().getTracker();
         } else {
             return;
         }
@@ -421,6 +430,7 @@ public final class ProjectActivity extends AbstractActivity {
                 case YouTrack:
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowProjectIcon.setVisibility(View.VISIBLE);
+                    this.txtProjectIconUrl.setInputType(InputType.TYPE_NULL);
                     this.rowProjectEnabled.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:

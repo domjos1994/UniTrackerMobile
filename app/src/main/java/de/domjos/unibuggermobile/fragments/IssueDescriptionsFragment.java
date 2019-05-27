@@ -106,7 +106,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         Validator validator = new Validator(this.getContext());
         if (this.root != null) {
             if (authentication.getTracker() != Authentication.Tracker.Bugzilla) {
@@ -118,7 +118,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
     @Override
     public void updateUITrackerSpecific() {
-        Authentication authentication = MainActivity.settings.getCurrentAuthentication();
+        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         this.rowIssueDescriptionsAdditional.setVisibility(View.GONE);
         this.rowIssueDescriptionsSteps.setVisibility(View.GONE);
 

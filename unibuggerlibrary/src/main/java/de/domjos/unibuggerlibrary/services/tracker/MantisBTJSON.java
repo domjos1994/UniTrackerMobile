@@ -30,11 +30,14 @@ import java.util.List;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.permissions.NOPERMISSION;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBTSpecific.SubProject;
@@ -258,8 +261,48 @@ public final class MantisBTJSON extends JSONEngine implements IBugService<Long> 
     }
 
     @Override
+    public User<Long> getUser(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+        return null;
+    }
+
+    @Override
+    public CustomField<Long> getCustomField(Long id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(Long id) throws Exception {
+
+    }
+
+    @Override
     public List<Tag<Long>> getTags() throws Exception {
         return null;
+    }
+
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new NOPERMISSION();
     }
 
     private Project<Long> jsonToProject(JSONObject projectObject, boolean versions) throws Exception {

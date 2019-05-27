@@ -47,6 +47,7 @@ import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.unibuggermobile.settings.Settings;
 
 public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -65,6 +66,7 @@ public final class VersionActivity extends AbstractActivity {
     private Version currentVersion;
 
     private Validator versionValidator;
+    private Settings settings;
 
     private String filter;
 
@@ -103,6 +105,8 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
+
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -115,10 +119,10 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        if (MainActivity.settings.getCurrentAuthentication().getTracker() == Authentication.Tracker.Github) {
+                        if (this.settings.getCurrentAuthentication().getTracker() == Authentication.Tracker.Github) {
                             ((Github) this.bugService).setTitle(currentProject.getAlias());
                         }
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true, MainActivity.settings.showNotifications()).execute(this.currentVersion).get();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentVersion).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -132,7 +136,7 @@ public final class VersionActivity extends AbstractActivity {
                     try {
                         if (this.versionValidator.getState()) {
                             this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false, MainActivity.settings.showNotifications()).execute(this.currentVersion).get();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -163,8 +167,8 @@ public final class VersionActivity extends AbstractActivity {
         this.rowVersionFilter = this.findViewById(R.id.rowVersionFilter);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-        this.permissions = Helper.getCurrentPermissions(VersionActivity.this);
-        this.currentProject = MainActivity.settings.getCurrentProject(VersionActivity.this, this.bugService);
+        this.permissions = this.bugService.getPermissions();
+        this.currentProject = this.settings.getCurrentProject(VersionActivity.this, this.bugService);
         this.updateUITrackerSpecific();
     }
 
@@ -191,7 +195,7 @@ public final class VersionActivity extends AbstractActivity {
                                 filterAction = "versions";
                             }
                         }
-                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction, MainActivity.settings.showNotifications());
+                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction, this.settings.showNotifications());
                         for (Version version : versionTask.execute().get()) {
                             ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
                             this.versionAdapter.add(listObject);
@@ -256,8 +260,8 @@ public final class VersionActivity extends AbstractActivity {
 
     private void updateUITrackerSpecific() {
         Authentication.Tracker tracker;
-        if (MainActivity.settings.getCurrentAuthentication() != null) {
-            tracker = MainActivity.settings.getCurrentAuthentication().getTracker();
+        if (this.settings.getCurrentAuthentication() != null) {
+            tracker = this.settings.getCurrentAuthentication().getTracker();
         } else {
             return;
         }
@@ -283,7 +287,9 @@ public final class VersionActivity extends AbstractActivity {
                     this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
                     break;
                 case YouTrack:
-
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:
                     this.rowVersionReleased.setVisibility(View.VISIBLE);

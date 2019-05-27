@@ -23,9 +23,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.google.api.client.json.jackson.JacksonFactory;
-import com.wuman.android.auth.oauth2.store.SharedPreferencesCredentialStore;
-
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -40,20 +37,16 @@ public class Settings {
 
     private SharedPreferences preferences;
     private SharedPreferences userPreferences;
-    private SharedPreferencesCredentialStore credentialStore;
-    private Context context;
 
-    public Settings(Context context) {
-        this.context = context;
-        this.preferences = context.getSharedPreferences(this.context.getPackageName(), MODE_PRIVATE);
+    Settings(Context context) {
+        this.preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.credentialStore = new SharedPreferencesCredentialStore(this.context, "credStore", new JacksonFactory());
     }
 
     public Authentication getCurrentAuthentication() {
         long authID = this.preferences.getLong(Settings.AUTH, 0);
         if (authID != 0) {
-            return MainActivity.globals.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
+            return MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
         }
         Authentication authentication = new Authentication();
         authentication.setTracker(Authentication.Tracker.Local);
@@ -75,7 +68,7 @@ public class Settings {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (title != null) {
                 if (!title.isEmpty()) {
-                    for (Project project : new ListProjectTask(activity, bugService, MainActivity.settings.showNotifications()).execute().get()) {
+                    for (Project project : new ListProjectTask(activity, bugService, this.showNotifications()).execute().get()) {
                         if (project.getTitle().equals(title)) {
                             return project;
                         }
@@ -97,13 +90,5 @@ public class Settings {
 
     public boolean showNotifications() {
         return this.userPreferences.getBoolean("swtNotifications", false);
-    }
-
-    public SharedPreferencesCredentialStore getCredentialStore() {
-        return this.credentialStore;
-    }
-
-    public String getGithubToken() {
-        return this.context.getSharedPreferences("credStore", MODE_PRIVATE).getString("userId", "");
     }
 }

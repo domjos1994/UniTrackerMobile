@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggermobile.settings;
 
+import android.content.Context;
+
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 
 public class Globals {
@@ -33,5 +35,9 @@ public class Globals {
 
     public void setSqLiteGeneral(SQLiteGeneral sqLiteGeneral) {
         this.sqLiteGeneral = sqLiteGeneral;
+    }
+
+    public Settings getSettings(Context context) {
+        return new Settings(context);
     }
 }
