@@ -27,8 +27,10 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -40,8 +42,6 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
-    private String title;
-    private String project;
 
     public Github(Authentication authentication) {
         super(authentication);
@@ -146,9 +146,9 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
+    public List<Version<Long>> getVersions(String filter, Long project_id) throws Exception {
         List<Version<Long>> versions = new LinkedList<>();
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             int status = this.executeRequest("/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases");
 
@@ -171,7 +171,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+    public void insertOrUpdateVersion(Version<Long> version, Long project_id) throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("tag_name", version.getTitle());
         jsonObject.put("name", version.getTitle());
@@ -181,7 +181,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
         String method;
         String url;
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             if (version.getId() == null) {
                 url = "/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases";
@@ -191,20 +191,16 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 method = "PATCH";
             }
 
-            int status = this.executeRequest(url, jsonObject.toString(), method);
-
-            if (status == 200 || status == 201) {
-                JSONObject response = new JSONObject(this.getCurrentMessage());
-                return response.getLong("id");
-            }
+            this.executeRequest(url, jsonObject.toString(), method);
         }
-
-        return null;
     }
 
     @Override
-    public void deleteVersion(Long id) throws Exception {
-        this.deleteRequest("/repos/" + this.authentication.getUserName() + "/" + this.title + "/releases/" + id);
+    public void deleteVersion(Long id, Long project_id) throws Exception {
+        Project<Long> project = this.getProject(project_id);
+        if (project != null) {
+            this.deleteRequest("/repos/" + this.authentication.getUserName() + "/" + project.getTitle() + "/releases/" + id);
+        }
     }
 
     @Override
@@ -229,44 +225,67 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         return issues;
     }
 
-    public Issue<Long> getIssue(Long id, String title) throws Exception {
-        this.project = title;
-        return this.getIssue(id);
-    }
-
     @Override
-    public Issue<Long> getIssue(Long id) throws Exception {
+    public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
         Issue<Long> issue = new Issue<>();
-        int status = this.executeRequest("/repos/" + this.project + "/issues/" + id);
-        if (status == 200 || status == 201) {
-            JSONObject issueObject = new JSONObject(this.getCurrentMessage());
-            issue.setId(issueObject.getLong("number"));
-            issue.setTitle(issueObject.getString("title"));
-            issue.setDescription(issueObject.getString("body"));
-            issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-            issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-            issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
+        Project<Long> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues/" + id);
+            if (status == 200 || status == 201) {
+                JSONObject issueObject = new JSONObject(this.getCurrentMessage());
+                issue.setId(issueObject.getLong("number"));
+                issue.setTitle(issueObject.getString("title"));
+                issue.setDescription(issueObject.getString("body"));
+                issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
+            }
         }
         return issue;
     }
 
     @Override
-    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+    public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteIssue(Long id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteIssue(Long id) throws Exception {
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<String> getCategories(Long pid) throws Exception {
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public List<User<Long>> getUsers(Long pid) throws Exception {
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<User<Long>> getUsers(Long project_id) throws Exception {
         List<User<Long>> users = new LinkedList<>();
         int status = this.executeRequest("/user/followers");
         if (status == 200 || status == 201) {
@@ -279,38 +298,55 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public User<Long> getUser(Long id) throws Exception {
+    public User<Long> getUser(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id) throws Exception {
+    public void deleteUser(Long id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id) throws Exception {
+    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteCustomField(Long id) throws Exception {
+    public void deleteCustomField(Long id, Long project_id) throws Exception {
 
+    }
+
+
+    @Override
+    public List<String> getCategories(Long project_id) throws Exception {
+        return null;
+    }
+
+    /**
+     * @param project_id Id of Project
+     * @return List of tags
+     * @throws Exception ex
+     * @see <a href="https://developer.github.com/v3/issues/labels/">Github Reference</a>
+     */
+    @Override
+    public List<Tag<Long>> getTags(Long project_id) throws Exception {
+        return null;
     }
 
     @Override
@@ -323,19 +359,5 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         user.setId(jsonObject.getLong("id"));
         user.setTitle(jsonObject.getString("login"));
         return user;
-    }
-
-    /**
-     * @return List of tags
-     * @throws Exception
-     * @see <a href="https://developer.github.com/v3/issues/labels/">Github Reference</a>
-     */
-    @Override
-    public List<Tag<Long>> getTags() throws Exception {
-        return null;
-    }
-
-    public void setTitle(String pTitle) {
-        this.title = pTitle;
     }
 }

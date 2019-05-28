@@ -16,24 +16,27 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggerlibrary.tasks.versions;
+package de.domjos.unibuggerlibrary.tasks;
 
 import android.app.Activity;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Version;
-import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
-public class VersionTask extends AbstractTask<Version, Void, Void> {
+public final class VersionTask extends AbstractTask<Object, Void, List<Version>> {
     private boolean delete;
-    private Object pid;
+    private Object project_id;
+    private String filter;
 
-    public VersionTask(Activity activity, IBugService bugService, Object pid, boolean delete, boolean showNotifications) {
+    public VersionTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, String filter) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
         this.delete = delete;
-        this.pid = pid;
+        this.project_id = project_id;
+        this.filter = filter;
     }
 
     @Override
@@ -47,18 +50,24 @@ public class VersionTask extends AbstractTask<Version, Void, Void> {
     }
 
     @Override
-    protected Void doInBackground(Version... versions) {
+    protected List<Version> doInBackground(Object... versions) {
+        List<Version> result = new LinkedList<>();
         try {
-            for (Version version : versions) {
-                if (this.delete) {
-                    super.bugService.deleteVersion(version.getId());
+            for (Object version : versions) {
+                if (version instanceof Version) {
+                    super.bugService.insertOrUpdateVersion((Version) version, super.returnTemp(this.project_id));
                 } else {
-                    super.bugService.insertOrUpdateVersion(this.pid, version);
+                    if (this.delete) {
+                        super.bugService.deleteVersion(super.returnTemp(version), super.returnTemp(this.project_id));
+                    } else {
+                        result.addAll(super.bugService.getVersions(this.filter, super.returnTemp(this.project_id)));
+                    }
                 }
             }
+            super.printMessage();
         } catch (Exception ex) {
-            super.activity.runOnUiThread(() -> MessageHelper.printException(ex, super.activity));
+            super.printException(ex);
         }
-        return null;
+        return result;
     }
 }

@@ -48,7 +48,6 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     private final String loginParams;
     private final Authentication authentication;
-    private long pid;
 
     public Bugzilla(Authentication authentication) {
         super(
@@ -162,8 +161,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
-        Project<Long> project = this.getProject(pid);
+    public List<Version<Long>> getVersions(String filter, Long project_id) throws Exception {
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             return project.getVersions();
         }
@@ -171,19 +170,19 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateVersion(Long pid, Version<Long> version) {
-        return 0L;
-    }
-
-    @Override
-    public void deleteVersion(Long id) {
+    public void insertOrUpdateVersion(Version<Long> version, Long project_id) {
 
     }
 
     @Override
-    public List<Issue<Long>> getIssues(Long pid) throws Exception {
+    public void deleteVersion(Long id, Long project_id) {
+
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long project_id) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             int status = this.executeRequest("/rest/bug?product=" + project.getTitle().replace(" ", "%20") + "&" + this.loginParams);
             if (status == 200 || status == 201) {
@@ -213,7 +212,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Issue<Long> getIssue(Long id) throws Exception {
+    public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
         Issue<Long> issue = new Issue<>();
         int status = this.executeRequest("/rest/bug/" + id + "?" + this.loginParams);
         if (status == 200 || status == 201) {
@@ -318,38 +317,12 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         return issue;
     }
 
-    private Map<String, Integer> getEnumValues(String name) throws Exception {
-        Map<String, Integer> entries = new LinkedHashMap<>();
-        int status = this.executeRequest("/rest/field/bug/" + name + "?" + this.loginParams);
-        if (status == 200 || status == 201) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONObject fieldObject = jsonObject.getJSONArray("fields").getJSONObject(0);
-            JSONArray valueArray = fieldObject.getJSONArray("values");
-            for (int i = 1; i <= valueArray.length(); i++) {
-                entries.put(valueArray.getJSONObject(i - 1).getString("name"), i);
-            }
-        }
-        return entries;
-    }
-
-    private int getId(String fieldType, String value) throws Exception {
-        int id = 0;
-        Map<String, Integer> map = this.getEnumValues(fieldType);
-        if (map != null) {
-            Integer val = map.get(value);
-            if (val != null) {
-                id = val;
-            }
-        }
-        return id;
-    }
-
     @Override
-    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+    public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         JSONObject bugObject = new JSONObject();
         bugObject.put("summary", issue.getTitle());
         bugObject.put("url", issue.getDescription());
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             bugObject.put("product", project.getTitle());
         }
@@ -394,7 +367,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            Issue<Long> oldIssue = this.getIssue(issue.getId());
+            Issue<Long> oldIssue = this.getIssue(issue.getId(), project_id);
             for (Attachment<Long> oldAttachment : oldIssue.getAttachments()) {
                 boolean contains = false;
                 for (Attachment<Long> attachment : issue.getAttachments()) {
@@ -426,23 +399,45 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 }
             }
         }
-
-        return null;
     }
 
     @Override
-    public void deleteIssue(Long id) throws Exception {
+    public void deleteIssue(Long id, Long project_id) throws Exception {
         this.deleteRequest("/rest/bug/" + id);
     }
 
     @Override
-    public List<String> getCategories(Long pid) {
-        return new LinkedList<>();
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+        return null;
     }
 
     @Override
-    public List<User<Long>> getUsers(Long pid) throws Exception {
-        this.pid = pid;
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<User<Long>> getUsers(Long project_id) throws Exception {
         List<User<Long>> users = new LinkedList<>();
         int status = this.executeRequest("/rest/user/" + this.authentication.getUserName() + "?" + this.loginParams);
         if (status == 200 || status == 201) {
@@ -460,44 +455,49 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public User<Long> getUser(Long id) throws Exception {
+    public User<Long> getUser(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id) throws Exception {
+    public void deleteUser(Long id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id) throws Exception {
+    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+    public Long insertOrUpdateCustomField(CustomField<Long> field, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteCustomField(Long id) throws Exception {
+    public void deleteCustomField(Long id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<Tag<Long>> getTags() throws Exception {
+    public List<String> getCategories(Long pid) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Tag<Long>> getTags(Long project_id) throws Exception {
         List<Tag<Long>> tags = new LinkedList<>();
-        List<Issue<Long>> issues = this.getIssues(this.pid);
+        List<Issue<Long>> issues = this.getIssues(project_id);
         for (Issue<Long> issue : issues) {
             String strTags = issue.getTags();
             for (String strTag : strTags.split(",")) {
@@ -521,5 +521,32 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     @Override
     public IFunctionImplemented getPermissions() {
         return new BugzillaPermissions(this.authentication);
+    }
+
+
+    private Map<String, Integer> getEnumValues(String name) throws Exception {
+        Map<String, Integer> entries = new LinkedHashMap<>();
+        int status = this.executeRequest("/rest/field/bug/" + name + "?" + this.loginParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONObject fieldObject = jsonObject.getJSONArray("fields").getJSONObject(0);
+            JSONArray valueArray = fieldObject.getJSONArray("values");
+            for (int i = 1; i <= valueArray.length(); i++) {
+                entries.put(valueArray.getJSONObject(i - 1).getString("name"), i);
+            }
+        }
+        return entries;
+    }
+
+    private int getId(String fieldType, String value) throws Exception {
+        int id = 0;
+        Map<String, Integer> map = this.getEnumValues(fieldType);
+        if (map != null) {
+            Integer val = map.get(value);
+            if (val != null) {
+                id = val;
+            }
+        }
+        return id;
     }
 }

@@ -45,4 +45,9 @@ public class DescriptionObject<T> extends LocalObject<T> {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return this.title;
+    }
 }

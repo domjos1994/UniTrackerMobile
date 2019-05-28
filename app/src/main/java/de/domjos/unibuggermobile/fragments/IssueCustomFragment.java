@@ -34,6 +34,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
+import android.widget.TextView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -42,9 +43,7 @@ import java.util.Map;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggermobile.R;
-import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.custom.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Validator;
 
@@ -86,7 +85,16 @@ public final class IssueCustomFragment extends AbstractFragment {
             for (View view : this.views) {
                 for (Object key : this.issue.getCustomFields().keySet()) {
                     CustomField customField = (CustomField) key;
+                    boolean isTheId = false;
+
                     if (String.valueOf(view.getId()).equals(String.valueOf(customField.getId()))) {
+                        isTheId = true;
+                    } else if (String.valueOf(view.getTag()).equals(String.valueOf(customField.getId()))) {
+                        isTheId = true;
+                    }
+
+
+                    if (isTheId) {
                         if (view instanceof EditText) {
                             issue.getCustomFields().put(key, ((EditText) view).getText().toString());
                         } else if (view instanceof CheckBox) {
@@ -160,7 +168,11 @@ public final class IssueCustomFragment extends AbstractFragment {
                     } else {
                         editText.setText(value);
                     }
-                    editText.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                    try {
+                        editText.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                    } catch (Exception ex) {
+                        editText.setTag(String.valueOf(customField.getId()));
+                    }
 
                     switch (customField.getType()) {
                         case TEXT:
@@ -197,7 +209,11 @@ public final class IssueCustomFragment extends AbstractFragment {
                             CheckBox checkBox = new CheckBox(this.getActivity());
                             checkBox.setLayoutParams(layoutParams);
                             checkBox.setText(customField.getTitle());
-                            checkBox.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                            try {
+                                checkBox.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                            } catch (Exception ex) {
+                                checkBox.setTag(String.valueOf(customField.getId()));
+                            }
                             if (value.isEmpty()) {
                                 if (!customField.getDefaultValue().isEmpty()) {
                                     checkBox.setChecked(Boolean.parseBoolean(customField.getDefaultValue()));
@@ -213,7 +229,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                                 for (String item : customField.getPossibleValues().split("\\|")) {
                                     RadioButton radioButton = new RadioButton(this.getActivity());
                                     radioButton.setLayoutParams(layoutParams);
-                                    radioButton.setText(item);
+                                    radioButton.setText(item.split(":")[0].trim());
                                     if (value.isEmpty()) {
                                         if (!customField.getDefaultValue().isEmpty()) {
                                             radioButton.setChecked(customField.getDefaultValue().equals(radioButton.getText().toString()));
@@ -223,21 +239,35 @@ public final class IssueCustomFragment extends AbstractFragment {
                                     }
                                     tableRow.addView(radioButton);
                                 }
-                                tableRow.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                                try {
+                                    tableRow.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                                } catch (Exception ex) {
+                                    tableRow.setTag(String.valueOf(customField.getId()));
+                                }
                                 this.views.add(tableRow);
                             }
                             break;
                         case LIST:
                         case ENUMERATION:
+                            TextView textView = new TextView(this.getActivity());
+                            textView.setText(customField.getTitle());
+                            layoutParams.weight = 3;
+                            textView.setLayoutParams(layoutParams);
                             Spinner spinner = new Spinner(this.getActivity());
+                            layoutParams.weight = 7;
                             spinner.setLayoutParams(layoutParams);
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+                            arrayAdapter.add(customField.getDefaultValue());
                             for (String item : customField.getPossibleValues().split("\\|")) {
-                                arrayAdapter.add(item.trim());
+                                arrayAdapter.add(item.split(":")[0].trim());
                             }
                             spinner.setAdapter(arrayAdapter);
                             arrayAdapter.notifyDataSetChanged();
-                            spinner.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                            try {
+                                spinner.setId(Integer.parseInt(String.valueOf(customField.getId())));
+                            } catch (Exception ex) {
+                                spinner.setTag(String.valueOf(customField.getId()));
+                            }
                             String selected = "";
                             if (!value.isEmpty()) {
                                 selected = value.trim();
@@ -255,6 +285,9 @@ public final class IssueCustomFragment extends AbstractFragment {
                                     }
                                 }
                             }
+                            this.views.add(spinner);
+                            tableRow.addView(textView);
+                            tableRow.addView(spinner);
                             break;
                         case MULTI_SELECT_LIST:
                             editText.setInputType(InputType.TYPE_CLASS_TEXT);
@@ -276,12 +309,5 @@ public final class IssueCustomFragment extends AbstractFragment {
 
     @Override
     public void updateUITrackerSpecific() {
-        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-
-        switch (authentication.getTracker()) {
-            case MantisBT:
-
-                break;
-        }
     }
 }

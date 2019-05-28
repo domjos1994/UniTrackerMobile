@@ -20,8 +20,10 @@ package de.domjos.unibuggerlibrary.interfaces;
 
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -70,43 +72,62 @@ public interface IBugService<T> {
 
     void deleteProject(T id) throws Exception;
 
-    List<Version<T>> getVersions(T pid, String filter) throws Exception;
 
-    T insertOrUpdateVersion(T pid, Version<T> version) throws Exception;
+    List<Version<T>> getVersions(String filter, T project_id) throws Exception;
 
-    void deleteVersion(T id) throws Exception;
+    void insertOrUpdateVersion(Version<T> version, T project_id) throws Exception;
+
+    void deleteVersion(T id, T project_id) throws Exception;
+
+
+    List<Issue<T>> getIssues(T project_id) throws Exception;
+
+    Issue<T> getIssue(T id, T project_id) throws Exception;
+
+    void insertOrUpdateIssue(Issue<T> issue, T project_id) throws Exception;
+
+    void deleteIssue(T id, T project_id) throws Exception;
+
+
+    List<Note<T>> getNotes(T issue_id, T project_id) throws Exception;
+
+    void insertOrUpdateNote(Note<T> note, T issue_id, T project_id) throws Exception;
+
+    void deleteNote(T id, T issue_id, T project_id) throws Exception;
+
+
+    List<Attachment<T>> getAttachments(T issue_id, T project_id) throws Exception;
+
+    void insertOrUpdateAttachment(Attachment<T> attachment, T issue_id, T project_id) throws Exception;
+
+    void deleteAttachment(T id, T issue_id, T project_id) throws Exception;
+
+
+    List<User<T>> getUsers(T project_id) throws Exception;
+
+    User<T> getUser(T id, T project_id) throws Exception;
+
+    T insertOrUpdateUser(User<T> user, T project_id) throws Exception;
+
+    void deleteUser(T id, T project_id) throws Exception;
+
+
+    List<CustomField<T>> getCustomFields(T project_id) throws Exception;
+
+    CustomField<T> getCustomField(T id, T project_id) throws Exception;
+
+    T insertOrUpdateCustomField(CustomField<T> user, T project_id) throws Exception;
+
+    void deleteCustomField(T id, T project_id) throws Exception;
+
 
     int getCurrentState();
 
     String getCurrentMessage();
 
-    List<Issue<T>> getIssues(T pid) throws Exception;
+    List<String> getCategories(T project_id) throws Exception;
 
-    Issue<T> getIssue(T id) throws Exception;
-
-    T insertOrUpdateIssue(T pid, Issue<T> issue) throws Exception;
-
-    void deleteIssue(T id) throws Exception;
-
-    List<String> getCategories(T pid) throws Exception;
-
-    List<User<T>> getUsers(T pid) throws Exception;
-
-    User<T> getUser(T id) throws Exception;
-
-    T insertOrUpdateUser(User<T> user) throws Exception;
-
-    void deleteUser(T id) throws Exception;
-
-    List<CustomField<T>> getCustomFields(T pid) throws Exception;
-
-    CustomField<T> getCustomField(T id) throws Exception;
-
-    T insertOrUpdateCustomField(CustomField<T> user) throws Exception;
-
-    void deleteCustomField(T id) throws Exception;
-
-    List<Tag<T>> getTags() throws Exception;
+    List<Tag<T>> getTags(T project_id) throws Exception;
 
     IFunctionImplemented getPermissions();
 }

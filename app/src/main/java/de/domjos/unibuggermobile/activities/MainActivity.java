@@ -45,9 +45,8 @@ import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.permissions.NOPERMISSION;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
-import de.domjos.unibuggerlibrary.tasks.issues.ListIssueTask;
-import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
+import de.domjos.unibuggerlibrary.tasks.IssueTask;
+import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
@@ -56,6 +55,7 @@ import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 import de.domjos.unibuggermobile.settings.Globals;
+import de.domjos.unibuggermobile.settings.Settings;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
@@ -67,9 +67,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Spinner spMainAccounts, spMainProjects;
     private ListView lvMainIssues;
     private ListAdapter issueAdapter;
-    private ArrayAdapter<String> accountList, projectList;
+    private ArrayAdapter<String> accountList;
+    private ArrayAdapter<Project> projectList;
     private IBugService bugService;
     private IFunctionImplemented permissions;
+    private Settings settings;
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
@@ -91,20 +93,25 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.spMainAccounts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Settings settings = MainActivity.GLOBALS.getSettings(getApplicationContext());
                 String item = accountList.getItem(position);
                 if (item != null) {
                     if (!item.trim().isEmpty()) {
                         Authentication authentication = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
                         if (authentication != null) {
-                            MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(authentication);
+                            Authentication selected = settings.getCurrentAuthentication();
+                            if (!selected.getTitle().equals(authentication.getTitle())) {
+                                settings.setCurrentProject("");
+                            }
+                            settings.setCurrentAuthentication(authentication);
                         } else {
-                            MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
+                            settings.setCurrentAuthentication(null);
                         }
                     } else {
-                        MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
+                        settings.setCurrentAuthentication(null);
                     }
                 } else {
-                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(null);
+                    settings.setCurrentAuthentication(null);
                 }
 
                 changeAuthentication();
@@ -120,9 +127,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.spMainProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(projectList.getItem(position));
-                changeAuthentication();
-                reload();
+                Project project = projectList.getItem(position);
+                if (project != null) {
+                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(String.valueOf(project.getId()));
+                    changePermissions();
+                    reload();
+                }
             }
 
             @Override
@@ -147,7 +157,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
                             Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
-                            new IssuesTask(MainActivity.this, this.bugService, project.getId(), true, MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications()).execute((Issue) listObject.getDescriptionObject()).get();
+                            new IssueTask(MainActivity.this, this.bugService, project.getId(), true, false, this.settings.showNotifications()).execute((listObject.getDescriptionObject()).getId()).get();
                             reload();
                         }
                     }
@@ -204,6 +214,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.issueAdapter.notifyDataSetChanged();
 
             MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
+            this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
             this.reloadAccounts();
             this.changeAuthentication();
@@ -215,14 +226,30 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void changeAuthentication() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
-            this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
             this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+
+            this.reloadProjects();
+            this.selectProject();
+        } else {
+            this.spMainAccounts.setSelection(this.accountList.getPosition(""));
+        }
+        this.changePermissions();
+    }
+
+    private void changePermissions() {
+        Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
+        if (authentication != null) {
+
             if (authentication.getServer().equals("")) {
                 this.permissions = new NOPERMISSION();
             } else {
                 this.permissions = this.bugService.getPermissions();
             }
 
+            if (this.projectList.getCount() - 1 < this.spMainProjects.getSelectedItemPosition()) {
+                this.spMainProjects.setSelection(0);
+            }
             if (this.permissions.addIssues() && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0) {
                 this.cmdIssuesAdd.show();
             } else {
@@ -232,15 +259,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.navigationView.getMenu().findItem(R.id.navVersions).setVisible((this.permissions.addVersions() || this.permissions.updateVersions() || this.permissions.deleteVersions()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
             this.navigationView.getMenu().findItem(R.id.navUsers).setVisible((this.permissions.addUsers() || this.permissions.updateUsers() || this.permissions.deleteUsers()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
             this.navigationView.getMenu().findItem(R.id.navFields).setVisible((this.permissions.addCustomFields() || this.permissions.updateCustomFields() || this.permissions.deleteCustomFields()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
-
-            this.reloadProjects();
-            this.selectProject();
         } else {
             this.navigationView.getMenu().findItem(R.id.navProjects).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navVersions).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navUsers).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navFields).setVisible(false);
-            this.spMainAccounts.setSelection(this.accountList.getPosition(""));
             this.permissions = new NOPERMISSION();
         }
     }
@@ -250,11 +273,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             this.issueAdapter.clear();
             if (this.permissions.listIssues()) {
-                Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
-                if (project != null) {
-                    ListIssueTask listIssueTask = new ListIssueTask(MainActivity.this, this.bugService, project.getId(), MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications());
-                    for (Object issue : listIssueTask.execute().get()) {
-                        this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                String id = String.valueOf(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId());
+                if (!id.isEmpty()) {
+                    if (!id.equals("0")) {
+                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, false, false, this.settings.showNotifications());
+                        for (Object issue : listIssueTask.execute(0).get()) {
+                            this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                        }
                     }
                 }
             }
@@ -274,12 +299,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void reloadProjects() {
         try {
             this.projectList.clear();
-            this.projectList.add("");
+            this.projectList.add(new Project());
 
-            List<Project> projects = new ListProjectTask(MainActivity.this, this.bugService, MainActivity.GLOBALS.getSettings(getApplicationContext()).showNotifications()).execute().get();
+            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications()).execute(0).get();
             if (projects != null) {
                 for (Project project : projects) {
-                    this.projectList.add(project.getTitle());
+                    this.projectList.add(project);
                 }
             }
         } catch (Exception ex) {
@@ -405,9 +430,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     private void selectProject() {
-        Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
-        if (project != null) {
-            this.spMainProjects.setSelection(this.projectList.getPosition(project.getTitle()));
+        for (int i = 0; i <= this.projectList.getCount() - 1; i++) {
+            Project current = this.projectList.getItem(i);
+            if (current != null) {
+                if (String.valueOf(current.getId()).equals(String.valueOf(this.settings.getCurrentProjectId()))) {
+                    this.spMainProjects.setSelection(i);
+                    return;
+                }
+            }
         }
     }
 }

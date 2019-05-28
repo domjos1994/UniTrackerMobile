@@ -23,10 +23,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.List;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
+import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.activities.MainActivity;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -68,12 +70,10 @@ public class Settings {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (title != null) {
                 if (!title.isEmpty()) {
-                    for (Project project : new ListProjectTask(activity, bugService, this.showNotifications()).execute().get()) {
-                        if (project.getTitle().equals(title)) {
-                            return project;
-                        }
+                    List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications()).execute(title).get();
+                    if (projects.size() >= 1) {
+                        return projects.get(0);
                     }
-
                 }
             }
 
@@ -82,9 +82,13 @@ public class Settings {
         return null;
     }
 
-    public void setCurrentProject(String title) {
+    public Object getCurrentProjectId() {
+        return this.preferences.getString(Settings.PROJECT, "");
+    }
+
+    public void setCurrentProject(String id) {
         SharedPreferences.Editor editor = this.preferences.edit();
-        editor.putString(Settings.PROJECT, title);
+        editor.putString(Settings.PROJECT, id);
         editor.apply();
     }
 

@@ -39,8 +39,7 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.projects.ListProjectTask;
-import de.domjos.unibuggerlibrary.tasks.projects.ProjectTask;
+import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
@@ -236,10 +235,10 @@ public final class ProjectActivity extends AbstractActivity {
     protected void reload() {
         try {
             if (this.permissions.listProjects()) {
-                ListProjectTask task = new ListProjectTask(ProjectActivity.this, this.bugService, this.settings.showNotifications());
+                ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
                 this.listAdapter.clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
-                for (Project project : task.execute().get()) {
+                for (Project project : task.execute(0).get()) {
                     ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
                     if (project.getIconUrl() != null) {
                         if (!project.getIconUrl().isEmpty()) {

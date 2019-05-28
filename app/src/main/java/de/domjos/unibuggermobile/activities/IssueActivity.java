@@ -24,12 +24,12 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
+import java.util.List;
+
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.issues.GetIssueTask;
-import de.domjos.unibuggerlibrary.tasks.issues.IssuesTask;
+import de.domjos.unibuggerlibrary.tasks.IssueTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.PagerAdapter;
@@ -61,11 +61,9 @@ public final class IssueActivity extends AbstractActivity {
             this.id = intent.getStringExtra("id");
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
-            Authentication authentication = this.settings.getCurrentAuthentication();
-            if (authentication.getTracker() == Authentication.Tracker.Github) {
-                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, this.settings.showNotifications(), this.settings.getCurrentProject(IssueActivity.this, bugService).getTitle()).execute(this.id).get();
-            } else {
-                this.issue = new GetIssueTask(IssueActivity.this, this.bugService, this.settings.showNotifications()).execute(this.id).get();
+            List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications()).execute(this.id).get();
+            if (issues.size() >= 1) {
+                this.issue = issues.get(0);
             }
 
             if (this.issue == null) {
@@ -92,7 +90,7 @@ public final class IssueActivity extends AbstractActivity {
                         if (this.pagerAdapter.validate()) {
                             this.issue = (Issue) this.pagerAdapter.getObject();
                             this.issue.setId(this.id.equals("") ? null : this.id);
-                            new IssuesTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications()).execute(this.issue).get();
+                            new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications()).execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();

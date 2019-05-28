@@ -153,12 +153,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
-        return this.getVersions("mc_project_get_" + filter, pid);
+    public List<Version<Long>> getVersions(String filter, Long project_id) throws Exception {
+        return this.getVersionsByFilter("mc_project_get_" + filter, project_id);
     }
 
     @Override
-    public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+    public void insertOrUpdateVersion(Version<Long> version, Long project_id) throws Exception {
         String action;
         SoapObject request;
         if (version.getId() == null) {
@@ -173,7 +173,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         SoapObject projectData = new SoapObject(NAMESPACE, "ProjectVersionData");
         projectData.addProperty("id", version.getId());
         projectData.addProperty("name", version.getTitle());
-        projectData.addProperty("project_id", pid);
+        projectData.addProperty("project_id", project_id);
 
         if (version.getReleasedVersionAt() != 0) {
             Date dt = new Date();
@@ -190,33 +190,16 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
         Object object = this.executeAction(request, action, true);
         object = this.getResult(object);
-
-        if (object != null) {
-            if (version.getId() == null) {
-                return (Long) object;
-            } else {
-                return version.getId();
-            }
-        }
-        return null;
     }
 
     @Override
-    public void deleteVersion(Long id) throws Exception {
+    public void deleteVersion(Long id, Long project_id) throws Exception {
         SoapObject request = new SoapObject();
         request.addProperty("version_id", String.valueOf(id));
         this.executeAction(request, "mc_project_version_delete", true);
     }
 
-    @Override
-    public int getCurrentState() {
-        return this.state;
-    }
 
-    @Override
-    public String getCurrentMessage() {
-        return this.currentMessage;
-    }
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
@@ -248,7 +231,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public Issue<Long> getIssue(Long id) throws Exception {
+    public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
         Issue<Long> issue = new Issue<>();
 
         SoapObject request = new SoapObject(super.soapPath, "mc_issue_get");
@@ -423,7 +406,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+    public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         String action;
         SoapObject request;
         if (issue.getId() != null) {
@@ -460,10 +443,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             issueObject.addProperty("target_version", "null");
         }
 
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             SoapObject projectObject = new SoapObject(NAMESPACE, "ObjectRef");
-            projectObject.addProperty("id", pid);
+            projectObject.addProperty("id", project_id);
             projectObject.addProperty("name", project.getTitle());
             issueObject.addProperty("project", projectObject);
         }
@@ -522,7 +505,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
 
         if (!issue.getTags().isEmpty()) {
-            List<Tag<Long>> tags = this.getTags();
+            List<Tag<Long>> tags = this.getTags(project_id);
             Vector<SoapObject> tagVector = new Vector<>();
             for (String strTag : issue.getTags().split(",")) {
                 for (Tag tag : tags) {
@@ -541,7 +524,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, action, true);
         object = this.getResult(object);
 
-        Long id;
+        long id;
         if (issue.getId() != null) {
             id = Long.parseLong(String.valueOf(issue.getId()));
         } else {
@@ -550,7 +533,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
         List<Note<Long>> oldNotes = new LinkedList<>();
         List<Attachment<Long>> oldAttachments = new LinkedList<>();
-        Issue<Long> oldIssue = this.getIssue(id);
+        Issue<Long> oldIssue = this.getIssue(id, project_id);
         if (oldIssue != null) {
             oldNotes = oldIssue.getNotes();
             oldAttachments = oldIssue.getAttachments();
@@ -619,11 +602,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 this.getResult(noteResult);
             }
         }
-        return id;
     }
 
     @Override
-    public void deleteIssue(Long id) throws Exception {
+    public void deleteIssue(Long id, Long project_id) throws Exception {
         SoapObject request = new SoapObject(super.soapPath, "mc_issue_delete");
         request.addProperty("issue_id", id);
         Object object = this.executeAction(request, "mc_issue_delete", true);
@@ -631,24 +613,33 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getCategories(Long pid) throws Exception {
-        List<String> categories = new LinkedList<>();
-        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_categories");
-        request.addProperty("project_id", pid);
-        Object object = this.executeAction(request, "mc_project_get_categories", true);
-        object = this.getResult(object);
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
 
-        if (object instanceof Vector) {
-            Vector vector = (Vector) object;
-            for (int i = 0; i <= vector.size() - 1; i++) {
-                Object obj = vector.get(i);
-                if (obj instanceof String) {
-                    categories.add((String) obj);
-                }
-            }
-        }
+    @Override
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
 
-        return categories;
+    }
+
+    @Override
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+
     }
 
     @Override
@@ -675,40 +666,18 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public User<Long> getUser(Long id) throws Exception {
+    public User<Long> getUser(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id) throws Exception {
+    public void deleteUser(Long id, Long project_id) throws Exception {
 
-    }
-
-    @Override
-    public List<Tag<Long>> getTags() throws Exception {
-        List<Tag<Long>> tags = new LinkedList<>();
-        SoapObject request = new SoapObject(super.soapPath, "mc_tag_get_all");
-        request.addProperty("page_number", 1);
-        request.addProperty("per_page", -1);
-        Object object = this.executeAction(request, "mc_tag_get_all", true);
-        object = this.getResult(object);
-        SoapObject soapObject = (SoapObject) object;
-        Vector vector = (Vector) soapObject.getProperty("results");
-        for (int i = 0; i <= vector.size() - 1; i++) {
-            SoapObject tagObject = (SoapObject) vector.get(i);
-            Tag<Long> tag = new Tag<>();
-            tag.setId(Long.parseLong(tagObject.getPropertyAsString("id")));
-            tag.setTitle(tagObject.getPropertyAsString("name"));
-            tag.setDescription(tagObject.getPropertyAsString("description"));
-            tags.add(tag);
-        }
-
-        return tags;
     }
 
     @Override
@@ -742,18 +711,71 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id) throws Exception {
+    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteCustomField(Long id) throws Exception {
+    public void deleteCustomField(Long id, Long project_id) throws Exception {
 
+    }
+
+    @Override
+    public List<Tag<Long>> getTags(Long project_id) throws Exception {
+        List<Tag<Long>> tags = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_tag_get_all");
+        request.addProperty("page_number", 1);
+        request.addProperty("per_page", -1);
+        Object object = this.executeAction(request, "mc_tag_get_all", true);
+        object = this.getResult(object);
+        SoapObject soapObject = (SoapObject) object;
+        Vector vector = (Vector) soapObject.getProperty("results");
+        for (int i = 0; i <= vector.size() - 1; i++) {
+            SoapObject tagObject = (SoapObject) vector.get(i);
+            Tag<Long> tag = new Tag<>();
+            tag.setId(Long.parseLong(tagObject.getPropertyAsString("id")));
+            tag.setTitle(tagObject.getPropertyAsString("name"));
+            tag.setDescription(tagObject.getPropertyAsString("description"));
+            tags.add(tag);
+        }
+
+        return tags;
+    }
+
+    @Override
+    public List<String> getCategories(Long project_id) throws Exception {
+        List<String> categories = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_categories");
+        request.addProperty("project_id", project_id);
+        Object object = this.executeAction(request, "mc_project_get_categories", true);
+        object = this.getResult(object);
+
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                Object obj = vector.get(i);
+                if (obj instanceof String) {
+                    categories.add((String) obj);
+                }
+            }
+        }
+
+        return categories;
+    }
+
+    @Override
+    public int getCurrentState() {
+        return this.state;
+    }
+
+    @Override
+    public String getCurrentMessage() {
+        return this.currentMessage;
     }
 
     @Override
@@ -833,10 +855,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return projectData;
     }
 
-    private List<Version<Long>> getVersions(String action, Long pid) throws Exception {
+    private List<Version<Long>> getVersionsByFilter(String action, Long project_id) throws Exception {
         List<Version<Long>> versions = new LinkedList<>();
         SoapObject request = new SoapObject(super.soapPath, action);
-        request.addProperty("project_id", pid);
+        request.addProperty("project_id", project_id);
         Object object = this.executeAction(request, action, true);
         Object result = this.getResult(object);
         if (object instanceof Vector) {

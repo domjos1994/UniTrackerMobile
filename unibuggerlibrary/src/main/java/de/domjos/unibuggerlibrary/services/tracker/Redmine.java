@@ -149,9 +149,9 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid, String filter) throws Exception {
+    public List<Version<Long>> getVersions(String filter, Long project_id) throws Exception {
         List<Version<Long>> versions = new LinkedList<>();
-        int status = this.executeRequest("/projects/" + pid + "/versions.json");
+        int status = this.executeRequest("/projects/" + project_id + "/versions.json");
 
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
@@ -186,7 +186,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateVersion(Long pid, Version<Long> version) throws Exception {
+    public void insertOrUpdateVersion(Version<Long> version, Long project_id) throws Exception {
         JSONObject object = new JSONObject();
         JSONObject versionObject = new JSONObject();
         versionObject.put("name", version.getTitle());
@@ -203,43 +203,25 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             versionObject.put("due_date", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(date));
         }
         JSONObject projectObject = new JSONObject();
-        projectObject.put("id", pid);
-        Project<Long> project = this.getProject(pid);
+        projectObject.put("id", project_id);
+        Project<Long> project = this.getProject(project_id);
         if (project != null) {
             projectObject.put("name", project.getTitle());
         }
         versionObject.put("project", projectObject);
 
-        int status;
         if (version.getId() == null) {
             object.put("version", versionObject);
-            status = this.executeRequest("/projects/" + pid + "/versions.json", object.toString(), "POST");
+            this.executeRequest("/projects/" + project + "/versions.json", object.toString(), "POST");
         } else {
             versionObject.put("id", version.getId());
             object.put("version", versionObject);
-            status = this.executeRequest("/versions/" + version.getId() + ".json", object.toString(), "PUT");
+            this.executeRequest("/versions/" + version.getId() + ".json", object.toString(), "PUT");
         }
-
-        if (status == 200 || status == 201) {
-            String content = this.getCurrentMessage();
-
-            if (version.getId() == null) {
-                JSONObject result = new JSONObject(content);
-                if (result.has("version")) {
-                    JSONObject resultProject = result.getJSONObject("version");
-                    return (long) resultProject.getInt("id");
-                }
-            } else {
-                return version.getId();
-            }
-            return null;
-        }
-
-        return null;
     }
 
     @Override
-    public void deleteVersion(Long id) throws Exception {
+    public void deleteVersion(Long id, Long project_id) throws Exception {
         this.deleteRequest("/versions/" + id + ".json");
     }
 
@@ -263,7 +245,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Issue<Long> getIssue(Long id) throws Exception {
+    public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
         Issue<Long> issue = new Issue<>();
         int status = this.executeRequest("/issues/" + id + ".json?include=attachments,journals");
         if (status == 200 || status == 201) {
@@ -377,10 +359,10 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) throws Exception {
+    public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         JSONObject requestObject = new JSONObject();
         JSONObject issueObject = new JSONObject();
-        issueObject.put("project_id", pid);
+        issueObject.put("project_id", project_id);
         if (issue.getSeverity() != null) {
             issueObject.put("tracker_id", issue.getSeverity().getKey());
             issueObject.put("tracker", issue.getSeverity().getValue());
@@ -400,10 +382,10 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             issueObject.put("assigned_to_id", issue.getHandler().getId());
         }
         if (!issue.getCategory().equals("")) {
-            issueObject.put("category_id", this.getCategoryId(issue.getCategory(), pid));
+            issueObject.put("category_id", this.getCategoryId(issue.getCategory(), project_id));
         }
         if (!issue.getVersion().equals("")) {
-            List<Version<Long>> versions = this.getVersions(pid, "");
+            List<Version<Long>> versions = this.getVersions("", project_id);
             for (Version<Long> version : versions) {
                 if (version.getTitle().equals(issue.getVersion())) {
                     issueObject.put("fixed_version_id", version.getId());
@@ -448,47 +430,45 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
             }
         }
-
-        return Long.parseLong(String.valueOf(issue.getId()));
     }
 
     @Override
-    public void deleteIssue(Long id) throws Exception {
+    public void deleteIssue(Long id, Long project_id) throws Exception {
         this.deleteRequest("/issues/" + id + ".json");
     }
 
     @Override
-    public List<String> getCategories(Long pid) throws Exception {
-        List<String> categories = new LinkedList<>();
-        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
-        if (status == 200 || status == 201) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject category = jsonArray.getJSONObject(i);
-                categories.add(category.getString("name"));
-            }
-        }
-        return categories;
-    }
-
-    private Long getCategoryId(String name, Long pid) throws Exception {
-        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
-        if (status == 200 || status == 201) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject category = jsonArray.getJSONObject(i);
-                if (category.getString("name").equals(name)) {
-                    return category.getLong("id");
-                }
-            }
-        }
-        return 0L;
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+        return null;
     }
 
     @Override
-    public List<User<Long>> getUsers(Long pid) throws Exception {
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<User<Long>> getUsers(Long project_id) throws Exception {
         List<User<Long>> users = new LinkedList<>();
         int status = this.executeRequest("/users.json");
         if (status == 200 || status == 201) {
@@ -508,48 +488,78 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public User<Long> getUser(Long id) throws Exception {
+    public User<Long> getUser(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id) throws Exception {
+    public void deleteUser(Long id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
+    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id) throws Exception {
+    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
         return null;
     }
 
     @Override
-    public void deleteCustomField(Long id) throws Exception {
+    public void deleteCustomField(Long id, Long project_id) throws Exception {
 
     }
 
     @Override
-    public List<Tag<Long>> getTags() {
+    public List<Tag<Long>> getTags(Long project_id) {
         return new LinkedList<>();
+    }
+
+    @Override
+    public List<String> getCategories(Long pid) throws Exception {
+        List<String> categories = new LinkedList<>();
+        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject category = jsonArray.getJSONObject(i);
+                categories.add(category.getString("name"));
+            }
+        }
+        return categories;
     }
 
     @Override
     public IFunctionImplemented getPermissions() {
         return new RedminePermissions(this.authentication);
+    }
+
+    private Long getCategoryId(String name, Long pid) throws Exception {
+        int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("issue_categories");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject category = jsonArray.getJSONObject(i);
+                if (category.getString("name").equals(name)) {
+                    return category.getLong("id");
+                }
+            }
+        }
+        return 0L;
     }
 
     private Project<Long> jsonObjectToProject(JSONObject obj) {

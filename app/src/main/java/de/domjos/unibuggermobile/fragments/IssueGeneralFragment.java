@@ -43,7 +43,7 @@ import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.versions.ListVersionTask;
+import de.domjos.unibuggerlibrary.tasks.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
@@ -130,10 +130,10 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     new Thread(() -> {
                         try {
                             List<User> users = new LinkedList<>();
-                            users.addAll(this.bugService.getUsers(pid));
+                            users.addAll(this.bugService.getUsers(this.pid));
                             users.add(0, new User());
 
-                            for (Object tag : this.bugService.getTags()) {
+                            for (Object tag : this.bugService.getTags(this.pid)) {
                                 this.tagAdapter.add(((Tag) tag).getTitle());
                             }
 
@@ -334,13 +334,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
                 break;
             case YouTrack:
-                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
                 this.priorityValueArray = "issues_general_priority_youtrack_values";
                 this.statusValueArray = "issues_general_status_youtrack_values";
                 this.severityValueArray = "issues_general_severity_youtrack_values";
@@ -430,7 +425,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new ListVersionTask(this.getActivity(), this.bugService, this.pid, "versions", MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications()).execute().get();
+                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions").execute(0).get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

@@ -16,24 +16,23 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggerlibrary.tasks.issues;
+package de.domjos.unibuggerlibrary.tasks;
 
 import android.app.Activity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.tasks.general.AbstractTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unibuggerlibrary.model.projects.Project;
 
-public class ListIssueTask extends AbstractTask<Void, Void, List<Issue>> {
-    private Object pid;
+public final class ProjectTask extends AbstractTask<Object, Void, List<Project>> {
+    private boolean delete;
 
-    public ListIssueTask(Activity activity, IBugService bugService, Object pid, boolean showNotifications) {
-        super(activity, bugService, R.string.task_issues_list_title, R.string.task_issues_list_content, showNotifications);
-        this.pid = pid;
+    public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications) {
+        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications);
+        this.delete = delete;
     }
 
     @Override
@@ -47,14 +46,24 @@ public class ListIssueTask extends AbstractTask<Void, Void, List<Issue>> {
     }
 
     @Override
-    protected List<Issue> doInBackground(Void... voids) {
+    protected List<Project> doInBackground(Object... projects) {
+        List<Project> result = new LinkedList<>();
         try {
-            List<Issue> issues = super.bugService.getIssues(pid);
+            for (Object project : projects) {
+                if (project instanceof Project) {
+                    super.bugService.insertOrUpdateProject((Project) project);
+                } else {
+                    if (this.delete) {
+                        super.bugService.deleteProject(super.returnTemp(project));
+                    } else {
+                        result.addAll(super.bugService.getProjects());
+                    }
+                }
+            }
             super.printMessage();
-            return issues;
         } catch (Exception ex) {
-            super.activity.runOnUiThread(() -> MessageHelper.printException(ex, super.activity));
-            return null;
+            super.printException(ex);
         }
+        return result;
     }
 }

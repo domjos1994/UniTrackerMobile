@@ -34,12 +34,9 @@ import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.tracker.Github;
-import de.domjos.unibuggerlibrary.tasks.versions.ListVersionTask;
-import de.domjos.unibuggerlibrary.tasks.versions.VersionTask;
+import de.domjos.unibuggerlibrary.tasks.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
@@ -62,7 +59,7 @@ public final class VersionActivity extends AbstractActivity {
 
     private IBugService bugService;
     private IFunctionImplemented permissions;
-    private Project currentProject;
+    private Object currentProject;
     private Version currentVersion;
 
     private Validator versionValidator;
@@ -119,10 +116,7 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        if (this.settings.getCurrentAuthentication().getTracker() == Authentication.Tracker.Github) {
-                            ((Github) this.bugService).setTitle(currentProject.getAlias());
-                        }
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentVersion).get();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "").execute(this.currentVersion.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -136,7 +130,7 @@ public final class VersionActivity extends AbstractActivity {
                     try {
                         if (this.versionValidator.getState()) {
                             this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentVersion).get();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "").execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -168,7 +162,7 @@ public final class VersionActivity extends AbstractActivity {
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
-        this.currentProject = this.settings.getCurrentProject(VersionActivity.this, this.bugService);
+        this.currentProject = this.settings.getCurrentProjectId();
         this.updateUITrackerSpecific();
     }
 
@@ -183,24 +177,23 @@ public final class VersionActivity extends AbstractActivity {
         try {
             if (this.permissions.listVersions()) {
                 if (this.currentProject != null) {
-                    if (this.currentProject.getId() != null) {
-                        this.versionAdapter.clear();
-                        String filterAction = "versions";
-                        if (filter != null) {
-                            if (this.filter.equals(getString(R.string.versions_released))) {
-                                filterAction = "released_versions";
-                            } else if (this.filter.equals(getString(R.string.versions_unReleased))) {
-                                filterAction = "unreleased_versions";
-                            } else {
-                                filterAction = "versions";
-                            }
-                        }
-                        ListVersionTask versionTask = new ListVersionTask(VersionActivity.this, this.bugService, this.currentProject.getId(), filterAction, this.settings.showNotifications());
-                        for (Version version : versionTask.execute().get()) {
-                            ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
-                            this.versionAdapter.add(listObject);
+                    this.versionAdapter.clear();
+                    String filterAction = "versions";
+                    if (filter != null) {
+                        if (this.filter.equals(getString(R.string.versions_released))) {
+                            filterAction = "released_versions";
+                        } else if (this.filter.equals(getString(R.string.versions_unReleased))) {
+                            filterAction = "unreleased_versions";
+                        } else {
+                            filterAction = "versions";
                         }
                     }
+                    VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction);
+                    for (Version version : versionTask.execute(0).get()) {
+                        ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
+                        this.versionAdapter.add(listObject);
+                    }
+
                 }
             }
         } catch (Exception ex) {

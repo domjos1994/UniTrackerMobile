@@ -25,7 +25,6 @@ import org.json.JSONObject;
 
 import java.util.AbstractMap;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +47,10 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "id,name,values(id,name,description,released,releaseDate,archived)";
-    private final static String CUSTOM_FIELDS = "id,name,localizedName,fieldType(id),isAutoAttached,isDisplayedInIssueList,aliases,isUpdateable,fieldDefaults(canBeEmpty,emptyFieldText,isPublic)";
-    private final static String ISSUE_FIELDS = "id,summary,description,tags,created,updated,comments(id,text,created,updated),attachments(id,name,base64Content,url),customFields($type,id,projectCustomField($type,id,field($type,id,name)),value($type,avatarUrl,buildLink,color(id),fullName,id,isResolved,localizedName,login,minutes,name,presentation,text))";
+    private final static String CUSTOM_FIELDS = "id,name,localizedName,fieldType(id),isAutoAttached,isDisplayedInIssueList,aliases,isUpdateable,fieldDefaults(canBeEmpty,emptyFieldText,isPublic),instances(id,project(id,name))";
+    private final static String ISSUE_FIELDS = "id,summary,description,tags(id,name),created,updated,customFields(id,projectCustomField(field(id)),value(localizedName,name,id))";
+    private final static String COMMENT_FIELDS = "id,text,created,updated";
+    private final static String ATTACHMENT_FIELDS = "id,name,base64Content,url";
     private final static String USER_FIELDS = "id,login,fullName,email";
     private Authentication authentication;
 
@@ -144,9 +145,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public List<Version<String>> getVersions(String pid, String filter) throws Exception {
+    public List<Version<String>> getVersions(String filter, String project_id) throws Exception {
         List<Version<String>> versions = new LinkedList<>();
-        Project<String> project = this.getProject(pid);
+        Project<String> project = this.getProject(project_id);
         if (project != null) {
             Map.Entry<String, JSONArray> entry = this.getBundle(project.getTitle(), false);
             if (entry != null) {
@@ -158,9 +159,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                         version.setId(versionObject.getString("id"));
                         version.setTitle(versionObject.getString("name"));
                         version.setDescription(versionObject.getString("description"));
-                        version.setReleasedVersionAt(versionObject.getLong("releaseDate"));
-                        version.setReleasedVersion(versionObject.getBoolean("released"));
-                        version.setDeprecatedVersion(versionObject.getBoolean("archived"));
+                        version.setReleasedVersionAt(this.getLong(versionObject, "releaseDate"));
+                        version.setReleasedVersion(this.getBoolean(versionObject, "released"));
+                        version.setDeprecatedVersion(this.getBoolean(versionObject, "archived"));
                         versions.add(version);
                     }
                 }
@@ -171,8 +172,8 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public String insertOrUpdateVersion(String pid, Version<String> version) throws Exception {
-        Project<String> project = this.getProject(pid);
+    public void insertOrUpdateVersion(Version<String> version, String project_id) throws Exception {
+        Project<String> project = this.getProject(project_id);
         if (project != null) {
             Map.Entry<String, JSONArray> entry = this.getBundle(project.getTitle(), false);
             if (entry != null) {
@@ -203,8 +204,582 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + id, rootObject.toString(), "POST");
             }
         }
+    }
+
+    @Override
+    public void deleteVersion(String id, String project_id) throws Exception {
+        Map.Entry<String, JSONArray> entry = this.getBundle(id, true);
+        if (entry != null) {
+            JSONArray array = new JSONArray();
+            for (int i = 0; i <= entry.getValue().length() - 1; i++) {
+                if (!entry.getValue().getJSONObject(i).getString("id").equals(id)) {
+                    array.put(entry.getValue().getJSONObject(i));
+                }
+            }
+            JSONObject rootObject = new JSONObject();
+            rootObject.put("values", array);
+            this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + entry.getKey(), rootObject.toString(), "POST");
+        }
+    }
+
+    @Override
+    public List<Issue<String>> getIssues(String project_id) throws Exception {
+        List<Issue<String>> issues = new LinkedList<>();
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + "&fields=id,summary,description");
+            if (status == 200 || status == 201) {
+                JSONArray response = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= response.length() - 1; i++) {
+                    JSONObject jsonObject = response.getJSONObject(i);
+                    Issue<String> issue = new Issue<>();
+                    issue.setId(jsonObject.getString("id"));
+                    issue.setDescription(jsonObject.getString("description"));
+                    issue.setTitle(jsonObject.getString("summary"));
+                    issues.add(issue);
+                }
+            }
+        }
+        return issues;
+    }
+
+    @Override
+    public Issue<String> getIssue(String id, String project_id) throws Exception {
+        Issue<String> issue = new Issue<>();
+        int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            issue.setId(jsonObject.getString("id"));
+            issue.setTitle(jsonObject.getString("summary"));
+            issue.setDescription(jsonObject.getString("description"));
+
+            if (jsonObject.has("created")) {
+                long created = jsonObject.getLong("created");
+                if (created != 0) {
+                    Date date = new Date();
+                    date.setTime(created);
+                    issue.setSubmitDate(date);
+                }
+            }
+            if (jsonObject.has("updated")) {
+                long updated = jsonObject.getLong("updated");
+                if (updated != 0) {
+                    Date date = new Date();
+                    date.setTime(updated);
+                    issue.setLastUpdated(date);
+                }
+            }
+
+            if (jsonObject.has("tags")) {
+                if (!jsonObject.isNull("tags")) {
+                    JSONArray jsonArray = jsonObject.getJSONArray("tags");
+                    StringBuilder tags = new StringBuilder();
+                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                        tags.append(jsonArray.getJSONObject(i).getString("name"));
+                        tags.append(",");
+                    }
+                    issue.setTags(tags.toString());
+                }
+            }
+
+
+            JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
+            for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                JSONObject customFieldObject = customFieldArray.getJSONObject(i);
+                if (customFieldObject.has("projectCustomField")) {
+                    if (!customFieldObject.isNull("projectCustomField")) {
+                        JSONObject projectCustomField = customFieldObject.getJSONObject("projectCustomField");
+                        if (projectCustomField.has("field")) {
+                            if (!projectCustomField.isNull("field")) {
+                                String fieldId = projectCustomField.getJSONObject("field").getString("id");
+
+                                String valueName = "";
+                                if (customFieldObject.has("value")) {
+                                    if (!customFieldObject.isNull("value")) {
+                                        if (customFieldObject.get("value") instanceof JSONObject) {
+                                            JSONObject valueObject = customFieldObject.getJSONObject("value");
+                                            valueName = this.getName(valueObject);
+                                        } else if (customFieldObject.get("value") instanceof JSONArray) {
+                                            JSONArray valueArray = customFieldObject.getJSONArray("value");
+                                            if (valueArray.length() >= 1) {
+                                                JSONObject valueObject = valueArray.getJSONObject(0);
+                                                valueName = this.getName(valueObject);
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                                CustomField<String> customField = this.getCustomField(fieldId, project_id);
+                                if (customField != null) {
+                                    customField.setDescription(customFieldObject.getString("$type"));
+                                    issue.getCustomFields().put(customField, valueName);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
+            issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+        }
+        return issue;
+    }
+
+    @Override
+    public void insertOrUpdateIssue(Issue<String> issue, String project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject projectObject = new JSONObject();
+        projectObject.put("id", project_id);
+        jsonObject.put("project", projectObject);
+        jsonObject.put("summary", issue.getTitle());
+        jsonObject.put("description", issue.getDescription());
+
+        JSONArray tagArray = new JSONArray();
+        List<Tag<String>> tags = this.getTags(project_id);
+        for (String tag : issue.getTags().split(",")) {
+            for (Tag<String> current : tags) {
+                if (current.getTitle().equals(tag.trim())) {
+                    JSONObject tagObject = new JSONObject();
+                    tagObject.put("id", current.getId());
+                    tagObject.put("name", tag.trim());
+                    tagArray.put(tagObject);
+                    break;
+                }
+            }
+        }
+        jsonObject.put("tags", tagArray);
+
+        JSONArray customFieldsArray = new JSONArray();
+        int i = 0;
+        for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
+            JSONObject customFieldObject = new JSONObject();
+            JSONObject valueObject = new JSONObject();
+            boolean setted = false;
+            for (String item : entry.getKey().getPossibleValues().split("\\|")) {
+                if (item.split(":")[0].trim().equals(entry.getValue())) {
+                    valueObject.put("name", item.split(":")[1].trim());
+                    setted = true;
+                    break;
+                }
+            }
+            if (!setted) {
+                valueObject.put("name", entry.getKey().getDefaultValue());
+            }
+            customFieldObject.put("value", valueObject);
+            customFieldObject.put("$type", entry.getKey().getDescription());
+            customFieldObject.put("name", entry.getKey().getTitle());
+            customFieldObject.put("id", entry.getKey().getId());
+            customFieldsArray.put(customFieldObject);
+            if (i == 3) {
+                break;
+            }
+            i++;
+        }
+        jsonObject.put("customFields", customFieldsArray);
+
+        int status;
+        if (issue.getId() != null) {
+            status = this.executeRequest("/api/issues/" + issue.getId() + "?fields=idReadable", jsonObject.toString(), "POST");
+        } else {
+            status = this.executeRequest("/api/issues?fields=idReadable", jsonObject.toString(), "POST");
+        }
+
+        if (status == 200 || status == 201) {
+            JSONObject response = new JSONObject(this.getCurrentMessage());
+            issue.setId(response.getString("idReadable"));
+        }
+
+        Issue<String> oldIssue = this.getIssue(issue.getId(), project_id);
+        List<Note<String>> notes = oldIssue.getNotes();
+        List<Attachment<String>> attachments = oldIssue.getAttachments();
+        for (Note<String> note : notes) {
+            boolean available = false;
+            for (Note<String> newNote : issue.getNotes()) {
+                if (note.getId().equals(newNote.getId())) {
+                    available = true;
+                    break;
+                }
+            }
+            if (!available) {
+                this.deleteNote(note.getId(), issue.getId(), project_id);
+            }
+        }
+
+        if (!issue.getNotes().isEmpty()) {
+            for (Note<String> note : issue.getNotes()) {
+                this.insertOrUpdateNote(note, issue.getId(), project_id);
+            }
+        }
+
+        for (Attachment<String> attachment : attachments) {
+            boolean available = false;
+            for (Attachment<String> newAttachment : issue.getAttachments()) {
+                if (attachment.getId().equals(newAttachment.getId())) {
+                    available = true;
+                    break;
+                }
+            }
+            if (!available) {
+                this.deleteAttachment(attachment.getId(), issue.getId(), project_id);
+            }
+        }
+
+        if (!issue.getAttachments().isEmpty()) {
+            for (Attachment<String> attachment : issue.getAttachments()) {
+                this.insertOrUpdateAttachment(attachment, issue.getId(), project_id);
+            }
+        }
+    }
+
+    @Override
+    public void deleteIssue(String id, String project_id) throws Exception {
+        this.deleteRequest("/api/issues/" + id);
+    }
+
+    @Override
+    public List<Note<String>> getNotes(String issue_id, String project_id) throws Exception {
+        List<Note<String>> notes = new LinkedList<>();
+        int status = this.executeRequest("/api/issues/" + issue_id + "/comments?fields=" + YouTrack.COMMENT_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONArray array = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= array.length() - 1; i++) {
+                JSONObject commentObject = array.getJSONObject(i);
+                Note<String> note = new Note<>();
+                note.setId(commentObject.getString("id"));
+                note.setDescription(commentObject.getString("text"));
+                if (note.getDescription().length() >= 50) {
+                    note.setTitle(note.getDescription().substring(0, 50));
+                } else {
+                    note.setTitle(note.getDescription());
+                }
+                if (commentObject.has("created")) {
+                    Date date = new Date();
+                    date.setTime(commentObject.getLong("created"));
+                    note.setSubmitDate(date);
+                }
+                if (commentObject.has("updated")) {
+                    if (!commentObject.isNull("updated")) {
+                        Date date = new Date();
+                        date.setTime(commentObject.getLong("updated"));
+                        note.setLastUpdated(date);
+                    }
+                }
+                notes.add(note);
+            }
+        }
+        return notes;
+    }
+
+    @Override
+    public void insertOrUpdateNote(Note<String> note, String issue_id, String project_id) throws Exception {
+        JSONObject noteObject = new JSONObject();
+        noteObject.put("text", note.getDescription());
+
+        if (note.getId() == null) {
+            this.executeRequest("/api/issues/" + issue_id + "/comments?fields=id", noteObject.toString(), "POST");
+        } else {
+            this.executeRequest("/api/issues/" + issue_id + "/comments/" + note.getId() + "?fields=id", noteObject.toString(), "POST");
+        }
+    }
+
+    @Override
+    public void deleteNote(String id, String issue_id, String project_id) throws Exception {
+        this.deleteRequest("/api/issues/" + issue_id + "/comments/" + id);
+    }
+
+    @Override
+    public List<Attachment<String>> getAttachments(String issue_id, String project_id) throws Exception {
+        List<Attachment<String>> attachments = new LinkedList<>();
+        int status = this.executeRequest("/api/issues/" + issue_id + "/attachments?fields=" + YouTrack.ATTACHMENT_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject attachmentObject = jsonArray.getJSONObject(i);
+                Attachment<String> attachment = new Attachment<>();
+                attachment.setId(attachmentObject.getString("id"));
+                attachment.setFilename(attachmentObject.getString("name"));
+                attachment.setDownloadUrl(this.authentication.getServer() + attachmentObject.getString("url"));
+                attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
+                attachments.add(attachment);
+            }
+        }
+        return attachments;
+    }
+
+    @Override
+    public void insertOrUpdateAttachment(Attachment<String> attachment, String issue_id, String project_id) throws Exception {
+        JSONObject attachmentObject = new JSONObject();
+        attachmentObject.put("name", UUID.randomUUID().toString());
+        attachmentObject.put("base64Content", Base64.encodeToString(attachment.getContent(), Base64.DEFAULT));
+
+        if (attachment.getId() == null) {
+            this.executeRequest("/api/issues/" + issue_id + "/attachments?fields=id", attachmentObject.toString(), "POST");
+        } else {
+            this.executeRequest("/api/issues/" + issue_id + "/attachments/" + attachment.getId() + "?fields=id", attachmentObject.toString(), "POST");
+        }
+    }
+
+    @Override
+    public void deleteAttachment(String id, String issue_id, String project_id) throws Exception {
+        this.deleteRequest("/api/issues/" + issue_id + "/attachments/" + id);
+    }
+
+    @Override
+    public List<User<String>> getUsers(String pid) throws Exception {
+        List<User<String>> users = new LinkedList<>();
+        int status = this.executeRequest("/rest/admin/user?" + pid);
+        if (status == 200 || status == 201) {
+            JSONArray usersArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= usersArray.length() - 1; i++) {
+                User<String> user = new User<>();
+                JSONObject jsonObject = usersArray.getJSONObject(i);
+                user.setTitle(jsonObject.getString("login"));
+                user.setId(jsonObject.getString("ringId"));
+                users.add(user);
+            }
+        }
+        return users;
+    }
+
+    @Override
+    public User<String> getUser(String id, String project_id) throws Exception {
         return null;
     }
+
+    @Override
+    public String insertOrUpdateUser(User<String> user, String project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(String id, String project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<String>> getCustomFields(String project_id) throws Exception {
+        List<CustomField<String>> customFields = new LinkedList<>();
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/api/admin/customFieldSettings/customFields?fields=id");
+            if (status == 200 || status == 201) {
+                JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    customFields.add(this.getCustomField(jsonObject.getString("id"), project.getTitle()));
+                }
+            }
+        }
+        return customFields;
+    }
+
+    @Override
+    public CustomField<String> getCustomField(String id, String project_id) throws Exception {
+        int status = this.executeRequest("/api/admin/customFieldSettings/customFields/" + id + "?fields=" + YouTrack.CUSTOM_FIELDS);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            CustomField<String> customField = new CustomField<>();
+            customField.setId(jsonObject.getString("id"));
+            if (jsonObject.has("localizedName")) {
+                if (!jsonObject.isNull("localizedName")) {
+                    customField.setTitle(jsonObject.getString("localizedName"));
+                }
+            }
+            if (customField.getTitle().trim().isEmpty()) {
+                customField.setTitle(jsonObject.getString("name"));
+            }
+            if (jsonObject.has("fieldDefaults")) {
+                if (!jsonObject.isNull("fieldDefaults")) {
+                    customField.setDefaultValue(jsonObject.getJSONObject("fieldDefaults").getString("emptyFieldText"));
+                }
+            }
+            if (jsonObject.has("fieldType")) {
+                if (!jsonObject.isNull("fieldType")) {
+                    String field_id = jsonObject.getJSONObject("fieldType").getString("id");
+                    field_id = field_id.substring(0, field_id.lastIndexOf("["));
+                    StringBuilder possibleValues = new StringBuilder();
+                    Project<String> project = this.getProject(project_id);
+                    if (project != null) {
+                        for (String item : this.getValuesByBundle(project.getTitle(), customField.getTitle(), field_id)) {
+                            possibleValues.append(item);
+                            possibleValues.append("|");
+                        }
+                        customField.setPossibleValues(possibleValues.toString());
+                    }
+                }
+            }
+            if (jsonObject.has("instances")) {
+                if (!jsonObject.isNull("instances")) {
+                    JSONArray jsonArray = jsonObject.getJSONArray("instances");
+                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                        JSONObject instanceObject = jsonArray.getJSONObject(i);
+                        JSONObject projectObject = instanceObject.getJSONObject("project");
+                        if (projectObject.getString("id").equals(project_id)) {
+                            customField.setId(instanceObject.getString("id"));
+                            customField.setDescription(instanceObject.getString("$type"));
+                        }
+                    }
+                }
+            }
+            customField.setType(CustomField.Type.LIST);
+
+            return customField;
+        }
+        return null;
+    }
+
+    @Override
+    public String insertOrUpdateCustomField(CustomField<String> user, String project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(String id, String project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Tag<String>> getTags(String project_id) throws Exception {
+        List<Tag<String>> tags = new LinkedList<>();
+        int status = this.executeRequest("/api/issueTags?fields=id,name");
+        if (status == 200 || status == 201) {
+            JSONArray tagArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= tagArray.length() - 1; i++) {
+                JSONObject jsonObject = tagArray.getJSONObject(i);
+                Tag<String> tag = new Tag<>();
+                tag.setId(jsonObject.getString("id"));
+                tag.setTitle(jsonObject.getString("name"));
+                tags.add(tag);
+            }
+        }
+        return tags;
+    }
+
+    @Override
+    public List<String> getCategories(String project_id) throws Exception {
+        List<String> categories = new LinkedList<>();
+
+        return categories;
+    }
+
+    @Override
+    public IFunctionImplemented getPermissions() {
+        return new YoutrackPermissions(this.authentication);
+    }
+
+    private String getName(JSONObject object) throws Exception {
+        String name = "";
+        if (object.has("localizedName")) {
+            if (!object.isNull("localizedName")) {
+                name = object.getString("localizedName");
+            }
+        }
+        if (name.trim().isEmpty()) {
+            if (object.has("name")) {
+                if (!object.isNull("name")) {
+                    name = object.getString("name");
+                }
+            }
+        }
+        return name;
+    }
+
+    private List<String> getValuesByBundle(String projectTitle, String customFieldName, String enumField) throws Exception {
+        List<String> list = new LinkedList<>();
+        String val = "values";
+        if (enumField.equals("user")) {
+            val = "aggregatedUsers";
+        }
+
+        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/" + enumField + "?fields=id,name," + val + "(id,name,localizedName)");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String name = jsonObject.getString("name");
+                boolean isField = false;
+                if (name.contains(": ")) {
+                    String[] spl = name.split(": ");
+
+                    if (enumField.equals("version")) {
+                        if (spl[0].trim().toLowerCase().contains(projectTitle.trim().toLowerCase()) &&
+                                spl[1].trim().toLowerCase().contains(enumField.trim().toLowerCase())) {
+
+                            isField = true;
+                        }
+                    } else {
+                        if (spl[0].trim().toLowerCase().contains(projectTitle.trim().toLowerCase()) &&
+                                spl[1].trim().toLowerCase().contains(customFieldName.trim().toLowerCase())) {
+
+                            isField = true;
+                        }
+                    }
+                } else {
+                    if (enumField.equals("version")) {
+                        if (name.trim().toLowerCase().contains(enumField.trim().toLowerCase())) {
+                            isField = true;
+                        }
+                    } else {
+                        if (name.trim().toLowerCase().contains(customFieldName.trim().toLowerCase())) {
+                            isField = true;
+                        }
+                    }
+                }
+
+                if (isField) {
+                    if (jsonObject.has(val)) {
+                        if (!jsonObject.isNull(val)) {
+                            for (int j = 0; j <= jsonObject.getJSONArray(val).length() - 1; j++) {
+                                JSONObject valueObject = jsonObject.getJSONArray(val).getJSONObject(j);
+                                String value = "";
+                                if (valueObject.has("localizedName")) {
+                                    if (!valueObject.isNull("localizedName")) {
+                                        value = valueObject.getString("localizedName");
+                                    }
+                                }
+                                if (value.isEmpty()) {
+                                    if (valueObject.has("name")) {
+                                        if (!valueObject.isNull("name")) {
+                                            value = valueObject.getString("name");
+
+                                        }
+                                    }
+                                }
+                                list.add(value + ":" + valueObject.getString("name"));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
+    private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {
+        Project<String> project = new Project<>();
+        project.setId(jsonObject.getString("id"));
+        project.setTitle(jsonObject.getString("name"));
+        project.setDescription(jsonObject.getString("description"));
+        project.setAlias(jsonObject.getString("shortName"));
+        if (jsonObject.has("archived")) {
+            project.setEnabled(!jsonObject.getBoolean("archived"));
+        }
+        String iconUrl = jsonObject.getString("iconUrl");
+        if (iconUrl != null) {
+            iconUrl = iconUrl.trim();
+            if (!iconUrl.isEmpty()) {
+                if (iconUrl.startsWith("/")) {
+                    project.setIconUrl(this.authentication.getServer() + jsonObject.getString("iconUrl"));
+                } else {
+                    project.setIconUrl(jsonObject.getString("iconUrl"));
+                }
+            }
+        }
+        return project;
+    }
+
 
     private Map.Entry<String, JSONArray> getBundle(String projectName, boolean id) throws Exception {
         int status = this.executeRequest("/api/admin/customFieldSettings/bundles/version?fields=" + YouTrack.VERSION_FIELDS);
@@ -236,434 +811,5 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
         }
         return null;
-    }
-
-    @Override
-    public void deleteVersion(String id) throws Exception {
-        Map.Entry<String, JSONArray> entry = this.getBundle(id, true);
-        if (entry != null) {
-            JSONArray array = new JSONArray();
-            for (int i = 0; i <= entry.getValue().length() - 1; i++) {
-                if (!entry.getValue().getJSONObject(i).getString("id").equals(id)) {
-                    array.put(entry.getValue().getJSONObject(i));
-                }
-            }
-            JSONObject rootObject = new JSONObject();
-            rootObject.put("values", array);
-            this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + entry.getKey(), rootObject.toString(), "POST");
-        }
-    }
-
-    @Override
-    public List<Issue<String>> getIssues(String pid) throws Exception {
-        List<Issue<String>> issues = new LinkedList<>();
-        Project<String> project = this.getProject(pid);
-        if (project != null) {
-            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + "&fields=id,summary,description");
-            if (status == 200 || status == 201) {
-                JSONArray response = new JSONArray(this.getCurrentMessage());
-                for (int i = 0; i <= response.length() - 1; i++) {
-                    JSONObject jsonObject = response.getJSONObject(i);
-                    Issue<String> issue = new Issue<>();
-                    issue.setId(jsonObject.getString("id"));
-                    issue.setDescription(jsonObject.getString("description"));
-                    issue.setTitle(jsonObject.getString("summary"));
-                    issues.add(issue);
-                }
-            }
-        }
-        return issues;
-    }
-
-    @Override
-    public Issue<String> getIssue(String id) throws Exception {
-        Issue<String> issue = new Issue<>();
-        int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
-        if (status == 200 || status == 201) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            issue.setId(jsonObject.getString("id"));
-            issue.setTitle(jsonObject.getString("summary"));
-            issue.setDescription(jsonObject.getString("description"));
-
-            if (jsonObject.has("created")) {
-                long created = jsonObject.getLong("created");
-                if (created != 0) {
-                    Date date = new Date();
-                    date.setTime(created);
-                    issue.setSubmitDate(date);
-                }
-            }
-            if (jsonObject.has("updated")) {
-                long updated = jsonObject.getLong("updated");
-                if (updated != 0) {
-                    Date date = new Date();
-                    date.setTime(updated);
-                    issue.setLastUpdated(date);
-                }
-            }
-
-            JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
-            for (int i = 0; i <= customFieldArray.length() - 1; i++) {
-                JSONObject customFieldObject = customFieldArray.getJSONObject(i);
-                JSONObject fieldDescription = customFieldObject.getJSONObject("projectCustomField");
-
-                if (fieldDescription.has("field")) {
-                    JSONObject fieldObject = fieldDescription.getJSONObject("field");
-
-                    String valueId = "", valueName = "";
-                    if (customFieldObject.has("value")) {
-                        if (!customFieldObject.isNull("value")) {
-                            if (customFieldObject.get("value") instanceof JSONObject) {
-                                JSONObject valueObject = customFieldObject.getJSONObject("value");
-                                valueId = valueObject.getString("id");
-                                valueName = valueObject.getString("name");
-                            } else if (customFieldObject.get("value") instanceof JSONArray) {
-                                JSONArray valueArray = customFieldObject.getJSONArray("value");
-                                if (valueArray.length() >= 1) {
-                                    JSONObject valueObject = valueArray.getJSONObject(0);
-                                    valueId = valueObject.getString("id");
-                                    valueName = valueObject.getString("name");
-                                }
-                            }
-                        }
-                    }
-
-
-                    if (fieldObject.has("name")) {
-                        String name = fieldObject.getString("name");
-                        switch (name) {
-                            case "Priority":
-                                issue.setPriority(Integer.parseInt(valueId.split("-")[1]), valueName);
-                                break;
-                            case "Type":
-                                issue.setSeverity(Integer.parseInt(valueId.split("-")[1]), valueName);
-                                break;
-                            case "State":
-                                issue.setStatus(Integer.parseInt(valueId.split("-")[1]), valueName);
-                                break;
-                            case "Assignee":
-                                if (!valueName.equals("")) {
-                                    User<String> user = new User<>();
-                                    user.setTitle(valueName);
-                                    user.setId(valueId);
-                                    issue.setHandler(user);
-                                }
-                                break;
-                            case "Fix versions":
-                                issue.setFixedInVersion(valueName);
-                                break;
-                            case "Affected versions":
-                                issue.setVersion(valueName);
-                                break;
-                        }
-                    }
-                }
-            }
-
-            if (jsonObject.has("comments")) {
-                JSONArray jsonArray = jsonObject.getJSONArray("comments");
-                for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                    JSONObject commentObject = jsonArray.getJSONObject(i);
-                    Note<String> note = new Note<>();
-                    note.setId(commentObject.getString("id"));
-                    note.setDescription(commentObject.getString("text"));
-                    if (note.getDescription().length() >= 50) {
-                        note.setTitle(note.getDescription().substring(0, 50));
-                    } else {
-                        note.setTitle(note.getDescription());
-                    }
-                    if (commentObject.has("created")) {
-                        Date date = new Date();
-                        date.setTime(commentObject.getLong("created"));
-                        note.setSubmitDate(date);
-                    }
-                    if (commentObject.has("updated")) {
-                        if (!commentObject.isNull("updated")) {
-                            Date date = new Date();
-                            date.setTime(commentObject.getLong("updated"));
-                            note.setLastUpdated(date);
-                        }
-                    }
-                    issue.getNotes().add(note);
-                }
-            }
-
-            if (jsonObject.has("attachments")) {
-                JSONArray jsonArray = jsonObject.getJSONArray("attachments");
-                for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                    JSONObject attachmentObject = jsonArray.getJSONObject(i);
-                    Attachment<String> attachment = new Attachment<>();
-                    attachment.setId(attachmentObject.getString("id"));
-                    attachment.setFilename(attachmentObject.getString("name"));
-                    attachment.setDownloadUrl(this.authentication.getServer() + attachmentObject.getString("url"));
-                    attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
-                    issue.getAttachments().add(attachment);
-                }
-            }
-        }
-        return issue;
-    }
-
-    @Override
-    public String insertOrUpdateIssue(String pid, Issue<String> issue) throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        JSONObject projectObject = new JSONObject();
-        projectObject.put("id", pid);
-        jsonObject.put("project", projectObject);
-        jsonObject.put("summary", issue.getTitle());
-        jsonObject.put("description", issue.getDescription());
-
-        Map<String, String> fields = this.getCustomFields();
-        Map<String, String> localized = this.getValuesFromLocalized();
-        JSONArray customFieldsArray = new JSONArray();
-        int i = 0;
-        customFieldsArray.put(i++, this.putCustomField(localized.get(issue.getPriority().getValue()), "Priority", fields.get("Priority"), "SingleEnumIssueCustomField"));
-        customFieldsArray.put(i++, this.putCustomField(localized.get(issue.getSeverity().getValue()), "Type", fields.get("Type"), "SingleEnumIssueCustomField"));
-        //customFieldsArray.put(2, this.putCustomField(localized.get(issue.getPriority().getValue()), "State", fields.get("State"), "StateProjectCustomField"));
-        if (issue.getHandler() != null) {
-            if (!issue.getHandler().getTitle().isEmpty()) {
-                customFieldsArray.put(i++, this.putCustomField(issue.getHandler().getTitle(), "Assignee", "", "SingleUserIssueCustomField"));
-            }
-        }
-        if (!issue.getFixedInVersion().isEmpty()) {
-            customFieldsArray.put(i++, this.putCustomField(issue.getFixedInVersion(), "Fix versions", "", "MultiVersionIssueCustomField"));
-        }
-        if (!issue.getVersion().isEmpty()) {
-            customFieldsArray.put(i, this.putCustomField(issue.getVersion(), "Affected versions", "", "MultiVersionIssueCustomField"));
-        }
-
-        jsonObject.put("customFields", customFieldsArray);
-
-        int status;
-        if (issue.getId() != null) {
-            status = this.executeRequest("/api/issues/" + issue.getId() + "?fields=idReadable", jsonObject.toString(), "POST");
-        } else {
-            status = this.executeRequest("/api/issues?fields=idReadable", jsonObject.toString(), "POST");
-        }
-
-        if (status == 200 || status == 201) {
-            JSONObject response = new JSONObject(this.getCurrentMessage());
-            issue.setId(response.getString("idReadable"));
-        }
-
-        Issue<String> oldIssue = this.getIssue(issue.getId());
-        List<Note<String>> notes = oldIssue.getNotes();
-        List<Attachment<String>> attachments = oldIssue.getAttachments();
-        for (Note<String> note : notes) {
-            boolean available = false;
-            for (Note<String> newNote : issue.getNotes()) {
-                if (note.getId().equals(newNote.getId())) {
-                    available = true;
-                    break;
-                }
-            }
-            if (!available) {
-                this.deleteRequest("/api/issues/" + issue.getId() + "/comments/" + note.getId());
-            }
-        }
-
-        if (!issue.getNotes().isEmpty()) {
-            for (Note<String> note : issue.getNotes()) {
-                JSONObject noteObject = new JSONObject();
-                noteObject.put("text", note.getDescription());
-
-                if (note.getId() == null) {
-                    this.executeRequest("/api/issues/" + issue.getId() + "/comments?fields=id", noteObject.toString(), "POST");
-                } else {
-                    this.executeRequest("/api/issues/" + issue.getId() + "/comments/" + note.getId() + "?fields=id", noteObject.toString(), "POST");
-                }
-            }
-        }
-
-        for (Attachment<String> attachment : attachments) {
-            boolean available = false;
-            for (Attachment<String> newAttachment : issue.getAttachments()) {
-                if (attachment.getId().equals(newAttachment.getId())) {
-                    available = true;
-                    break;
-                }
-            }
-            if (!available) {
-                this.deleteRequest("/api/issues/" + issue.getId() + "/attachments/" + attachment.getId());
-            }
-        }
-
-        if (!issue.getAttachments().isEmpty()) {
-            for (Attachment<String> attachment : issue.getAttachments()) {
-                JSONObject attachmentObject = new JSONObject();
-                attachmentObject.put("name", UUID.randomUUID().toString());
-                attachmentObject.put("base64Content", Base64.encodeToString(attachment.getContent(), Base64.DEFAULT));
-
-                if (attachment.getId() == null) {
-                    this.executeRequest("/api/issues/" + issue.getId() + "/attachments?fields=id", attachmentObject.toString(), "POST");
-                } else {
-                    this.executeRequest("/api/issues/" + issue.getId() + "/attachments/" + attachment.getId() + "?fields=id", attachmentObject.toString(), "POST");
-                }
-            }
-        }
-
-        return issue.getId();
-    }
-
-    private Map<String, String> getCustomFields() throws Exception {
-        Map<String, String> fields = new LinkedHashMap<>();
-        int status = this.executeRequest("/api/admin/customFieldSettings/customFields?fields=id,name");
-        if (status == 200 || status == 201) {
-            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                status = this.executeRequest("/api/admin/customFieldSettings/customFields/" + jsonObject.getString("id") + "/instances?fields=id,name");
-                if (status == 200 || status == 201) {
-                    JSONArray realId = new JSONArray(this.getCurrentMessage());
-                    if (realId.length() >= 1) {
-                        fields.put(jsonObject.getString("name"), realId.getJSONObject(0).getString("id"));
-                    }
-                }
-            }
-        }
-        return fields;
-    }
-
-    private Map<String, String> getValuesFromLocalized() throws Exception {
-        Map<String, String> fields = new LinkedHashMap<>();
-        int status = this.executeRequest("/api/admin/customFieldSettings/bundles/enum?fields=values(name,localizedName)");
-        if (status == 200 || status == 201) {
-            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
-            for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject valuesObject = jsonArray.getJSONObject(i);
-                JSONArray valuesArray = valuesObject.getJSONArray("values");
-                for (int j = 0; j <= valuesArray.length() - 1; j++) {
-                    JSONObject valueObject = valuesArray.getJSONObject(j);
-                    fields.put(valueObject.getString("localizedName"), valueObject.getString("name"));
-                }
-            }
-        }
-        return fields;
-    }
-
-    private JSONObject putCustomField(String valueId, String name, String id, String type) throws Exception {
-        JSONObject customObject = new JSONObject();
-        JSONObject valueObject = new JSONObject();
-        switch (type) {
-            case "SingleEnumIssueCustomField":
-                valueObject.put("name", valueId);
-                customObject.put("value", valueObject);
-                break;
-            case "SingleUserIssueCustomField":
-                valueObject.put("login", valueId);
-                customObject.put("value", valueObject);
-                break;
-            case "MultiVersionIssueCustomField":
-                JSONArray arrayObject = new JSONArray();
-                valueObject.put("name", valueId);
-                arrayObject.put(0, valueObject);
-                customObject.put("values", arrayObject);
-        }
-
-        customObject.put("name", name);
-        if (!id.isEmpty()) {
-            customObject.put("id", id);
-        }
-        customObject.put("$type", type);
-        return customObject;
-    }
-
-    @Override
-    public void deleteIssue(String id) throws Exception {
-        this.deleteRequest("/api/issues/" + id);
-    }
-
-    @Override
-    public List<String> getCategories(String pid) throws Exception {
-        List<String> categories = new LinkedList<>();
-
-        return categories;
-    }
-
-    @Override
-    public List<User<String>> getUsers(String pid) throws Exception {
-        List<User<String>> users = new LinkedList<>();
-        int status = this.executeRequest("/rest/admin/user?" + pid);
-        if (status == 200 || status == 201) {
-            JSONArray usersArray = new JSONArray(this.getCurrentMessage());
-            for (int i = 0; i <= usersArray.length() - 1; i++) {
-                User<String> user = new User<>();
-                JSONObject jsonObject = usersArray.getJSONObject(i);
-                user.setTitle(jsonObject.getString("login"));
-                user.setId(jsonObject.getString("ringId"));
-                users.add(user);
-            }
-        }
-        return users;
-    }
-
-    @Override
-    public User<String> getUser(String id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String insertOrUpdateUser(User<String> user) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteUser(String id) throws Exception {
-
-    }
-
-    @Override
-    public List<CustomField<String>> getCustomFields(String pid) throws Exception {
-        return null;
-    }
-
-    @Override
-    public CustomField<String> getCustomField(String id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String insertOrUpdateCustomField(CustomField<String> user) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteCustomField(String id) throws Exception {
-
-    }
-
-    @Override
-    public List<Tag<String>> getTags() throws Exception {
-        List<Tag<String>> tags = new LinkedList<>();
-
-        return tags;
-    }
-
-    @Override
-    public IFunctionImplemented getPermissions() {
-        return new YoutrackPermissions(this.authentication);
-    }
-
-    private Project<String> jsonObjectToProject(JSONObject jsonObject) throws Exception {
-        Project<String> project = new Project<>();
-        project.setId(jsonObject.getString("id"));
-        project.setTitle(jsonObject.getString("name"));
-        project.setDescription(jsonObject.getString("description"));
-        project.setAlias(jsonObject.getString("shortName"));
-        if (jsonObject.has("archived")) {
-            project.setEnabled(!jsonObject.getBoolean("archived"));
-        }
-        String iconUrl = jsonObject.getString("iconUrl");
-        if (iconUrl != null) {
-            iconUrl = iconUrl.trim();
-            if (!iconUrl.isEmpty()) {
-                if (iconUrl.startsWith("/")) {
-                    project.setIconUrl(this.authentication.getServer() + jsonObject.getString("iconUrl"));
-                } else {
-                    project.setIconUrl(jsonObject.getString("iconUrl"));
-                }
-            }
-        }
-        return project;
     }
 }

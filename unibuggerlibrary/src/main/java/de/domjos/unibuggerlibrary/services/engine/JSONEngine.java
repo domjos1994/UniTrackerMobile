@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggerlibrary.services.engine;
 
+import org.json.JSONObject;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,6 +103,26 @@ public class JSONEngine {
 
     protected void addHeader(String header) {
         this.headers.add(header);
+    }
+
+    protected long getLong(JSONObject object, String key) throws Exception {
+        long value = 0L;
+        if (object.has(key)) {
+            if (!object.isNull(key)) {
+                value = object.getLong(key);
+            }
+        }
+        return value;
+    }
+
+    protected boolean getBoolean(JSONObject object, String key) throws Exception {
+        boolean value = false;
+        if (object.has(key)) {
+            if (!object.isNull(key)) {
+                value = object.getBoolean(key);
+            }
+        }
+        return value;
     }
 
     private Call initAuthentication(String path) {

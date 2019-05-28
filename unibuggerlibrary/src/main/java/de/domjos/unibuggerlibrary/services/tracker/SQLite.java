@@ -168,10 +168,10 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<Version<Long>> getVersions(Long pid, String filter) {
+    public List<Version<Long>> getVersions(String filter, Long project_id) {
         List<Version<Long>> versions = new LinkedList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM versions WHERE project=?", new String[]{String.valueOf(pid)});
+        Cursor cursor = db.rawQuery("SELECT * FROM versions WHERE project=?", new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
             Version<Long> version = new Version<>();
             version.setTitle(this.getString(cursor, "title"));
@@ -186,7 +186,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public Long insertOrUpdateVersion(Long pid, Version<Long> version) {
+    public void insertOrUpdateVersion(Version<Long> version, Long project_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         SQLiteStatement sqLiteStatement;
         if (version.getId() == null) {
@@ -200,7 +200,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         sqLiteStatement.bindLong(3, version.isDeprecatedVersion() ? 1 : 0);
         sqLiteStatement.bindLong(4, version.getReleasedVersionAt());
         sqLiteStatement.bindString(5, version.getDescription());
-        sqLiteStatement.bindLong(6, pid);
+        sqLiteStatement.bindLong(6, project_id);
 
         if (version.getId() == null) {
             version.setId(sqLiteStatement.executeInsert());
@@ -208,39 +208,27 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
             sqLiteStatement.execute();
         }
         sqLiteStatement.close();
-
-        return version.getId();
     }
 
     @Override
-    public void deleteVersion(Long id) {
+    public void deleteVersion(Long id, Long project_id) {
         this.getWritableDatabase().execSQL("DELETE FROM versions WHERE id=" + id);
     }
 
     @Override
-    public int getCurrentState() {
-        return 200;
-    }
-
-    @Override
-    public String getCurrentMessage() {
-        return "";
-    }
-
-    @Override
-    public List<Issue<Long>> getIssues(Long pid) {
+    public List<Issue<Long>> getIssues(Long project_id) {
         List<Issue<Long>> issues = new LinkedList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?", new String[]{String.valueOf(pid)});
+        Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?", new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
-            issues.add(this.getIssue((long) this.getInt(cursor, "id")));
+            issues.add(this.getIssue((long) this.getInt(cursor, "id"), project_id));
         }
         cursor.close();
         return issues;
     }
 
     @Override
-    public Issue<Long> getIssue(Long id) {
+    public Issue<Long> getIssue(Long id, Long project_id) {
         Issue<Long> issue = new Issue<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM issues WHERE id=?", new String[]{String.valueOf(id)});
@@ -335,7 +323,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public Long insertOrUpdateIssue(Long pid, Issue<Long> issue) {
+    public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         SQLiteStatement sqLiteStatement;
         if (issue.getId() == null) {
@@ -383,7 +371,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         sqLiteStatement.bindString(16, issue.getDescription());
         sqLiteStatement.bindString(17, issue.getStepsToReproduce());
         sqLiteStatement.bindString(18, issue.getAdditionalInformation());
-        sqLiteStatement.bindLong(19, pid);
+        sqLiteStatement.bindLong(19, project_id);
 
         if (issue.getId() != null) {
             sqLiteStatement.execute();
@@ -458,12 +446,10 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                 sqLiteStatement.close();
             }
         }
-
-        return null;
     }
 
     @Override
-    public void deleteIssue(Long id) {
+    public void deleteIssue(Long id, Long project_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM fieldResult WHERE issue=" + id);
         db.execSQL("DELETE FROM notes WHERE issue=" + id);
@@ -472,10 +458,80 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<String> getCategories(Long pid) {
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<User<Long>> getUsers(Long project_id) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public User<Long> getUser(Long id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteUser(Long id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void deleteCustomField(Long id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public List<String> getCategories(Long project_id) {
         List<String> categories = new LinkedList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT category FROM issues WHERE project=?", new String[]{String.valueOf(pid)});
+        Cursor cursor = db.rawQuery("SELECT DISTINCT category FROM issues WHERE project=?", new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
             categories.add(this.getString(cursor, "category"));
         }
@@ -484,47 +540,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<User<Long>> getUsers(Long pid) {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public User<Long> getUser(Long id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public Long insertOrUpdateUser(User<Long> user) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteUser(Long id) throws Exception {
-
-    }
-
-    @Override
-    public List<CustomField<Long>> getCustomFields(Long pid) throws Exception {
-        return null;
-    }
-
-    @Override
-    public CustomField<Long> getCustomField(Long id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteCustomField(Long id) throws Exception {
-
-    }
-
-    @Override
-    public List<Tag<Long>> getTags() {
+    public List<Tag<Long>> getTags(Long project_id) {
         List<Tag<Long>> tags = new LinkedList<>();
         List<String> strTags = new LinkedList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -570,6 +586,16 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     @Override
     public IFunctionImplemented getPermissions() {
         return new SQLitePermissions();
+    }
+
+    @Override
+    public int getCurrentState() {
+        return 200;
+    }
+
+    @Override
+    public String getCurrentMessage() {
+        return "";
     }
 
     private void initDatabase(SQLiteDatabase db) {
