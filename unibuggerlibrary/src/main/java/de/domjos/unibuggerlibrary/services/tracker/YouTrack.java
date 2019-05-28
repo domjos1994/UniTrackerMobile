@@ -354,27 +354,46 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         JSONArray customFieldsArray = new JSONArray();
         int i = 0;
         for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
+            if (i == 3 || i == 4 || i == 7) {
+                i++;
+                continue;
+            }
             JSONObject customFieldObject = new JSONObject();
             JSONObject valueObject = new JSONObject();
-            boolean setted = false;
+            boolean setField = false;
             for (String item : entry.getKey().getPossibleValues().split("\\|")) {
                 if (item.split(":")[0].trim().equals(entry.getValue())) {
                     valueObject.put("name", item.split(":")[1].trim());
-                    setted = true;
+                    setField = true;
                     break;
                 }
             }
-            if (!setted) {
+            if (!setField) {
                 valueObject.put("name", entry.getKey().getDefaultValue());
             }
-            customFieldObject.put("value", valueObject);
+            if (entry.getKey().getDescription().contains("MultiVersion")) {
+                String name = valueObject.getString("name");
+                List<Version<String>> versions = this.getVersions("", project_id);
+                for (Version<String> version : versions) {
+                    if (version.getTitle().equals(name)) {
+                        valueObject.put("id", version.getId());
+                        break;
+                    }
+                }
+
+                JSONArray jsonArray = new JSONArray();
+                if (!valueObject.getString("name").equals(entry.getKey().getDefaultValue())) {
+                    jsonArray.put(valueObject);
+                }
+                customFieldObject.put("value", jsonArray);
+            } else {
+                customFieldObject.put("value", valueObject);
+            }
+
             customFieldObject.put("$type", entry.getKey().getDescription());
             customFieldObject.put("name", entry.getKey().getTitle());
             customFieldObject.put("id", entry.getKey().getId());
             customFieldsArray.put(customFieldObject);
-            if (i == 3) {
-                break;
-            }
             i++;
         }
         jsonObject.put("customFields", customFieldsArray);
