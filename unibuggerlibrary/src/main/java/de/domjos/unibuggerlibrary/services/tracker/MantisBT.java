@@ -190,7 +190,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         request.addProperty("version", projectData);
 
         Object object = this.executeAction(request, action, true);
-        object = this.getResult(object);
+        this.getResult(object);
     }
 
     @Override
@@ -540,7 +540,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             oldAttachments = oldIssue.getAttachments();
         }
 
-        for (Note oldNote : oldNotes) {
+        for (Note<Long> oldNote : oldNotes) {
             boolean available = false;
             for (Note note : issue.getNotes()) {
                 if (oldNote.getId().equals(note.getId())) {
@@ -549,58 +549,23 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 }
             }
             if (!available) {
-                SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_note_delete");
-                deleteRequest.addProperty("issue_note_id", oldNote.getId());
-                Object deleteObject = this.executeAction(deleteRequest, "mc_issue_note_delete", true);
-                this.getResult(deleteObject);
+                this.deleteNote(oldNote.getId(), id, project_id);
             }
         }
 
         if (!issue.getNotes().isEmpty()) {
-            for (Note note : issue.getNotes()) {
-                String noteAction;
-                SoapObject noteRequestObject;
-                if (note.getId() != null) {
-                    noteAction = "mc_issue_note_update";
-                    noteRequestObject = new SoapObject(super.soapPath, noteAction);
-                } else {
-                    noteAction = "mc_issue_note_add";
-                    noteRequestObject = new SoapObject(super.soapPath, noteAction);
-                    noteRequestObject.addProperty("issue_id", id);
-                }
-                SoapObject noteObject = new SoapObject(NAMESPACE, "IssueNoteData");
-                if (note.getId() != null) {
-                    noteObject.addProperty("id", note.getId());
-                }
-                noteObject.addProperty("text", note.getDescription());
-
-                SoapObject viewNoteObject = new SoapObject(NAMESPACE, "ObjectRef");
-                viewNoteObject.addProperty("id", note.getState().getKey());
-                viewNoteObject.addProperty("name", note.getState().getValue());
-                noteObject.addProperty("view_state", viewNoteObject);
-                noteRequestObject.addProperty("note", noteObject);
-                Object noteResult = this.executeAction(noteRequestObject, noteAction, true);
-                this.getResult(noteResult);
+            for (Note<Long> note : issue.getNotes()) {
+                this.insertOrUpdateNote(note, id, project_id);
             }
         }
 
-        for (Attachment oldAttachment : oldAttachments) {
-            SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
-            deleteRequest.addProperty("issue_attachment_id", oldAttachment.getId());
-            Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
-            this.getResult(deleteObject);
+        for (Attachment<Long> oldAttachment : oldAttachments) {
+            this.deleteAttachment(oldAttachment.getId(), id, project_id);
         }
 
         if (!issue.getAttachments().isEmpty()) {
-            for (Attachment attachment : issue.getAttachments()) {
-                SoapObject attachmentObject = new SoapObject(super.soapPath, "mc_issue_attachment_add");
-                attachmentObject.addProperty("issue_id", id);
-                attachmentObject.addProperty("name", attachment.getFilename());
-                attachmentObject.addProperty("file_type", "text");
-                attachmentObject.addProperty("content", attachment.getContent());
-
-                Object noteResult = this.executeAction(attachmentObject, "mc_issue_attachment_add", true);
-                this.getResult(noteResult);
+            for (Attachment<Long> attachment : issue.getAttachments()) {
+                this.insertOrUpdateAttachment(attachment, id, project_id);
             }
         }
     }
@@ -614,33 +579,68 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) {
+        return new LinkedList<>();
     }
 
     @Override
     public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+        String noteAction;
+        SoapObject noteRequestObject;
+        if (note.getId() != null) {
+            noteAction = "mc_issue_note_update";
+            noteRequestObject = new SoapObject(super.soapPath, noteAction);
+        } else {
+            noteAction = "mc_issue_note_add";
+            noteRequestObject = new SoapObject(super.soapPath, noteAction);
+            noteRequestObject.addProperty("issue_id", issue_id);
+        }
+        SoapObject noteObject = new SoapObject(NAMESPACE, "IssueNoteData");
+        if (note.getId() != null) {
+            noteObject.addProperty("id", note.getId());
+        }
+        noteObject.addProperty("text", note.getDescription());
 
+        SoapObject viewNoteObject = new SoapObject(NAMESPACE, "ObjectRef");
+        viewNoteObject.addProperty("id", note.getState().getKey());
+        viewNoteObject.addProperty("name", note.getState().getValue());
+        noteObject.addProperty("view_state", viewNoteObject);
+        noteRequestObject.addProperty("note", noteObject);
+        Object noteResult = this.executeAction(noteRequestObject, noteAction, true);
+        this.getResult(noteResult);
     }
 
     @Override
     public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
-
+        SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_note_delete");
+        deleteRequest.addProperty("issue_note_id", id);
+        Object deleteObject = this.executeAction(deleteRequest, "mc_issue_note_delete", true);
+        this.getResult(deleteObject);
     }
 
     @Override
-    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) {
+        return new LinkedList<>();
     }
 
     @Override
     public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+        SoapObject attachmentObject = new SoapObject(super.soapPath, "mc_issue_attachment_add");
+        attachmentObject.addProperty("issue_id", issue_id);
+        attachmentObject.addProperty("name", attachment.getFilename());
+        attachmentObject.addProperty("file_type", "text");
+        attachmentObject.addProperty("content", attachment.getContent());
 
+        Object noteResult = this.executeAction(attachmentObject, "mc_issue_attachment_add", true);
+        this.getResult(noteResult);
     }
 
     @Override
     public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+        SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
+        deleteRequest.addProperty("issue_attachment_id", id);
+        Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
+        this.getResult(deleteObject);
     }
 
     @Override
@@ -667,18 +667,17 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public User<Long> getUser(Long id, Long project_id) throws Exception {
-        return null;
+    public User<Long> getUser(Long id, Long project_id) {
+        return new User<>();
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
-        return null;
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) {
+        return 0L;
     }
 
     @Override
-    public void deleteUser(Long id, Long project_id) throws Exception {
-
+    public void deleteUser(Long id, Long project_id) {
     }
 
     @Override
@@ -712,18 +711,17 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
-        return null;
+    public CustomField<Long> getCustomField(Long id, Long project_id) {
+        return new CustomField<>();
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
-        return null;
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
+        return 0L;
     }
 
     @Override
-    public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+    public void deleteCustomField(Long id, Long project_id) {
     }
 
     @Override
@@ -750,7 +748,32 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<History<Long>> histories = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_issue_get_history");
+        request.addProperty("issue_id", issue_id);
+        Object object = this.executeAction(request, "mc_issue_get_history", true);
+        object = this.getResult(object);
+
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                SoapObject soapObject = (SoapObject) vector.get(i);
+                History<Long> history = new History<>();
+                history.setTitle(
+                        soapObject.getPropertyAsString("field") + ": " +
+                                soapObject.getPropertyAsString("old_value") + " -> " +
+                                soapObject.getPropertyAsString("new_value")
+                );
+                history.setOldValue(soapObject.getPropertyAsString("old_value"));
+                history.setNewValue(soapObject.getPropertyAsString("new_value"));
+                history.setField(soapObject.getPropertyAsString("field"));
+                history.setUser(soapObject.getPropertyAsString("username"));
+                history.setTime(Long.parseLong(soapObject.getPropertyAsString("date")));
+                histories.add(history);
+            }
+        }
+
+        return histories;
     }
 
     @Override

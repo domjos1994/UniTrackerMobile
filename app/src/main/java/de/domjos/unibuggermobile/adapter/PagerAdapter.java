@@ -38,6 +38,7 @@ import de.domjos.unibuggermobile.fragments.IssueAttachmentsFragment;
 import de.domjos.unibuggermobile.fragments.IssueCustomFragment;
 import de.domjos.unibuggermobile.fragments.IssueDescriptionsFragment;
 import de.domjos.unibuggermobile.fragments.IssueGeneralFragment;
+import de.domjos.unibuggermobile.fragments.IssueHistoryFragment;
 import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
 import de.domjos.unibuggermobile.helper.Helper;
 
@@ -47,7 +48,7 @@ import de.domjos.unibuggermobile.helper.Helper;
  */
 public class PagerAdapter extends FragmentPagerAdapter {
     private final Context context;
-    private AbstractFragment general, notes, descriptions, attachments, custom;
+    private AbstractFragment general, notes, descriptions, attachments, custom, history;
     private IBugService bugService;
     private int count;
 
@@ -59,8 +60,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions = new IssueDescriptionsFragment();
         this.attachments = new IssueAttachmentsFragment();
         this.custom = new IssueCustomFragment();
+        this.history = new IssueHistoryFragment();
         this.bugService = Helper.getCurrentBugService(context);
-        this.count = 5;
+        this.count = 6;
         if (!this.bugService.getPermissions().listNotes()) {
             this.count--;
         }
@@ -68,6 +70,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
             this.count--;
         }
         if (!this.bugService.getPermissions().listCustomFields()) {
+            this.count--;
+        }
+        if (!this.bugService.getPermissions().listHistory()) {
             this.count--;
         }
     }
@@ -95,7 +100,13 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
-                return this.notes;
+                return this.custom;
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listCustomFields()) {
+            if (position == i) {
+                return this.history;
             }
         }
         return null;
@@ -111,6 +122,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.notes.manageControls(editMode);
         this.attachments.manageControls(editMode);
         this.custom.manageControls(editMode);
+        this.history.manageControls(editMode);
     }
 
     public void setObject(DescriptionObject object) {
@@ -119,6 +131,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.notes.setObject(object);
         this.attachments.setObject(object);
         this.custom.setObject(object);
+        this.history.setObject(object);
     }
 
     public DescriptionObject getObject() {
@@ -126,12 +139,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
         object = this.descriptions.getObject(object);
         object = this.notes.getObject(object);
         object = this.attachments.getObject(object);
-        return this.custom.getObject(object);
+        object = this.custom.getObject(object);
+        return this.history.getObject(object);
     }
 
     public boolean validate() {
         return this.general.initValidator().getState() && this.descriptions.initValidator().getState()
-                && this.attachments.initValidator().getState() && this.notes.initValidator().getState();
+                && this.attachments.initValidator().getState() && this.notes.initValidator().getState()
+                && this.history.initValidator().getState();
     }
 
     @Nullable
@@ -164,6 +179,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
                 drawable = context.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listHistory()) {
+            if (position == i) {
+                drawable = context.getResources().getDrawable(R.drawable.ic_history_black_24dp);
             }
         }
 

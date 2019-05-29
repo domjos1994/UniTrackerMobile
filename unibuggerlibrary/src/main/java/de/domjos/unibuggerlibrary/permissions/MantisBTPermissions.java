@@ -90,47 +90,47 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listUsers() {
-        return false;
+        return true;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
@@ -170,6 +170,6 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return false;
+        return true;
     }
 }

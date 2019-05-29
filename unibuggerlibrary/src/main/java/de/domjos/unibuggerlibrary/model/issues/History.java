@@ -21,6 +21,7 @@ package de.domjos.unibuggerlibrary.model.issues;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
 public class History<T> extends DescriptionObject<T> {
+    private String field;
     private String newValue;
     private String oldValue;
     private long time;
@@ -33,6 +34,7 @@ public class History<T> extends DescriptionObject<T> {
         this.oldValue = "";
         this.time = 0L;
         this.user = "";
+        this.field = "";
     }
 
     public String getNewValue() {
@@ -65,5 +67,13 @@ public class History<T> extends DescriptionObject<T> {
 
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public String getField() {
+        return this.field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
     }
 }
