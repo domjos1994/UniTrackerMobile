@@ -44,3 +44,20 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+task customZip(type: Zip) {
+    clean
+    from '.'
+    include 'build.gradle'
+    include '.gitignore'
+    include 'LICENSE'
+    include 'README.md'
+    include '*.java'
+    include 'data/*'
+    include 'app/**'
+    include 'unibuggerlibrary/**'
+    exclude 'unibuggerlibrary/build'
+    exclude 'app/build'
+    archiveName rootProject.name + '.zip'
+    destinationDir(file(rootProject.rootDir))
+}

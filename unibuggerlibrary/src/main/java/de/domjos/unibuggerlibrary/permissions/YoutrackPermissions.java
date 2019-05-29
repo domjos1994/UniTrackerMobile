@@ -90,81 +90,81 @@ public class YoutrackPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean editNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteCustomFields() {
-        return false;
+        return true;
     }
 }

@@ -23,10 +23,13 @@ import android.util.Base64;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,12 +46,13 @@ import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
+import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "id,name,values(id,name,description,released,releaseDate,archived)";
-    private final static String CUSTOM_FIELDS = "id,name,localizedName,fieldType(id),isAutoAttached,isDisplayedInIssueList,aliases,isUpdateable,fieldDefaults(canBeEmpty,emptyFieldText,isPublic),instances(id,project(id,name))";
-    private final static String ISSUE_FIELDS = "id,summary,description,tags(id,name),created,updated,customFields(id,projectCustomField(field(id)),value(localizedName,name,id))";
+    private final static String CUSTOM_FIELDS = "id,name,localizedName,fieldType(id),isAutoAttached,isDisplayedInIssueList,aliases,isUpdateable,fieldDefaults(id,canBeEmpty,emptyFieldText,isPublic),instances(id,project(id,name))";
+    private final static String ISSUE_FIELDS = "id,summary,description,tags(id,name),created,updated,customFields(id,projectCustomField(field(id)),value(localizedName,name,text,id))";
     private final static String COMMENT_FIELDS = "id,text,created,updated";
     private final static String ATTACHMENT_FIELDS = "id,name,base64Content,url";
     private final static String USER_FIELDS = "id,login,fullName,email";
@@ -246,83 +250,99 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public Issue<String> getIssue(String id, String project_id) throws Exception {
         Issue<String> issue = new Issue<>();
-        int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
-        if (status == 200 || status == 201) {
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            issue.setId(jsonObject.getString("id"));
-            issue.setTitle(jsonObject.getString("summary"));
-            issue.setDescription(jsonObject.getString("description"));
+        if (!id.equals("")) {
+            int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
+            if (status == 200 || status == 201) {
+                JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                issue.setId(jsonObject.getString("id"));
+                issue.setTitle(jsonObject.getString("summary"));
+                issue.setDescription(jsonObject.getString("description"));
 
-            if (jsonObject.has("created")) {
-                long created = jsonObject.getLong("created");
-                if (created != 0) {
-                    Date date = new Date();
-                    date.setTime(created);
-                    issue.setSubmitDate(date);
-                }
-            }
-            if (jsonObject.has("updated")) {
-                long updated = jsonObject.getLong("updated");
-                if (updated != 0) {
-                    Date date = new Date();
-                    date.setTime(updated);
-                    issue.setLastUpdated(date);
-                }
-            }
-
-            if (jsonObject.has("tags")) {
-                if (!jsonObject.isNull("tags")) {
-                    JSONArray jsonArray = jsonObject.getJSONArray("tags");
-                    StringBuilder tags = new StringBuilder();
-                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                        tags.append(jsonArray.getJSONObject(i).getString("name"));
-                        tags.append(",");
+                if (jsonObject.has("created")) {
+                    long created = jsonObject.getLong("created");
+                    if (created != 0) {
+                        Date date = new Date();
+                        date.setTime(created);
+                        issue.setSubmitDate(date);
                     }
-                    issue.setTags(tags.toString());
                 }
-            }
+                if (jsonObject.has("updated")) {
+                    long updated = jsonObject.getLong("updated");
+                    if (updated != 0) {
+                        Date date = new Date();
+                        date.setTime(updated);
+                        issue.setLastUpdated(date);
+                    }
+                }
+
+                if (jsonObject.has("tags")) {
+                    if (!jsonObject.isNull("tags")) {
+                        JSONArray jsonArray = jsonObject.getJSONArray("tags");
+                        StringBuilder tags = new StringBuilder();
+                        for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                            tags.append(jsonArray.getJSONObject(i).getString("name"));
+                            tags.append(",");
+                        }
+                        issue.setTags(tags.toString());
+                    }
+                }
 
 
-            JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
-            for (int i = 0; i <= customFieldArray.length() - 1; i++) {
-                JSONObject customFieldObject = customFieldArray.getJSONObject(i);
-                if (customFieldObject.has("projectCustomField")) {
-                    if (!customFieldObject.isNull("projectCustomField")) {
-                        JSONObject projectCustomField = customFieldObject.getJSONObject("projectCustomField");
-                        if (projectCustomField.has("field")) {
-                            if (!projectCustomField.isNull("field")) {
-                                String fieldId = projectCustomField.getJSONObject("field").getString("id");
+                JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
+                for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                    JSONObject customFieldObject = customFieldArray.getJSONObject(i);
+                    if (customFieldObject.has("projectCustomField")) {
+                        if (!customFieldObject.isNull("projectCustomField")) {
+                            JSONObject projectCustomField = customFieldObject.getJSONObject("projectCustomField");
+                            if (projectCustomField.has("field")) {
+                                if (!projectCustomField.isNull("field")) {
+                                    String fieldId = projectCustomField.getJSONObject("field").getString("id");
 
-                                String valueName = "";
-                                if (customFieldObject.has("value")) {
-                                    if (!customFieldObject.isNull("value")) {
-                                        if (customFieldObject.get("value") instanceof JSONObject) {
-                                            JSONObject valueObject = customFieldObject.getJSONObject("value");
-                                            valueName = this.getName(valueObject);
-                                        } else if (customFieldObject.get("value") instanceof JSONArray) {
-                                            JSONArray valueArray = customFieldObject.getJSONArray("value");
-                                            if (valueArray.length() >= 1) {
-                                                JSONObject valueObject = valueArray.getJSONObject(0);
+
+                                    String valueName = "";
+                                    if (customFieldObject.has("value")) {
+                                        if (!customFieldObject.isNull("value")) {
+                                            if (customFieldObject.get("value") instanceof Long) {
+                                                Date date = new Date();
+                                                date.setTime(customFieldObject.getLong("value"));
+                                                valueName = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date);
+                                            } else if (customFieldObject.get("value") instanceof Integer) {
+                                                valueName = customFieldObject.getString("value");
+                                            } else if (customFieldObject.get("value") instanceof Float) {
+                                                valueName = customFieldObject.getString("value");
+                                            } else if (customFieldObject.get("value") instanceof JSONObject) {
+                                                JSONObject valueObject = customFieldObject.getJSONObject("value");
                                                 valueName = this.getName(valueObject);
+                                                if (valueObject.has("text")) {
+                                                    if (!valueObject.isNull("text")) {
+                                                        valueName = valueObject.getString("text");
+                                                    }
+                                                }
+                                            } else if (customFieldObject.get("value") instanceof JSONArray) {
+                                                JSONArray valueArray = customFieldObject.getJSONArray("value");
+                                                if (valueArray.length() >= 1) {
+                                                    JSONObject valueObject = valueArray.getJSONObject(0);
+                                                    valueName = this.getName(valueObject);
+                                                }
                                             }
+
                                         }
                                     }
-                                }
-
 
                                 CustomField<String> customField = this.getCustomField(fieldId, project_id);
-                                if (customField != null) {
-                                    customField.setDescription(customFieldObject.getString("$type"));
-                                    issue.getCustomFields().put(customField, valueName);
+                                    if (customField != null) {
+                                        customField.setDescription(customFieldObject.getString("$type"));
+                                        issue.getCustomFields().put(customField, valueName);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
-            issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+                issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
+                issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+            }
         }
         return issue;
     }
@@ -335,78 +355,8 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         jsonObject.put("project", projectObject);
         jsonObject.put("summary", issue.getTitle());
         jsonObject.put("description", issue.getDescription());
-
-        JSONArray tagArray = new JSONArray();
-        List<Tag<String>> tags = this.getTags(project_id);
-        for (String tag : issue.getTags().split(",")) {
-            for (Tag<String> current : tags) {
-                if (current.getTitle().equals(tag.trim())) {
-                    JSONObject tagObject = new JSONObject();
-                    tagObject.put("id", current.getId());
-                    tagObject.put("name", tag.trim());
-                    tagArray.put(tagObject);
-                    break;
-                }
-            }
-        }
-        jsonObject.put("tags", tagArray);
-
-        JSONArray customFieldsArray = new JSONArray();
-        int i = 0;
-        for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
-            if (i == 4 || i == 7) {
-                i++;
-                continue;
-            }
-            JSONObject customFieldObject = new JSONObject();
-            JSONObject valueObject = new JSONObject();
-            boolean setField = false;
-            for (String item : entry.getKey().getPossibleValues().split("\\|")) {
-                if (item.split(":")[0].trim().equals(entry.getValue())) {
-                    valueObject.put("name", item.split(":")[1].trim());
-                    setField = true;
-                    break;
-                }
-            }
-            if (!setField) {
-                valueObject.put("name", entry.getKey().getDefaultValue());
-            }
-            if (entry.getKey().getDescription().contains("User")) {
-                String name = valueObject.getString("name");
-                List<User<String>> users = this.getUsers(project_id);
-                for (User<String> user : users) {
-                    if (name.equals(user.getRealName())) {
-                        valueObject.put("id", user.getId());
-                        break;
-                    }
-                }
-            }
-            if (entry.getKey().getDescription().contains("MultiVersion")) {
-                String name = valueObject.getString("name");
-                List<Version<String>> versions = this.getVersions("", project_id);
-                for (Version<String> version : versions) {
-                    if (version.getTitle().equals(name)) {
-                        valueObject.put("id", version.getId());
-                        break;
-                    }
-                }
-
-                JSONArray jsonArray = new JSONArray();
-                if (!valueObject.getString("name").equals(entry.getKey().getDefaultValue())) {
-                    jsonArray.put(valueObject);
-                }
-                customFieldObject.put("value", jsonArray);
-            } else {
-                customFieldObject.put("value", valueObject);
-            }
-
-            customFieldObject.put("$type", entry.getKey().getDescription());
-            customFieldObject.put("name", entry.getKey().getTitle());
-            customFieldObject.put("id", entry.getKey().getId());
-            customFieldsArray.put(customFieldObject);
-            i++;
-        }
-        jsonObject.put("customFields", customFieldsArray);
+        jsonObject.put("tags", this.insertOrUpdateTags(issue.getTags(), project_id));
+        jsonObject.put("customFields", this.insertOrUpdateCustomFieldValues(issue, project_id));
 
         int status;
         if (issue.getId() != null) {
@@ -560,7 +510,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         List<User<String>> users = new LinkedList<>();
         Project<String> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/api/admin/customFieldSettings/bundles/user?fields=name,aggregatedUsers(id,name,fullName,login,email)");
+            int status = this.executeRequest("/api/admin/customFieldSettings/bundles/user?fields=name,aggregatedUsers(ringId)");
             if (status == 200 || status == 201) {
                 JSONArray usersArray = new JSONArray(this.getCurrentMessage());
                 for (int i = 0; i <= usersArray.length() - 1; i++) {
@@ -570,30 +520,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                         JSONArray jsonArray = jsonObject.getJSONArray("aggregatedUsers");
                         for (int j = 0; j <= jsonArray.length() - 1; j++) {
                             JSONObject userObject = jsonArray.getJSONObject(j);
-                            User<String> user = new User<>();
-                            user.setId(userObject.getString("id"));
-                            user.setTitle(userObject.getString("login"));
-                            if (userObject.has("fullName")) {
-                                if (!userObject.isNull("fullName")) {
-                                    user.setRealName(userObject.getString("fullName"));
-                                }
-                            }
-                            if (userObject.has("email")) {
-                                if (!userObject.isNull("email")) {
-                                    user.setEmail(userObject.getString("email"));
-                                }
-                            }
-
-                            boolean isInList = false;
-                            for (User<String> tmp : users) {
-                                if (tmp.getTitle().equals(user.getTitle())) {
-                                    isInList = true;
-                                    break;
-                                }
-                            }
-                            if (!isInList) {
-                                users.add(user);
-                            }
+                            users.add(this.getUser(userObject.getString("ringId"), project_id));
                         }
                     }
                 }
@@ -604,17 +531,65 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public User<String> getUser(String id, String project_id) throws Exception {
-        return null;
+        int status = this.executeRequest("/hub/api/rest/users/" + id + "?fields=id,name,login,email");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            User<String> user = new User<>();
+            user.setId(jsonObject.getString("id"));
+            user.setTitle(jsonObject.getString("login"));
+            user.setRealName(jsonObject.getString("name"));
+            if (jsonObject.has("email")) {
+                user.setEmail(jsonObject.getString("email"));
+            }
+            this.executeRequest("/hub/api/rest/users/" + id + "/applicationPasswords?fields=id,name,password");
+
+            return user;
+        }
+        return new User<>();
     }
 
     @Override
     public String insertOrUpdateUser(User<String> user, String project_id) throws Exception {
-        return null;
+        if (user.getId() != null) {
+            List<User<String>> users = this.getUsers(project_id);
+            for (User<String> tmp : users) {
+                if (tmp.getTitle().equals(user.getTitle())) {
+                    user.setId(tmp.getId());
+                    break;
+                }
+            }
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("login", user.getTitle());
+        jsonObject.put("name", user.getRealName());
+
+        int status;
+        if (user.getId() == null) {
+            status = this.executeRequest("/hub/api/rest/users?fields=id", jsonObject.toString(), "POST");
+        } else {
+            status = this.executeRequest("/hub/api/rest/users/" + user.getId() + "?fields=id", jsonObject.toString(), "POST");
+        }
+        if (status == 200 || status == 201) {
+            if (user.getId() == null) {
+                JSONObject response = new JSONObject(this.getCurrentMessage());
+                user.setId(response.getString("id"));
+
+                JSONObject object = new JSONObject();
+                object.put("name", user.getTitle());
+                object.put("password", user.getPassword());
+                jsonObject.put("id", user.getId());
+                object.put("user", jsonObject);
+                this.executeRequest("/hub/api/rest/users/" + user.getId() + "/applicationPasswords", object.toString(), "POST");
+            }
+
+        }
+        return user.getId();
     }
 
     @Override
     public void deleteUser(String id, String project_id) throws Exception {
-
+        this.deleteRequest("/hub/api/rest/users/" + id);
     }
 
     @Override
@@ -651,17 +626,23 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
             if (jsonObject.has("fieldDefaults")) {
                 if (!jsonObject.isNull("fieldDefaults")) {
-                    customField.setDefaultValue(jsonObject.getJSONObject("fieldDefaults").getString("emptyFieldText"));
+                    JSONObject fieldDefaults = jsonObject.getJSONObject("fieldDefaults");
+                    customField.setDefaultValue(fieldDefaults.getString("emptyFieldText"));
+                    customField.setNullable(fieldDefaults.getBoolean("canBeEmpty"));
                 }
             }
+
+            String field_id = "";
             if (jsonObject.has("fieldType")) {
                 if (!jsonObject.isNull("fieldType")) {
-                    String field_id = jsonObject.getJSONObject("fieldType").getString("id");
-                    field_id = field_id.substring(0, field_id.lastIndexOf("["));
+                    field_id = jsonObject.getJSONObject("fieldType").getString("id");
+                    if (field_id.contains("[")) {
+                        field_id = field_id.substring(0, field_id.lastIndexOf("["));
+                    }
                     StringBuilder possibleValues = new StringBuilder();
                     Project<String> project = this.getProject(project_id);
                     if (project != null) {
-                        for (String item : this.getValuesByBundle(project.getTitle(), customField.getTitle(), field_id)) {
+                        for (String item : this.getValuesByBundle(project.getTitle(), customField.getTitle(), field_id).values()) {
                             possibleValues.append(item);
                             possibleValues.append("|");
                         }
@@ -682,7 +663,30 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                     }
                 }
             }
-            customField.setType(CustomField.Type.LIST);
+
+            switch (field_id) {
+                case "enum":
+                case "state":
+                case "user":
+                case "ownedField":
+                case "version":
+                case "build":
+                    customField.setType(CustomField.Type.LIST);
+                    break;
+                case "date":
+                case "date and time":
+                    customField.setType(CustomField.Type.DATE);
+                    break;
+                case "text":
+                case "string":
+                    customField.setType(CustomField.Type.TEXT);
+                    break;
+                case "integer":
+                case "float":
+                    customField.setType(CustomField.Type.NUMBER);
+                    break;
+            }
+
 
             return customField;
         }
@@ -690,13 +694,67 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public String insertOrUpdateCustomField(CustomField<String> user, String project_id) throws Exception {
+    public String insertOrUpdateCustomField(CustomField<String> customField, String project_id) throws Exception {
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            JSONObject fieldObject = new JSONObject();
+            JSONObject customFieldObject = new JSONObject();
+
+            JSONObject fieldTypeObject = new JSONObject();
+            fieldTypeObject.put("$type", "FieldType");
+            switch (customField.getType()) {
+                case TEXT:
+                case TEXT_AREA:
+                    fieldTypeObject.put("id", "text");
+                    fieldObject.put("$type", "TextProjectCustomField");
+                    break;
+                case NUMBER:
+                    fieldTypeObject.put("id", "float");
+                    fieldObject.put("$type", "SimpleProjectCustomField");
+                    break;
+                case DATE:
+                    fieldTypeObject.put("id", "date and time");
+                    fieldObject.put("$type", "SimpleProjectCustomField");
+                    break;
+            }
+            customFieldObject.put("fieldType", fieldTypeObject);
+
+            JSONObject fieldDefaultObject = new JSONObject();
+            fieldDefaultObject.put("isPublic", true);
+            fieldDefaultObject.put("canBeEmpty", customField.isNullable());
+            fieldDefaultObject.put("$type", "CustomFieldDefaults");
+            fieldDefaultObject.put("EmptyFieldText", customField.getDefaultValue());
+            customFieldObject.put("fieldDefaults", fieldDefaultObject);
+
+            customFieldObject.put("isDisplayedInIssueList", true);
+            customFieldObject.put("isAutoAttached", true);
+            customFieldObject.put("name", customField.getTitle());
+            customFieldObject.put("$type", "CustomField");
+
+            int status;
+            if (customField.getId() == null) {
+                status = this.executeRequest("/api/admin/customFieldSettings/customFields?fields=id", customFieldObject.toString(), "POST");
+            } else {
+                status = this.executeRequest("/api/admin/customFieldSettings/customFields/" + customField.getId() + "?fields=id", customFieldObject.toString(), "POST");
+            }
+
+            if (status == 200 || status == 201) {
+                if (customField.getId() == null) {
+                    JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                    customFieldObject.put("id", jsonObject.getString("id"));
+                    fieldObject.put("field", customFieldObject);
+
+                    this.executeRequest("/api/admin/projects/" + project_id + "/customFields", fieldObject.toString(), "POST");
+                }
+            }
+        }
+
         return null;
     }
 
     @Override
     public void deleteCustomField(String id, String project_id) throws Exception {
-
+        this.deleteRequest("/api/admin/customFieldSettings/customFields/" + id);
     }
 
     @Override
@@ -716,11 +774,45 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         return tags;
     }
 
-    @Override
-    public List<String> getCategories(String project_id) throws Exception {
-        List<String> categories = new LinkedList<>();
+    private JSONArray insertOrUpdateTags(String strTags, String project_id) throws Exception {
+        JSONArray tagArray = new JSONArray();
+        List<Tag<String>> tags = this.getTags(project_id);
+        for (String tag : strTags.split(",")) {
+            boolean found = false;
+            for (Tag<String> current : tags) {
+                if (current.getTitle().equals(tag.trim())) {
+                    JSONObject tagObject = new JSONObject();
+                    tagObject.put("id", current.getId());
+                    tagObject.put("name", tag.trim());
+                    tagArray.put(tagObject);
+                    found = true;
+                    break;
+                }
+            }
 
-        return categories;
+            if (!found) {
+                JSONObject tagObject = new JSONObject();
+                tagObject.put("name", tag.trim());
+                int status = this.executeRequest("/api/issueTags", tagObject.toString(), "POST");
+                if (status == 200 || status == 201) {
+                    for (Tag<String> current : this.getTags(project_id)) {
+                        if (current.getTitle().equals(tag.trim())) {
+                            tagObject = new JSONObject();
+                            tagObject.put("id", current.getId());
+                            tagObject.put("name", tag.trim());
+                            tagArray.put(tagObject);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return tagArray;
+    }
+
+    @Override
+    public List<String> getCategories(String project_id) {
+        return new LinkedList<>();
     }
 
     @Override
@@ -745,8 +837,146 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         return name;
     }
 
-    private List<String> getValuesByBundle(String projectTitle, String customFieldName, String enumField) throws Exception {
-        List<String> list = new LinkedList<>();
+    private JSONArray insertOrUpdateCustomFieldValues(Issue<String> issue, String project_id) throws Exception {
+        JSONArray customFieldsArray = new JSONArray();
+        for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
+            JSONObject customFieldObject = new JSONObject();
+            JSONObject valueObject = new JSONObject();
+
+            switch (entry.getKey().getType()) {
+                case LIST:
+                    boolean setField = false;
+                    for (String item : entry.getKey().getPossibleValues().split("\\|")) {
+                        if (item.split(":")[0].trim().equals(entry.getValue())) {
+                            valueObject.put("name", item.split(":")[1].trim());
+                            setField = true;
+                            break;
+                        }
+                    }
+                    if (!setField) {
+                        valueObject = null;
+                    }
+
+                    if (valueObject != null || entry.getKey().getDescription().contains("MultiVersion")) {
+                        if (entry.getKey().getDescription().contains("User")) {
+                            valueObject = this.convertUserToObject(valueObject, entry.getKey(), project_id);
+                        }
+                        if (entry.getKey().getDescription().contains("OwnedIssue")) {
+                            valueObject = this.convertOwnedFieldToObject(valueObject, entry.getKey(), project_id);
+                        }
+
+                        if (entry.getKey().getDescription().contains("MultiVersion")) {
+                            valueObject = new JSONObject();
+                            valueObject.put("name", "");
+                            customFieldObject.put("value", this.convertVersionToArray(valueObject, entry.getKey().getDefaultValue(), project_id));
+                        } else {
+                            if (valueObject != null) {
+                                customFieldObject.put("value", valueObject);
+                            } else {
+                                customFieldObject.put("value", JSONObject.NULL);
+                            }
+                        }
+                    } else {
+                        customFieldObject.put("value", JSONObject.NULL);
+                    }
+                    break;
+                case TEXT:
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("text", entry.getValue());
+                    customFieldObject.put("value", jsonObject);
+                    break;
+                case DATE:
+                    Date dt = Converter.convertStringToDate(entry.getValue(), "dd-MM-yyyy HH:mm:ss");
+                    customFieldObject.put("value", dt.getTime());
+                    break;
+                case NUMBER:
+                    try {
+                        int val = Integer.parseInt(entry.getValue());
+                        customFieldObject.put("value", val);
+                    } catch (Exception ex) {
+                        try {
+                            float val = Float.parseFloat(entry.getValue());
+                            customFieldObject.put("value", val);
+                        } catch (Exception ignored) {
+                        }
+                    }
+            }
+
+            customFieldObject.put("$type", entry.getKey().getDescription());
+            customFieldObject.put("name", entry.getKey().getTitle());
+            customFieldObject.put("id", entry.getKey().getId());
+            customFieldsArray.put(customFieldObject);
+        }
+        return customFieldsArray;
+    }
+
+    private JSONObject convertOwnedFieldToObject(JSONObject jsonObject, CustomField<String> field, String project_id) throws Exception {
+        if (field.getDescription().contains("OwnedIssue")) {
+            Project<String> project = this.getProject(project_id);
+            if (project != null) {
+                boolean found = false;
+                Map<String, String> fields = this.getValuesByBundle(project.getTitle(), field.getTitle(), "ownedField");
+                String name = jsonObject.getString("name");
+                for (Map.Entry<String, String> entry : fields.entrySet()) {
+                    String[] spl = entry.getValue().split(":");
+                    if (name.contains(spl[0]) || name.contains(spl[1])) {
+                        jsonObject.put("id", entry.getKey());
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    jsonObject = null;
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    private JSONObject convertUserToObject(JSONObject jsonObject, CustomField<String> field, String project_id) throws Exception {
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            if (field.getDescription().contains("User")) {
+                String name = jsonObject.getString("name");
+                List<User<String>> users = this.getUsers(project_id);
+                boolean found = false;
+                for (User<String> user : users) {
+                    if (name.equals(user.getRealName())) {
+                        jsonObject.put("id", user.getId());
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    jsonObject = null;
+                }
+            }
+        }
+        return jsonObject;
+    }
+
+    private JSONArray convertVersionToArray(JSONObject jsonObject, String defaultValue, String project_id) throws Exception {
+        String name = jsonObject.getString("name");
+        List<Version<String>> versions = this.getVersions("", project_id);
+        for (Version<String> version : versions) {
+            if (version.getTitle().equals(name)) {
+                jsonObject.put("id", version.getId());
+                break;
+            }
+        }
+
+        JSONArray jsonArray = new JSONArray();
+        if (!jsonObject.getString("name").isEmpty()) {
+            if (!jsonObject.getString("name").equals(defaultValue)) {
+                jsonArray.put(jsonObject);
+            }
+        }
+        return jsonArray;
+    }
+
+    private Map<String, String> getValuesByBundle(String projectTitle, String customFieldName, String enumField) throws Exception {
+        Map<String, String> list = new LinkedHashMap<>();
         String val = "values";
         if (enumField.equals("user")) {
             val = "aggregatedUsers";
@@ -806,7 +1036,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                                         }
                                     }
                                 }
-                                list.add(value + ":" + valueObject.getString("name"));
+                                list.put(valueObject.getString("id"), value + ":" + valueObject.getString("name"));
                             }
                         }
                     }

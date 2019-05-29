@@ -19,16 +19,22 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.support.design.widget.BottomNavigationView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.FieldTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
+import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
@@ -40,6 +46,11 @@ public final class FieldActivity extends AbstractActivity {
     private ListView lvFields;
     private ListAdapter fieldAdapter;
 
+    private EditText txtFieldTitle, txtFieldDefault;
+    private Spinner cmbFieldType;
+    private CheckBox chkFieldNullable;
+    private ArrayAdapter<String> fieldTypeAdapter;
+
     private IBugService bugService;
     private IFunctionImplemented permissions;
     private Project currentProject;
@@ -49,19 +60,29 @@ public final class FieldActivity extends AbstractActivity {
     private Settings settings;
 
     protected FieldActivity() {
-        super(R.layout.user_activity);
+        super(R.layout.field_activity);
     }
 
     @Override
     protected void initActions() {
-
+        this.lvFields.setOnItemClickListener((parent, view, position, id) -> {
+            ListObject ls = this.fieldAdapter.getItem(position);
+            if (ls != null) {
+                this.currentField = (CustomField) ls.getDescriptionObject();
+                this.manageControls(false, false, true);
+                this.objectToControls();
+            }
+        });
     }
 
     @Override
     protected void reload() {
         try {
-            if (this.permissions.listUsers()) {
-
+            this.fieldAdapter.clear();
+            if (this.permissions.listCustomFields()) {
+                for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
+                    this.fieldAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, FieldActivity.this);
@@ -84,6 +105,7 @@ public final class FieldActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
+                        new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentField.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -96,7 +118,8 @@ public final class FieldActivity extends AbstractActivity {
                 case R.id.navSave:
                     try {
                         if (this.fieldValidator.getState()) {
-
+                            this.controlsToObject();
+                            new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentField).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -109,10 +132,18 @@ public final class FieldActivity extends AbstractActivity {
         });
 
         // init controls
-        this.lvFields = this.findViewById(R.id.lvUsers);
-        this.fieldAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_person_black_24dp);
+        this.lvFields = this.findViewById(R.id.lvFields);
+        this.fieldAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp);
         this.lvFields.setAdapter(this.fieldAdapter);
         this.fieldAdapter.notifyDataSetChanged();
+
+        this.txtFieldTitle = this.findViewById(R.id.txtFieldTitle);
+        this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
+        this.cmbFieldType = this.findViewById(R.id.cmbFieldType);
+        this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, android.R.layout.simple_spinner_item);
+        this.cmbFieldType.setAdapter(this.fieldTypeAdapter);
+        this.fieldTypeAdapter.notifyDataSetChanged();
+        this.chkFieldNullable = this.findViewById(R.id.chkFieldNullable);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
@@ -132,14 +163,32 @@ public final class FieldActivity extends AbstractActivity {
         this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected && this.permissions.deleteCustomFields());
         this.navigationView.getMenu().getItem(3).setEnabled(editMode);
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
+
+        this.txtFieldTitle.setEnabled(editMode);
+        this.txtFieldDefault.setEnabled(editMode);
+        this.cmbFieldType.setEnabled(editMode);
+        this.chkFieldNullable.setEnabled(editMode);
+
+        if (reset) {
+            this.currentField = new CustomField();
+            this.objectToControls();
+        }
     }
 
     private void objectToControls() {
-
+        this.txtFieldTitle.setText(this.currentField.getTitle());
+        this.txtFieldDefault.setText(this.currentField.getDefaultValue());
+        if (this.currentField.getType() != null) {
+            this.cmbFieldType.setSelection(this.fieldTypeAdapter.getPosition(this.currentField.getType().name()));
+        }
+        this.chkFieldNullable.setChecked(this.currentField.isNullable());
     }
 
     private void controlsToObject() {
-
+        this.currentField.setTitle(this.txtFieldTitle.getText().toString());
+        this.currentField.setDefaultValue(this.txtFieldDefault.getText().toString());
+        this.currentField.setType(this.cmbFieldType.getSelectedItemPosition());
+        this.currentField.setNullable(this.chkFieldNullable.isChecked());
     }
 
     private void updateUITrackerSpecific() {
@@ -148,6 +197,20 @@ public final class FieldActivity extends AbstractActivity {
             tracker = this.settings.getCurrentAuthentication().getTracker();
         } else {
             return;
+        }
+
+        switch (tracker) {
+            case MantisBT:
+                for (CustomField.Type type : CustomField.Type.values()) {
+                    this.fieldTypeAdapter.add(type.name());
+                }
+                break;
+            case YouTrack:
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT.name());
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT_AREA.name());
+                this.fieldTypeAdapter.add(CustomField.Type.DATE.name());
+                this.fieldTypeAdapter.add(CustomField.Type.NUMBER.name());
+                break;
         }
     }
 }

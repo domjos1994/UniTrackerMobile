@@ -23,12 +23,14 @@ import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 public class User<T> extends DescriptionObject<T> {
     private String realName;
     private String email;
+    private String password;
 
     public User() {
         super();
 
         this.realName = "";
         this.email = "";
+        this.password = "";
     }
 
     public String getRealName() {
@@ -45,6 +47,14 @@ public class User<T> extends DescriptionObject<T> {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     @Override

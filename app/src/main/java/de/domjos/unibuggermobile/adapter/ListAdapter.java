@@ -65,7 +65,9 @@ public class ListAdapter extends ArrayAdapter<ListObject> {
                 }
 
                 if (lblSubTitle != null) {
-                    lblSubTitle.setText(listObject.getDescriptionObject().getDescription());
+                    if (listObject.getDescriptionObject().getDescription() != null) {
+                        lblSubTitle.setText(listObject.getDescriptionObject().getDescription());
+                    }
                 }
             }
         }

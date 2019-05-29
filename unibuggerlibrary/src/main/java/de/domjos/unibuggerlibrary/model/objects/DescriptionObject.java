@@ -18,16 +18,21 @@
 
 package de.domjos.unibuggerlibrary.model.objects;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import de.domjos.unibuggerlibrary.model.local.LocalObject;
 
 public class DescriptionObject<T> extends LocalObject<T> {
     private String title;
     private String description;
+    private Map<String, String> hints;
 
     public DescriptionObject() {
         super();
         this.title = "";
         this.description = "";
+        this.hints = new LinkedHashMap<>();
     }
 
     public String getTitle() {
@@ -49,5 +54,9 @@ public class DescriptionObject<T> extends LocalObject<T> {
     @Override
     public String toString() {
         return this.title;
+    }
+
+    public Map<String, String> getHints() {
+        return this.hints;
     }
 }

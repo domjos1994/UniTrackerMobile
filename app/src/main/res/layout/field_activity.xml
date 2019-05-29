@@ -51,6 +51,50 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10">
 
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtFieldTitle"
+                        android:hint="@string/general_title"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:text="@string/fields_type"
+                        android:layout_weight="3"
+                        android:layout_width="0dp" />
+
+                    <Spinner
+                        android:id="@+id/cmbFieldType"
+                        android:layout_weight="7"
+                        android:layout_width="0dp" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtFieldDefault"
+                        android:hint="@string/fields_default"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <CheckBox
+                        android:id="@+id/chkFieldNullable"
+                        android:text="@string/fields_nullable"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
             </TableLayout>
         </ScrollView>
     </LinearLayout>

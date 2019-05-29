@@ -20,15 +20,17 @@
     <string name="app_name">UniBuggerLibrary</string>
 
     <string name="task_project_list_title">Projekte</string>
-    <string name="task_project_list_content">Projekt-Liste laden…</string>
     <string name="task_project_content">Projekt aktualisieren…</string>
 
     <string name="task_version_list_title">Versionen</string>
-    <string name="task_version_list_content">Versions-Liste laden…</string>
     <string name="task_version_content">Version aktualisieren…</string>
 
     <string name="task_issues_list_title">Bugs</string>
-    <string name="task_issues_list_content">Bug-Liste laden…</string>
     <string name="task_issue_content">Bug aktualisieren…</string>
-    <string name="task_issue_load">Bug laden</string>
+
+    <string name="task_field_list_title">Felder</string>
+    <string name="task_field_content">Felder aktualisieren…</string>
+
+    <string name="task_user_list_title">Benutzer</string>
+    <string name="task_user_content">Benutzer aktualisieren</string>
 </resources>

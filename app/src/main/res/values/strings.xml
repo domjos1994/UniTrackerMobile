@@ -71,8 +71,14 @@
     </string-array>
 
     <string name="users">Benutzer</string>
+    <string name="users_login">Login-Name</string>
+    <string name="users_fullName">Name</string>
+    <string name="users_email">Email</string>
 
     <string name="fields">Felder</string>
+    <string name="fields_type">Typ</string>
+    <string name="fields_default">Standard-Wert</string>
+    <string name="fields_nullable">Null-Werte</string>
 
     <string name="issues">Fehler</string>
     <string name="issues_general">Generell</string>

@@ -19,6 +19,7 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.support.design.widget.BottomNavigationView;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -26,9 +27,11 @@ import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.UserTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
+import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
@@ -39,6 +42,7 @@ public final class UserActivity extends AbstractActivity {
 
     private ListView lvUsers;
     private ListAdapter userAdapter;
+    private EditText txtUserName, txtUserFullName, txtUserEmail;
 
     private IBugService bugService;
     private IFunctionImplemented permissions;
@@ -54,14 +58,24 @@ public final class UserActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
+        this.lvUsers.setOnItemClickListener((parent, view, position, id) -> {
+            ListObject ls = this.userAdapter.getItem(position);
+            if (ls != null) {
+                this.currentUser = (User) ls.getDescriptionObject();
+                this.objectToControls();
+                this.manageControls(false, false, true);
+            }
+        });
     }
 
     @Override
     protected void reload() {
         try {
+            this.userAdapter.clear();
             if (this.permissions.listUsers()) {
-
+                for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
+                    this.userAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, UserActivity.this);
@@ -84,6 +98,7 @@ public final class UserActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
+                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentProject).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -96,7 +111,8 @@ public final class UserActivity extends AbstractActivity {
                 case R.id.navSave:
                     try {
                         if (this.userValidator.getState()) {
-
+                            this.controlsToObject();
+                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentProject).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -114,6 +130,10 @@ public final class UserActivity extends AbstractActivity {
         this.lvUsers.setAdapter(this.userAdapter);
         this.userAdapter.notifyDataSetChanged();
 
+        this.txtUserName = this.findViewById(R.id.txtUserName);
+        this.txtUserFullName = this.findViewById(R.id.txtUserFullName);
+        this.txtUserEmail = this.findViewById(R.id.txtUserEmail);
+
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
         this.currentProject = this.settings.getCurrentProject(UserActivity.this, this.bugService);
@@ -129,17 +149,32 @@ public final class UserActivity extends AbstractActivity {
     protected void manageControls(boolean editMode, boolean reset, boolean selected) {
         this.navigationView.getMenu().getItem(0).setEnabled(!editMode && this.permissions.addUsers());
         this.navigationView.getMenu().getItem(1).setEnabled(!editMode && selected && this.permissions.updateUsers());
-        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected && this.permissions.deleteUsers());
+        this.navigationView.getMenu().getItem(2).setEnabled(!editMode && selected && this.permissions.deleteUsers() && !this.currentUser.getTitle().equals(this.settings.getCurrentAuthentication().getUserName()));
         this.navigationView.getMenu().getItem(3).setEnabled(editMode);
         this.navigationView.getMenu().getItem(4).setEnabled(editMode);
+
+        this.lvUsers.setEnabled(!editMode);
+
+        this.txtUserName.setEnabled(editMode);
+        this.txtUserFullName.setEnabled(editMode);
+        this.txtUserEmail.setEnabled(editMode);
+
+        if (reset) {
+            this.currentUser = new User();
+            this.objectToControls();
+        }
     }
 
     private void objectToControls() {
-
+        this.txtUserName.setText(this.currentUser.getTitle());
+        this.txtUserFullName.setText(this.currentUser.getRealName());
+        this.txtUserEmail.setText(this.currentUser.getEmail());
     }
 
     private void controlsToObject() {
-
+        this.currentUser.setTitle(this.txtUserName.getText().toString());
+        this.currentUser.setRealName(this.txtUserFullName.getText().toString());
+        this.currentUser.setEmail(this.txtUserEmail.getText().toString());
     }
 
     private void updateUITrackerSpecific() {
@@ -149,5 +184,7 @@ public final class UserActivity extends AbstractActivity {
         } else {
             return;
         }
+
+        System.out.println(tracker);
     }
 }

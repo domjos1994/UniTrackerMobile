@@ -52,6 +52,38 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10">
 
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtUserName"
+                        android:hint="@string/users_login"
+                        android:inputType="text"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtUserFullName"
+                        android:hint="@string/users_fullName"
+                        android:inputType="text"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtUserEmail"
+                        android:hint="@string/users_email"
+                        android:inputType="textEmailAddress"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
             </TableLayout>
         </ScrollView>
     </LinearLayout>

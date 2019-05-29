@@ -26,10 +26,12 @@ public class CustomField<T> extends DescriptionObject<T> {
     private String defaultValue;
     private int minLength;
     private int maxLength;
+    private boolean nullable;
 
     public CustomField() {
         super();
 
+        this.nullable = false;
         this.intType = 0;
     }
 
@@ -113,6 +115,14 @@ public class CustomField<T> extends DescriptionObject<T> {
 
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+    }
+
+    public boolean isNullable() {
+        return nullable;
+    }
+
+    public void setNullable(boolean nullable) {
+        this.nullable = nullable;
     }
 
     public enum Type {
