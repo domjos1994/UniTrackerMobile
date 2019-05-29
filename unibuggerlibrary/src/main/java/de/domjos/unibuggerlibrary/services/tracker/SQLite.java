@@ -34,6 +34,7 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
+import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
@@ -581,6 +582,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         }
         cursor.close();
         return tags;
+    }
+
+    @Override
+    public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
+        return null;
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -41,6 +42,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
 import de.domjos.unibuggermobile.adapter.ListObject;
+import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
 
 import static android.app.Activity.RESULT_OK;
@@ -52,6 +54,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     private ListView lvIssueAttachments;
     private ListAdapter attachmentAdapter;
     private ImageButton cmdIssueAttachmentAdd;
+    private IBugService bugService;
 
     private View root;
     private Issue issue;
@@ -73,6 +76,8 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             this.attachmentAdapter = new ListAdapter(this.getActivity(), R.drawable.ic_file_upload_black_24dp);
             this.lvIssueAttachments.setAdapter(this.attachmentAdapter);
             this.attachmentAdapter.notifyDataSetChanged();
+
+            this.bugService = Helper.getCurrentBugService(this.getActivity());
         }
         this.cmdIssueAttachmentAdd = this.root.findViewById(R.id.cmdIssueAttachmentAdd);
 
@@ -179,8 +184,8 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.editMode = editMode;
 
         if (this.root != null) {
-            this.cmdIssueAttachmentAdd.setEnabled(editMode);
-            this.lvIssueAttachments.setEnabled(editMode);
+            this.cmdIssueAttachmentAdd.setEnabled(editMode && this.bugService.getPermissions().addAttachments() || this.bugService.getPermissions().updateAttachments());
+            this.lvIssueAttachments.setEnabled(editMode && this.bugService.getPermissions().deleteAttachments());
         }
     }
 

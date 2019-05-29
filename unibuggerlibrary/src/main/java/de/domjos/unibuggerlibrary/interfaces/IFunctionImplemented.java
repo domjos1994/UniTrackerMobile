@@ -51,9 +51,9 @@ public interface IFunctionImplemented {
 
     boolean addNotes();
 
-    boolean editNotes();
-
     boolean updateNotes();
+
+    boolean deleteNotes();
 
 
     boolean listAttachments();
@@ -81,4 +81,6 @@ public interface IFunctionImplemented {
     boolean updateCustomFields();
 
     boolean deleteCustomFields();
+
+    boolean listHistory();
 }

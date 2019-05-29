@@ -37,6 +37,7 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
+import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
@@ -255,6 +256,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             if (status == 200 || status == 201) {
                 JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
                 issue.setId(jsonObject.getString("id"));
+                this.getHistory(issue.getId(), project_id);
                 issue.setTitle(jsonObject.getString("summary"));
                 issue.setDescription(jsonObject.getString("description"));
 
@@ -772,6 +774,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
         }
         return tags;
+    }
+
+    @Override
+    public List<History<String>> getHistory(String issue_id, String project_id) {
+        return new LinkedList<>();
     }
 
     private JSONArray insertOrUpdateTags(String strTags, String project_id) throws Exception {

@@ -29,6 +29,7 @@ import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
@@ -38,6 +39,7 @@ import de.domjos.unibuggermobile.fragments.IssueCustomFragment;
 import de.domjos.unibuggermobile.fragments.IssueDescriptionsFragment;
 import de.domjos.unibuggermobile.fragments.IssueGeneralFragment;
 import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
+import de.domjos.unibuggermobile.helper.Helper;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -46,6 +48,8 @@ import de.domjos.unibuggermobile.fragments.IssueNotesFragment;
 public class PagerAdapter extends FragmentPagerAdapter {
     private final Context context;
     private AbstractFragment general, notes, descriptions, attachments, custom;
+    private IBugService bugService;
+    private int count;
 
     public PagerAdapter(Context context, FragmentManager fm) {
         super(fm);
@@ -55,6 +59,17 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions = new IssueDescriptionsFragment();
         this.attachments = new IssueAttachmentsFragment();
         this.custom = new IssueCustomFragment();
+        this.bugService = Helper.getCurrentBugService(context);
+        this.count = 5;
+        if (!this.bugService.getPermissions().listNotes()) {
+            this.count--;
+        }
+        if (!this.bugService.getPermissions().listAttachments()) {
+            this.count--;
+        }
+        if (!this.bugService.getPermissions().listCustomFields()) {
+            this.count--;
+        }
     }
 
     @Override
@@ -64,15 +79,26 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 return this.general;
             case 1:
                 return this.descriptions;
-            case 2:
-                return this.notes;
-            case 3:
-                return this.attachments;
-            case 4:
-                return this.custom;
-            default:
-                return null;
         }
+        int i = 2;
+        if (this.bugService.getPermissions().listNotes()) {
+            if (position == i) {
+                return this.notes;
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listAttachments()) {
+            if (position == i) {
+                return this.attachments;
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listCustomFields()) {
+            if (position == i) {
+                return this.notes;
+            }
+        }
+        return null;
     }
 
     public void setPid(String pid) {
@@ -111,7 +137,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
-        Drawable drawable;
+        Drawable drawable = null;
 
         switch (position) {
             case 0:
@@ -120,29 +146,42 @@ public class PagerAdapter extends FragmentPagerAdapter {
             case 1:
                 drawable = context.getResources().getDrawable(R.drawable.ic_description_black_24dp);
                 break;
-            case 2:
-                drawable = context.getResources().getDrawable(R.drawable.ic_note_black_24dp);
-                break;
-            case 3:
-                drawable = context.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp);
-                break;
-            default:
-                drawable = context.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
-                break;
         }
 
-        SpannableStringBuilder sb = new SpannableStringBuilder("   ");
-        try {
-            drawable.setBounds(5, 5, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
-            ImageSpan span = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE);
-            sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        } catch (Exception ignored) {
+        int i = 2;
+        if (this.bugService.getPermissions().listNotes()) {
+            if (position == i) {
+                drawable = context.getResources().getDrawable(R.drawable.ic_note_black_24dp);
+            }
+            i++;
         }
-        return sb;
+        if (this.bugService.getPermissions().listAttachments()) {
+            if (position == i) {
+                drawable = context.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listCustomFields()) {
+            if (position == i) {
+                drawable = context.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
+            }
+        }
+
+        if (drawable != null) {
+            SpannableStringBuilder sb = new SpannableStringBuilder("   ");
+            try {
+                drawable.setBounds(5, 5, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                ImageSpan span = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE);
+                sb.setSpan(span, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            } catch (Exception ignored) {
+            }
+            return sb;
+        }
+        return null;
     }
 
     @Override
     public int getCount() {
-        return 5;
+        return this.count;
     }
 }

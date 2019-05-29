@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
+import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
@@ -128,6 +129,8 @@ public interface IBugService<T> {
     List<String> getCategories(T project_id) throws Exception;
 
     List<Tag<T>> getTags(T project_id) throws Exception;
+
+    List<History<T>> getHistory(T issue_id, T project_id) throws Exception;
 
     IFunctionImplemented getPermissions();
 }

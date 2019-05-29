@@ -32,6 +32,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -54,6 +55,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private EditText txtIssueNotesText;
     private TextView txtIssueNotesSubmitDate, txtIssueNotesLastUpdated;
     private Spinner spIssueNotesView;
+    private IBugService bugService;
 
     private View root;
     private Issue issue;
@@ -75,6 +77,7 @@ public final class IssueNotesFragment extends AbstractFragment {
             this.notesAdapter = new ListAdapter(this.getContext(), R.drawable.ic_note_black_24dp);
             this.lvIssueNotes.setAdapter(this.notesAdapter);
             this.notesAdapter.notifyDataSetChanged();
+            this.bugService = Helper.getCurrentBugService(this.getContext());
         }
         this.cmdIssueNotesAdd = this.root.findViewById(R.id.cmdIssueNotesAdd);
         this.cmdIssueNotesEdit = this.root.findViewById(R.id.cmdIssueNotesEdit);
@@ -255,9 +258,9 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.txtIssueNotesText.setEnabled(editMode);
         this.spIssueNotesView.setEnabled(editMode);
         this.lvIssueNotes.setEnabled(!editMode);
-        this.cmdIssueNotesAdd.setEnabled(!editMode && this.editMode);
-        this.cmdIssueNotesEdit.setEnabled(!editMode && selected && this.editMode);
-        this.cmdIssueNotesDelete.setEnabled(!editMode && selected && this.editMode);
+        this.cmdIssueNotesAdd.setEnabled(!editMode && this.editMode && this.bugService.getPermissions().addNotes());
+        this.cmdIssueNotesEdit.setEnabled(!editMode && selected && this.editMode && this.bugService.getPermissions().updateNotes());
+        this.cmdIssueNotesDelete.setEnabled(!editMode && selected && this.editMode && this.bugService.getPermissions().deleteNotes());
         this.cmdIssueNotesCancel.setEnabled(editMode);
         this.cmdIssueNotesSave.setEnabled(editMode);
 

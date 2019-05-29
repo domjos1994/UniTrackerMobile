@@ -99,12 +99,12 @@ public class YoutrackPermissions implements IFunctionImplemented {
     }
 
     @Override
-    public boolean editNotes() {
+    public boolean updateNotes() {
         return true;
     }
 
     @Override
-    public boolean updateNotes() {
+    public boolean deleteNotes() {
         return true;
     }
 
@@ -165,6 +165,11 @@ public class YoutrackPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteCustomFields() {
+        return true;
+    }
+
+    @Override
+    public boolean listHistory() {
         return true;
     }
 }

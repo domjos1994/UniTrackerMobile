@@ -99,12 +99,12 @@ public class MantisBTPermissions implements IFunctionImplemented {
     }
 
     @Override
-    public boolean editNotes() {
+    public boolean updateNotes() {
         return false;
     }
 
     @Override
-    public boolean updateNotes() {
+    public boolean deleteNotes() {
         return false;
     }
 
@@ -165,6 +165,11 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteCustomFields() {
+        return false;
+    }
+
+    @Override
+    public boolean listHistory() {
         return false;
     }
 }
