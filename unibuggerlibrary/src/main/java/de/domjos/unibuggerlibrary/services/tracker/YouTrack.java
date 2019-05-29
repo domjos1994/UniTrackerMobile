@@ -354,7 +354,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         JSONArray customFieldsArray = new JSONArray();
         int i = 0;
         for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
-            if (i == 3 || i == 4 || i == 7) {
+            if (i == 4 || i == 7) {
                 i++;
                 continue;
             }
@@ -370,6 +370,16 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
             if (!setField) {
                 valueObject.put("name", entry.getKey().getDefaultValue());
+            }
+            if (entry.getKey().getDescription().contains("User")) {
+                String name = valueObject.getString("name");
+                List<User<String>> users = this.getUsers(project_id);
+                for (User<String> user : users) {
+                    if (name.equals(user.getRealName())) {
+                        valueObject.put("id", user.getId());
+                        break;
+                    }
+                }
             }
             if (entry.getKey().getDescription().contains("MultiVersion")) {
                 String name = valueObject.getString("name");
@@ -546,17 +556,47 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public List<User<String>> getUsers(String pid) throws Exception {
+    public List<User<String>> getUsers(String project_id) throws Exception {
         List<User<String>> users = new LinkedList<>();
-        int status = this.executeRequest("/rest/admin/user?" + pid);
-        if (status == 200 || status == 201) {
-            JSONArray usersArray = new JSONArray(this.getCurrentMessage());
-            for (int i = 0; i <= usersArray.length() - 1; i++) {
-                User<String> user = new User<>();
-                JSONObject jsonObject = usersArray.getJSONObject(i);
-                user.setTitle(jsonObject.getString("login"));
-                user.setId(jsonObject.getString("ringId"));
-                users.add(user);
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/api/admin/customFieldSettings/bundles/user?fields=name,aggregatedUsers(id,name,fullName,login,email)");
+            if (status == 200 || status == 201) {
+                JSONArray usersArray = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= usersArray.length() - 1; i++) {
+                    JSONObject jsonObject = usersArray.getJSONObject(i);
+                    String name = jsonObject.getString("name");
+                    if (name.contains(project.getTitle())) {
+                        JSONArray jsonArray = jsonObject.getJSONArray("aggregatedUsers");
+                        for (int j = 0; j <= jsonArray.length() - 1; j++) {
+                            JSONObject userObject = jsonArray.getJSONObject(j);
+                            User<String> user = new User<>();
+                            user.setId(userObject.getString("id"));
+                            user.setTitle(userObject.getString("login"));
+                            if (userObject.has("fullName")) {
+                                if (!userObject.isNull("fullName")) {
+                                    user.setRealName(userObject.getString("fullName"));
+                                }
+                            }
+                            if (userObject.has("email")) {
+                                if (!userObject.isNull("email")) {
+                                    user.setEmail(userObject.getString("email"));
+                                }
+                            }
+
+                            boolean isInList = false;
+                            for (User<String> tmp : users) {
+                                if (tmp.getTitle().equals(user.getTitle())) {
+                                    isInList = true;
+                                    break;
+                                }
+                            }
+                            if (!isInList) {
+                                users.add(user);
+                            }
+                        }
+                    }
+                }
             }
         }
         return users;
