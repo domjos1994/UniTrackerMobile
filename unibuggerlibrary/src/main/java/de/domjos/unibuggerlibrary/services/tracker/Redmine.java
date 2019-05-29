@@ -55,6 +55,12 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public boolean testConnection() throws Exception {
+        int status = this.executeRequest("/users/current.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONObject userObject = jsonObject.getJSONObject("user");
+            return this.authentication.getUserName().equals(userObject.getString("login"));
+        }
         return false;
     }
 
@@ -428,7 +434,39 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             }
 
             if (!issue.getAttachments().isEmpty()) {
+                for (Attachment<Long> attachment : issue.getAttachments()) {
+                    if (attachment.getId() == null) {
+                        attachment.setFilename(attachment.getFilename().replace(":", "_").replace("/", "_"));
+                        status = this.executeRequest("/uploads.json?filename=" + attachment.getFilename(), attachment.getContent(), "POST");
+                        if (status == 200 || status == 201) {
+                            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                            JSONObject uploadObject = jsonObject.getJSONObject("upload");
+                            String token = uploadObject.getString("token");
 
+                            issueObject = new JSONObject();
+                            JSONObject jsonObj = new JSONObject();
+                            jsonObj.put("id", issue.getId());
+                            jsonObj.put("subject", issue.getTitle());
+                            issueObject.put("project_id", project_id);
+                            if (issue.getSeverity() != null) {
+                                issueObject.put("tracker_id", issue.getSeverity().getKey());
+                                issueObject.put("tracker", issue.getSeverity().getValue());
+                            }
+                            if (issue.getStatus() != null) {
+                                issueObject.put("status_id", issue.getStatus().getKey());
+                            }
+                            JSONArray jsonArray = new JSONArray();
+                            JSONObject uploadObj = new JSONObject();
+                            uploadObj.put("token", token);
+                            uploadObj.put("filename", attachment.getFilename());
+                            uploadObj.put("content_type", "");
+                            jsonArray.put(uploadObj);
+                            jsonObj.put("uploads", jsonArray);
+                            issueObject.put("issue", jsonObj);
+                            this.executeRequest("/issues/" + issue.getId() + ".json", issueObject.toString(), "PUT");
+                        }
+                    }
+                }
             }
         }
     }
@@ -439,33 +477,29 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) {
+        return new LinkedList<>();
     }
 
     @Override
-    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) {
     }
 
     @Override
-    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteNote(Long id, Long issue_id, Long project_id) {
     }
 
     @Override
-    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) {
+        return new LinkedList<>();
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
     }
 
     @Override
@@ -476,13 +510,8 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray jsonArray = jsonObject.getJSONArray("users");
             for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                JSONObject userobject = jsonArray.getJSONObject(i);
-                User<Long> user = new User<>();
-                user.setId(userobject.getLong("id"));
-                user.setTitle(userobject.getString("login"));
-                user.setRealName(userobject.getString("firstname") + " " + userobject.getString("lastname"));
-                user.setEmail(userobject.getString("mail"));
-                users.add(user);
+                JSONObject userObject = jsonArray.getJSONObject(i);
+                users.add(this.getUser(userObject.getLong("id"), project_id));
             }
         }
         return users;
@@ -490,17 +519,59 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public User<Long> getUser(Long id, Long project_id) throws Exception {
-        return null;
+        User<Long> user = new User<>();
+        int status = this.executeRequest("/users/" + id + ".json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONObject userObject = jsonObject.getJSONObject("user");
+            user.setId(userObject.getLong("id"));
+            if (userObject.has("login")) {
+                user.setTitle(userObject.getString("login"));
+            }
+
+            user.setRealName(
+                    userObject.getString("firstname") + " " +
+                            userObject.getString("lastname")
+            );
+            if (userObject.has("mail")) {
+                user.setEmail(userObject.getString("mail"));
+            }
+        }
+        return user;
     }
 
     @Override
     public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject userObject = new JSONObject();
+        userObject.put("login", user.getTitle());
+        String[] spl = user.getRealName().split(" ");
+        if (spl.length == 2) {
+            userObject.put("firstname", spl[0]);
+            userObject.put("lastname", spl[1]);
+        }
+        if (!user.getEmail().isEmpty()) {
+            userObject.put("mail", user.getEmail());
+        }
+        userObject.put("password", user.getPassword());
+        jsonObject.put("user", userObject);
+
+        int status;
+        if (user.getId() != null) {
+            status = this.executeRequest("/users/" + user.getId() + ".json", jsonObject.toString(), "PUT");
+        } else {
+            status = this.executeRequest("/users.json", jsonObject.toString(), "POST");
+        }
+        if (status == 200 || status == 201) {
+
+        }
+
         return null;
     }
 
     @Override
     public void deleteUser(Long id, Long project_id) throws Exception {
-
+        this.deleteRequest("/users/" + id + ".json");
     }
 
     @Override

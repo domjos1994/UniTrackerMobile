@@ -40,6 +40,7 @@ public class JSONEngine {
     private Authentication authentication;
     private final List<String> headers;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final MediaType OctetStream = MediaType.get("application/octet-stream");
     private final OkHttpClient client;
     private String currentMessage;
     private int state;
@@ -78,6 +79,18 @@ public class JSONEngine {
     }
 
     protected int executeRequest(String path, String body, String type) throws Exception {
+        Call call = this.initAuthentication(path, body, type);
+        Response response = call.execute();
+        this.state = response.code();
+
+        ResponseBody responseBody = response.body();
+        if (responseBody != null) {
+            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+        }
+        return this.state;
+    }
+
+    protected int executeRequest(String path, byte[] body, String type) throws Exception {
         Call call = this.initAuthentication(path, body, type);
         Response response = call.execute();
         this.state = response.code();
@@ -135,6 +148,32 @@ public class JSONEngine {
             if (!body.trim().isEmpty()) {
                 requestBody = RequestBody.create(JSON, body);
             }
+        }
+
+        Request request;
+        switch (type.toUpperCase()) {
+            case "POST":
+                request = this.initRequestBuilder(path).post(requestBody).build();
+                break;
+            case "PUT":
+                request = this.initRequestBuilder(path).put(requestBody).build();
+                break;
+            case "PATCH":
+                request = this.initRequestBuilder(path).patch(requestBody).build();
+                break;
+            case "DELETE":
+                request = this.initRequestBuilder(path).delete().build();
+                break;
+            default:
+                request = this.initRequestBuilder(path).build();
+        }
+        return this.client.newCall(request);
+    }
+
+    private Call initAuthentication(String path, byte[] body, String type) {
+        RequestBody requestBody = RequestBody.create(OctetStream, "");
+        if (body != null) {
+            requestBody = RequestBody.create(OctetStream, body);
         }
 
         Request request;

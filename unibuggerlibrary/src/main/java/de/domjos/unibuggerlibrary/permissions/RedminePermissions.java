@@ -90,12 +90,12 @@ public class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addNotes() {
-        return false;
+        return true;
     }
 
     @Override
@@ -110,12 +110,12 @@ public class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addAttachments() {
-        return false;
+        return true;
     }
 
     @Override
@@ -130,22 +130,22 @@ public class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteUsers() {
-        return false;
+        return true;
     }
 
     @Override

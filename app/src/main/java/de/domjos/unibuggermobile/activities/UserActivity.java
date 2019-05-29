@@ -98,7 +98,7 @@ public final class UserActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentProject).get();
+                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentUser).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -112,7 +112,7 @@ public final class UserActivity extends AbstractActivity {
                     try {
                         if (this.userValidator.getState()) {
                             this.controlsToObject();
-                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentProject).get();
+                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentUser).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         }
