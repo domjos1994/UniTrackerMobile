@@ -305,20 +305,20 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         }
         cursor.close();
 
-        cursor = db.rawQuery("SELECT fieldResult.fieldValue, customFields.* FROM fieldResult INNER JOIN customFields ON fieldResult.field=customFields.id WHERE issue=?", new String[]{String.valueOf(issue.getId())});
-        while (cursor.moveToNext()) {
-            CustomField<Long> customField = new CustomField<>();
-            customField.setId(this.getLong(cursor, "customFields.id"));
-            customField.setTitle(this.getString(cursor, "customFields.title"));
-            customField.setType(this.getInt(cursor, "customFields.type"));
-            customField.setPossibleValues(this.getString(cursor, "customFields.possibleValues"));
-            customField.setDefaultValue(this.getString(cursor, "customFields.defaultValue"));
-            customField.setMinLength(this.getInt(cursor, "customFields.minLength"));
-            customField.setMaxLength(this.getInt(cursor, "customFields.maxLength"));
-            customField.setDescription(this.getString(cursor, "customFields.description"));
-            issue.getCustomFields().put(customField, this.getString(cursor, "fieldResult.fieldValue"));
+        List<CustomField<Long>> customFields = this.getCustomFields(project_id);
+        for (CustomField<Long> customField : customFields) {
+            cursor = db.rawQuery("SELECT fieldResult.fieldValue, customFields.id FROM fieldResult INNER JOIN customFields ON fieldResult.field=customFields.id WHERE issue=? AND customFields.id=?", new String[]{String.valueOf(issue.getId()), String.valueOf(customField.getId())});
+            boolean hasValue = false;
+            while (cursor.moveToNext()) {
+                hasValue = true;
+                issue.getCustomFields().put(customField, this.getString(cursor, "fieldResult.fieldValue"));
+            }
+            cursor.close();
+
+            if (!hasValue) {
+                issue.getCustomFields().put(customField, "");
+            }
         }
-        cursor.close();
 
         return issue;
     }
@@ -383,56 +383,13 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
         if (!issue.getNotes().isEmpty()) {
             for (Note<Long> note : issue.getNotes()) {
-                if (note.getId() != null) {
-                    sqLiteStatement = db.compileStatement(
-                            "UPDATE notes SET title=?, state_id=?, description=?, lustUpdated=?," +
-                                    "submitDate=?,issue=? WHERE id=?"
-                    );
-                    sqLiteStatement.bindLong(7, note.getId());
-                } else {
-                    sqLiteStatement = db.compileStatement(
-                            "INSERT INTO notes(title, state_id, description, lustUpdated, " +
-                                    "submitDate, issue) VALUES(?,?,?,?,?,?)"
-                    );
-                }
-                sqLiteStatement.bindString(1, note.getTitle());
-                sqLiteStatement.bindLong(2, note.getState().getKey());
-                sqLiteStatement.bindString(3, note.getDescription());
-                note.setLastUpdated(new Date());
-                sqLiteStatement.bindLong(4, note.getLastUpdated().getTime());
-                if (note.getSubmitDate() != null) {
-                    sqLiteStatement.bindLong(5, note.getSubmitDate().getTime());
-                } else {
-                    sqLiteStatement.bindNull(5);
-                }
-                sqLiteStatement.bindLong(6, Long.parseLong(String.valueOf(issue.getId())));
-                sqLiteStatement.execute();
-                sqLiteStatement.close();
+                this.insertOrUpdateNote(note, issue.getId(), project_id);
             }
         }
 
         if (!issue.getAttachments().isEmpty()) {
             for (Attachment<Long> attachment : issue.getAttachments()) {
-                if (attachment.getId() != null) {
-                    sqLiteStatement = db.compileStatement(
-                            "UPDATE attachments SET title=?, download_url=?, content=?, issue=? WHERE id=?"
-                    );
-                    sqLiteStatement.bindLong(5, attachment.getId());
-                } else {
-                    sqLiteStatement = db.compileStatement(
-                            "INSERT INTO attachments(title, download_url, content, issue) VALUES(?,?,?,?)"
-                    );
-                }
-                sqLiteStatement.bindString(1, attachment.getTitle());
-                sqLiteStatement.bindString(2, attachment.getDownloadUrl());
-                if (attachment.getContent() != null) {
-                    sqLiteStatement.bindBlob(3, attachment.getContent());
-                } else {
-                    sqLiteStatement.bindNull(3);
-                }
-                sqLiteStatement.bindLong(4, Long.parseLong(String.valueOf(issue.getId())));
-                sqLiteStatement.execute();
-                sqLiteStatement.close();
+                this.insertOrUpdateAttachment(attachment, issue.getId(), project_id);
             }
         }
 
@@ -459,33 +416,115 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) {
+        List<Note<Long>> notes = new LinkedList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM notes", new String[]{});
+        while (cursor.moveToNext()) {
+            Note<Long> note = new Note<>();
+            note.setId(this.getLong(cursor, "id"));
+            note.setState(this.getInt(cursor, "state_id"), "");
+            note.setTitle(this.getString(cursor, "title"));
+            note.setDescription(this.getString(cursor, "description"));
+            long lastUpdated = this.getLong(cursor, "lustUpdated");
+            if (lastUpdated != 0) {
+                Date dt = new Date();
+                dt.setTime(lastUpdated);
+                note.setLastUpdated(dt);
+            }
+            long submitDate = this.getLong(cursor, "submitDate");
+            if (submitDate != 0) {
+                Date dt = new Date();
+                dt.setTime(submitDate);
+                note.setSubmitDate(dt);
+            }
+            notes.add(note);
+        }
+        cursor.close();
+        return notes;
     }
 
     @Override
-    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteStatement sqLiteStatement;
+        if (note.getId() != null) {
+            sqLiteStatement = db.compileStatement(
+                    "UPDATE notes SET title=?, state_id=?, description=?, lustUpdated=?," +
+                            "submitDate=?,issue=? WHERE id=?"
+            );
+            sqLiteStatement.bindLong(7, note.getId());
+        } else {
+            sqLiteStatement = db.compileStatement(
+                    "INSERT INTO notes(title, state_id, description, lustUpdated, " +
+                            "submitDate, issue) VALUES(?,?,?,?,?,?)"
+            );
+        }
+        sqLiteStatement.bindString(1, note.getTitle());
+        sqLiteStatement.bindLong(2, note.getState().getKey());
+        sqLiteStatement.bindString(3, note.getDescription());
+        note.setLastUpdated(new Date());
+        sqLiteStatement.bindLong(4, note.getLastUpdated().getTime());
+        if (note.getSubmitDate() != null) {
+            sqLiteStatement.bindLong(5, note.getSubmitDate().getTime());
+        } else {
+            sqLiteStatement.bindNull(5);
+        }
+        sqLiteStatement.bindLong(6, Long.parseLong(String.valueOf(issue_id)));
+        sqLiteStatement.execute();
+        sqLiteStatement.close();
     }
 
     @Override
-    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteNote(Long id, Long issue_id, Long project_id) {
+        this.getWritableDatabase().execSQL("DELETE FROM notes WHERE id=" + id);
     }
 
     @Override
-    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
-        return null;
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) {
+        List<Attachment<Long>> attachments = new LinkedList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM attachments", new String[]{});
+        while (cursor.moveToNext()) {
+            Attachment<Long> attachment = new Attachment<>();
+            attachment.setId(this.getLong(cursor, "id"));
+            attachment.setTitle(this.getString(cursor, "title"));
+            attachment.setContent(cursor.getBlob(cursor.getColumnIndex("content")));
+            attachments.add(attachment);
+        }
+        cursor.close();
+        return attachments;
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteStatement sqLiteStatement;
+        if (attachment.getId() != null) {
+            sqLiteStatement = db.compileStatement(
+                    "UPDATE attachments SET title=?, download_url=?, content=?, issue=? WHERE id=?"
+            );
+            sqLiteStatement.bindLong(5, attachment.getId());
+        } else {
+            sqLiteStatement = db.compileStatement(
+                    "INSERT INTO attachments(title, download_url, content, issue) VALUES(?,?,?,?)"
+            );
+        }
+        sqLiteStatement.bindString(1, attachment.getTitle());
+        sqLiteStatement.bindString(2, attachment.getDownloadUrl());
+        if (attachment.getContent() != null) {
+            sqLiteStatement.bindBlob(3, attachment.getContent());
+        } else {
+            sqLiteStatement.bindNull(3);
+        }
+        sqLiteStatement.bindLong(4, Long.parseLong(String.valueOf(issue_id)));
+        sqLiteStatement.execute();
+        sqLiteStatement.close();
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
+        this.getWritableDatabase().execSQL("DELETE FROM attachments WHERE id=" + id);
     }
 
     @Override
@@ -494,38 +533,95 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public User<Long> getUser(Long id, Long project_id) throws Exception {
+    public User<Long> getUser(Long id, Long project_id) {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id, Long project_id) throws Exception {
-
+    public void deleteUser(Long id, Long project_id) {
     }
 
     @Override
-    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
-        return null;
+    public List<CustomField<Long>> getCustomFields(Long project_id) {
+        List<CustomField<Long>> customFields = new LinkedList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM customFields WHERE project=?", new String[]{String.valueOf(project_id)});
+        while (cursor.moveToNext()) {
+            CustomField<Long> customField = new CustomField<>();
+            customField.setId(this.getLong(cursor, "customFields.id"));
+            customField.setTitle(this.getString(cursor, "customFields.title"));
+            customField.setType(this.getInt(cursor, "customFields.type"));
+            customField.setPossibleValues(this.getString(cursor, "customFields.possibleValues"));
+            customField.setDefaultValue(this.getString(cursor, "customFields.defaultValue"));
+            customField.setMinLength(this.getInt(cursor, "customFields.minLength"));
+            customField.setMaxLength(this.getInt(cursor, "customFields.maxLength"));
+            customField.setDescription(this.getString(cursor, "customFields.description"));
+            customFields.add(customField);
+        }
+        cursor.close();
+        return customFields;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
-        return null;
+    public CustomField<Long> getCustomField(Long id, Long project_id) {
+        CustomField<Long> customField = new CustomField<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM customFields WHERE id=?", new String[]{String.valueOf(id)});
+        while (cursor.moveToNext()) {
+            customField.setId(this.getLong(cursor, "id"));
+            customField.setTitle(this.getString(cursor, "title"));
+            customField.setType(this.getInt(cursor, "type"));
+            customField.setPossibleValues(this.getString(cursor, "possibleValues"));
+            customField.setDefaultValue(this.getString(cursor, "defaultValue"));
+            customField.setMinLength(this.getInt(cursor, "minLength"));
+            customField.setMaxLength(this.getInt(cursor, "maxLength"));
+            customField.setDescription(this.getString(cursor, "description"));
+        }
+        cursor.close();
+        return customField;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
-        return null;
+    public Long insertOrUpdateCustomField(CustomField<Long> customField, Long project_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteStatement sqLiteStatement;
+        if (customField.getId() == null) {
+            sqLiteStatement = db.compileStatement("INSERT INTO customFields(title, type, possibleValues, defaultValue, minLength, maxLength, description, project) VALUES(?,?,?,?,?,?,?,?)");
+        } else {
+            sqLiteStatement = db.compileStatement("UPDATE customFields SET title=?, type=?, possibleValues=?, defaultValue=?, minLength=?, maxLength=?, description=?,project=? WHERE ID=?");
+            sqLiteStatement.bindLong(9, customField.getId());
+        }
+        sqLiteStatement.bindString(1, customField.getTitle());
+        sqLiteStatement.bindLong(2, customField.getIntType());
+        if (customField.getPossibleValues() != null) {
+            sqLiteStatement.bindString(3, customField.getPossibleValues());
+        } else {
+            sqLiteStatement.bindNull(3);
+        }
+        sqLiteStatement.bindString(4, customField.getDefaultValue());
+        sqLiteStatement.bindLong(5, customField.getMinLength());
+        sqLiteStatement.bindLong(6, customField.getMaxLength());
+        sqLiteStatement.bindString(7, customField.getDescription());
+        sqLiteStatement.bindLong(8, project_id);
+
+        if (customField.getId() != null) {
+            sqLiteStatement.execute();
+        } else {
+            customField.setId(sqLiteStatement.executeInsert());
+        }
+        sqLiteStatement.close();
+
+        return customField.getId();
     }
 
     @Override
-    public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+    public void deleteCustomField(Long id, Long project_id) {
+        this.getWritableDatabase().execSQL("DELETE FROM customFields WHERE id=?", new String[]{String.valueOf(id)});
     }
 
     @Override
@@ -585,7 +681,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
+    public List<History<Long>> getHistory(Long issue_id, Long project_id) {
         return null;
     }
 

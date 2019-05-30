@@ -201,6 +201,7 @@ public final class FieldActivity extends AbstractActivity {
 
         switch (tracker) {
             case MantisBT:
+            case Local:
                 for (CustomField.Type type : CustomField.Type.values()) {
                     this.fieldTypeAdapter.add(type.name());
                 }

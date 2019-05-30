@@ -142,22 +142,26 @@ public final class IssueCustomFragment extends AbstractFragment {
                     tableRow.setLayoutParams(layoutParams);
 
                     EditText editText;
-                    if (!customField.getPossibleValues().isEmpty()) {
-                        editText = new AutoCompleteTextView(this.getActivity());
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
-                        for (String item : customField.getDefaultValue().split("\\|")) {
-                            arrayAdapter.add(item.trim());
+                    if (customField.getPossibleValues() != null) {
+                        if (!customField.getPossibleValues().isEmpty()) {
+                            editText = new AutoCompleteTextView(this.getActivity());
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
+                            for (String item : customField.getDefaultValue().split("\\|")) {
+                                arrayAdapter.add(item.trim());
+                            }
+                            ((AutoCompleteTextView) editText).setAdapter(arrayAdapter);
+                        } else if (customField.getType() == CustomField.Type.MULTI_SELECT_LIST) {
+                            editText = new MultiAutoCompleteTextView(this.getActivity());
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
+                            for (String item : customField.getDefaultValue().split("\\|")) {
+                                arrayAdapter.add(item.trim());
+                            }
+                            ((MultiAutoCompleteTextView) editText).setAdapter(arrayAdapter);
+                            ((MultiAutoCompleteTextView) editText).setTokenizer(new CommaTokenizer());
+                            value = value.replace("|", ";");
+                        } else {
+                            editText = new EditText(this.getActivity());
                         }
-                        ((AutoCompleteTextView) editText).setAdapter(arrayAdapter);
-                    } else if (customField.getType() == CustomField.Type.MULTI_SELECT_LIST) {
-                        editText = new MultiAutoCompleteTextView(this.getActivity());
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
-                        for (String item : customField.getDefaultValue().split("\\|")) {
-                            arrayAdapter.add(item.trim());
-                        }
-                        ((MultiAutoCompleteTextView) editText).setAdapter(arrayAdapter);
-                        ((MultiAutoCompleteTextView) editText).setTokenizer(new CommaTokenizer());
-                        value = value.replace("|", ";");
                     } else {
                         editText = new EditText(this.getActivity());
                     }

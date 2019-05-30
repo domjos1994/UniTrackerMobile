@@ -101,5 +101,45 @@ CREATE TABLE IF NOT EXISTS fieldResult(
     FOREIGN KEY(issue) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS history(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    field VARCHAR(100),
+    oldVal TEXT,
+    newVal TEXT,
+    timestamp LONG,
+    issue INTEGER NOT NULL,
+    FOREIGN KEY(issue) REFERENCES issues(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TRIGGER IF NOT EXISTS update_history
+    BEFORE UPDATE ON issues
+    BEGIN
+       INSERT INTO history(field, oldVal, newVal, timestamp, issue)
+       SELECT field, oldVal, newVal,
+           CAST((julianday('now') - 2440587.5)*86400000  AS INTEGER), new.id
+           FROM (
+           SELECT '' field, '' oldVal, '' newVal, 0 timestamp, 0 issue
+           UNION ALL
+           SELECT sub.* FROM (VALUES
+              ('title', old.title, new.title, new.title!=old.title),
+              ('category', old.category, new.category, new.category!=old.category),
+              ('state_id', old.state_id, new.state_id, new.state_id!=old.state_id),
+              ('priority_id', old.priority_id, new.priority_id, new.priority_id!=old.priority_id),
+              ('severity_id', old.severity_id, new.severity_id, new.severity_id!=old.severity_id),
+              ('status_id', old.status_id, new.status_id, new.status_id!=old.status_id),
+              ('reproducibility_id', old.reproducibility_id, new.reproducibility_id, new.reproducibility_id!=old.reproducibility_id),
+              ('resolution_id', old.resolution_id, new.resolution_id, new.resolution_id!=old.resolution_id),
+              ('version', old.version, new.version, new.version!=old.version),
+              ('fixedInVersion', old.fixedInVersion, new.fixedInVersion, new.fixedInVersion!=old.fixedInVersion),
+              ('targetVersion', old.targetVersion, new.targetVersion, new.targetVersion!=old.targetVersion),
+              ('tags', old.tags, new.tags, new.tags!=old.tags),
+              ('dueDate', old.dueDate, new.dueDate, new.dueDate!=old.dueDate),
+              ('description', old.description, new.description, new.description!=old.description),
+              ('steps_to_reproduce', old.steps_to_reproduce, new.steps_to_reproduce, new.steps_to_reproduce!=old.steps_to_reproduce),
+              ('additional_information', old.additional_information, new.additional_information, new.additional_information!=old.additional_information)
+           ) AS sub
+           );
+    END;
+
 
 

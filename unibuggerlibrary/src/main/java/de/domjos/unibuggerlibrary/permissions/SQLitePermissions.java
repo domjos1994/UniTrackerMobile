@@ -148,22 +148,22 @@ public class SQLitePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
