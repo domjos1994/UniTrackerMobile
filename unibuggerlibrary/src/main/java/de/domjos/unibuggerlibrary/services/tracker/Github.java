@@ -51,8 +51,13 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public boolean testConnection() {
-        return true;
+    public boolean testConnection() throws Exception {
+        int status = this.executeRequest("/user");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            return jsonObject.has("plan");
+        }
+        return false;
     }
 
     @Override
@@ -247,11 +252,20 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
-
+        Project<Long> project = this.getProject(project_id);
+        if (project != null) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("title", issue.getTitle());
+            jsonObject.put("body", issue.getDescription());
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(this.authentication.getUserName());
+            jsonObject.put("assignees", jsonArray);
+            this.executeRequest("/repos/" + project.getTitle() + "/issues", jsonObject.toString(), "POST");
+        }
     }
 
     @Override
-    public void deleteIssue(Long id, Long project_id) throws Exception {
+    public void deleteIssue(Long id, Long project_id) {
 
     }
 
@@ -271,18 +285,16 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
     }
 
     @Override
@@ -300,53 +312,50 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public User<Long> getUser(Long id, Long project_id) throws Exception {
+        int status = this.executeRequest("/user");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            return this.getUser(jsonObject);
+        }
         return null;
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+    public Long insertOrUpdateUser(User<Long> user, Long project_id) {
         return null;
     }
 
     @Override
-    public void deleteUser(Long id, Long project_id) throws Exception {
-
+    public void deleteUser(Long id, Long project_id) {
     }
 
     @Override
-    public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
+    public List<CustomField<Long>> getCustomFields(Long project_id) {
         return null;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
+    public CustomField<Long> getCustomField(Long id, Long project_id) {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
         return null;
     }
 
     @Override
-    public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+    public void deleteCustomField(Long id, Long project_id) {
     }
 
 
     @Override
-    public List<String> getCategories(Long project_id) throws Exception {
+    public List<String> getCategories(Long project_id) {
         return null;
     }
 
-    /**
-     * @param project_id Id of Project
-     * @return List of tags
-     * @throws Exception ex
-     * @see <a href="https://developer.github.com/v3/issues/labels/">Github Reference</a>
-     */
     @Override
-    public List<Tag<Long>> getTags(Long project_id) throws Exception {
+    public List<Tag<Long>> getTags(Long project_id) {
         return null;
     }
 

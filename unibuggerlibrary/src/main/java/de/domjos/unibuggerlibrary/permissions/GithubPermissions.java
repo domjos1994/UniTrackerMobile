@@ -40,12 +40,12 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteProjects() {
-        return true;
+        return false;
     }
 
     @Override
@@ -60,12 +60,12 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteVersions() {
-        return true;
+        return false;
     }
 
     @Override
@@ -80,12 +80,12 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateIssues() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteIssues() {
-        return true;
+        return false;
     }
 
     @Override
@@ -110,22 +110,22 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean addAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return true;
+        return false;
     }
 
     @Override
