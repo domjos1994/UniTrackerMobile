@@ -120,8 +120,20 @@
     <string name="settings_general_notifications">Notifikationen</string>
     <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
 
-    <string name="administration_menu">Übergreifend</string>
     <string name="administration">Administration</string>
+    <string name="administration_menu">Übergreifend</string>
+    <string name="administration_bugTracker">Account auswählen</string>
+    <string name="administration_project">Projekt auswählen</string>
+    <string name="administration_data">Daten auswählen</string>
+    <string name="administration_copy">Kopieren</string>
+    <string name="administration_move">Verschieben</string>
+    <string-array name="administration_data">
+        <item>@string/projects</item>
+        <item>@string/issues</item>
+        <item>@string/issues_notes</item>
+        <item>@string/issues_attachments</item>
+        <item>@string/issues_custom</item>
+    </string-array>
 
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>

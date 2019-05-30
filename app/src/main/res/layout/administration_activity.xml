@@ -16,10 +16,196 @@
   ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.AdministrationActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10"
+        android:layout_alignParentTop="true">
+
+        <TableRow>
+
+            <TextView
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:text="@string/administration_bugTracker"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/spBugTracker1"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+
+            <Spinner
+                android:id="@+id/spBugTracker2"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:text="@string/administration_project"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/spProject1"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+
+            <Spinner
+                android:id="@+id/spProject2"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:text="@string/administration_data"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/spData1"
+                android:entries="@array/administration_data"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+
+            <Spinner
+                android:id="@+id/spData2"
+                android:entries="@array/administration_data"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <Spinner
+                android:id="@+id/spDataItem1"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+
+            <Spinner
+                android:id="@+id/spDataItem2"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_margin="4dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:background="@color/colorPrimaryDark"
+                android:layout_weight="10"
+                android:layout_width="0dp"
+                android:layout_height="1dp" />
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="10"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/cmdCopy"
+            android:text="@string/administration_copy"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/cmdMove"
+            android:text="@string/administration_move"
+            android:layout_weight="5"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</RelativeLayout>
