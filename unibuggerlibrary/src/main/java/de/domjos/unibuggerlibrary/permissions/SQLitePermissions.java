@@ -168,6 +168,6 @@ public class SQLitePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return false;
+        return true;
     }
 }

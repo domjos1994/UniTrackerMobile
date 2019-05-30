@@ -325,6 +325,10 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) {
+        if (issue.getId() != null) {
+            Issue<Long> oldIssue = this.getIssue(Long.parseLong(String.valueOf(issue.getId())), Long.parseLong(String.valueOf(project_id)));
+            this.addHistoryItem(oldIssue, issue);
+        }
         SQLiteDatabase db = this.getWritableDatabase();
         SQLiteStatement sqLiteStatement;
         if (issue.getId() == null) {
@@ -682,7 +686,20 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public List<History<Long>> getHistory(Long issue_id, Long project_id) {
-        return null;
+        List<History<Long>> historyItems = new LinkedList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM history WHERE issue=?", new String[]{String.valueOf(issue_id)});
+        while (cursor.moveToNext()) {
+            History<Long> history = new History<>();
+            history.setField(this.getString(cursor, "field"));
+            history.setOldValue(this.getString(cursor, "oldVal"));
+            history.setNewValue(this.getString(cursor, "newVal"));
+            history.setUser("");
+            history.setTime(this.getLong(cursor, "timestamp"));
+            historyItems.add(history);
+        }
+        cursor.close();
+        return historyItems;
     }
 
     @Override
@@ -698,6 +715,61 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     @Override
     public String getCurrentMessage() {
         return "";
+    }
+
+    private void addHistoryItem(Issue<Long> oldIssue, Issue<Long> newIssue) {
+        if (!oldIssue.getTitle().equals(newIssue.getTitle())) {
+            this.addHistory("title", oldIssue.getTitle(), newIssue.getTitle(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getCategory().equals(newIssue.getCategory())) {
+            this.addHistory("category", oldIssue.getCategory(), newIssue.getCategory(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getTags().equals(newIssue.getTags())) {
+            this.addHistory("tags", oldIssue.getTags(), newIssue.getTags(), String.valueOf(newIssue.getId()));
+        }
+        if (oldIssue.getDueDate() != null && newIssue.getDueDate() != null) {
+            if (oldIssue.getDueDate().compareTo(newIssue.getDueDate()) != 0) {
+                this.addHistory("dueDate", String.valueOf(oldIssue.getDueDate()), String.valueOf(newIssue.getDueDate()), String.valueOf(newIssue.getId()));
+            }
+        }
+        if (!oldIssue.getVersion().equals(newIssue.getVersion())) {
+            this.addHistory("version", oldIssue.getVersion(), newIssue.getVersion(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getFixedInVersion().equals(newIssue.getFixedInVersion())) {
+            this.addHistory("fixedInVersion", oldIssue.getFixedInVersion(), newIssue.getFixedInVersion(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getTargetVersion().equals(newIssue.getTargetVersion())) {
+            this.addHistory("targetVersion", oldIssue.getTargetVersion(), newIssue.getTargetVersion(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getVersion().equals(newIssue.getVersion())) {
+            this.addHistory("version", oldIssue.getVersion(), newIssue.getVersion(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getResolution().getValue().equals(newIssue.getResolution().getValue())) {
+            this.addHistory("resolution", oldIssue.getResolution().getValue(), newIssue.getResolution().getValue(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getReproducibility().getValue().equals(newIssue.getReproducibility().getValue())) {
+            this.addHistory("reproducibility", oldIssue.getReproducibility().getValue(), newIssue.getReproducibility().getValue(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getStatus().getValue().equals(newIssue.getStatus().getValue())) {
+            this.addHistory("status", oldIssue.getStatus().getValue(), newIssue.getStatus().getValue(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getSeverity().getValue().equals(newIssue.getSeverity().getValue())) {
+            this.addHistory("severity", oldIssue.getSeverity().getValue(), newIssue.getSeverity().getValue(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getState().getValue().equals(newIssue.getState().getValue())) {
+            this.addHistory("state", oldIssue.getState().getValue(), newIssue.getState().getValue(), String.valueOf(newIssue.getId()));
+        }
+        if (!oldIssue.getPriority().getValue().equals(newIssue.getPriority().getValue())) {
+            this.addHistory("priority", oldIssue.getPriority().getValue(), newIssue.getPriority().getValue(), String.valueOf(newIssue.getId()));
+        }
+    }
+
+    private void addHistory(String field, String oldVal, String newVal, String id) {
+        this.getWritableDatabase()
+                .execSQL(
+                        "INSERT INTO history(field, oldVal, newVal, timestamp, issue) " +
+                                "VALUES('" + field + "', '" + oldVal + "', '" + newVal + "', " + new Date().getTime() + ", " + id + ")"
+                );
     }
 
     private void initDatabase(SQLiteDatabase db) {
