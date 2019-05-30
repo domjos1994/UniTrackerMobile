@@ -120,6 +120,9 @@
     <string name="settings_general_notifications">Notifikationen</string>
     <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
 
+    <string name="administration_menu">Übergreifend</string>
+    <string name="administration">Administration</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_delete">Löschen</string>

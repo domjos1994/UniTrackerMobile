@@ -20,22 +20,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <item android:title="@string/issues">
+        <menu>
+            <item
+                android:id="@+id/navProjects"
+                android:icon="@drawable/ic_apps_black_24dp"
+                android:title="@string/projects" />
+            <item
+                android:id="@+id/navVersions"
+                android:icon="@drawable/ic_update_black_24dp"
+                android:title="@string/versions" />
+            <item
+                android:id="@+id/navUsers"
+                android:icon="@drawable/ic_person_black_24dp"
+                android:title="@string/users" />
+            <item
+                android:id="@+id/navFields"
+                android:icon="@drawable/ic_text_fields_black_24dp"
+                android:title="@string/fields" />
+        </menu>
+    </item>
+
+    <item android:title="@string/administration_menu">
         <item
-            android:id="@+id/navProjects"
-            android:icon="@drawable/ic_apps_black_24dp"
-            android:title="@string/projects" />
-        <item
-            android:id="@+id/navVersions"
-            android:icon="@drawable/ic_update_black_24dp"
-            android:title="@string/versions" />
-        <item
-            android:id="@+id/navUsers"
-            android:icon="@drawable/ic_person_black_24dp"
-            android:title="@string/users" />
-        <item
-            android:id="@+id/navFields"
-            android:icon="@drawable/ic_text_fields_black_24dp"
-            android:title="@string/fields" />
-    </group>
+            android:id="@+id/navAdministration"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="@string/administration" />
+    </item>
 </menu>
