@@ -74,6 +74,8 @@
     <string name="users_login">Login-Name</string>
     <string name="users_fullName">Name</string>
     <string name="users_email">Email</string>
+    <string name="users_password">Passwort</string>
+    <string name="users_password_repeat">Passwort bestätigen</string>
 
     <string name="fields">Felder</string>
     <string name="fields_type">Typ</string>

@@ -42,6 +42,7 @@ public final class UserActivity extends AbstractActivity {
 
     private ListView lvUsers;
     private ListAdapter userAdapter;
+    private EditText txtUserPassword, txtUserPasswordRepeat;
     private EditText txtUserName, txtUserFullName, txtUserEmail;
 
     private IBugService bugService;
@@ -98,7 +99,7 @@ public final class UserActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentUser).get();
+                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentUser.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -133,6 +134,8 @@ public final class UserActivity extends AbstractActivity {
         this.txtUserName = this.findViewById(R.id.txtUserName);
         this.txtUserFullName = this.findViewById(R.id.txtUserFullName);
         this.txtUserEmail = this.findViewById(R.id.txtUserEmail);
+        this.txtUserPassword = this.findViewById(R.id.txtUserPassword);
+        this.txtUserPasswordRepeat = this.findViewById(R.id.txtUserPasswordRepeat);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
@@ -158,6 +161,8 @@ public final class UserActivity extends AbstractActivity {
         this.txtUserName.setEnabled(editMode);
         this.txtUserFullName.setEnabled(editMode);
         this.txtUserEmail.setEnabled(editMode);
+        this.txtUserPassword.setEnabled(editMode);
+        this.txtUserPasswordRepeat.setEnabled(editMode);
 
         if (reset) {
             this.currentUser = new User();
@@ -169,12 +174,16 @@ public final class UserActivity extends AbstractActivity {
         this.txtUserName.setText(this.currentUser.getTitle());
         this.txtUserFullName.setText(this.currentUser.getRealName());
         this.txtUserEmail.setText(this.currentUser.getEmail());
+        this.txtUserPassword.setText(this.currentUser.getPassword());
     }
 
     private void controlsToObject() {
         this.currentUser.setTitle(this.txtUserName.getText().toString());
         this.currentUser.setRealName(this.txtUserFullName.getText().toString());
         this.currentUser.setEmail(this.txtUserEmail.getText().toString());
+        if (this.txtUserPassword.getText().toString().equals(this.txtUserPasswordRepeat.getText().toString())) {
+            this.currentUser.setPassword(this.txtUserPassword.getText().toString());
+        }
     }
 
     private void updateUITrackerSpecific() {

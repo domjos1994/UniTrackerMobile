@@ -150,7 +150,7 @@ public class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
@@ -170,6 +170,6 @@ public class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return false;
+        return true;
     }
 }

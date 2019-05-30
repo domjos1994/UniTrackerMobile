@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
@@ -66,7 +67,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public String getTrackerVersion() {
-        return null;
+        return "";
     }
 
     @Override
@@ -361,6 +362,31 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                     }
                 }
             }
+
+            if (jsonObject.has("custom_fields")) {
+                if (!jsonObject.isNull("custom_fields")) {
+                    JSONArray customFieldArray = jsonObject.getJSONArray("custom_fields");
+                    List<CustomField<Long>> customFields = this.getCustomFields(project_id);
+                    if (customFields != null) {
+                        for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                            JSONObject fieldObject = customFieldArray.getJSONObject(i);
+                            long field_id = fieldObject.getLong("id");
+                            for (CustomField<Long> customField : customFields) {
+                                if (customField.getId() == field_id) {
+                                    if (fieldObject.has("value")) {
+                                        if (!fieldObject.isNull("value")) {
+                                            issue.getCustomFields().put(customField, fieldObject.getString("value"));
+                                            break;
+                                        }
+                                    }
+                                    issue.getCustomFields().put(customField, "");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         return issue;
     }
@@ -399,11 +425,23 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 }
             }
         }
+        if (!issue.getCustomFields().isEmpty()) {
+            JSONArray customFieldArray = new JSONArray();
+            for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
+                JSONObject customFieldObject = new JSONObject();
+                customFieldObject.put("id", entry.getKey().getId());
+                customFieldObject.put("name", entry.getKey().getTitle());
+                customFieldObject.put("value", entry.getValue());
+                customFieldArray.put(customFieldObject);
+            }
+            issueObject.put("custom_fields", customFieldArray);
+        }
+
         requestObject.put("issue", issueObject);
 
         int status;
         if (issue.getId() != null) {
-            status = this.executeRequest("/issues/" + issue.getId() + ".json", requestObject.toString(), "POST");
+            status = this.executeRequest("/issues/" + issue.getId() + ".json", requestObject.toString(), "PUT");
         } else {
             status = this.executeRequest("/issues.json", requestObject.toString(), "POST");
         }
@@ -511,7 +549,20 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             JSONArray jsonArray = jsonObject.getJSONArray("users");
             for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 JSONObject userObject = jsonArray.getJSONObject(i);
-                users.add(this.getUser(userObject.getLong("id"), project_id));
+                User<Long> user = new User<>();
+                user.setId(userObject.getLong("id"));
+                if (userObject.has("login")) {
+                    user.setTitle(userObject.getString("login"));
+                }
+
+                user.setRealName(
+                        userObject.getString("firstname") + " " +
+                                userObject.getString("lastname")
+                );
+                if (userObject.has("mail")) {
+                    user.setEmail(userObject.getString("mail"));
+                }
+                users.add(user);
             }
         }
         return users;
@@ -556,14 +607,10 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         userObject.put("password", user.getPassword());
         jsonObject.put("user", userObject);
 
-        int status;
         if (user.getId() != null) {
-            status = this.executeRequest("/users/" + user.getId() + ".json", jsonObject.toString(), "PUT");
+            this.executeRequest("/users/" + user.getId() + ".json", jsonObject.toString(), "PUT");
         } else {
-            status = this.executeRequest("/users.json", jsonObject.toString(), "POST");
-        }
-        if (status == 200 || status == 201) {
-
+            this.executeRequest("/users.json", jsonObject.toString(), "POST");
         }
 
         return null;
@@ -576,22 +623,92 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
+        List<CustomField<Long>> customFields = new LinkedList<>();
+        int status = this.executeRequest("/custom_fields.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray customFieldArray = jsonObject.getJSONArray("custom_fields");
+            for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                JSONObject fieldObject = customFieldArray.getJSONObject(i);
+                if (fieldObject.getString("customized_type").equals("issue")) {
+                    CustomField<Long> customField = new CustomField<>();
+                    customField.setId(fieldObject.getLong("id"));
+                    customField.setTitle(fieldObject.getString("name"));
+                    if (fieldObject.has("description")) {
+                        if (!fieldObject.isNull("description")) {
+                            customField.setDescription(fieldObject.getString("description"));
+                        }
+                    }
+                    if (fieldObject.has("min_length")) {
+                        if (!fieldObject.isNull("min_length")) {
+                            customField.setMinLength(fieldObject.getInt("min_length"));
+                        }
+                    }
+                    if (fieldObject.has("max_length")) {
+                        if (!fieldObject.isNull("max_length")) {
+                            customField.setMaxLength(fieldObject.getInt("max_length"));
+                        }
+                    }
+                    customField.setNullable(fieldObject.getBoolean("is_required"));
+                    if (fieldObject.has("default_value")) {
+                        if (!fieldObject.isNull("default_value")) {
+                            customField.setDefaultValue(fieldObject.getString("default_value"));
+                        }
+                    }
+                    StringBuilder possibleValues = new StringBuilder();
+                    if (fieldObject.has("possible_values")) {
+                        if (!fieldObject.isNull("possible_values")) {
+                            JSONArray array = fieldObject.getJSONArray("possible_values");
+                            for (int j = 0; j <= array.length() - 1; j++) {
+                                JSONObject possibleObject = array.getJSONObject(j);
+                                possibleValues.append(possibleObject.getString("value"));
+                                possibleValues.append("|");
+                            }
+                        }
+                    }
+                    customField.setPossibleValues(possibleValues.toString());
+                    String format = fieldObject.getString("field_format");
+                    switch (format.toLowerCase()) {
+                        case "string":
+                            customField.setType(CustomField.Type.TEXT);
+                            break;
+                        case "text":
+                            customField.setType(CustomField.Type.TEXT_AREA);
+                            break;
+                        case "int":
+                            customField.setType(CustomField.Type.NUMBER);
+                            break;
+                        case "date":
+                            customField.setType(CustomField.Type.DATE);
+                            break;
+                        case "bool":
+                            customField.setType(CustomField.Type.CHECKBOX);
+                            break;
+                        case "list":
+                            customField.setType(CustomField.Type.LIST);
+                            break;
+                    }
+
+                    customFields.add(customField);
+                }
+            }
+        }
+
+        return customFields;
+    }
+
+    @Override
+    public CustomField<Long> getCustomField(Long id, Long project_id) {
         return null;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
-        return null;
+    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
+        return 0L;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+    public void deleteCustomField(Long id, Long project_id) {
     }
 
     @Override
@@ -600,7 +717,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
+    public List<History<Long>> getHistory(Long issue_id, Long project_id) {
         return null;
     }
 

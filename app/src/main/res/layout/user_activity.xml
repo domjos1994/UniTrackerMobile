@@ -84,6 +84,28 @@
                         android:layout_width="0dp"
                         tools:ignore="Autofill" />
                 </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtUserPassword"
+                        android:hint="@string/users_password"
+                        android:inputType="textPassword"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtUserPasswordRepeat"
+                        android:hint="@string/users_password_repeat"
+                        android:inputType="textPassword"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
             </TableLayout>
         </ScrollView>
     </LinearLayout>
