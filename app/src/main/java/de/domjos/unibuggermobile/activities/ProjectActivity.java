@@ -112,7 +112,7 @@ public final class ProjectActivity extends AbstractActivity {
                 case R.id.navDelete:
                     try {
                         task = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
-                        task.execute(this.currentProject).get();
+                        task.execute(this.currentProject.getId()).get();
                         if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                             MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
                         } else {
@@ -195,9 +195,6 @@ public final class ProjectActivity extends AbstractActivity {
         switch (this.settings.getCurrentAuthentication().getTracker()) {
             case RedMine:
                 this.projectValidator.addEmptyValidator(this.txtProjectAlias);
-                break;
-            case Bugzilla:
-                this.projectValidator.addEmptyValidator(this.txtProjectVersion);
                 break;
             case YouTrack:
                 this.projectValidator.addValueEqualsRegex(this.txtProjectAlias, "^[a-zA-Z0-9_]{1,}$");
@@ -416,7 +413,6 @@ public final class ProjectActivity extends AbstractActivity {
             switch (tracker) {
                 case MantisBT:
                     this.rowProjectState.setVisibility(View.VISIBLE);
-                    //this.rowSubProjects.setVisibility(View.VISIBLE);
                     this.rowProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowProjectPrivate.setVisibility(View.VISIBLE);
                     break;
@@ -433,7 +429,6 @@ public final class ProjectActivity extends AbstractActivity {
                     this.rowProjectEnabled.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:
-                    this.rowProjectVersion.setVisibility(View.VISIBLE);
                     this.rowProjectEnabled.setVisibility(View.VISIBLE);
                     break;
                 case Github:

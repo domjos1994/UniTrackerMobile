@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -103,6 +104,13 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 project.setTitle(projectObject.getString("name"));
                 project.setDescription(projectObject.getString("description"));
                 project.setEnabled(projectObject.getBoolean("is_active"));
+                if (projectObject.has("components")) {
+                    JSONArray componentArray = projectObject.getJSONArray("components");
+                    if (componentArray.length() >= 1) {
+                        JSONObject componentObject = componentArray.getJSONObject(0);
+                        project.getHints().put("component", componentObject.getString("name"));
+                    }
+                }
 
                 if (projectObject.has("version")) {
                     project.setDefaultVersion(projectObject.getString("version"));
@@ -116,7 +124,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                         version.setId(versionObject.getLong("id"));
                         version.setTitle(versionObject.getString("name"));
                         version.setReleasedVersion(!versionObject.getBoolean("is_active"));
-                        project.getVersions().add(version);
+                        project.setDefaultVersion(version.getTitle());
                     }
                 }
 
@@ -130,16 +138,15 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         String url, method;
         if (project.getId() == 0L) {
-            url = "/rest/product";
+            url = "/rest/product?" + this.loginParams;
             method = "POST";
         } else {
-            url = "/rest/product/" + project.getId();
+            url = "/rest/product/" + project.getId() + "?" + this.loginParams;
             method = "PUT";
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", project.getTitle());
         jsonObject.put("description", project.getDescription());
-        jsonObject.put("version", project.getDefaultVersion());
         jsonObject.put("is_open", project.isEnabled());
         jsonObject.put("has_unconfirmed", false);
         int status = this.executeRequest(url, jsonObject.toString(), method);
@@ -158,7 +165,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void deleteProject(Long id) throws Exception {
-        this.deleteRequest("/rest/product/" + id);
+        this.deleteRequest("/rest/product/" + id + "?" + this.loginParams);
     }
 
     @Override
@@ -172,12 +179,10 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateVersion(Version<Long> version, Long project_id) {
-
     }
 
     @Override
     public void deleteVersion(Long id, Long project_id) {
-
     }
 
     @Override
@@ -235,6 +240,17 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
                 String severityEnum = bugObject.getString("severity");
                 issue.setSeverity(this.getId("severity", severityEnum), severityEnum);
+
+                List<CustomField<Long>> customFields = this.getCustomFields(project_id);
+                for (CustomField<Long> customField : customFields) {
+                    String value = "";
+                    if (bugObject.has(customField.getHints().get("name"))) {
+                        if (!bugObject.isNull(customField.getHints().get("name"))) {
+                            value = bugObject.getString(customField.getHints().get("name"));
+                        }
+                    }
+                    issue.getCustomFields().put(customField, value);
+                }
 
                 if (bugObject.has("assigned_to_detail")) {
                     if (!bugObject.isNull("assigned_to_detail")) {
@@ -326,14 +342,21 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
             bugObject.put("product", project.getTitle());
+            bugObject.put("component", project.getHints().get("component"));
+            bugObject.put("version", project.getDefaultVersion());
         }
         bugObject.put("priority", issue.getPriority().getValue());
         bugObject.put("status", issue.getStatus().getValue());
         bugObject.put("severity", issue.getSeverity().getValue());
+        bugObject.put("op_sys", "All");
+        bugObject.put("platform", "All");
+        for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
+            bugObject.put(entry.getKey().getHints().get("name"), entry.getValue());
+        }
         if (issue.getHandler() != null) {
             bugObject.put("assigned_to", issue.getHandler().getTitle());
         }
-        bugObject.put("version", issue.getVersion());
+
         if (issue.getDueDate() != null) {
             bugObject.put("deadline", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(issue.getDueDate()));
         }
@@ -347,9 +370,9 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
         int status;
         if (issue.getId() != null) {
-            status = this.executeRequest("/rest/bug/" + issue.getId(), bugObject.toString(), "PUT");
+            status = this.executeRequest("/rest/bug/" + issue.getId() + "?" + this.loginParams, bugObject.toString(), "PUT");
         } else {
-            status = this.executeRequest("/rest/bug", bugObject.toString(), "POST");
+            status = this.executeRequest("/rest/bug?" + this.loginParams, bugObject.toString(), "POST");
             if (status == 200 || status == 201) {
                 JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
                 issue.setId(jsonObject.getLong("id"));
@@ -360,15 +383,12 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
             if (!issue.getNotes().isEmpty()) {
                 for (Note<Long> note : issue.getNotes()) {
                     if (note.getId() == null) {
-                        JSONObject noteObject = new JSONObject();
-                        noteObject.put("comment", note.getDescription());
-                        noteObject.put("is_private", note.getState().getKey() == 50);
-                        this.executeRequest("/rest/bug/" + issue.getId() + "/comment", noteObject.toString(), "POST");
+                        this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
                     }
                 }
             }
 
-            Issue<Long> oldIssue = this.getIssue(issue.getId(), project_id);
+            Issue<Long> oldIssue = this.getIssue(Long.parseLong(String.valueOf(issue.getId())), project_id);
             for (Attachment<Long> oldAttachment : oldIssue.getAttachments()) {
                 boolean contains = false;
                 for (Attachment<Long> attachment : issue.getAttachments()) {
@@ -378,25 +398,13 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                     }
                 }
                 if (!contains) {
-                    this.deleteRequest("/rest/bug/attachment/" + oldAttachment.getId());
+                    this.deleteAttachment(oldAttachment.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
             }
 
             if (!issue.getAttachments().isEmpty()) {
                 for (Attachment<Long> attachment : issue.getAttachments()) {
-                    JSONObject attachmentObject = new JSONObject();
-                    JSONArray array = new JSONArray();
-                    array.put(issue.getId());
-                    attachmentObject.put("ids", array);
-                    attachmentObject.put("file_name", attachment.getFilename());
-                    attachmentObject.put("content_type", "text/plain");
-                    attachmentObject.put("summary", "Add Attachment " + attachment.getFilename());
-                    attachmentObject.put("data", Base64.encodeToString(attachment.getContent(), Base64.DEFAULT));
-                    if (attachment.getId() != null) {
-                        this.executeRequest("/rest/bug/attachment/" + attachment.getId(), attachmentObject.toString(), "PUT");
-                    } else {
-                        this.executeRequest("/rest/bug/" + issue.getId() + "/attachment", attachmentObject.toString(), "POST");
-                    }
+                    this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
             }
         }
@@ -404,90 +412,197 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void deleteIssue(Long id, Long project_id) throws Exception {
-        this.deleteRequest("/rest/bug/" + id);
+        this.deleteRequest("/rest/bug/" + id + "?" + this.loginParams);
     }
 
     @Override
-    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
     public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
-
+        JSONObject noteObject = new JSONObject();
+        noteObject.put("comment", note.getDescription());
+        noteObject.put("is_private", note.getState().getKey() == 50);
+        this.executeRequest("/rest/bug/" + issue_id + "/comment?" + this.loginParams, noteObject.toString(), "POST");
     }
 
     @Override
-    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
-
+    public void deleteNote(Long id, Long issue_id, Long project_id) {
     }
 
     @Override
-    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
+    public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
     public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-
+        JSONObject attachmentObject = new JSONObject();
+        JSONArray array = new JSONArray();
+        array.put(issue_id);
+        attachmentObject.put("ids", array);
+        attachmentObject.put("file_name", attachment.getFilename());
+        attachmentObject.put("content_type", "text/plain");
+        attachmentObject.put("summary", "Add Attachment " + attachment.getFilename());
+        attachmentObject.put("data", Base64.encodeToString(attachment.getContent(), Base64.DEFAULT));
+        if (attachment.getId() != null) {
+            this.executeRequest("/rest/bug/attachment/" + attachment.getId() + "?" + this.loginParams, attachmentObject.toString(), "PUT");
+        } else {
+            this.executeRequest("/rest/bug/" + issue_id + "/attachment?" + this.loginParams, attachmentObject.toString(), "POST");
+        }
     }
 
     @Override
     public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+        this.deleteRequest("/rest/bug/attachment/" + id + "?" + this.loginParams);
     }
 
     @Override
     public List<User<Long>> getUsers(Long project_id) throws Exception {
         List<User<Long>> users = new LinkedList<>();
-        int status = this.executeRequest("/rest/user/" + this.authentication.getUserName() + "?" + this.loginParams);
+        int status = this.executeRequest("/rest/user?match=*&" + this.loginParams);
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             JSONArray userArray = jsonObject.getJSONArray("users");
-            JSONObject userObject = userArray.getJSONObject(0);
-            User<Long> user = new User<>();
-            user.setId(userObject.getLong("id"));
-            user.setEmail(userObject.getString("name"));
-            user.setTitle(userObject.getString("name"));
-            user.setRealName(userObject.getString("real_name"));
-            users.add(user);
+            for (int i = 0; i <= userArray.length() - 1; i++) {
+                users.add(this.getUser(userArray.getJSONObject(i).getLong("id"), project_id));
+            }
         }
         return users;
     }
 
     @Override
     public User<Long> getUser(Long id, Long project_id) throws Exception {
-        return null;
+        User<Long> user = new User<>();
+        int status = this.executeRequest("/rest/user/" + id + "?" + this.loginParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray userArray = jsonObject.getJSONArray("users");
+            if (userArray.length() >= 1) {
+                JSONObject userObject = userArray.getJSONObject(0);
+                user.setId(userObject.getLong("id"));
+                user.setEmail(userObject.getString("name"));
+                user.setTitle(userObject.getString("name"));
+                user.setRealName(userObject.getString("real_name"));
+            }
+        }
+        return user;
     }
 
     @Override
     public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("login", user.getTitle());
+        jsonObject.put("email", user.getEmail());
+        jsonObject.put("full_name", user.getRealName());
+        jsonObject.put("password", user.getPassword());
+
+        int status;
+        if (user.getId() != null) {
+            status = this.executeRequest("/rest/user/" + user.getId() + "?" + this.loginParams, jsonObject.toString(), "PUT");
+        } else {
+            status = this.executeRequest("/rest/user?" + this.loginParams, jsonObject.toString(), "POST");
+        }
+        if (status == 200 || status == 201) {
+            if (user.getId() == null) {
+                JSONObject response = new JSONObject(this.getCurrentMessage());
+                return response.getLong("id");
+            } else {
+                JSONArray jsonArray = new JSONObject(this.getCurrentMessage()).getJSONArray("users");
+                if (jsonArray.length() >= 1) {
+                    return jsonArray.getJSONObject(0).getLong("id");
+                }
+            }
+        }
         return null;
     }
 
     @Override
-    public void deleteUser(Long id, Long project_id) throws Exception {
-
+    public void deleteUser(Long id, Long project_id) {
     }
 
     @Override
     public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
-        return null;
+        List<CustomField<Long>> customFields = new LinkedList<>();
+        int status = this.executeRequest("/rest/field/bug?" + this.loginParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("fields");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject fieldObject = jsonArray.getJSONObject(i);
+                if (fieldObject.getBoolean("is_custom")) {
+                    customFields.add(this.getCustomField(fieldObject.getLong("id"), project_id));
+                }
+            }
+        }
+        return customFields;
     }
 
     @Override
     public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
+        CustomField<Long> customField = new CustomField<>();
+        int status = this.executeRequest("/rest/field/bug/" + id + "?" + this.loginParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("fields");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject fieldObject = jsonArray.getJSONObject(i);
+                customField.setId(fieldObject.getLong("id"));
+                customField.setTitle(fieldObject.getString("display_name"));
+                customField.setNullable(!fieldObject.getBoolean("is_mandatory"));
+                customField.getHints().put("name", fieldObject.getString("name"));
+                if (fieldObject.has("values")) {
+                    if (!fieldObject.isNull("values")) {
+                        JSONArray valueArray = fieldObject.getJSONArray("values");
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for (int j = 0; j <= valueArray.length() - 1; j++) {
+                            JSONObject valueObject = valueArray.getJSONObject(j);
+                            stringBuilder.append(valueObject.getString("name"));
+                            stringBuilder.append("|");
+                        }
+                        customField.setPossibleValues(stringBuilder.toString());
+                    }
+                }
+
+                int type = fieldObject.getInt("type");
+                switch (type) {
+                    case 0:
+                    case 1:
+                        customField.setType(CustomField.Type.TEXT);
+                        break;
+                    case 2:
+                        customField.setType(CustomField.Type.LIST);
+                        break;
+                    case 3:
+                        customField.setType(CustomField.Type.MULTI_SELECT_LIST);
+                        break;
+                    case 4:
+                        customField.setType(CustomField.Type.TEXT_AREA);
+                        break;
+                    case 5:
+                    case 9:
+                        customField.setType(CustomField.Type.DATE);
+                        break;
+                    case 10:
+                        customField.setType(CustomField.Type.NUMBER);
+                        break;
+
+                }
+            }
+        }
+
+        return customField;
+    }
+
+    @Override
+    public Long insertOrUpdateCustomField(CustomField<Long> field, Long project_id) {
         return null;
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> field, Long project_id) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+    public void deleteCustomField(Long id, Long project_id) {
     }
 
     @Override
@@ -521,7 +636,32 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<History<Long>> historyItems = new LinkedList<>();
+        int status = this.executeRequest("/rest/bug/" + issue_id + "/history?" + this.loginParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("bugs");
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject bugObject = jsonArray.getJSONObject(i);
+                JSONArray historyArray = bugObject.getJSONArray("history");
+                for (int j = 0; j <= historyArray.length() - 1; j++) {
+                    JSONObject historyObject = historyArray.getJSONObject(j);
+                    JSONArray changeArray = historyObject.getJSONArray("changes");
+                    for (int k = 0; k <= changeArray.length() - 1; k++) {
+                        JSONObject changeObject = changeArray.getJSONObject(k);
+                        History<Long> history = new History<>();
+                        Date when = Converter.convertStringToDate(historyObject.getString("when"), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        history.setTime(when.getTime());
+                        history.setUser(historyObject.getString("who"));
+                        history.setField(changeObject.getString("field_name"));
+                        history.setNewValue(changeObject.getString("added"));
+                        history.setOldValue(changeObject.getString("removed"));
+                        historyItems.add(history);
+                    }
+                }
+            }
+        }
+        return historyItems;
     }
 
     @Override

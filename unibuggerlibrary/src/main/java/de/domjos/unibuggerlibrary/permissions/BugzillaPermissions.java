@@ -45,17 +45,17 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteProjects() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean listVersions() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean addVersions() {
-        return true;
+        return false;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteIssues() {
-        return true;
+        return false;
     }
 
     @Override
@@ -100,12 +100,12 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateNotes() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteNotes() {
-        return true;
+        return false;
     }
 
     @Override
@@ -120,27 +120,27 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean listUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addUsers() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateUsers() {
-        return false;
+        return true;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listCustomFields() {
-        return false;
+        return true;
     }
 
     @Override
@@ -170,6 +170,6 @@ public class BugzillaPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return false;
+        return true;
     }
 }
