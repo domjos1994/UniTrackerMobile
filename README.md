@@ -15,7 +15,7 @@ Android-App to connect to multiple BugTracking-Systems!
             <li>history</li>
         </ul>
     </li>
-    <li><hr/></li>
+    <hr/>
     <li>Copy or move from one BugTracker to another</li>
 </ul>
 
