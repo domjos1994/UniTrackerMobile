@@ -47,6 +47,10 @@
                 android:id="@+id/navAdministration"
                 android:icon="@drawable/ic_settings_black_24dp"
                 android:title="@string/administration" />
+            <item
+                android:id="@+id/navFilter"
+                android:icon="@drawable/ic_filter_list_black_24dp"
+                android:title="@string/filter" />
         </menu>
     </item>
 </menu>

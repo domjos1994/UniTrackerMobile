@@ -134,6 +134,8 @@
     </string-array>
     <string name="administration_message">%s erfolgreich %s!</string>
 
+    <string name="filter">Filter</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_delete">Löschen</string>
