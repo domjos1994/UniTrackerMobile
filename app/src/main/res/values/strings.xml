@@ -132,6 +132,7 @@
         <item>@string/issues</item>
         <item>@string/issues_custom</item>
     </string-array>
+    <string name="administration_message">%s erfolgreich %s!</string>
 
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>

@@ -134,11 +134,19 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         sqLiteStatement.bindString(2, project.getAlias());
         sqLiteStatement.bindLong(3, project.isPrivateProject() ? 1 : 0);
         sqLiteStatement.bindLong(4, project.isEnabled() ? 1 : 0);
-        sqLiteStatement.bindString(5, project.getWebsite());
+        if (project.getWebsite() != null) {
+            sqLiteStatement.bindString(5, project.getWebsite());
+        } else {
+            sqLiteStatement.bindNull(5);
+        }
         sqLiteStatement.bindString(6, project.getStatus());
         sqLiteStatement.bindLong(7, project.getStatusID());
         sqLiteStatement.bindString(8, project.getIconUrl());
-        sqLiteStatement.bindString(9, project.getDefaultVersion());
+        if (project.getDefaultVersion() != null) {
+            sqLiteStatement.bindString(9, project.getDefaultVersion());
+        } else {
+            sqLiteStatement.bindNull(9);
+        }
         sqLiteStatement.bindString(10, project.getDescription());
         sqLiteStatement.bindString(11, this.authentication.getTitle());
 

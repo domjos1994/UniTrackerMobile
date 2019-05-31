@@ -235,6 +235,13 @@ public final class AdministrationActivity extends AbstractActivity {
             }
 
             this.reloadAuthentications();
+
+            String message = String.format(
+                    this.getString(R.string.administration_message),
+                    this.getResources().getStringArray(R.array.administration_data)[this.spData1.getSelectedItemPosition()],
+                    move ? this.getString(R.string.administration_move) : this.getString(R.string.administration_copy)
+            );
+            MessageHelper.printMessage(message, this.ctx);
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getApplicationContext());
         }
