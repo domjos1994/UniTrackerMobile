@@ -130,8 +130,6 @@
     <string-array name="administration_data">
         <item>@string/projects</item>
         <item>@string/issues</item>
-        <item>@string/issues_notes</item>
-        <item>@string/issues_attachments</item>
         <item>@string/issues_custom</item>
     </string-array>
 

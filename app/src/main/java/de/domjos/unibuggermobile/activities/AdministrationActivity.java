@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,12 +26,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
+import de.domjos.unibuggerlibrary.model.issues.CustomField;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
+import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.FieldTask;
+import de.domjos.unibuggerlibrary.tasks.IssueTask;
 import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
@@ -40,11 +49,11 @@ import de.domjos.unibuggermobile.settings.Settings;
 
 public final class AdministrationActivity extends AbstractActivity {
     private Button cmdCopy, cmdMove;
-    private Spinner spBugTracker1, spBugTracker2, spProject1, spProject2, spData1, spData2, spDataItem1, spDataItem2;
+    private Spinner spBugTracker1, spBugTracker2, spProject1, spProject2, spData1, spDataItem1;
     private ArrayAdapter<Authentication> bugTrackerAdapter1, bugTrackerAdapter2;
     private ArrayAdapter<Project> projectAdapter1, projectAdapter2;
-    private ArrayAdapter<DescriptionObject> dataItemAdapter1, dataItemAdapter2;
-    private ArrayAdapter<String> dataAdapter1, dataAdapter2;
+    private ArrayAdapter<DescriptionObject> dataItemAdapter1;
+    private ArrayAdapter<String> dataAdapter1;
     private IBugService bugService1, bugService2;
 
     private Context ctx;
@@ -63,15 +72,22 @@ public final class AdministrationActivity extends AbstractActivity {
                     projectAdapter1.clear();
                     Authentication authentication = bugTrackerAdapter1.getItem(position);
                     bugService1 = Helper.getCurrentBugService(authentication, ctx);
+
+                    boolean showData = false;
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications());
                     for (Object object : projectTask.execute(0L).get()) {
                         projectAdapter1.add((Project) object);
+                        showData = true;
+                    }
+
+                    if (showData) {
+                        dataAdapter1.clear();
+                        dataAdapter1.addAll(Arrays.asList(getResources().getStringArray(R.array.administration_data)));
                     }
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, AdministrationActivity.this);
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -84,6 +100,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     projectAdapter2.clear();
                     Authentication authentication = bugTrackerAdapter2.getItem(position);
                     bugService2 = Helper.getCurrentBugService(authentication, ctx);
+
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications());
                     for (Object object : projectTask.execute(0L).get()) {
                         projectAdapter2.add((Project) object);
@@ -92,7 +109,6 @@ public final class AdministrationActivity extends AbstractActivity {
                     MessageHelper.printException(ex, AdministrationActivity.this);
                 }
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -101,34 +117,139 @@ public final class AdministrationActivity extends AbstractActivity {
         this.spProject1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    Project project = projectAdapter1.getItem(position);
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, AdministrationActivity.this);
-                }
+                reloadData1(spData1.getSelectedItemPosition(), position);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
-        this.spProject2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        this.spData1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    Project project = projectAdapter2.getItem(position);
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, AdministrationActivity.this);
-                }
+                reloadData1(position, spProject1.getSelectedItemPosition());
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
+
+        this.cmdCopy.setOnClickListener((v) -> this.writeData(false));
+        this.cmdMove.setOnClickListener((v) -> this.writeData(true));
     }
 
+    private void reloadData1(int data, int projectPosition) {
+        try {
+            boolean notify = this.settings.showNotifications();
+            Project project1 = this.projectAdapter1.getItem(projectPosition);
+            if (project1 != null) {
+                this.dataItemAdapter1.clear();
+                switch (data) {
+                    case 0:
+                        ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, this.bugService1, false, notify);
+                        this.dataItemAdapter1.addAll(projectTask.execute(0L).get());
+                        break;
+                    case 1:
+                        IssueTask issueTask = new IssueTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, false, notify);
+                        this.dataItemAdapter1.addAll(issueTask.execute(0L).get());
+                        break;
+                    case 2:
+                        FieldTask fieldTask = new FieldTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, notify);
+                        this.dataItemAdapter1.addAll(fieldTask.execute(0L).get());
+                        break;
+                }
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.getApplicationContext());
+        }
+    }
+
+    private void writeData(boolean move) {
+        try {
+            Activity act = AdministrationActivity.this;
+            boolean notify = this.settings.showNotifications();
+
+            Project project2 = this.projectAdapter2.getItem(this.spProject2.getSelectedItemPosition());
+            Project project1 = this.projectAdapter1.getItem(this.spProject1.getSelectedItemPosition());
+            DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
+            int dataPosition = this.spData1.getSelectedItemPosition();
+
+            if (project2 != null && project1 != null) {
+                Object id;
+                switch (dataPosition) {
+                    case 0:
+                        Project project = (Project) dataItem1;
+                        if (project != null) {
+                            id = project.getId();
+                            project.setId(null);
+                            for (int i = 0; i <= project.getVersions().size() - 1; i++) {
+                                ((Version) project.getVersions().get(i)).setId(null);
+                            }
+                            ProjectTask projectTask = new ProjectTask(act, this.bugService2, false, notify);
+                            projectTask.execute(project).get();
+
+                            if (move) {
+                                projectTask = new ProjectTask(act, this.bugService1, true, notify);
+                                projectTask.execute(id).get();
+                            }
+                        }
+                        break;
+                    case 1:
+                        Issue issue = (Issue) dataItem1;
+                        if (issue != null) {
+                            id = issue.getId();
+                            issue.setId(null);
+                            for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
+                                ((Attachment) issue.getAttachments().get(i)).setId(null);
+                            }
+                            for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
+                                ((Note) issue.getNotes().get(i)).setId(null);
+                            }
+
+                            IssueTask issueTask = new IssueTask(act, this.bugService2, project2.getId(), false, false, notify);
+                            issueTask.execute(issue).get();
+
+                            if (move) {
+                                issueTask = new IssueTask(act, this.bugService1, project1.getId(), true, false, notify);
+                                issueTask.execute(id).get();
+                            }
+                        }
+                        break;
+                    case 2:
+                        CustomField customField = (CustomField) dataItem1;
+                        if (customField != null) {
+                            id = customField.getId();
+                            customField.setId(null);
+
+                            FieldTask fieldTask = new FieldTask(act, this.bugService2, project2.getId(), false, notify);
+                            fieldTask.execute(customField).get();
+
+                            if (move) {
+                                fieldTask = new FieldTask(act, this.bugService1, project1.getId(), false, notify);
+                                fieldTask.execute(id).get();
+                            }
+                        }
+                        break;
+                }
+            }
+
+            this.reloadAuthentications();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.getApplicationContext());
+        }
+    }
+
+
+    private void reloadAuthentications() {
+        List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
+
+        this.bugTrackerAdapter1.clear();
+        this.bugTrackerAdapter1.addAll(authentications);
+
+        this.bugTrackerAdapter2.clear();
+        this.bugTrackerAdapter2.addAll(authentications);
+    }
     @Override
     protected void initControls() {
         int spinner = android.R.layout.simple_spinner_item;
@@ -138,15 +259,16 @@ public final class AdministrationActivity extends AbstractActivity {
         this.cmdMove = this.findViewById(R.id.cmdMove);
 
 
-        List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
+
         this.spBugTracker1 = this.findViewById(R.id.spBugTracker1);
-        this.bugTrackerAdapter1 = new ArrayAdapter<>(ctx, spinner, authentications);
+        this.bugTrackerAdapter1 = new ArrayAdapter<>(ctx, spinner);
         this.spBugTracker1.setAdapter(this.bugTrackerAdapter1);
         this.bugTrackerAdapter1.notifyDataSetChanged();
         this.spBugTracker2 = this.findViewById(R.id.spBugTracker2);
-        this.bugTrackerAdapter2 = new ArrayAdapter<>(ctx, spinner, authentications);
+        this.bugTrackerAdapter2 = new ArrayAdapter<>(ctx, spinner);
         this.spBugTracker2.setAdapter(this.bugTrackerAdapter2);
         this.bugTrackerAdapter2.notifyDataSetChanged();
+        this.reloadAuthentications();
 
         this.spProject1 = this.findViewById(R.id.spProject1);
         this.projectAdapter1 = new ArrayAdapter<>(ctx, spinner);
@@ -161,18 +283,10 @@ public final class AdministrationActivity extends AbstractActivity {
         this.dataAdapter1 = new ArrayAdapter<>(ctx, spinner);
         this.spData1.setAdapter(this.dataAdapter1);
         this.dataAdapter1.notifyDataSetChanged();
-        this.spData2 = this.findViewById(R.id.spData2);
-        this.dataAdapter2 = new ArrayAdapter<>(ctx, spinner);
-        this.spData2.setAdapter(this.dataAdapter2);
-        this.dataAdapter2.notifyDataSetChanged();
 
         this.spDataItem1 = this.findViewById(R.id.spDataItem1);
         this.dataItemAdapter1 = new ArrayAdapter<>(ctx, spinner);
         this.spDataItem1.setAdapter(this.dataItemAdapter1);
         this.dataItemAdapter1.notifyDataSetChanged();
-        this.spDataItem2 = this.findViewById(R.id.spDataItem2);
-        this.dataItemAdapter2 = new ArrayAdapter<>(ctx, spinner);
-        this.spDataItem2.setAdapter(this.dataItemAdapter2);
-        this.dataItemAdapter2.notifyDataSetChanged();
     }
 }

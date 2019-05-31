@@ -140,14 +140,12 @@
 
             <Spinner
                 android:id="@+id/spData1"
-                android:entries="@array/administration_data"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_margin="4dp" />
 
-            <Spinner
+            <TextView
                 android:id="@+id/spData2"
-                android:entries="@array/administration_data"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_margin="4dp" />
@@ -170,7 +168,7 @@
                 android:layout_width="0dp"
                 android:layout_margin="4dp" />
 
-            <Spinner
+            <TextView
                 android:id="@+id/spDataItem2"
                 android:layout_weight="5"
                 android:layout_width="0dp"

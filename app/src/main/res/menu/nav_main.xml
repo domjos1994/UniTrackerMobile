@@ -42,9 +42,11 @@
     </item>
 
     <item android:title="@string/administration_menu">
-        <item
-            android:id="@+id/navAdministration"
-            android:icon="@drawable/ic_settings_black_24dp"
-            android:title="@string/administration" />
+        <menu>
+            <item
+                android:id="@+id/navAdministration"
+                android:icon="@drawable/ic_settings_black_24dp"
+                android:title="@string/administration" />
+        </menu>
     </item>
 </menu>
