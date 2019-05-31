@@ -53,7 +53,7 @@ public final class UserActivity extends AbstractActivity {
     private Validator userValidator;
     private Settings settings;
 
-    protected UserActivity() {
+    public UserActivity() {
         super(R.layout.user_activity);
     }
 

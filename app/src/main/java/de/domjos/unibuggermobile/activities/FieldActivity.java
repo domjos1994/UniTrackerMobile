@@ -59,7 +59,7 @@ public final class FieldActivity extends AbstractActivity {
     private Validator fieldValidator;
     private Settings settings;
 
-    protected FieldActivity() {
+    public FieldActivity() {
         super(R.layout.field_activity);
     }
 
