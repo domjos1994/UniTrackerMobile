@@ -313,7 +313,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     @Override
-    public void onActivityResult(int resultCode, int requestCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
             this.reloadAccounts();
             this.fillFields();
