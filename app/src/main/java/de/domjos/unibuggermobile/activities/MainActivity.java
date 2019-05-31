@@ -26,12 +26,14 @@ import android.support.design.widget.NavigationView.OnNavigationItemSelectedList
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -72,6 +74,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private IBugService bugService;
     private IFunctionImplemented permissions;
     private Settings settings;
+    private ImageButton cmdRefresh;
+    private SearchView cmdSearch;
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
@@ -174,6 +178,29 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService).getId()));
             this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
         });
+
+        this.cmdRefresh.setOnClickListener(v -> this.reload());
+
+        this.cmdSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                reload(s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s.isEmpty()) {
+                    reload();
+                }
+                return true;
+            }
+        });
+
+        this.cmdSearch.setOnCloseListener(() -> {
+            this.reload();
+            return true;
+        });
     }
 
     @Override
@@ -192,6 +219,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.drawerLayout.addDrawerListener(toggle);
             toggle.syncState();
             this.navigationView.setNavigationItemSelectedListener(this);
+
+            this.cmdSearch = this.findViewById(R.id.cmdSearch);
+            this.cmdRefresh = this.findViewById(R.id.cmdRefresh);
 
             this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
@@ -270,6 +300,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void reload() {
+        this.reload("");
+    }
+
+    private void reload(String search) {
         try {
             this.issueAdapter.clear();
             if (this.permissions.listIssues()) {
@@ -278,7 +312,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (!id.equals("0")) {
                         IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, false, false, this.settings.showNotifications());
                         for (Object issue : listIssueTask.execute(0).get()) {
-                            this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                            Issue tmp = (Issue) issue;
+                            if (tmp.getTitle().contains(search)) {
+                                this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                            }
                         }
                     }
                 }
