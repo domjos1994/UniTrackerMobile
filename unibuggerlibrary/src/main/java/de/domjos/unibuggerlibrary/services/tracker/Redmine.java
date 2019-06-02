@@ -766,6 +766,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         return new RedminePermissions(this.authentication);
     }
 
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
     private Long getCategoryId(String name, Long pid) throws Exception {
         int status = this.executeRequest("/projects/" + pid + "/issue_categories.json");
         if (status == 200 || status == 201) {

@@ -369,6 +369,11 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         return new GithubPermissions(this.authentication);
     }
 
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
     private User<Long> getUser(JSONObject jsonObject) throws Exception {
         User<Long> user = new User<>();
         user.setId(jsonObject.getLong("id"));

@@ -720,6 +720,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
+    @Override
     public int getCurrentState() {
         return 200;
     }

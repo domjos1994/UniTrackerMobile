@@ -51,6 +51,10 @@
                 android:id="@+id/navFilter"
                 android:icon="@drawable/ic_filter_list_black_24dp"
                 android:title="@string/filter" />
+            <item
+                android:id="@+id/navExtendedSearch"
+                android:icon="@drawable/ic_search_black_24dp"
+                android:title="@string/search" />
         </menu>
     </item>
 </menu>

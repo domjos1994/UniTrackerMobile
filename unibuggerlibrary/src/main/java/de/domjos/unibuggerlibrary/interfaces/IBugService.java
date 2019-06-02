@@ -29,6 +29,7 @@ import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
 
 /**
  * Interface for all Bug-Tracker-Classes
@@ -133,4 +134,6 @@ public interface IBugService<T> {
     List<History<T>> getHistory(T issue_id, T project_id) throws Exception;
 
     IFunctionImplemented getPermissions();
+
+    Authentication getAuthentication();
 }

@@ -148,6 +148,9 @@
         <item>Erledigt</item>
     </string-array>
 
+    <string name="search">Erweiterte Suche</string>
+    <string name="search_content">Suche</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_delete">Löschen</string>

@@ -486,6 +486,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 intent = new Intent(this.getApplicationContext(), FilterActivity.class);
                 reload = MainActivity.RELOAD_FILTERS;
                 break;
+            case R.id.navExtendedSearch:
+                intent = new Intent(this.getApplicationContext(), SearchActivity.class);
+                break;
             default:
                 intent = null;
                 break;

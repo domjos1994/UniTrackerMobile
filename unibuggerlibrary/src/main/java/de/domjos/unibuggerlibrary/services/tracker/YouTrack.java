@@ -827,6 +827,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         return new YoutrackPermissions(this.authentication);
     }
 
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
     private String getName(JSONObject object) throws Exception {
         String name = "";
         if (object.has("localizedName")) {

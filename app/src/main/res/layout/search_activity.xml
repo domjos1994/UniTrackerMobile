@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C)  2019 Domjos
+  ~ This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
+  ~
+  ~ UniBuggerMobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="20"
+    tools:context=".activities.SearchActivity">
+
+    <ListView
+        android:id="@+id/lvSearchResults"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="12"
+        android:padding="5dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:background="@drawable/control_background"
+        android:padding="5dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10">
+
+            <TableRow>
+
+                <EditText
+                    android:id="@+id/txtSearch"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:hint="@string/search_content" />
+            </TableRow>
+
+            <TableRow>
+
+                <CheckBox
+                    android:id="@+id/chkSearchSummary"
+                    android:text="@string/issues_general_summary"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:checked="true" />
+
+                <CheckBox
+                    android:id="@+id/chkSearchDescription"
+                    android:text="@string/general_description"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:checked="true" />
+            </TableRow>
+
+            <TableRow>
+
+                <MultiAutoCompleteTextView
+                    android:id="@+id/txtSearchProjects"
+                    android:hint="@string/projects"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:inputType="textMultiLine" />
+            </TableRow>
+
+            <TableRow>
+
+                <MultiAutoCompleteTextView
+                    android:id="@+id/txtSearchVersions"
+                    android:hint="@string/versions"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:inputType="textMultiLine" />
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
+    <TextView
+        android:background="@color/colorPrimaryDark"
+        android:layout_weight="10"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
+
+    <ImageButton
+        android:id="@+id/cmdSearch"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:srcCompat="@drawable/ic_search_black_24dp"
+        android:background="@drawable/control_background" />
+</LinearLayout>

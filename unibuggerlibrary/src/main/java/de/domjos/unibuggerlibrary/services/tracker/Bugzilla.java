@@ -673,6 +673,11 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         return new BugzillaPermissions(this.authentication);
     }
 
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
 
     private Map<String, Integer> getEnumValues(String name) throws Exception {
         Map<String, Integer> entries = new LinkedHashMap<>();

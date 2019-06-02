@@ -821,6 +821,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return new MantisBTPermissions(this.authentication);
     }
 
+    @Override
+    public Authentication getAuthentication() {
+        return this.authentication;
+    }
+
     private Object getResult(Object object) {
         if (object instanceof SoapFault) {
             SoapFault soapFault = (SoapFault) object;
