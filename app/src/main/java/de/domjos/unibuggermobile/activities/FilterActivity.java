@@ -96,6 +96,8 @@ public final class FilterActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateFilter(this.currentFilter);
                             this.reload();
                             this.manageControls(false, true, false);
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, FilterActivity.this);

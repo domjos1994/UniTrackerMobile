@@ -101,6 +101,8 @@ public final class IssueActivity extends AbstractActivity {
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, this.getApplicationContext());

@@ -175,6 +175,8 @@ public final class AccountActivity extends AbstractActivity {
                                     AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
                                 }
                             }).start();
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, AccountActivity.this);

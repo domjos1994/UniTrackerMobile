@@ -138,6 +138,8 @@ public final class ProjectActivity extends AbstractActivity {
                                 this.reload();
                                 this.manageControls(false, false, false);
                             }
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, this.getApplicationContext());

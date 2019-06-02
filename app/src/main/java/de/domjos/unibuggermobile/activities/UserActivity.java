@@ -116,6 +116,8 @@ public final class UserActivity extends AbstractActivity {
                             new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentUser).get();
                             this.reload();
                             this.manageControls(false, true, false);
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, UserActivity.this);

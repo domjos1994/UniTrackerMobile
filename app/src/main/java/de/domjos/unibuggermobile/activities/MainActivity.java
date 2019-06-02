@@ -112,9 +112,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                             }
                             settings.setCurrentAuthentication(authentication);
 
-                            spMainProjects.setSelection(0);
-                            Project project = (Project) spMainProjects.getSelectedItem();
-                            settings.setCurrentProject(String.valueOf(project.getId()));
+                            if (projectList.getCount() < spMainProjects.getSelectedItemPosition()) {
+                                spMainProjects.setSelection(0);
+                                Project project = (Project) spMainProjects.getSelectedItem();
+                                settings.setCurrentProject(String.valueOf(project.getId()));
+                            }
                         } else {
                             settings.setCurrentAuthentication(null);
                         }

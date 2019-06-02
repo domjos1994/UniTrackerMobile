@@ -133,6 +133,8 @@ public final class VersionActivity extends AbstractActivity {
                             new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "").execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, VersionActivity.this);

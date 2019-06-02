@@ -161,4 +161,5 @@
     <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>
     <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
     <string name="validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
+    <string name="validator_no_success">Felder sind nicht valide!</string>
 </resources>
