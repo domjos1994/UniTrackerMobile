@@ -170,6 +170,6 @@ public class YoutrackPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return true;
+        return false;
     }
 }

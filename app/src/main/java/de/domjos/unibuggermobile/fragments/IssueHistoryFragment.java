@@ -82,22 +82,24 @@ public final class IssueHistoryFragment extends AbstractFragment {
                 new Thread(() -> {
                     try {
                         IBugService bugService = Helper.getCurrentBugService(this.getActivity());
-                        for (Object object : bugService.getHistory(this.issue.getId(), 0L)) {
-                            History history = (History) object;
+                        if (this.issue.getId() != null) {
+                            for (Object object : bugService.getHistory(String.valueOf(this.issue.getId()), "")) {
+                                History history = (History) object;
 
-                            LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10);
-                            TableRow tableRow = new TableRow(this.getActivity());
-                            tableRow.setLayoutParams(layoutParams);
+                                LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10);
+                                TableRow tableRow = new TableRow(this.getActivity());
+                                tableRow.setLayoutParams(layoutParams);
 
-                            tableRow.addView(this.createTextView(history.getField()));
-                            tableRow.addView(this.createTextView(history.getUser()));
-                            Date dt = new Date();
-                            dt.setTime(history.getTime());
-                            tableRow.addView(this.createTextView(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(dt)));
-                            tableRow.addView(this.createTextView(history.getOldValue()));
-                            tableRow.addView(this.createTextView(history.getNewValue()));
+                                tableRow.addView(this.createTextView(history.getField()));
+                                tableRow.addView(this.createTextView(history.getUser()));
+                                Date dt = new Date();
+                                dt.setTime(history.getTime());
+                                tableRow.addView(this.createTextView(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(dt)));
+                                tableRow.addView(this.createTextView(history.getOldValue()));
+                                tableRow.addView(this.createTextView(history.getNewValue()));
 
-                            this.getActivity().runOnUiThread(() -> this.tblCustomFields.addView(tableRow, layoutParams));
+                                this.getActivity().runOnUiThread(() -> this.tblCustomFields.addView(tableRow, layoutParams));
+                            }
                         }
                     } catch (Exception ex) {
                         this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
