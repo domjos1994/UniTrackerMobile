@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 
 import java.util.Arrays;
@@ -54,6 +55,7 @@ public final class AdministrationActivity extends AbstractActivity {
     private ArrayAdapter<Project> projectAdapter1, projectAdapter2;
     private ArrayAdapter<DescriptionObject> dataItemAdapter1;
     private ArrayAdapter<String> dataAdapter1;
+    private CheckBox chkWithIssues;
     private IBugService bugService1, bugService2;
 
     private Context ctx;
@@ -193,6 +195,30 @@ public final class AdministrationActivity extends AbstractActivity {
                                 projectTask = new ProjectTask(act, this.bugService1, true, notify);
                                 projectTask.execute(id).get();
                             }
+
+                            if (chkWithIssues.isChecked()) {
+                                Object newId = null;
+                                List<Project> projects = projectTask.execute("").get();
+                                for (Project newProject : projects) {
+                                    if (newProject.getTitle().equals(project.getId())) {
+                                        newId = newProject.getId();
+                                    }
+                                }
+
+                                IssueTask issueTask = new IssueTask(act, this.bugService1, id, false, false, notify);
+                                for (Issue issue : issueTask.execute("").get()) {
+                                    issueTask = new IssueTask(act, this.bugService1, id, false, true, notify);
+                                    issue = issueTask.execute("").get().get(0);
+
+                                    IssueTask newTask = new IssueTask(act, this.bugService2, newId, false, false, notify);
+                                    newTask.execute(issue).get();
+
+                                    if (move) {
+                                        issueTask = new IssueTask(act, this.bugService1, id, true, true, notify);
+                                        issueTask.execute(issue.getId()).get().get(0);
+                                    }
+                                }
+                            }
                         }
                         break;
                     case 1:
@@ -295,5 +321,7 @@ public final class AdministrationActivity extends AbstractActivity {
         this.dataItemAdapter1 = new ArrayAdapter<>(ctx, spinner);
         this.spDataItem1.setAdapter(this.dataItemAdapter1);
         this.dataItemAdapter1.notifyDataSetChanged();
+
+        this.chkWithIssues = this.findViewById(R.id.chkWithIssues);
     }
 }
