@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.helper.Helper;
 

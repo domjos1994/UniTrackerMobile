@@ -26,10 +26,10 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import de.domjos.unibuggerlibrary.model.Filter;
+import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
-import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Validator;
 

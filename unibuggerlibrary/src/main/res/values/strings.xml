@@ -33,4 +33,7 @@
 
     <string name="task_user_list_title">Benutzer</string>
     <string name="task_user_content">Benutzer aktualisieren</string>
+
+    <string name="task_search_title">Suche</string>
+    <string name="task_search_content">Suche läuft...</string>
 </resources>

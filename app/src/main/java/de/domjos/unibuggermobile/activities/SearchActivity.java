@@ -33,14 +33,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.SearchTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
-import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.custom.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
@@ -105,72 +105,24 @@ public final class SearchActivity extends AbstractActivity {
     }
 
     private void search() {
-        new Thread(() -> {
-            try {
-                String search = this.txtSearch.getText().toString();
-                boolean summary = this.chkSearchSummary.isChecked();
-                boolean description = this.chkSearchDescription.isChecked();
-                List<String> projects = new LinkedList<>(Arrays.asList(this.txtSearchProjects.getText().toString().split(",")));
-                List<String> versions = new LinkedList<>(Arrays.asList(this.txtSearchVersions.getText().toString().split(",")));
-
-
-                for (IBugService service : this.bugServices) {
-                    for (Object object : service.getProjects()) {
-                        Project project = (Project) object;
-
-                        boolean contains = false;
-                        if (!this.txtSearchProjects.getText().toString().trim().isEmpty()) {
-                            for (String strProject : projects) {
-                                if (project.getTitle().equals(strProject.trim())) {
-                                    if (!this.txtSearchVersions.getText().toString().trim().isEmpty()) {
-                                        for (String strVersion : versions) {
-                                            for (Object objVersion : project.getVersions()) {
-                                                if (((Version) objVersion).getTitle().equals(strVersion.trim())) {
-                                                    contains = true;
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        contains = true;
-                                    }
-                                }
-                            }
-                        } else {
-                            contains = true;
-                        }
-
-                        if (contains) {
-                            for (Object objIssue : service.getIssues(project.getId())) {
-                                Issue issue = (Issue) objIssue;
-                                boolean searchSuccess = false;
-
-                                if (summary) {
-                                    if (issue.getTitle().contains(search)) {
-                                        searchSuccess = true;
-                                    }
-                                }
-                                if (description) {
-                                    if (issue.getDescription().contains(search)) {
-                                        searchSuccess = true;
-                                    }
-                                }
-
-                                if (searchSuccess) {
-                                    ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_search_black_24dp, issue);
-                                    listObject.getDescriptionObject().setDescription(service.getAuthentication().getTracker().name());
-                                    listObject.getDescriptionObject().getHints().put("title", service.getAuthentication().getTitle());
-                                    listObject.getDescriptionObject().getHints().put("project", project.getId().toString());
-                                    SearchActivity.this.runOnUiThread(() -> this.searchResultAdapter.add(listObject));
-                                }
-                            }
-                        }
-                    }
-                }
-
-            } catch (Exception ex) {
-                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, this.getApplicationContext()));
+        try {
+            SearchTask searchTask =
+                    new SearchTask(
+                            SearchActivity.this,
+                            this.txtSearch.getText().toString(),
+                            this.chkSearchSummary.isChecked(),
+                            this.chkSearchDescription.isChecked(),
+                            this.txtSearchProjects.getText().toString(),
+                            this.txtSearchVersions.getText().toString(),
+                            this.bugServices,
+                            MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications()
+                    );
+            for (ListObject obj : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
+                this.searchResultAdapter.add(obj);
             }
-        }).start();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, SearchActivity.this);
+        }
     }
 
     @Override

@@ -16,7 +16,7 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggermobile.adapter;
+package de.domjos.unibuggerlibrary.model;
 
 import android.content.Context;
 import android.graphics.Bitmap;

@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -40,7 +41,6 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
-import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.helper.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.Validator;
