@@ -25,9 +25,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import de.domjos.unibuggerlibrary.model.Filter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.ListAdapter;
+import de.domjos.unibuggermobile.adapter.ListObject;
 import de.domjos.unibuggermobile.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Validator;
 
@@ -36,11 +38,12 @@ public final class FilterActivity extends AbstractActivity {
     private ListAdapter filterAdapter;
     private BottomNavigationView navigationView;
 
-    private EditText txtFilterTitle;
-    private Spinner spFilterView, spFilterStatus, spFilterResolution, spFilterReproducibility;
-    private ArrayAdapter<String> viewAdapter, statusAdapter, resolutionAdapter, reproducibilityAdapter;
+    private EditText txtFilterTitle, txtFilterVersion, txtFilterDescription;
+    private Spinner spFilterView, spFilterStatus;
+    private ArrayAdapter<String> viewAdapter, statusAdapter;
 
     private Validator filterValidator;
+    private Filter currentFilter;
     private Context ctx;
 
     public FilterActivity() {
@@ -49,7 +52,14 @@ public final class FilterActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
+        this.lvFilters.setOnItemClickListener((parent, view, position, id) -> {
+            ListObject listObject = this.filterAdapter.getItem(position);
+            if (listObject != null) {
+                this.currentFilter = (Filter) listObject.getDescriptionObject();
+                this.manageControls(false, false, true);
+                this.objectToControls();
+            }
+        });
     }
 
     @Override
@@ -69,6 +79,7 @@ public final class FilterActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
+                        MainActivity.GLOBALS.getSqLiteGeneral().delete("filters", "id", this.currentFilter.getId());
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -82,6 +93,7 @@ public final class FilterActivity extends AbstractActivity {
                     try {
                         if (this.filterValidator.getState()) {
                             this.controlsToObject();
+                            MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateFilter(this.currentFilter);
                             this.reload();
                             this.manageControls(false, true, false);
                         }
@@ -99,26 +111,18 @@ public final class FilterActivity extends AbstractActivity {
         this.filterAdapter.notifyDataSetChanged();
 
         this.txtFilterTitle = this.findViewById(R.id.txtFilterTitle);
+        this.txtFilterVersion = this.findViewById(R.id.txtFilterVersion);
+        this.txtFilterDescription = this.findViewById(R.id.txtFilterDescription);
 
         this.spFilterView = this.findViewById(R.id.spFilterView);
-        this.viewAdapter = new ArrayAdapter<>(this.ctx, spinner);
+        this.viewAdapter = new ArrayAdapter<>(this.ctx, spinner, this.getResources().getStringArray(R.array.filter_view));
         this.spFilterView.setAdapter(this.viewAdapter);
         this.viewAdapter.notifyDataSetChanged();
 
         this.spFilterStatus = this.findViewById(R.id.spFilterStatus);
-        this.statusAdapter = new ArrayAdapter<>(this.ctx, spinner);
+        this.statusAdapter = new ArrayAdapter<>(this.ctx, spinner, this.getResources().getStringArray(R.array.filter_status));
         this.spFilterStatus.setAdapter(this.statusAdapter);
         this.statusAdapter.notifyDataSetChanged();
-
-        this.spFilterResolution = this.findViewById(R.id.spFilterResolution);
-        this.resolutionAdapter = new ArrayAdapter<>(this.ctx, spinner);
-        this.spFilterResolution.setAdapter(this.resolutionAdapter);
-        this.resolutionAdapter.notifyDataSetChanged();
-
-        this.spFilterReproducibility = this.findViewById(R.id.spFilterReproducibility);
-        this.reproducibilityAdapter = new ArrayAdapter<>(this.ctx, spinner);
-        this.spFilterReproducibility.setAdapter(this.reproducibilityAdapter);
-        this.reproducibilityAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -131,10 +135,23 @@ public final class FilterActivity extends AbstractActivity {
 
         this.lvFilters.setEnabled(!editMode);
         this.txtFilterTitle.setEnabled(editMode);
+        this.txtFilterVersion.setEnabled(editMode);
         this.spFilterView.setEnabled(editMode);
         this.spFilterStatus.setEnabled(editMode);
-        this.spFilterReproducibility.setEnabled(editMode);
-        this.spFilterResolution.setEnabled(editMode);
+        this.txtFilterDescription.setEnabled(editMode);
+
+        if (reset) {
+            this.currentFilter = new Filter();
+            this.objectToControls();
+        }
+    }
+
+    @Override
+    protected void reload() {
+        this.filterAdapter.clear();
+        for (Filter filter : MainActivity.GLOBALS.getSqLiteGeneral().getFilters()) {
+            this.filterAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_filter_list_black_24dp, filter));
+        }
     }
 
     @Override
@@ -144,10 +161,34 @@ public final class FilterActivity extends AbstractActivity {
     }
 
     private void controlsToObject() {
-
+        this.currentFilter.setTitle(this.txtFilterTitle.getText().toString());
+        this.currentFilter.setView(this.spFilterView.getSelectedItem().toString());
+        this.currentFilter.setStatus(this.spFilterStatus.getSelectedItem().toString());
+        this.currentFilter.setVersion(this.txtFilterVersion.getText().toString());
+        this.currentFilter.setDescription(this.txtFilterDescription.getText().toString());
     }
 
     private void objectToControls() {
-
+        this.txtFilterTitle.setText(this.currentFilter.getTitle());
+        for (int i = 0; i <= this.viewAdapter.getCount() - 1; i++) {
+            String view = this.viewAdapter.getItem(i);
+            if (view != null) {
+                if (view.equals(this.currentFilter.getView())) {
+                    this.spFilterView.setSelection(i);
+                    break;
+                }
+            }
+        }
+        for (int i = 0; i <= this.statusAdapter.getCount() - 1; i++) {
+            String status = this.statusAdapter.getItem(i);
+            if (status != null) {
+                if (status.equals(this.currentFilter.getStatus())) {
+                    this.spFilterStatus.setSelection(i);
+                    break;
+                }
+            }
+        }
+        this.txtFilterVersion.setText(this.currentFilter.getVersion());
+        this.txtFilterDescription.setText(this.currentFilter.getDescription());
     }
 }

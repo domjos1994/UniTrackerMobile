@@ -222,6 +222,15 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
                     issue.setDescription(soapObject.getPropertyAsString("category"));
                     issue.setTitle(soapObject.getPropertyAsString("summary"));
+                    if (soapObject.hasProperty("version")) {
+                        issue.getHints().put("version", soapObject.getPropertyAsString("version"));
+                    }
+                    if (soapObject.hasProperty("view_state")) {
+                        issue.getHints().put("view", soapObject.getPropertyAsString("view_state"));
+                    }
+                    if (soapObject.hasProperty("view_state")) {
+                        issue.getHints().put("status", soapObject.getPropertyAsString("status"));
+                    }
                     issues.add(issue);
                 }
             }

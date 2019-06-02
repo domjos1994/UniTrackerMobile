@@ -246,6 +246,31 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 issue.setId(issueObject.getLong("id"));
                 issue.setTitle(issueObject.getString("subject"));
                 issue.setDescription(issueObject.getString("description"));
+
+                if (issueObject.has("fixed_version")) {
+                    if (!issueObject.isNull("fixed_version")) {
+                        JSONObject versionObject = issueObject.getJSONObject("fixed_version");
+                        issue.getHints().put("version", versionObject.getString("name"));
+                    }
+                }
+                if (issueObject.has("is_private")) {
+                    if (!issueObject.isNull("is_private")) {
+                        boolean isPrivate = issueObject.getBoolean("is_private");
+                        String state;
+                        if (isPrivate) {
+                            state = "private";
+                        } else {
+                            state = "public";
+                        }
+                        issue.getHints().put("view", state);
+                    }
+                }
+                if (issueObject.has("status")) {
+                    if (!issueObject.isNull("status")) {
+                        JSONObject statusObject = issueObject.getJSONObject("status");
+                        issue.getHints().put("status", statusObject.getString("name"));
+                    }
+                }
                 issues.add(issue);
             }
         }

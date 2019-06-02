@@ -210,6 +210,10 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                             issue.setTags(builder.toString());
                         }
                     }
+                    if (bugObject.has("version")) {
+                        issue.getHints().put("version", bugObject.getString("version"));
+                    }
+                    issue.getHints().put("status", bugObject.getString("status"));
                     issues.add(issue);
                 }
             }

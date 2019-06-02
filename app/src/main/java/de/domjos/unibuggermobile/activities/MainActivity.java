@@ -43,6 +43,7 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.Filter;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.permissions.NOPERMISSION;
@@ -66,11 +67,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private ImageView ivMainCover;
     private TextView lblMainCommand;
     private TextView lblAccountTitle;
-    private Spinner spMainAccounts, spMainProjects;
+    private Spinner spMainAccounts, spMainFilters, spMainProjects;
     private ListView lvMainIssues;
     private ListAdapter issueAdapter;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
+    private ArrayAdapter<Filter> filterAdapter;
     private IBugService bugService;
     private IFunctionImplemented permissions;
     private Settings settings;
@@ -81,6 +83,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private static final int RELOAD_ACCOUNTS = 99;
     private static final int RELOAD_ISSUES = 101;
     private static final int RELOAD_SETTINGS = 102;
+    private static final int RELOAD_FILTERS = 103;
     public static final Globals GLOBALS = new Globals();
 
     public MainActivity() {
@@ -243,11 +246,17 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues.setAdapter(this.issueAdapter);
             this.issueAdapter.notifyDataSetChanged();
 
+            this.spMainFilters = this.findViewById(R.id.spMainFilters);
+            this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.spMainFilters.setAdapter(this.filterAdapter);
+            this.filterAdapter.notifyDataSetChanged();
+
             MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
             this.reloadAccounts();
             this.changeAuthentication();
+            this.reloadFilters();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -313,8 +322,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, false, false, this.settings.showNotifications());
                         for (Object issue : listIssueTask.execute(0).get()) {
                             Issue tmp = (Issue) issue;
-                            if (tmp.getTitle().contains(search)) {
-                                this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                            if (this.fitsInFilter(tmp)) {
+                                if (tmp.getTitle().contains(search)) {
+                                    this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                                }
                             }
                         }
                     }
@@ -323,6 +334,42 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
+    }
+
+    private boolean fitsInFilter(Issue issue) {
+        Filter filter = (Filter) this.spMainFilters.getSelectedItem();
+        boolean state = true;
+
+        if (filter != null) {
+            Object version = issue.getHints().get("version");
+            if (version != null) {
+                if (filter.getVersion() != null) {
+                    if (!filter.getVersion().isEmpty()) {
+                        state = filter.getVersion().contains(version.toString());
+                    }
+                }
+            }
+
+            Object view = issue.getHints().get("view");
+            if (view != null) {
+                if (filter.getView() != null) {
+                    if (!filter.getView().isEmpty()) {
+                        state = filter.getView().contains(view.toString());
+                    }
+                }
+            }
+
+            Object status = issue.getHints().get("status");
+            if (status != null) {
+                if (filter.getStatus() != null) {
+                    if (!filter.getStatus().isEmpty()) {
+                        state = filter.getView().contains(status.toString());
+                    }
+                }
+            }
+        }
+
+        return state;
     }
 
     private void reloadAccounts() {
@@ -349,6 +396,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
+    private void reloadFilters() {
+        this.filterAdapter.clear();
+        List<Filter> filters = MainActivity.GLOBALS.getSqLiteGeneral().getFilters();
+        filters.add(0, new Filter());
+        this.filterAdapter.addAll(filters);
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
@@ -362,6 +416,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ISSUES) {
             this.reload();
+        }
+
+        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_FILTERS) {
+            this.reloadFilters();
         }
     }
 
@@ -419,6 +477,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 break;
             case R.id.navFilter:
                 intent = new Intent(this.getApplicationContext(), FilterActivity.class);
+                reload = MainActivity.RELOAD_FILTERS;
                 break;
             default:
                 intent = null;

@@ -230,7 +230,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?", new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
-            issues.add(this.getIssue((long) this.getInt(cursor, "id"), project_id));
+            Issue<Long> issue = this.getIssue((long) this.getInt(cursor, "id"), project_id);
+            issue.getHints().put("version", issue.getVersion());
+            issue.getHints().put("view", issue.getState().getValue());
+            issue.getHints().put("status", issue.getStatus().getValue());
+            issues.add(issue);
         }
         cursor.close();
         return issues;

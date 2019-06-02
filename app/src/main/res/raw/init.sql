@@ -9,3 +9,12 @@ CREATE TABLE IF NOT EXISTS accounts(
     cover BLOB DEFAULT NULL,
     tracker VARCHAR(50) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS filters(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    view VARCHAR(50) DEFAULT '',
+    status VARCHAR(50) DEFAULT '',
+    version VARCHAR(200) DEFAULT '',
+    description TEXT
+);

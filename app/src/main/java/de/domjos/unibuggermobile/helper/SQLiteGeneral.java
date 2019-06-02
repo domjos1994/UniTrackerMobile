@@ -27,6 +27,7 @@ import android.database.sqlite.SQLiteStatement;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.model.Filter;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
@@ -97,7 +98,41 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         }
     }
 
-    public boolean duplicated(String table, String column, String value, String where) {
+    public List<Filter> getFilters() {
+        List<Filter> filters = new LinkedList<>();
+        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM filters", new String[]{});
+        while (cursor.moveToNext()) {
+            Filter filter = new Filter();
+            filter.setId(cursor.getLong(cursor.getColumnIndex("ID")));
+            filter.setTitle(cursor.getString(cursor.getColumnIndex("title")));
+            filter.setView(cursor.getString(cursor.getColumnIndex("view")));
+            filter.setStatus(cursor.getString(cursor.getColumnIndex("status")));
+            filter.setVersion(cursor.getString(cursor.getColumnIndex("version")));
+            filter.setDescription(cursor.getString(cursor.getColumnIndex("description")));
+            filters.add(filter);
+        }
+        cursor.close();
+        return filters;
+    }
+
+    public void insertOrUpdateFilter(Filter filter) {
+        SQLiteStatement sqLiteStatement;
+        if (filter.getId() != null) {
+            sqLiteStatement = this.getWritableDatabase().compileStatement("UPDATE filters SET title=?, `view`=?, status=?, version=?, description=? WHERE id=?");
+            sqLiteStatement.bindLong(6, filter.getId());
+        } else {
+            sqLiteStatement = this.getWritableDatabase().compileStatement("INSERT INTO filters(title, `view`, status, version, description) VALUES(?,?,?,?,?)");
+        }
+        sqLiteStatement.bindString(1, filter.getTitle());
+        sqLiteStatement.bindString(2, filter.getView());
+        sqLiteStatement.bindString(3, filter.getStatus());
+        sqLiteStatement.bindString(4, filter.getVersion());
+        sqLiteStatement.bindString(5, filter.getDescription());
+        sqLiteStatement.execute();
+        sqLiteStatement.close();
+    }
+
+    boolean duplicated(String table, String column, String value, String where) {
         boolean duplicated = false;
         SQLiteDatabase db = this.getReadableDatabase();
         where = where.trim().isEmpty() ? "" : " AND " + where;

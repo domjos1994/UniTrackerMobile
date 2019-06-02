@@ -135,6 +135,17 @@
     <string name="administration_message">%s erfolgreich %s!</string>
 
     <string name="filter">Filter</string>
+    <string-array name="filter_view">
+        <item />
+        <item>Privat</item>
+        <item>Öffentlich</item>
+    </string-array>
+    <string-array name="filter_status">
+        <item />
+        <item>Neu</item>
+        <item>Bestätigt</item>
+        <item>Erledigt</item>
+    </string-array>
 
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>
