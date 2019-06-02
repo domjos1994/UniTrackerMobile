@@ -37,18 +37,20 @@ public class Validator {
     private Context context;
     private Map<Integer, Boolean> states;
     private Map<Integer, Map.Entry<EditText, String>> executeLater;
+    private Map<Integer, TextWatcher> textWatchers;
 
 
     public Validator(Context context) {
         this.context = context;
         this.states = new LinkedHashMap<>();
         this.executeLater = new LinkedHashMap<>();
+        this.textWatchers = new LinkedHashMap<>();
     }
 
     public void addEmptyValidator(EditText txt) {
         this.controlFieldIsEmpty(txt);
 
-        txt.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -61,7 +63,9 @@ public class Validator {
             public void afterTextChanged(Editable s) {
                 controlFieldIsEmpty(txt);
             }
-        });
+        };
+        textWatchers.put(txt.getId(), textWatcher);
+        txt.addTextChangedListener(textWatcher);
     }
 
     public void addDuplicatedEntry(EditText txt, String table, String column, long id) {
@@ -71,7 +75,7 @@ public class Validator {
     public void addValueEqualsRegex(EditText txt, String regex) {
         this.controlFieldEqualsRegex(txt, regex);
 
-        txt.addTextChangedListener(new TextWatcher() {
+        TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -84,7 +88,9 @@ public class Validator {
             public void afterTextChanged(Editable s) {
                 controlFieldEqualsRegex(txt, regex);
             }
-        });
+        };
+        textWatchers.put(txt.getId(), textWatcher);
+        txt.addTextChangedListener(textWatcher);
     }
 
     public boolean getState() {
@@ -104,6 +110,12 @@ public class Validator {
             }
         }
         return true;
+    }
+
+    public void removeValidator(EditText txt) {
+        this.states.remove(txt.getId());
+        txt.removeTextChangedListener(this.textWatchers.get(txt.getId()));
+        txt.setError(null);
     }
 
     private void controlFieldIsEmpty(EditText txt) {

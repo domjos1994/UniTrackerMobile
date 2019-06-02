@@ -91,6 +91,12 @@ public final class AccountActivity extends AbstractActivity {
                         txtAccountServer.setText("");
                     }
                 }
+
+                if (trackerAdapter.getItem(position) == Authentication.Tracker.YouTrack) {
+                    accountValidator.addEmptyValidator(txtAccountAPI);
+                } else {
+                    accountValidator.removeValidator(txtAccountAPI);
+                }
             }
 
             @Override
