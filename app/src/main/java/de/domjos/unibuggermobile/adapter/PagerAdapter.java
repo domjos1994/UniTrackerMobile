@@ -189,7 +189,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
 
         if (drawable != null) {
-            SpannableStringBuilder sb = new SpannableStringBuilder("   ");
+            SpannableStringBuilder sb = new SpannableStringBuilder(" ");
             try {
                 drawable.setBounds(5, 5, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
                 ImageSpan span = new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE);

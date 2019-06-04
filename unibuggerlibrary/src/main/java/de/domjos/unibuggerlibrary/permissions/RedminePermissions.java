@@ -172,4 +172,9 @@ public class RedminePermissions implements IFunctionImplemented {
     public boolean listHistory() {
         return true;
     }
+
+    @Override
+    public boolean listProfiles() {
+        return false;
+    }
 }

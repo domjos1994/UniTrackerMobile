@@ -172,4 +172,9 @@ public class GithubPermissions implements IFunctionImplemented {
     public boolean listHistory() {
         return false;
     }
+
+    @Override
+    public boolean listProfiles() {
+        return false;
+    }
 }

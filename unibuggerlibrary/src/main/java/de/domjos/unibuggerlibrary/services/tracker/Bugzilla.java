@@ -38,6 +38,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -245,6 +246,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 String severityEnum = bugObject.getString("severity");
                 issue.setSeverity(this.getId("severity", severityEnum), severityEnum);
 
+                issue.setProfile(new Profile<>(bugObject.getString("platform"), bugObject.getString("op_sys"), ""));
+
                 List<CustomField<Long>> customFields = this.getCustomFields(project_id);
                 for (CustomField<Long> customField : customFields) {
                     String value = "";
@@ -352,8 +355,13 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         bugObject.put("priority", issue.getPriority().getValue());
         bugObject.put("status", issue.getStatus().getValue());
         bugObject.put("severity", issue.getSeverity().getValue());
-        bugObject.put("op_sys", "All");
-        bugObject.put("platform", "All");
+        if (issue.getProfile() == null) {
+            bugObject.put("op_sys", "All");
+            bugObject.put("platform", "All");
+        } else {
+            bugObject.put("op_sys", issue.getProfile().getOs());
+            bugObject.put("platform", issue.getProfile().getPlatform());
+        }
         for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
             bugObject.put(entry.getKey().getHints().get("name"), entry.getValue());
         }
@@ -666,6 +674,21 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
             }
         }
         return historyItems;
+    }
+
+    @Override
+    public List<Profile<Long>> getProfiles() {
+        List<Profile<Long>> profiles = new LinkedList<>();
+        profiles.add(new Profile<>("All", "All", ""));
+        profiles.add(new Profile<>("PC", "Windows", ""));
+        profiles.add(new Profile<>("PC", "Mac OS", ""));
+        profiles.add(new Profile<>("PC", "Linux", ""));
+        profiles.add(new Profile<>("PC", "Other", ""));
+        profiles.add(new Profile<>("Smartphone", "Android", ""));
+        profiles.add(new Profile<>("Smartphone", "IOS", ""));
+        profiles.add(new Profile<>("Smartphone", "Other", ""));
+        profiles.add(new Profile<>("Other", "", ""));
+        return profiles;
     }
 
     @Override

@@ -25,6 +25,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -132,6 +133,8 @@ public interface IBugService<T> {
     List<Tag<T>> getTags(T project_id) throws Exception;
 
     List<History<T>> getHistory(T issue_id, T project_id) throws Exception;
+
+    List<Profile<T>> getProfiles() throws Exception;
 
     IFunctionImplemented getPermissions();
 

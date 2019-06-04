@@ -37,6 +37,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -281,6 +282,12 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
             issue.setDescription(this.getString(cursor, "description"));
             issue.setStepsToReproduce(this.getString(cursor, "steps_to_reproduce"));
             issue.setAdditionalInformation(this.getString(cursor, "additional_information"));
+
+            Profile<Long> profile = new Profile<>();
+            profile.setPlatform(this.getString(cursor, "platform"));
+            profile.setOs(this.getString(cursor, "os"));
+            profile.setOs_build(this.getString(cursor, "os_build"));
+            issue.setProfile(profile);
         }
         cursor.close();
 
@@ -348,17 +355,17 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                     "INSERT INTO issues(title,category,state_id,priority_id,severity_id," +
                             "status_id,reproducibility_id,resolution_id,version,fixedInVersion," +
                             "targetVersion,tags,dueDate,lastUpdated,submitDate,description," +
-                            "steps_to_reproduce,additional_information,project) " +
-                            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+                            "steps_to_reproduce,additional_information,platform,os,os_build,project) " +
+                            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
             );
         } else {
             sqLiteStatement = db.compileStatement(
                     "UPDATE issues SET title=?,category=?,state_id=?,priority_id=?,severity_id=?," +
                             "status_id=?,reproducibility_id=?,resolution_id=?,version=?,fixedInVersion=?," +
                             "targetVersion=?,tags=?,dueDate=?,lastUpdated=?,submitDate=?,description=?," +
-                            "steps_to_reproduce=?,additional_information=?,project=? WHERE id=?"
+                            "steps_to_reproduce=?,additional_information=?,platform=?,os=?,os_build=?,project=? WHERE id=?"
             );
-            sqLiteStatement.bindLong(20, Long.parseLong(String.valueOf(issue.getId())));
+            sqLiteStatement.bindLong(23, Long.parseLong(String.valueOf(issue.getId())));
         }
         sqLiteStatement.bindString(1, issue.getTitle());
         sqLiteStatement.bindString(2, issue.getCategory());
@@ -388,7 +395,16 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         sqLiteStatement.bindString(16, issue.getDescription());
         sqLiteStatement.bindString(17, issue.getStepsToReproduce());
         sqLiteStatement.bindString(18, issue.getAdditionalInformation());
-        sqLiteStatement.bindLong(19, project_id);
+        if (issue.getProfile() != null) {
+            sqLiteStatement.bindString(19, issue.getProfile().getPlatform());
+            sqLiteStatement.bindString(20, issue.getProfile().getOs());
+            sqLiteStatement.bindString(21, issue.getProfile().getOs_build());
+        } else {
+            sqLiteStatement.bindString(19, "");
+            sqLiteStatement.bindString(20, "");
+            sqLiteStatement.bindString(21, "");
+        }
+        sqLiteStatement.bindLong(22, project_id);
 
         if (issue.getId() != null) {
             sqLiteStatement.execute();
@@ -656,32 +672,36 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     public List<Tag<Long>> getTags(Long project_id) {
         List<Tag<Long>> tags = new LinkedList<>();
         List<String> strTags = new LinkedList<>();
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT DISTINCT tags FROM issues", null);
-        while (cursor.moveToNext()) {
-            String tagList = this.getString(cursor, "category");
-            if (tagList != null) {
-                if (!tagList.trim().isEmpty()) {
-                    if (tagList.contains(",")) {
-                        for (String strTag : tagList.split(",")) {
-                            if (!strTag.trim().isEmpty()) {
-                                if (!strTags.contains(strTag)) {
-                                    strTags.add(strTag);
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT DISTINCT tags FROM issues", new String[]{});
+            while (cursor.moveToNext()) {
+                String tagList = this.getString(cursor, "category");
+                if (tagList != null) {
+                    if (!tagList.trim().isEmpty()) {
+                        if (tagList.contains(",")) {
+                            for (String strTag : tagList.split(",")) {
+                                if (!strTag.trim().isEmpty()) {
+                                    if (!strTags.contains(strTag)) {
+                                        strTags.add(strTag);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if (tagList.contains(";")) {
-                        for (String strTag : tagList.split(";")) {
-                            if (!strTag.trim().isEmpty()) {
-                                if (!strTags.contains(strTag)) {
-                                    strTags.add(strTag);
+                        if (tagList.contains(";")) {
+                            for (String strTag : tagList.split(";")) {
+                                if (!strTag.trim().isEmpty()) {
+                                    if (!strTags.contains(strTag)) {
+                                        strTags.add(strTag);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            cursor.close();
+        } catch (Exception ignored) {
         }
 
         long i = 1;
@@ -692,7 +712,6 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
             tags.add(tag);
             i++;
         }
-        cursor.close();
         return tags;
     }
 
@@ -712,6 +731,24 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         }
         cursor.close();
         return historyItems;
+    }
+
+    @Override
+    public List<Profile<Long>> getProfiles() {
+        List<Profile<Long>> profiles = new LinkedList<>();
+        profiles.add(new Profile<>("PC", "Windows", "XP"));
+        profiles.add(new Profile<>("PC", "Windows", "7"));
+        profiles.add(new Profile<>("PC", "Windows", "10"));
+        profiles.add(new Profile<>("PC", "Linux", ""));
+        profiles.add(new Profile<>("PC", "Other", ""));
+        profiles.add(new Profile<>("Smartphone", "Android", "5.0"));
+        profiles.add(new Profile<>("Smartphone", "Android", "6.0"));
+        profiles.add(new Profile<>("Smartphone", "Android", "7.0"));
+        profiles.add(new Profile<>("Smartphone", "Android", "8.0"));
+        profiles.add(new Profile<>("Smartphone", "Android", "9.0"));
+        profiles.add(new Profile<>("Smartphone", "iOs", ""));
+        profiles.add(new Profile<>("Other", "", ""));
+        return profiles;
     }
 
     @Override

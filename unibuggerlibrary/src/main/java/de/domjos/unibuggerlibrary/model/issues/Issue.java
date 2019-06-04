@@ -40,6 +40,7 @@ public class Issue<T> extends DescriptionObject<T> {
     private List<Attachment<T>> attachments;
     private Map<CustomField<T>, String> customFields;
     private User<T> handler;
+    private Profile<T> profile;
     private String tags;
     private String stepsToReproduce;
     private String additionalInformation;
@@ -66,6 +67,7 @@ public class Issue<T> extends DescriptionObject<T> {
         this.tags = "";
         this.stepsToReproduce = "";
         this.additionalInformation = "";
+        this.profile = null;
     }
 
     public String getCategory() {
@@ -214,5 +216,13 @@ public class Issue<T> extends DescriptionObject<T> {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public Profile<T> getProfile() {
+        return this.profile;
+    }
+
+    public void setProfile(Profile<T> profile) {
+        this.profile = profile;
     }
 }

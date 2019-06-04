@@ -158,7 +158,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (ls != null) {
                 Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
                 intent.putExtra("id", String.valueOf(ls.getDescriptionObject().getId()));
-                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService).getId()));
+                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
                 this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
             }
         });
@@ -184,7 +184,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.cmdIssuesAdd.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
             intent.putExtra("id", "");
-            intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService).getId()));
+            intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
             this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
         });
 

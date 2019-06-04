@@ -36,6 +36,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -244,170 +245,180 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
         Issue<Long> issue = new Issue<>();
 
-        SoapObject request = new SoapObject(super.soapPath, "mc_issue_get");
-        request.addProperty("issue_id", Integer.parseInt(String.valueOf(id)));
-        Object object = this.executeAction(request, "mc_issue_get", true);
-        object = this.getResult(object);
-        if (object instanceof SoapObject) {
-            SoapObject soapObject = (SoapObject) object;
-            issue.setTitle(soapObject.getPropertyAsString("summary"));
-            issue.setDescription(soapObject.getPropertyAsString("description"));
-            issue.setCategory(soapObject.getPropertyAsString("category"));
-            issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
-            if (soapObject.hasProperty("version")) {
-                issue.setVersion(soapObject.getPropertyAsString("version"));
-            }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
-            if (soapObject.hasProperty("date_submitted")) {
-                issue.setSubmitDate(sdf.parse(soapObject.getPropertyAsString("date_submitted")));
-            }
-            if (soapObject.hasProperty("last_updated")) {
-                issue.setLastUpdated(sdf.parse(soapObject.getPropertyAsString("last_updated")));
-            }
-            try {
-                if (soapObject.hasProperty("due_date")) {
-                    issue.setDueDate(sdf.parse(soapObject.getPropertyAsString("due_date")));
-                }
-            } catch (Exception ex) {
-                issue.setDueDate(null);
-            }
+        if (id != null) {
+            if (id != 0) {
+                SoapObject request = new SoapObject(super.soapPath, "mc_issue_get");
+                request.addProperty("issue_id", Integer.parseInt(String.valueOf(id)));
+                Object object = this.executeAction(request, "mc_issue_get", true);
+                object = this.getResult(object);
+                if (object instanceof SoapObject) {
+                    SoapObject soapObject = (SoapObject) object;
+                    issue.setTitle(soapObject.getPropertyAsString("summary"));
+                    issue.setDescription(soapObject.getPropertyAsString("description"));
+                    issue.setCategory(soapObject.getPropertyAsString("category"));
+                    issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
+                    if (soapObject.hasProperty("version")) {
+                        issue.setVersion(soapObject.getPropertyAsString("version"));
+                    }
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
+                    if (soapObject.hasProperty("date_submitted")) {
+                        issue.setSubmitDate(sdf.parse(soapObject.getPropertyAsString("date_submitted")));
+                    }
+                    if (soapObject.hasProperty("last_updated")) {
+                        issue.setLastUpdated(sdf.parse(soapObject.getPropertyAsString("last_updated")));
+                    }
+                    try {
+                        if (soapObject.hasProperty("due_date")) {
+                            issue.setDueDate(sdf.parse(soapObject.getPropertyAsString("due_date")));
+                        }
+                    } catch (Exception ex) {
+                        issue.setDueDate(null);
+                    }
 
-            if (soapObject.hasProperty("fixed_in_version")) {
-                issue.setFixedInVersion(soapObject.getPropertyAsString("fixed_in_version"));
-            }
-            if (soapObject.hasProperty("target_version")) {
-                issue.setTargetVersion(soapObject.getPropertyAsString("target_version"));
-            }
+                    if (soapObject.hasProperty("fixed_in_version")) {
+                        issue.setFixedInVersion(soapObject.getPropertyAsString("fixed_in_version"));
+                    }
+                    if (soapObject.hasProperty("target_version")) {
+                        issue.setTargetVersion(soapObject.getPropertyAsString("target_version"));
+                    }
 
-            if (soapObject.hasProperty("view_state")) {
-                SoapObject viewObject = (SoapObject) soapObject.getProperty("view_state");
-                issue.setState(Integer.parseInt(viewObject.getPropertyAsString("id")), viewObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("view_state")) {
+                        SoapObject viewObject = (SoapObject) soapObject.getProperty("view_state");
+                        issue.setState(Integer.parseInt(viewObject.getPropertyAsString("id")), viewObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("priority")) {
-                SoapObject priorityObject = (SoapObject) soapObject.getProperty("priority");
-                issue.setPriority(Integer.parseInt(priorityObject.getPropertyAsString("id")), priorityObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("priority")) {
+                        SoapObject priorityObject = (SoapObject) soapObject.getProperty("priority");
+                        issue.setPriority(Integer.parseInt(priorityObject.getPropertyAsString("id")), priorityObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("severity")) {
-                SoapObject severityObject = (SoapObject) soapObject.getProperty("severity");
-                issue.setSeverity(Integer.parseInt(severityObject.getPropertyAsString("id")), severityObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("severity")) {
+                        SoapObject severityObject = (SoapObject) soapObject.getProperty("severity");
+                        issue.setSeverity(Integer.parseInt(severityObject.getPropertyAsString("id")), severityObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("status")) {
-                SoapObject statusObject = (SoapObject) soapObject.getProperty("status");
-                issue.setStatus(Integer.parseInt(statusObject.getPropertyAsString("id")), statusObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("status")) {
+                        SoapObject statusObject = (SoapObject) soapObject.getProperty("status");
+                        issue.setStatus(Integer.parseInt(statusObject.getPropertyAsString("id")), statusObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("reproducibility")) {
-                SoapObject reproducibilityObject = (SoapObject) soapObject.getProperty("reproducibility");
-                issue.setReproducibility(Integer.parseInt(reproducibilityObject.getPropertyAsString("id")), reproducibilityObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("reproducibility")) {
+                        SoapObject reproducibilityObject = (SoapObject) soapObject.getProperty("reproducibility");
+                        issue.setReproducibility(Integer.parseInt(reproducibilityObject.getPropertyAsString("id")), reproducibilityObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("resolution")) {
-                SoapObject resolutionObject = (SoapObject) soapObject.getProperty("resolution");
-                issue.setReproducibility(Integer.parseInt(resolutionObject.getPropertyAsString("id")), resolutionObject.getPropertyAsString("name"));
-            }
+                    if (soapObject.hasProperty("resolution")) {
+                        SoapObject resolutionObject = (SoapObject) soapObject.getProperty("resolution");
+                        issue.setReproducibility(Integer.parseInt(resolutionObject.getPropertyAsString("id")), resolutionObject.getPropertyAsString("name"));
+                    }
 
-            if (soapObject.hasProperty("steps_to_reproduce")) {
-                issue.setStepsToReproduce(soapObject.getPropertyAsString("steps_to_reproduce"));
-            }
+                    if (soapObject.hasProperty("steps_to_reproduce")) {
+                        issue.setStepsToReproduce(soapObject.getPropertyAsString("steps_to_reproduce"));
+                    }
 
-            if (soapObject.hasProperty("additional_information")) {
-                issue.setAdditionalInformation(soapObject.getPropertyAsString("additional_information"));
-            }
+                    if (soapObject.hasProperty("additional_information")) {
+                        issue.setAdditionalInformation(soapObject.getPropertyAsString("additional_information"));
+                    }
 
-            if (soapObject.hasProperty("handler")) {
-                SoapObject handlerObject = (SoapObject) soapObject.getProperty("handler");
-                User<Long> user = new User<>();
-                user.setId(Long.parseLong(handlerObject.getPropertyAsString("id")));
-                user.setTitle(handlerObject.getPropertyAsString("name"));
-                user.setRealName(handlerObject.getPropertyAsString("real_name"));
-                user.setEmail(handlerObject.getPropertyAsString("email"));
-                issue.setHandler(user);
-            }
+                    Profile<Long> profile = new Profile<>();
+                    profile.setPlatform(soapObject.getPropertyAsString("platform"));
+                    profile.setOs(soapObject.getPropertyAsString("os"));
+                    profile.setOs_build(soapObject.getPropertyAsString("os_build"));
+                    issue.setProfile(profile);
 
-            if (soapObject.hasProperty("notes")) {
-                if (soapObject.getProperty("notes") instanceof Vector) {
-                    Vector vector = (Vector) soapObject.getProperty("notes");
-                    for (int i = 0; i <= vector.size() - 1; i++) {
-                        if (vector.get(i) instanceof SoapObject) {
-                            SoapObject noteObject = (SoapObject) vector.get(i);
-                            Note<Long> note = new Note<>();
-                            note.setId(Long.parseLong(noteObject.getPropertyAsString("id")));
-                            note.setDescription(noteObject.getPropertyAsString("text"));
-                            if (note.getDescription().length() > 50) {
-                                note.setTitle(note.getDescription().substring(0, 50));
-                            } else {
-                                note.setTitle(note.getDescription());
+                    if (soapObject.hasProperty("handler")) {
+                        SoapObject handlerObject = (SoapObject) soapObject.getProperty("handler");
+                        User<Long> user = new User<>();
+                        user.setId(Long.parseLong(handlerObject.getPropertyAsString("id")));
+                        user.setTitle(handlerObject.getPropertyAsString("name"));
+                        user.setRealName(handlerObject.getPropertyAsString("real_name"));
+                        user.setEmail(handlerObject.getPropertyAsString("email"));
+                        issue.setHandler(user);
+                    }
+
+                    if (soapObject.hasProperty("notes")) {
+                        if (soapObject.getProperty("notes") instanceof Vector) {
+                            Vector vector = (Vector) soapObject.getProperty("notes");
+                            for (int i = 0; i <= vector.size() - 1; i++) {
+                                if (vector.get(i) instanceof SoapObject) {
+                                    SoapObject noteObject = (SoapObject) vector.get(i);
+                                    Note<Long> note = new Note<>();
+                                    note.setId(Long.parseLong(noteObject.getPropertyAsString("id")));
+                                    note.setDescription(noteObject.getPropertyAsString("text"));
+                                    if (note.getDescription().length() > 50) {
+                                        note.setTitle(note.getDescription().substring(0, 50));
+                                    } else {
+                                        note.setTitle(note.getDescription());
+                                    }
+                                    if (noteObject.hasProperty("view_state")) {
+                                        SoapObject viewObject = (SoapObject) soapObject.getProperty("view_state");
+                                        note.setState(Integer.parseInt(viewObject.getPropertyAsString("id")), viewObject.getPropertyAsString("name"));
+                                    }
+                                    if (noteObject.hasProperty("date_submitted")) {
+                                        note.setSubmitDate(sdf.parse(noteObject.getPropertyAsString("date_submitted")));
+                                    }
+                                    if (noteObject.hasProperty("last_modified")) {
+                                        note.setLastUpdated(sdf.parse(noteObject.getPropertyAsString("last_modified")));
+                                    }
+                                    issue.getNotes().add(note);
+                                }
                             }
-                            if (noteObject.hasProperty("view_state")) {
-                                SoapObject viewObject = (SoapObject) soapObject.getProperty("view_state");
-                                note.setState(Integer.parseInt(viewObject.getPropertyAsString("id")), viewObject.getPropertyAsString("name"));
-                            }
-                            if (noteObject.hasProperty("date_submitted")) {
-                                note.setSubmitDate(sdf.parse(noteObject.getPropertyAsString("date_submitted")));
-                            }
-                            if (noteObject.hasProperty("last_modified")) {
-                                note.setLastUpdated(sdf.parse(noteObject.getPropertyAsString("last_modified")));
-                            }
-                            issue.getNotes().add(note);
                         }
                     }
-                }
-            }
 
-            if (soapObject.hasProperty("attachments")) {
-                if (soapObject.getProperty("attachments") instanceof Vector) {
-                    Vector vector = (Vector) soapObject.getProperty("attachments");
-                    for (int i = 0; i <= vector.size() - 1; i++) {
-                        if (vector.get(i) instanceof SoapObject) {
-                            SoapObject attachmentObject = (SoapObject) vector.get(i);
-                            Attachment<Long> attachment = new Attachment<>();
-                            attachment.setId(Long.parseLong(attachmentObject.getPropertyAsString("id")));
-                            attachment.setFilename(attachmentObject.getPropertyAsString("filename"));
-                            attachment.setDownloadUrl(attachmentObject.getPropertyAsString("download_url"));
-                            issue.getAttachments().add(attachment);
+                    if (soapObject.hasProperty("attachments")) {
+                        if (soapObject.getProperty("attachments") instanceof Vector) {
+                            Vector vector = (Vector) soapObject.getProperty("attachments");
+                            for (int i = 0; i <= vector.size() - 1; i++) {
+                                if (vector.get(i) instanceof SoapObject) {
+                                    SoapObject attachmentObject = (SoapObject) vector.get(i);
+                                    Attachment<Long> attachment = new Attachment<>();
+                                    attachment.setId(Long.parseLong(attachmentObject.getPropertyAsString("id")));
+                                    attachment.setFilename(attachmentObject.getPropertyAsString("filename"));
+                                    attachment.setDownloadUrl(attachmentObject.getPropertyAsString("download_url"));
+                                    issue.getAttachments().add(attachment);
+                                }
+                            }
                         }
                     }
-                }
-            }
 
-            for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
-                Attachment<Long> attachment = issue.getAttachments().get(i);
-                SoapObject getAttachmentObject = new SoapObject(super.soapPath, "mc_issue_attachment_get");
-                getAttachmentObject.addProperty("issue_attachment_id", Long.parseLong(String.valueOf(attachment.getId())));
-                Object getObject = this.executeAction(getAttachmentObject, "mc_issue_attachment_get", true);
-                if (getObject instanceof byte[]) {
-                    attachment.setContent((byte[]) getObject);
-                }
-                issue.getAttachments().set(i, attachment);
-            }
+                    for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
+                        Attachment<Long> attachment = issue.getAttachments().get(i);
+                        SoapObject getAttachmentObject = new SoapObject(super.soapPath, "mc_issue_attachment_get");
+                        getAttachmentObject.addProperty("issue_attachment_id", Long.parseLong(String.valueOf(attachment.getId())));
+                        Object getObject = this.executeAction(getAttachmentObject, "mc_issue_attachment_get", true);
+                        if (getObject instanceof byte[]) {
+                            attachment.setContent((byte[]) getObject);
+                        }
+                        issue.getAttachments().set(i, attachment);
+                    }
 
 
-            if (soapObject.hasProperty("custom_fields")) {
-                SoapObject projectObject = (SoapObject) soapObject.getProperty("project");
-                List<CustomField<Long>> customFields = this.getCustomFields(Long.parseLong(projectObject.getPropertyAsString("id")));
-                Vector vector = (Vector) soapObject.getProperty("custom_fields");
-                for (int i = 0; i <= vector.size() - 1; i++) {
-                    SoapObject fieldObject = (SoapObject) vector.get(i);
-                    SoapObject fieldData = (SoapObject) fieldObject.getProperty("field");
-                    Long fieldId = Long.parseLong(fieldData.getPropertyAsString("id"));
-                    String value = fieldObject.getPropertyAsString("value");
+                    if (soapObject.hasProperty("custom_fields")) {
+                        SoapObject projectObject = (SoapObject) soapObject.getProperty("project");
+                        List<CustomField<Long>> customFields = this.getCustomFields(Long.parseLong(projectObject.getPropertyAsString("id")));
+                        Vector vector = (Vector) soapObject.getProperty("custom_fields");
+                        for (int i = 0; i <= vector.size() - 1; i++) {
+                            SoapObject fieldObject = (SoapObject) vector.get(i);
+                            SoapObject fieldData = (SoapObject) fieldObject.getProperty("field");
+                            Long fieldId = Long.parseLong(fieldData.getPropertyAsString("id"));
+                            String value = fieldObject.getPropertyAsString("value");
 
-                    for (CustomField<Long> customField : customFields) {
-                        if (customField.getId().equals(fieldId)) {
-                            issue.getCustomFields().put(customField, value);
-                            break;
+                            for (CustomField<Long> customField : customFields) {
+                                if (customField.getId().equals(fieldId)) {
+                                    issue.getCustomFields().put(customField, value);
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
-            }
 
-            if (soapObject.hasProperty("tags")) {
-                Vector vector = (Vector) soapObject.getProperty("tags");
-                for (int i = 0; i <= vector.size() - 1; i++) {
-                    issue.setTags(issue.getTags() + ((SoapObject) vector.get(i)).getPropertyAsString("name") + ", ");
+                    if (soapObject.hasProperty("tags")) {
+                        Vector vector = (Vector) soapObject.getProperty("tags");
+                        for (int i = 0; i <= vector.size() - 1; i++) {
+                            issue.setTags(issue.getTags() + ((SoapObject) vector.get(i)).getPropertyAsString("name") + ", ");
+                        }
+                    }
                 }
             }
         }
@@ -490,6 +501,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         resolutionObject.addProperty("id", issue.getResolution().getKey());
         resolutionObject.addProperty("name", issue.getResolution().getValue());
         issueObject.addProperty("resolution", resolutionObject);
+
+        if (issue.getProfile() != null) {
+            issueObject.addProperty("platform", issue.getProfile().getPlatform());
+            issueObject.addProperty("os", issue.getProfile().getOs());
+            issueObject.addProperty("os_build", issue.getProfile().getOs_build());
+        }
 
         if (issue.getHandler() != null) {
             SoapObject handlerObject = new SoapObject(NAMESPACE, "AccountData");
@@ -783,6 +800,33 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
 
         return histories;
+    }
+
+    @Override
+    public List<Profile<Long>> getProfiles() throws Exception {
+        List<Profile<Long>> profiles = new LinkedList<>();
+        SoapObject request = new SoapObject(super.soapPath, "mc_user_profiles_get_all");
+        request.addProperty("page_number", 1);
+        request.addProperty("per_page", 100);
+        Object object = this.executeAction(request, "mc_user_profiles_get_all", true);
+        object = this.getResult(object);
+
+        if (object instanceof SoapObject) {
+            SoapObject resultObject = (SoapObject) object;
+            if (resultObject.getProperty("results") instanceof Vector) {
+                Vector vector = (Vector) resultObject.getProperty("results");
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    SoapObject soapObject = (SoapObject) vector.get(i);
+                    Profile<Long> profile = new Profile<>();
+                    profile.setPlatform(soapObject.getPropertyAsString("platform"));
+                    profile.setOs(soapObject.getPropertyAsString("os"));
+                    profile.setOs_build(soapObject.getPropertyAsString("os_build"));
+                    profiles.add(profile);
+                }
+            }
+        }
+
+        return profiles;
     }
 
     @Override

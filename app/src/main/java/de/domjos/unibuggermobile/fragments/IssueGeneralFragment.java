@@ -38,6 +38,7 @@ import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
@@ -58,7 +59,9 @@ import de.domjos.unibuggermobile.helper.Validator;
 public final class IssueGeneralFragment extends AbstractFragment {
     private EditText txtIssueGeneralSummary, txtIssueGeneralDueDate;
     private TextView txtIssueGeneralSubmitted, txtIssueGeneralUpdated;
-    private AutoCompleteTextView txtIssueGeneralCategory, txtIssueGeneralVersion, txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion;
+    private AutoCompleteTextView txtIssueGeneralCategory, txtIssueGeneralVersion,
+            txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion,
+            txtIssueGeneralPlatform, txtIssueGeneralOs, txtIssueGeneralBuild;
     private Spinner spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
     private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
@@ -66,8 +69,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private ArrayAdapter<String> tagAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray;
-    private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory, rowIssueGeneralVersion, rowIssueGeneralTargetVersion, rowIssueGeneralFixedInVersion, rowIssueGeneralTags;
-    private TableRow rowIssueGeneralView, rowIssueGeneralSeverity, rowIssueGeneralReproducibility, rowIssueGeneralPriority, rowIssueGeneralStatus, rowIssueGeneralResolution, rowIssueGeneralHandler;
+    private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory,
+            rowIssueGeneralVersion, rowIssueGeneralTargetVersion, rowIssueGeneralFixedInVersion,
+            rowIssueGeneralTags;
+    private TableRow rowIssueGeneralView, rowIssueGeneralSeverity, rowIssueGeneralReproducibility,
+            rowIssueGeneralPriority, rowIssueGeneralStatus, rowIssueGeneralResolution,
+            rowIssueGeneralHandler, rowIssueGeneralProfile;
 
     private View root;
     private Issue issue;
@@ -98,6 +105,10 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.spIssueGeneralHandler = this.root.findViewById(R.id.spIssueGeneralHandler);
         this.txtIssueGeneralTags = this.root.findViewById(R.id.txtIssueGeneralTags);
 
+        this.txtIssueGeneralPlatform = this.root.findViewById(R.id.txtIssueGeneralPlatform);
+        this.txtIssueGeneralOs = this.root.findViewById(R.id.txtIssueGeneralOS);
+        this.txtIssueGeneralBuild = this.root.findViewById(R.id.txtIssueGeneralOsBuild);
+
         this.rowIssueGeneralDueDate = this.root.findViewById(R.id.rowIssueGeneralDueDates);
         this.rowIssueGeneralDates = this.root.findViewById(R.id.rowIssueGeneralDates);
         this.rowIssueGeneralCategory = this.root.findViewById(R.id.rowIssueGeneralCategory);
@@ -112,6 +123,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.rowIssueGeneralResolution = this.root.findViewById(R.id.rowIssueGeneralResolution);
         this.rowIssueGeneralTags = this.root.findViewById(R.id.rowIssueGeneralTags);
         this.rowIssueGeneralHandler = this.root.findViewById(R.id.rowIssueGeneralHandler);
+        this.rowIssueGeneralProfile = this.root.findViewById(R.id.rowIssueGeneralProfile);
 
 
         try {
@@ -137,6 +149,28 @@ public final class IssueGeneralFragment extends AbstractFragment {
                                 this.tagAdapter.add(((Tag) tag).getTitle());
                             }
 
+                            List<String> platform = new LinkedList<>();
+                            List<String> os = new LinkedList<>();
+                            List<String> build = new LinkedList<>();
+                            List<Profile> profiles = this.bugService.getProfiles();
+                            for (Profile profile : profiles) {
+                                if (!profile.getPlatform().isEmpty()) {
+                                    if (!platform.contains(profile.getPlatform())) {
+                                        platform.add(profile.getPlatform());
+                                    }
+                                }
+                                if (!profile.getOs().isEmpty()) {
+                                    if (!os.contains(profile.getOs())) {
+                                        os.add(profile.getOs());
+                                    }
+                                }
+                                if (!profile.getOs_build().isEmpty()) {
+                                    if (!build.contains(profile.getOs_build())) {
+                                        build.add(profile.getOs_build());
+                                    }
+                                }
+                            }
+
                             this.getActivity().runOnUiThread(() -> {
                                 for (User user : users) {
                                     this.userAdapter.add(user);
@@ -156,6 +190,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
                                     }
                                     this.txtIssueGeneralTags.setText(this.issue.getTags());
                                 }
+                                this.txtIssueGeneralPlatform.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, platform));
+                                this.txtIssueGeneralOs.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, os));
+                                this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
                             });
                         } catch (Exception ex) {
                             this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
@@ -216,6 +253,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
             issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
             issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
             issue.setHandler((User) this.spIssueGeneralHandler.getSelectedItem());
+            Profile profile = new Profile();
+            profile.setPlatform(this.txtIssueGeneralPlatform.getText().toString());
+            profile.setOs(this.txtIssueGeneralOs.getText().toString());
+            profile.setOs_build(this.txtIssueGeneralBuild.getText().toString());
+            issue.setProfile(profile);
+
             issue.setTags(this.txtIssueGeneralTags.getText().toString());
 
             try {
@@ -248,6 +291,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralDueDate.setEnabled(editMode);
             this.spIssueGeneralHandler.setEnabled(editMode);
             this.txtIssueGeneralTags.setEnabled(editMode);
+            this.txtIssueGeneralPlatform.setEnabled(editMode);
+            this.txtIssueGeneralBuild.setEnabled(editMode);
+            this.txtIssueGeneralOs.setEnabled(editMode);
         }
     }
 
@@ -266,6 +312,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralVersion.setText(this.issue.getVersion());
             this.txtIssueGeneralTargetVersion.setText(this.issue.getTargetVersion());
             this.txtIssueGeneralFixedInVersion.setText(this.issue.getFixedInVersion());
+            if (this.issue.getProfile() != null) {
+                this.txtIssueGeneralPlatform.setText(this.issue.getProfile().getPlatform());
+                this.txtIssueGeneralOs.setText(this.issue.getProfile().getOs());
+                this.txtIssueGeneralBuild.setText(this.issue.getProfile().getOs_build());
+            } else {
+                this.txtIssueGeneralPlatform.setText("");
+                this.txtIssueGeneralOs.setText("");
+                this.txtIssueGeneralBuild.setText("");
+            }
 
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.issue.getSubmitDate() != null) {
@@ -312,6 +367,11 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.rowIssueGeneralResolution.setVisibility(View.GONE);
         this.rowIssueGeneralTags.setVisibility(View.GONE);
         this.rowIssueGeneralHandler.setVisibility(View.GONE);
+        if (this.bugService.getPermissions().listProfiles()) {
+            this.rowIssueGeneralProfile.setVisibility(View.VISIBLE);
+        } else {
+            this.rowIssueGeneralProfile.setVisibility(View.GONE);
+        }
 
         switch (authentication.getTracker()) {
             case MantisBT:

@@ -40,6 +40,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -778,6 +779,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<History<String>> getHistory(String issue_id, String project_id) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<Profile<String>> getProfiles() {
         return new LinkedList<>();
     }
 

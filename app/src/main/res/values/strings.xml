@@ -101,6 +101,9 @@
     <string name="issue_general_handler">Bearbeitung durch</string>
     <string name="issues_general_status">Status</string>
     <string name="issues_general_resolution">Lösung</string>
+    <string name="issues_general_platform">Plattform</string>
+    <string name="issues_general_os">OS</string>
+    <string name="issues_general_build">Version</string>
 
     <string name="issues_descriptions">Beschreibungen</string>
     <string name="issues_descriptions_website">Website</string>

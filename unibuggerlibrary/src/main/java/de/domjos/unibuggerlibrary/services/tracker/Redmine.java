@@ -37,6 +37,7 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.History;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
+import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -744,6 +745,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     @Override
     public List<History<Long>> getHistory(Long issue_id, Long project_id) {
         return null;
+    }
+
+    @Override
+    public List<Profile<Long>> getProfiles() throws Exception {
+        return new LinkedList<>();
     }
 
     @Override

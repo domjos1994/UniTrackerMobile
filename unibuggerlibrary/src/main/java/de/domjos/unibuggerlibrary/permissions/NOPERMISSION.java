@@ -165,4 +165,9 @@ public class NOPERMISSION implements IFunctionImplemented {
     public boolean listHistory() {
         return false;
     }
+
+    @Override
+    public boolean listProfiles() {
+        return false;
+    }
 }

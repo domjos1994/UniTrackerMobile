@@ -199,6 +199,30 @@
                 tools:ignore="Autofill" />
         </TableRow>
 
+        <TableRow android:id="@+id/rowIssueGeneralProfile">
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralPlatform"
+                android:hint="@string/issues_general_platform"
+                android:layout_weight="4"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralOS"
+                android:hint="@string/issues_general_os"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+
+            <AutoCompleteTextView
+                android:id="@+id/txtIssueGeneralOsBuild"
+                android:hint="@string/issues_general_build"
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                tools:ignore="Autofill" />
+        </TableRow>
+
         <TableRow android:id="@+id/rowIssueGeneralTags">
 
             <MultiAutoCompleteTextView

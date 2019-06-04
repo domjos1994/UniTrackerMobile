@@ -170,4 +170,9 @@ public class SQLitePermissions implements IFunctionImplemented {
     public boolean listHistory() {
         return true;
     }
+
+    @Override
+    public boolean listProfiles() {
+        return true;
+    }
 }
