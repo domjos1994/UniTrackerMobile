@@ -18,9 +18,12 @@
 
 package de.domjos.unibuggermobile.helper;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -115,5 +118,11 @@ public class Helper {
             return new ArrayAdapter<>(context, spItem, ArrayHelper.getValues(context, key));
         }
         return null;
+    }
+
+    public static boolean isNetworkAvailable(Activity activity) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

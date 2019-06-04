@@ -37,6 +37,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
@@ -68,6 +69,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private TextView lblMainCommand;
     private TextView lblAccountTitle;
     private Spinner spMainAccounts, spMainFilters, spMainProjects;
+    private TableRow rowNoConnection;
     private ListView lvMainIssues;
     private ListAdapter issueAdapter;
     private ArrayAdapter<String> accountList;
@@ -188,7 +190,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
         });
 
-        this.cmdRefresh.setOnClickListener(v -> this.reload());
+        this.cmdRefresh.setOnClickListener(v -> {
+            this.reload();
+            this.reloadAccounts();
+        });
 
         this.cmdSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -257,6 +262,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.spMainFilters.setAdapter(this.filterAdapter);
             this.filterAdapter.notifyDataSetChanged();
 
+            this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
+
             MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext()));
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
@@ -272,7 +279,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
             this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-            this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+            if (this.accountList.getPosition(authentication.getTitle()) == -1) {
+                this.spMainAccounts.setSelection(0);
+                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).setCurrentAuthentication(null);
+                this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+            } else {
+                this.spMainAccounts.setSelection(this.accountList.getPosition(authentication.getTitle()));
+            }
 
             this.reloadProjects();
             this.selectProject();
@@ -382,7 +395,15 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.accountList.clear();
         this.accountList.add("");
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            this.accountList.add(authentication.getTitle());
+            if (Helper.isNetworkAvailable(MainActivity.this)) {
+                this.accountList.add(authentication.getTitle());
+                this.rowNoConnection.setVisibility(View.GONE);
+            } else {
+                this.rowNoConnection.setVisibility(View.VISIBLE);
+                if (authentication.getTracker() == Authentication.Tracker.Local) {
+                    this.accountList.add(authentication.getTitle());
+                }
+            }
         }
     }
 

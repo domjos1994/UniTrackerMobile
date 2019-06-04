@@ -169,4 +169,6 @@
     <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
     <string name="validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
     <string name="validator_no_success">Felder sind nicht valide!</string>
+
+    <string name="messages_no_network">Kein Internetzugang!</string>
 </resources>
