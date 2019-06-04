@@ -39,6 +39,7 @@ import de.domjos.unibuggermobile.R;
 
 public final class SettingsActivity extends PreferenceActivity {
     private AppCompatDelegate mDelegate;
+    private boolean loadHeaders = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,11 +158,14 @@ public final class SettingsActivity extends PreferenceActivity {
 
     @Override
     public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
+        if (!this.loadHeaders) {
+            loadHeadersFromResource(R.xml.pref_headers, target);
+            this.loadHeaders = true;
+        }
     }
 
     protected boolean isValidFragment(String fragmentName) {
-        return PreferenceFragment.class.getName().equals(fragmentName) || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+        return GeneralPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
