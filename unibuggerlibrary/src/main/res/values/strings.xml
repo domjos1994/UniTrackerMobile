@@ -35,5 +35,8 @@
     <string name="task_user_content">Benutzer aktualisieren</string>
 
     <string name="task_search_title">Suche</string>
-    <string name="task_search_content">Suche läuft...</string>
+    <string name="task_search_content">Suche läuft…</string>
+
+    <string name="task_export_title">Export</string>
+    <string name="task_export_contet">Export läuft…</string>
 </resources>

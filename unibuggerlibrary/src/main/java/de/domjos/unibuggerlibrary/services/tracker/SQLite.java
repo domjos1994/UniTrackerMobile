@@ -771,6 +771,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         return "";
     }
 
+    @Override
+    public String toString() {
+        return this.getAuthentication().getTitle();
+    }
+
     private void addHistoryItem(Issue<Long> oldIssue, Issue<Long> newIssue) {
         if (!oldIssue.getTitle().equals(newIssue.getTitle())) {
             this.addHistory("title", oldIssue.getTitle(), newIssue.getTitle(), String.valueOf(newIssue.getId()));
@@ -822,7 +827,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         this.getWritableDatabase()
                 .execSQL(
                         "INSERT INTO history(field, oldVal, newVal, timestamp, issue) " +
-                                "VALUES('" + field + "', '" + oldVal + "', '" + newVal + "', " + new Date().getTime() + ", " + id + ")"
+                                "VALUES('" + field + "', '" + oldVal.replace("'", "\"") + "', '" + newVal.replace("'", "\"") + "', " + new Date().getTime() + ", " + id + ")"
                 );
     }
 

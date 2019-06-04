@@ -123,6 +123,10 @@
     <string name="settings_general_notifications">Notifikationen</string>
     <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
 
+    <string name="export">Export</string>
+    <string name="export_path">Pfad</string>
+    <string name="export_success">Export erfolgreich!</string>
+
     <string name="administration">Administration</string>
     <string name="administration_menu">Übergreifend</string>
     <string name="administration_bugTracker">Account auswählen</string>

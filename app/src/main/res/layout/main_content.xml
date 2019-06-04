@@ -41,7 +41,6 @@
                 android:id="@+id/rowNoConnection"
                 android:background="@color/colorPrimary"
                 android:padding="4dp">
-
                 <TextView
                     android:text="@string/messages_no_network"
                     android:textColor="#ffffff"

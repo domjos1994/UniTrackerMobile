@@ -53,18 +53,20 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     protected List<Issue> doInBackground(Object... issues) {
         List<Issue> result = new LinkedList<>();
         try {
-            if (!this.project_id.equals("null")) {
-                for (Object issue : issues) {
-                    if (issue instanceof Issue) {
-                        super.bugService.insertOrUpdateIssue((Issue) issue, super.returnTemp(this.project_id));
-                    } else {
-                        if (this.delete) {
-                            super.bugService.deleteIssue(super.returnTemp(issue), super.returnTemp(this.project_id));
+            if (this.project_id != null) {
+                if (!this.project_id.equals("null")) {
+                    for (Object issue : issues) {
+                        if (issue instanceof Issue) {
+                            super.bugService.insertOrUpdateIssue((Issue) issue, super.returnTemp(this.project_id));
                         } else {
-                            if (this.oneDetailed) {
-                                result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
+                            if (this.delete) {
+                                super.bugService.deleteIssue(super.returnTemp(issue), super.returnTemp(this.project_id));
                             } else {
-                                result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id)));
+                                if (this.oneDetailed) {
+                                    result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
+                                } else {
+                                    result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id)));
+                                }
                             }
                         }
                     }

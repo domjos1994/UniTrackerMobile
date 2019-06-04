@@ -510,6 +510,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             case R.id.navExtendedSearch:
                 intent = new Intent(this.getApplicationContext(), SearchActivity.class);
                 break;
+            case R.id.navExport:
+                intent = new Intent(this.getApplicationContext(), ExportActivity.class);
+                break;
             default:
                 intent = null;
                 break;

@@ -102,7 +102,7 @@ public class JSONEngine {
         return this.state;
     }
 
-    protected int deleteRequest(String path) throws Exception {
+    protected void deleteRequest(String path) throws Exception {
         Call call = this.delete(path);
         Response response = call.execute();
         this.state = response.code();
@@ -111,11 +111,6 @@ public class JSONEngine {
         if (responseBody != null) {
             this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
         }
-        return this.state;
-    }
-
-    protected void addHeader(String header) {
-        this.headers.add(header);
     }
 
     protected long getLong(JSONObject object, String key) throws Exception {

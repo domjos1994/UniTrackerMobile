@@ -701,6 +701,10 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         return this.authentication;
     }
 
+    @Override
+    public String toString() {
+        return this.getAuthentication().getTitle();
+    }
 
     private Map<String, Integer> getEnumValues(String name) throws Exception {
         Map<String, Integer> entries = new LinkedHashMap<>();

@@ -380,6 +380,11 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         return this.authentication;
     }
 
+    @Override
+    public String toString() {
+        return this.getAuthentication().getTitle();
+    }
+
     private User<Long> getUser(JSONObject jsonObject) throws Exception {
         User<Long> user = new User<>();
         user.setId(jsonObject.getLong("id"));

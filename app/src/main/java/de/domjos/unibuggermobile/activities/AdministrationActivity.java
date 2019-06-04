@@ -172,7 +172,12 @@ public final class AdministrationActivity extends AbstractActivity {
             Activity act = AdministrationActivity.this;
             boolean notify = this.settings.showNotifications();
 
-            Project project2 = this.projectAdapter2.getItem(this.spProject2.getSelectedItemPosition());
+            Project project2;
+            if (this.spProject2.getSelectedItemPosition() != -1) {
+                project2 = this.projectAdapter2.getItem(this.spProject2.getSelectedItemPosition());
+            } else {
+                project2 = new Project();
+            }
             Project project1 = this.projectAdapter1.getItem(this.spProject1.getSelectedItemPosition());
             DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
             int dataPosition = this.spData1.getSelectedItemPosition();
@@ -198,17 +203,26 @@ public final class AdministrationActivity extends AbstractActivity {
 
                             if (chkWithIssues.isChecked()) {
                                 Object newId = null;
+                                projectTask = new ProjectTask(act, this.bugService2, false, notify);
                                 List<Project> projects = projectTask.execute("").get();
                                 for (Project newProject : projects) {
-                                    if (newProject.getTitle().equals(project.getId())) {
+                                    if (newProject.getId().equals(project.getId())) {
                                         newId = newProject.getId();
                                     }
                                 }
 
                                 IssueTask issueTask = new IssueTask(act, this.bugService1, id, false, false, notify);
-                                for (Issue issue : issueTask.execute("").get()) {
+                                List<Issue> issues = issueTask.execute("").get();
+                                for (Issue issue : issues) {
                                     issueTask = new IssueTask(act, this.bugService1, id, false, true, notify);
-                                    issue = issueTask.execute("").get().get(0);
+                                    issue = issueTask.execute(issue.getId()).get().get(0);
+                                    issue.setId(null);
+                                    for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
+                                        ((Attachment) issue.getAttachments().get(i)).setId(null);
+                                    }
+                                    for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
+                                        ((Note) issue.getNotes().get(i)).setId(null);
+                                    }
 
                                     IssueTask newTask = new IssueTask(act, this.bugService2, newId, false, false, notify);
                                     newTask.execute(issue).get();

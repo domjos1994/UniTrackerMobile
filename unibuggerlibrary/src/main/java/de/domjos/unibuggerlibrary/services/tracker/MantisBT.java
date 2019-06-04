@@ -321,9 +321,15 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     }
 
                     Profile<Long> profile = new Profile<>();
-                    profile.setPlatform(soapObject.getPropertyAsString("platform"));
-                    profile.setOs(soapObject.getPropertyAsString("os"));
-                    profile.setOs_build(soapObject.getPropertyAsString("os_build"));
+                    if (soapObject.hasProperty("platform")) {
+                        profile.setPlatform(soapObject.getPropertyAsString("platform"));
+                    }
+                    if (soapObject.hasProperty("os")) {
+                        profile.setOs(soapObject.getPropertyAsString("os"));
+                    }
+                    if (soapObject.hasProperty("os_build")) {
+                        profile.setOs_build(soapObject.getPropertyAsString("os_build"));
+                    }
                     issue.setProfile(profile);
 
                     if (soapObject.hasProperty("handler")) {
@@ -868,6 +874,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     @Override
     public Authentication getAuthentication() {
         return this.authentication;
+    }
+
+    @Override
+    public String toString() {
+        return this.getAuthentication().getTitle();
     }
 
     private Object getResult(Object object) {

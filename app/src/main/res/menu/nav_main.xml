@@ -55,6 +55,10 @@
                 android:id="@+id/navExtendedSearch"
                 android:icon="@drawable/ic_search_black_24dp"
                 android:title="@string/search" />
+            <item
+                android:id="@+id/navExport"
+                android:icon="@drawable/ic_import_export_black_24dp"
+                android:title="@string/export" />
         </menu>
     </item>
 </menu>

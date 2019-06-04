@@ -139,4 +139,7 @@ public interface IBugService<T> {
     IFunctionImplemented getPermissions();
 
     Authentication getAuthentication();
+
+    @Override
+    String toString();
 }
