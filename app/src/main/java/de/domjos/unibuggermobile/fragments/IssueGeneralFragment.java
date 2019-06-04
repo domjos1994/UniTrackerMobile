@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggermobile.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -65,6 +67,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private Spinner spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
     private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
+    private ImageButton cmdIssueGeneralSmartPhone;
     private ArrayAdapter<User> userAdapter;
     private ArrayAdapter<String> tagAdapter;
 
@@ -124,6 +127,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.rowIssueGeneralTags = this.root.findViewById(R.id.rowIssueGeneralTags);
         this.rowIssueGeneralHandler = this.root.findViewById(R.id.rowIssueGeneralHandler);
         this.rowIssueGeneralProfile = this.root.findViewById(R.id.rowIssueGeneralProfile);
+        this.cmdIssueGeneralSmartPhone = this.root.findViewById(R.id.cmdIssueGeneralSmartPhone);
 
 
         try {
@@ -294,6 +298,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralPlatform.setEnabled(editMode);
             this.txtIssueGeneralBuild.setEnabled(editMode);
             this.txtIssueGeneralOs.setEnabled(editMode);
+            this.cmdIssueGeneralSmartPhone.setEnabled(editMode);
         }
     }
 
@@ -332,6 +337,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
             if (this.issue.getDueDate() != null) {
                 this.txtIssueGeneralDueDate.setText(sdf.format(this.issue.getDueDate()));
             }
+
+            this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {
+                String smartPhone = "SmartPhone";
+                String android = "Android";
+
+                this.txtIssueGeneralPlatform.setText(smartPhone);
+                this.txtIssueGeneralOs.setText(android);
+                this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
+            });
         }
     }
 
