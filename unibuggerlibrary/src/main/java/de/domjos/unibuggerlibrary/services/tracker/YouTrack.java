@@ -513,7 +513,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 attachment.setId(attachmentObject.getString("id"));
                 attachment.setFilename(attachmentObject.getString("name"));
                 attachment.setDownloadUrl(this.authentication.getServer() + attachmentObject.getString("url"));
-                attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
+                try {
+                    attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
+                } catch (Exception ex) {
+
+                }
                 attachments.add(attachment);
             }
         }
