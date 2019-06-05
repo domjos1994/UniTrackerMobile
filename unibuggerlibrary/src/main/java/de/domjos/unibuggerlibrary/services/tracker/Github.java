@@ -214,16 +214,35 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        return this.getIssues(pid, 1, -1);
+        return this.getIssues(pid, 1, -1, IssueFilter.all);
     }
 
     @Override
-    public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems) throws Exception {
+    public List<Issue<Long>> getIssues(Long pid, IssueFilter filter) throws Exception {
+        return this.getIssues(pid, 1, -1, filter);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems) throws Exception {
+        return this.getIssues(pid, page, numberOfItems, IssueFilter.all);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems, IssueFilter filter) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
         Project<Long> project = this.getProject(project_id);
 
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                filterQuery = "?state=closed";
+            } else {
+                filterQuery = "?state=open";
+            }
+        }
+
         if (project != null) {
-            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues");
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues" + filterQuery);
             if (status == 200 || status == 201) {
                 JSONArray issueArray = new JSONArray(this.getCurrentMessage());
                 for (int i = 0; i <= issueArray.length() - 1; i++) {

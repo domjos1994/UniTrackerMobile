@@ -32,19 +32,26 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     private boolean oneDetailed;
     private Object project_id;
     private int numberOfItems, page;
+    private String filter;
 
     public IssueTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean oneDetailed, boolean showNotifications) {
-        this(activity, bugService, project_id, 1, -1, delete, oneDetailed, showNotifications);
+        this(activity, bugService, project_id, 1, -1, "", delete, oneDetailed, showNotifications);
     }
 
-    public IssueTask(Activity activity, IBugService bugService, Object project_id, int page, int numberOfItems, boolean delete, boolean oneDetailed, boolean showNotifications) {
+    public IssueTask(Activity activity, IBugService bugService, Object project_id, String filter, boolean delete, boolean oneDetailed, boolean showNotifications) {
+        this(activity, bugService, project_id, 1, -1, filter, delete, oneDetailed, showNotifications);
+    }
+
+    public IssueTask(Activity activity, IBugService bugService, Object project_id, int page, int numberOfItems, String filter, boolean delete, boolean oneDetailed, boolean showNotifications) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
         this.delete = delete;
         this.oneDetailed = oneDetailed;
         this.project_id = project_id;
         this.numberOfItems = numberOfItems;
         this.page = page;
+        this.filter = filter;
     }
+
 
     @Override
     protected void before() {
@@ -72,7 +79,11 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
                                 if (this.oneDetailed) {
                                     result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
                                 } else {
-                                    result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
+                                    if (this.filter.isEmpty()) {
+                                        result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
+                                    } else {
+                                        result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems, IBugService.IssueFilter.valueOf(this.filter)));
+                                    }
                                 }
                             }
                         }

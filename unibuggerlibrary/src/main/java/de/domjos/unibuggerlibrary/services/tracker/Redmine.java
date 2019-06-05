@@ -237,18 +237,37 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        return this.getIssues(pid, 1, -1);
+        return this.getIssues(pid, 1, -1, IssueFilter.all);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, IssueFilter filter) throws Exception {
+        return this.getIssues(pid, 1, -1, filter);
     }
 
     @Override
     public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems) throws Exception {
+        return this.getIssues(pid, page, numberOfItems, IssueFilter.all);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems, IssueFilter filter) throws Exception {
         String limitation = "";
         if (numberOfItems != -1) {
             limitation = "&limit=" + numberOfItems + "&offset=" + ((page - 1) * numberOfItems);
         }
 
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.unresolved) {
+                filterQuery = "&status_id=open";
+            } else {
+                filterQuery = "&status_id=closed";
+            }
+        }
+
         List<Issue<Long>> issues = new LinkedList<>();
-        int status = this.executeRequest("/issues.json?project_id=" + pid + limitation);
+        int status = this.executeRequest("/issues.json?project_id=" + pid + limitation + filterQuery);
         if (status == 200 || status == 201) {
             JSONObject resultObject = new JSONObject(this.getCurrentMessage());
             JSONArray resultArray = resultObject.getJSONArray("issues");

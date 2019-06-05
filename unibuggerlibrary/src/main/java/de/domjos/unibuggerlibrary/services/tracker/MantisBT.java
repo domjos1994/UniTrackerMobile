@@ -207,11 +207,21 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
-        return this.getIssues(pid, 1, -1);
+        return this.getIssues(pid, 1, -1, IssueFilter.all);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, IssueFilter filter) throws Exception {
+        return this.getIssues(pid, 1, -1, filter);
     }
 
     @Override
     public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems) throws Exception {
+        return this.getIssues(pid, page, numberOfItems, IssueFilter.all);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems, IssueFilter filter) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
 
         SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
@@ -232,17 +242,37 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     String category = soapObject.getPropertyAsString("category");
                     String summary = soapObject.getPropertyAsString("summary");
                     String view = soapObject.getPropertyAsString("view_state");
+
                     for (String enumViewItem : enumView) {
                         String[] spl = enumViewItem.split(":");
+
                         if (view.equals(spl[0])) {
                             view = spl[1].trim();
                             break;
                         }
                     }
 
+                    boolean fitsInFilter = true;
                     String status = soapObject.getPropertyAsString("status");
+                    switch (filter) {
+                        case resolved:
+                            if (Integer.parseInt(status) < 80) {
+                                fitsInFilter = false;
+                            }
+                            break;
+                        case unresolved:
+                            if (Integer.parseInt(status) >= 80) {
+                                fitsInFilter = false;
+                            }
+                            break;
+                    }
+                    if (!fitsInFilter) {
+                        continue;
+                    }
+
                     for (String enumStatusItem : enumStatus) {
                         String[] spl = enumStatusItem.split(":");
+
                         if (status.equals(spl[0])) {
                             status = spl[1].trim();
                             break;

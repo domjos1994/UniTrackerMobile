@@ -47,10 +47,10 @@
                 android:id="@+id/navAdministration"
                 android:icon="@drawable/ic_settings_black_24dp"
                 android:title="@string/administration" />
-            <item
+            <!--<item
                 android:id="@+id/navFilter"
                 android:icon="@drawable/ic_filter_list_black_24dp"
-                android:title="@string/filter" />
+                android:title="@string/filter" />-->
             <item
                 android:id="@+id/navExtendedSearch"
                 android:icon="@drawable/ic_search_black_24dp"

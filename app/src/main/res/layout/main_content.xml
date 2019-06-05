@@ -111,14 +111,12 @@
             android:orientation="horizontal"
             android:weightSum="10"
             android:layout_alignParentBottom="true">
-
             <ImageButton
                 android:id="@+id/cmdBefore"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_navigate_before_black_24dp" />
-
             <ImageButton
                 android:id="@+id/cmdNext"
                 android:layout_weight="5"

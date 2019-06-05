@@ -45,7 +45,6 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.model.Filter;
 import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
@@ -77,7 +76,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private ImageButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
-    private ArrayAdapter<Filter> filterAdapter;
+    private ArrayAdapter<String> filterAdapter;
     private IBugService bugService;
     private IFunctionImplemented permissions;
     private Settings settings;
@@ -193,6 +192,17 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             intent.putExtra("id", "");
             intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
             this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+        });
+
+        this.spMainFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                reload();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         this.cmdRefresh.setOnClickListener(v -> {
@@ -382,13 +392,16 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 String id = String.valueOf(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId());
                 if (!id.isEmpty()) {
                     if (!id.equals("0")) {
-                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), false, false, this.settings.showNotifications());
+                        String filter = "";
+                        if (this.spMainFilters.getSelectedItem() != null) {
+                            filter = this.spMainFilters.getSelectedItem().toString();
+                        }
+
+                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications());
                         for (Object issue : listIssueTask.execute(0).get()) {
                             Issue tmp = (Issue) issue;
-                            if (this.fitsInFilter(tmp)) {
-                                if (tmp.getTitle().contains(search)) {
-                                    this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
-                                }
+                            if (tmp.getTitle().contains(search)) {
+                                this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
                             }
                         }
                     }
@@ -397,42 +410,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
-    }
-
-    private boolean fitsInFilter(Issue issue) {
-        Filter filter = (Filter) this.spMainFilters.getSelectedItem();
-        boolean state = true;
-
-        if (filter != null) {
-            Object version = issue.getHints().get("version");
-            if (version != null) {
-                if (filter.getVersion() != null) {
-                    if (!filter.getVersion().isEmpty()) {
-                        state = filter.getVersion().contains(version.toString());
-                    }
-                }
-            }
-
-            Object view = issue.getHints().get("view");
-            if (view != null) {
-                if (filter.getView() != null) {
-                    if (!filter.getView().isEmpty()) {
-                        state = filter.getView().contains(view.toString());
-                    }
-                }
-            }
-
-            Object status = issue.getHints().get("status");
-            if (status != null) {
-                if (filter.getStatus() != null) {
-                    if (!filter.getStatus().isEmpty()) {
-                        state = filter.getView().contains(status.toString());
-                    }
-                }
-            }
-        }
-
-        return state;
     }
 
     private void reloadAccounts() {
@@ -469,9 +446,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void reloadFilters() {
         this.filterAdapter.clear();
-        List<Filter> filters = MainActivity.GLOBALS.getSqLiteGeneral().getFilters();
-        filters.add(0, new Filter());
-        this.filterAdapter.addAll(filters);
+        for (IBugService.IssueFilter filter : IBugService.IssueFilter.values()) {
+            this.filterAdapter.add(filter.name());
+        }
     }
 
     @Override
@@ -546,10 +523,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 break;
             case R.id.navAdministration:
                 intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
-                break;
-            case R.id.navFilter:
-                intent = new Intent(this.getApplicationContext(), FilterActivity.class);
-                reload = MainActivity.RELOAD_FILTERS;
                 break;
             case R.id.navExtendedSearch:
                 intent = new Intent(this.getApplicationContext(), SearchActivity.class);

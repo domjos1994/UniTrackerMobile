@@ -119,13 +119,31 @@ public interface IBugService<T> {
 
     /**
      * Returns a List of Issues
-     *
-     * @param project_id    the ID of the Project
-     * @param page          the current Page
+     * @param project_id the ID of the Project
+     * @param filter the IssueFilter
+     * @return List of Issues
+     */
+    List<Issue<T>> getIssues(T project_id, IssueFilter filter) throws Exception;
+
+    /**
+     * Returns a List of Issues
+     * @param project_id the ID of the Project
+     * @param page the current Page
      * @param numberOfItems the Number of Item
      * @return List of Issues
      */
     List<Issue<T>> getIssues(T project_id, int page, int numberOfItems) throws Exception;
+
+    /**
+     * Returns a List of Issues
+     *
+     * @param project_id    the ID of the Project
+     * @param page          the current Page
+     * @param numberOfItems the Number of Item
+     * @param filter        the Filter
+     * @return List of Issues
+     */
+    List<Issue<T>> getIssues(T project_id, int page, int numberOfItems, IssueFilter filter) throws Exception;
 
     /**
      * Returns an Issue
@@ -328,4 +346,10 @@ public interface IBugService<T> {
     @Override
     @NonNull
     String toString();
+
+    enum IssueFilter {
+        all,
+        resolved,
+        unresolved
+    }
 }
