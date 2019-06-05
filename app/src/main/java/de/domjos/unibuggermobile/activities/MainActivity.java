@@ -408,20 +408,30 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 this.pagination.setVisibility(View.VISIBLE);
             }
             this.issueAdapter.clear();
-            if (this.permissions.listIssues()) {
-                String id = String.valueOf(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId());
-                if (!id.isEmpty()) {
-                    if (!id.equals("0")) {
-                        String filter = "";
-                        if (this.spMainFilters.getSelectedItem() != null) {
-                            filter = this.spMainFilters.getSelectedItem().toString();
+            if (this.bugService.getAuthentication().getTracker() == Authentication.Tracker.Local || Helper.isNetworkAvailable(MainActivity.this)) {
+                if (this.permissions.listIssues()) {
+                    String id = "";
+                    if (this.spMainProjects.getSelectedItem() != null) {
+                        Project project = this.projectList.getItem(this.spMainProjects.getSelectedItemPosition());
+                        if (project != null) {
+                            id = String.valueOf(project.getId());
                         }
+                    } else {
+                        id = String.valueOf(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId());
+                    }
+                    if (!id.isEmpty()) {
+                        if (!id.equals("0")) {
+                            String filter = "";
+                            if (this.spMainFilters.getSelectedItem() != null) {
+                                filter = this.spMainFilters.getSelectedItem().toString();
+                            }
 
-                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications());
-                        for (Object issue : listIssueTask.execute(0).get()) {
-                            Issue tmp = (Issue) issue;
-                            if (tmp.getTitle().contains(search)) {
-                                this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                            IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications());
+                            for (Object issue : listIssueTask.execute(0).get()) {
+                                Issue tmp = (Issue) issue;
+                                if (tmp.getTitle().contains(search)) {
+                                    this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                                }
                             }
                         }
                     }
