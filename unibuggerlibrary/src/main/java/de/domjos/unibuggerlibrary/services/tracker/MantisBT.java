@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.support.annotation.NonNull;
+
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 
@@ -212,32 +214,44 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         request.addProperty("page_number", 1);
         request.addProperty("per_page", -1);
 
+        List<String> enumView = this.getEnums("view_states");
+        List<String> enumStatus = this.getEnums("status");
         Object object = this.executeAction(request, "mc_project_get_issue_headers", true);
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 if (vector.get(i) instanceof SoapObject) {
-                    Issue<Long> issue = new Issue<>();
                     SoapObject soapObject = (SoapObject) vector.get(i);
-                    issue.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
-                    issue.setDescription(soapObject.getPropertyAsString("category"));
-                    issue.setTitle(soapObject.getPropertyAsString("summary"));
-                    if (soapObject.hasProperty("version")) {
-                        issue.getHints().put("version", soapObject.getPropertyAsString("version"));
+                    String id = soapObject.getPropertyAsString("id");
+                    String category = soapObject.getPropertyAsString("category");
+                    String summary = soapObject.getPropertyAsString("summary");
+                    String view = soapObject.getPropertyAsString("view_state");
+                    for (String enumViewItem : enumView) {
+                        String[] spl = enumViewItem.split(":");
+                        if (view.equals(spl[0])) {
+                            view = spl[1].trim();
+                            break;
+                        }
                     }
-                    if (soapObject.hasProperty("view_state")) {
-                        issue.getHints().put("view", soapObject.getPropertyAsString("view_state"));
+
+                    String status = soapObject.getPropertyAsString("status");
+                    for (String enumStatusItem : enumStatus) {
+                        String[] spl = enumStatusItem.split(":");
+                        if (status.equals(spl[0])) {
+                            status = spl[1].trim();
+                            break;
+                        }
                     }
-                    if (soapObject.hasProperty("view_state")) {
-                        issue.getHints().put("status", soapObject.getPropertyAsString("status"));
-                    }
+
+                    Issue<Long> issue = new Issue<>();
+                    issue.setId(Long.parseLong(id));
+                    issue.setTitle(summary);
+                    issue.setDescription(String.format("%s - %s - %s", category, view, status));
                     issues.add(issue);
                 }
             }
         }
-
-
         return issues;
     }
 
@@ -704,8 +718,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) {
-        return 0L;
+    public void insertOrUpdateUser(User<Long> user, Long project_id) {
     }
 
     @Override
@@ -748,8 +761,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
-        return 0L;
+    public void insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
     }
 
     @Override
@@ -876,6 +888,26 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         return this.authentication;
     }
 
+    @Override
+    public List<String> getEnums(String title) throws Exception {
+        List<String> lsEnum = new LinkedList<>();
+        String action = "mc_enum_" + title;
+        SoapObject request = new SoapObject(super.soapPath, action);
+        Object object = this.executeAction(request, action, true);
+        object = this.getResult(object);
+
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                SoapObject soapObject = (SoapObject) vector.get(i);
+                lsEnum.add(String.format("%s:%s", soapObject.getPropertyAsString("id"), soapObject.getPropertyAsString("name")));
+            }
+        }
+
+        return lsEnum;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return this.getAuthentication().getTitle();

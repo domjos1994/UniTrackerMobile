@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -552,7 +553,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public String insertOrUpdateUser(User<String> user, String project_id) throws Exception {
+    public void insertOrUpdateUser(User<String> user, String project_id) throws Exception {
         if (user.getId() != null) {
             List<User<String>> users = this.getUsers(project_id);
             for (User<String> tmp : users) {
@@ -587,7 +588,6 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
 
         }
-        return user.getId();
     }
 
     @Override
@@ -697,7 +697,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public String insertOrUpdateCustomField(CustomField<String> customField, String project_id) throws Exception {
+    public void insertOrUpdateCustomField(CustomField<String> customField, String project_id) throws Exception {
         Project<String> project = this.getProject(project_id);
         if (project != null) {
             JSONObject fieldObject = new JSONObject();
@@ -752,7 +752,6 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             }
         }
 
-        return null;
     }
 
     @Override
@@ -838,6 +837,12 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         return this.authentication;
     }
 
+    @Override
+    public List<String> getEnums(String title) {
+        return null;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return this.getAuthentication().getTitle();

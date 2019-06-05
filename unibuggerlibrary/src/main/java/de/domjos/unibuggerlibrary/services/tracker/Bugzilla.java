@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -504,7 +505,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+    public void insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("login", user.getTitle());
         jsonObject.put("email", user.getEmail());
@@ -520,15 +521,14 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         if (status == 200 || status == 201) {
             if (user.getId() == null) {
                 JSONObject response = new JSONObject(this.getCurrentMessage());
-                return response.getLong("id");
+                response.getLong("id");
             } else {
                 JSONArray jsonArray = new JSONObject(this.getCurrentMessage()).getJSONArray("users");
                 if (jsonArray.length() >= 1) {
-                    return jsonArray.getJSONObject(0).getLong("id");
+                    jsonArray.getJSONObject(0).getLong("id");
                 }
             }
         }
-        return null;
     }
 
     @Override
@@ -609,8 +609,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> field, Long project_id) {
-        return null;
+    public void insertOrUpdateCustomField(CustomField<Long> field, Long project_id) {
     }
 
     @Override
@@ -702,6 +701,12 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public List<String> getEnums(String title) {
+        return null;
+    }
+
+    @Override
+    @NonNull
     public String toString() {
         return this.getAuthentication().getTitle();
     }

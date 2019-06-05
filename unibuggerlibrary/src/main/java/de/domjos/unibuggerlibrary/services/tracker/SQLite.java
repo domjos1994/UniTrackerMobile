@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -570,8 +571,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) {
-        return null;
+    public void insertOrUpdateUser(User<Long> user, Long project_id) {
     }
 
     @Override
@@ -619,7 +619,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> customField, Long project_id) {
+    public void insertOrUpdateCustomField(CustomField<Long> customField, Long project_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         SQLiteStatement sqLiteStatement;
         if (customField.getId() == null) {
@@ -648,7 +648,6 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         }
         sqLiteStatement.close();
 
-        return customField.getId();
     }
 
     @Override
@@ -762,6 +761,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public List<String> getEnums(String title) {
+        return null;
+    }
+
+    @Override
     public int getCurrentState() {
         return 200;
     }
@@ -771,6 +775,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         return "";
     }
 
+    @NonNull
     @Override
     public String toString() {
         return this.getAuthentication().getTitle();

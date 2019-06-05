@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -618,7 +619,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
+    public void insertOrUpdateUser(User<Long> user, Long project_id) throws Exception {
         JSONObject jsonObject = new JSONObject();
         JSONObject userObject = new JSONObject();
         userObject.put("login", user.getTitle());
@@ -639,7 +640,6 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             this.executeRequest("/users.json", jsonObject.toString(), "POST");
         }
 
-        return null;
     }
 
     @Override
@@ -729,8 +729,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public Long insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
-        return 0L;
+    public void insertOrUpdateCustomField(CustomField<Long> user, Long project_id) {
     }
 
     @Override
@@ -777,6 +776,12 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         return this.authentication;
     }
 
+    @Override
+    public List<String> getEnums(String title) {
+        return null;
+    }
+
+    @NonNull
     @Override
     public String toString() {
         return this.getAuthentication().getTitle();
