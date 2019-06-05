@@ -189,10 +189,20 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id) throws Exception {
+        return this.getIssues(project_id, 1, -1);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems) throws Exception {
+        String limitation = "";
+        if (numberOfItems != -1) {
+            limitation = "&limit=" + numberOfItems + "&offset=" + ((page - 1) * numberOfItems);
+        }
+
         List<Issue<Long>> issues = new LinkedList<>();
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/rest/bug?product=" + project.getTitle().replace(" ", "%20") + "&" + this.loginParams);
+            int status = this.executeRequest("/rest/bug?product=" + project.getTitle().replace(" ", "%20") + limitation + "&" + this.loginParams);
             if (status == 200 || status == 201) {
                 JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
                 JSONArray jsonArray = jsonObject.getJSONArray("bugs");

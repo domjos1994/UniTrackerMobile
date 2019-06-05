@@ -26,16 +26,18 @@
     tools:showIn="@layout/main_app_bar"
     android:orientation="vertical">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <TableLayout
+            android:id="@+id/tblControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="10">
+            android:weightSum="10"
+            android:layout_alignParentTop="true">
 
             <TableRow
                 android:id="@+id/rowNoConnection"
@@ -88,15 +90,44 @@
         </TableLayout>
 
         <TextView
+            android:layout_below="@+id/tblControls"
+            android:id="@+id/separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/colorPrimaryDark" />
 
         <ListView
+            android:layout_below="@+id/separator"
+            android:layout_above="@+id/pagination"
             android:id="@+id/lvMainIssues"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
-    </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pagination"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            android:layout_alignParentBottom="true">
+
+            <ImageButton
+                android:id="@+id/cmdBefore"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_navigate_before_black_24dp" />
+
+            <ImageButton
+                android:id="@+id/cmdNext"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_navigate_next_black_24dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/cmdIssueAdd"

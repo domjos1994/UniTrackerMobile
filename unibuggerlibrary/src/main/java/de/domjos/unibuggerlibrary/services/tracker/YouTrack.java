@@ -231,10 +231,20 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<Issue<String>> getIssues(String project_id) throws Exception {
+        return this.getIssues(project_id, 1, 20);
+    }
+
+    @Override
+    public List<Issue<String>> getIssues(String project_id, int page, int numberOfItems) throws Exception {
+        String limitation = "";
+        if (numberOfItems != -1) {
+            limitation = "&$skip=" + ((page - 1) * numberOfItems) + "&$top=" + numberOfItems;
+        }
+
         List<Issue<String>> issues = new LinkedList<>();
         Project<String> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + "&fields=id,summary,description");
+            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + "&fields=id,summary,description" + limitation);
             if (status == 200 || status == 201) {
                 JSONArray response = new JSONArray(this.getCurrentMessage());
                 for (int i = 0; i <= response.length() - 1; i++) {

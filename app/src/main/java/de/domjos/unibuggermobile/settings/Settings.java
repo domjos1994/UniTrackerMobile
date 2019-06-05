@@ -95,4 +95,21 @@ public class Settings {
     public boolean showNotifications() {
         return this.userPreferences.getBoolean("swtNotifications", false);
     }
+
+    public int getNumberOfItems() {
+        String strNumber = this.userPreferences.getString("txtNumberOfItems", "-1");
+        if (strNumber != null) {
+            try {
+                int number = Integer.parseInt(strNumber);
+                if (number < -1) {
+                    return -1;
+                }
+                return number;
+            } catch (Exception ex) {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
 }

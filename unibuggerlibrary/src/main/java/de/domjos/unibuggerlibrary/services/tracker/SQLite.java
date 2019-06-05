@@ -228,9 +228,19 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id) {
+        return this.getIssues(project_id, 1, -1);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems) {
+        String limitation = "";
+        if (numberOfItems != -1) {
+            limitation = " limit " + (page - 1) * numberOfItems + ", " + numberOfItems;
+        }
+
         List<Issue<Long>> issues = new LinkedList<>();
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?", new String[]{String.valueOf(project_id)});
+        Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?" + limitation, new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
             Issue<Long> issue = this.getIssue((long) this.getInt(cursor, "id"), project_id);
             issue.getHints().put("version", issue.getVersion());

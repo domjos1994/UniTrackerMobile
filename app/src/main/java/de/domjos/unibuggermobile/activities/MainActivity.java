@@ -35,6 +35,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -72,6 +73,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private TableRow rowNoConnection;
     private ListView lvMainIssues;
     private ListAdapter issueAdapter;
+    private LinearLayout pagination;
+    private ImageButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
     private ArrayAdapter<Filter> filterAdapter;
@@ -80,6 +83,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Settings settings;
     private ImageButton cmdRefresh;
     private SearchView cmdSearch;
+    private int page;
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
@@ -90,6 +94,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     public MainActivity() {
         super(R.layout.main_activity);
+        this.page = 1;
     }
 
     @Override
@@ -215,6 +220,35 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reload();
             return true;
         });
+
+        this.cmdPrevious.setOnLongClickListener(v -> {
+            this.page = 1;
+            this.reload();
+            return true;
+        });
+
+        this.cmdPrevious.setOnClickListener(v -> {
+            if (this.page > 1) {
+                this.page--;
+                this.reload();
+            }
+        });
+
+        this.cmdNext.setOnLongClickListener(v -> {
+            while (this.issueAdapter.getCount() == this.settings.getNumberOfItems()) {
+                this.page++;
+                this.reload();
+            }
+
+            return true;
+        });
+
+        this.cmdNext.setOnClickListener(v -> {
+            if (this.issueAdapter.getCount() == this.settings.getNumberOfItems()) {
+                this.page++;
+                this.reload();
+            }
+        });
     }
 
     @Override
@@ -261,6 +295,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainFilters.setAdapter(this.filterAdapter);
             this.filterAdapter.notifyDataSetChanged();
+
+            this.pagination = this.findViewById(R.id.pagination);
+            this.cmdPrevious = this.findViewById(R.id.cmdBefore);
+            this.cmdNext = this.findViewById(R.id.cmdNext);
 
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
 
@@ -333,12 +371,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void reload(String search) {
         try {
+            if (this.settings.getNumberOfItems() == -1) {
+                this.page = 1;
+                this.pagination.setVisibility(View.GONE);
+            } else {
+                this.pagination.setVisibility(View.VISIBLE);
+            }
             this.issueAdapter.clear();
             if (this.permissions.listIssues()) {
                 String id = String.valueOf(MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId());
                 if (!id.isEmpty()) {
                     if (!id.equals("0")) {
-                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, false, false, this.settings.showNotifications());
+                        IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), false, false, this.settings.showNotifications());
                         for (Object issue : listIssueTask.execute(0).get()) {
                             Issue tmp = (Issue) issue;
                             if (this.fitsInFilter(tmp)) {

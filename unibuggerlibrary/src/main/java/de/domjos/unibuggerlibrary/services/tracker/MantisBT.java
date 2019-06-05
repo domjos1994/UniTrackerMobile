@@ -207,12 +207,17 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
+        return this.getIssues(pid, 1, -1);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
 
         SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
         request.addProperty("project_id", Integer.parseInt(String.valueOf(pid)));
-        request.addProperty("page_number", 1);
-        request.addProperty("per_page", -1);
+        request.addProperty("page_number", page);
+        request.addProperty("per_page", numberOfItems);
 
         List<String> enumView = this.getEnums("view_states");
         List<String> enumStatus = this.getEnums("status");

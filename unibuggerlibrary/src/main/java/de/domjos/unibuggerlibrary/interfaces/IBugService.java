@@ -75,7 +75,6 @@ public interface IBugService<T> {
 
     /**
      * Inserts or updates a Project
-     *
      * @param project the Project to insert or update
      * @return ID of Project
      */
@@ -117,6 +116,16 @@ public interface IBugService<T> {
      * @return List of Issues
      */
     List<Issue<T>> getIssues(T project_id) throws Exception;
+
+    /**
+     * Returns a List of Issues
+     *
+     * @param project_id    the ID of the Project
+     * @param page          the current Page
+     * @param numberOfItems the Number of Item
+     * @return List of Issues
+     */
+    List<Issue<T>> getIssues(T project_id, int page, int numberOfItems) throws Exception;
 
     /**
      * Returns an Issue
@@ -208,8 +217,7 @@ public interface IBugService<T> {
 
     /**
      * Inserts or updates an User
-     *
-     * @param user       the User to insert or update
+     * @param user the User to insert or update
      * @param project_id the ID of the Project
      */
     void insertOrUpdateUser(User<T> user, T project_id) throws Exception;
@@ -239,9 +247,8 @@ public interface IBugService<T> {
 
     /**
      * Inserts or updates a Custom-Field
-     *
      * @param customField the Custom-Field to insert or update
-     * @param project_id  the ID of the Project
+     * @param project_id the ID of the Project
      */
     void insertOrUpdateCustomField(CustomField<T> customField, T project_id) throws Exception;
 
@@ -309,7 +316,6 @@ public interface IBugService<T> {
 
     /**
      * Returns a List of Enum-Items by Title
-     *
      * @param title the Title
      * @return List of Enum-Items
      */

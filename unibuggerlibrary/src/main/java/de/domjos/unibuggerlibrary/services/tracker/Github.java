@@ -214,8 +214,13 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
+        return this.getIssues(pid, 1, -1);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
-        Project<Long> project = this.getProject(pid);
+        Project<Long> project = this.getProject(project_id);
 
         if (project != null) {
             int status = this.executeRequest("/repos/" + project.getTitle() + "/issues");

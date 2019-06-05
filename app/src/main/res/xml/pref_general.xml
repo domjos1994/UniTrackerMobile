@@ -22,4 +22,12 @@
         android:defaultValue="true"
         android:title="@string/settings_general_notifications"
         android:summary="@string/settings_general_notifications_summary" />
+
+    <EditTextPreference
+        android:key="txtNumberOfItems"
+        android:defaultValue="-1"
+        android:digits="-10123456789"
+        android:inputType="number"
+        android:title="@string/settings_general_numberOfItems"
+        android:summary="@string/settings_general_numberOfItems_summary" />
 </PreferenceScreen>

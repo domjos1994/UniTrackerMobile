@@ -237,8 +237,18 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
+        return this.getIssues(pid, 1, -1);
+    }
+
+    @Override
+    public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems) throws Exception {
+        String limitation = "";
+        if (numberOfItems != -1) {
+            limitation = "&limit=" + numberOfItems + "&offset=" + ((page - 1) * numberOfItems);
+        }
+
         List<Issue<Long>> issues = new LinkedList<>();
-        int status = this.executeRequest("/issues.json?project_id=" + pid);
+        int status = this.executeRequest("/issues.json?project_id=" + pid + limitation);
         if (status == 200 || status == 201) {
             JSONObject resultObject = new JSONObject(this.getCurrentMessage());
             JSONArray resultArray = resultObject.getJSONArray("issues");
