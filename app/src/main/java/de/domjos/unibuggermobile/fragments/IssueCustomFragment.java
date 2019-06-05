@@ -137,7 +137,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                     CustomField customField = (CustomField) entry.getKey();
                     String value = (String) entry.getValue();
 
-                    LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10);
+                    LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 10);
                     TableRow tableRow = new TableRow(this.getActivity());
                     tableRow.setLayoutParams(layoutParams);
 

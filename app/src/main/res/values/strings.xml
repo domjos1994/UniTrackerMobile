@@ -113,8 +113,8 @@
     <string name="issues_notes">Notizen</string>
     <string name="issues_attachments">Anhänge</string>
 
-    <string name="issues_history_oldValue">alter Wert</string>
-    <string name="issues_history_newValue">neuer Wert</string>
+    <string name="issues_history_oldValue">alt</string>
+    <string name="issues_history_newValue">neu</string>
     <string name="issues_history_field">Feld</string>
     <string name="issues_history_time">Zeit</string>
     <string name="issues_history_user">Benutzer</string>

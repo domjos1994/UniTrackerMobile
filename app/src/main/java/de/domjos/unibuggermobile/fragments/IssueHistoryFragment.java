@@ -96,7 +96,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
                             for (Object object : objects) {
                                 History history = (History) object;
 
-                                LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10);
+                                LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 10);
                                 TableRow tableRow = new TableRow(IssueHistoryFragment.this.getActivity());
                                 tableRow.setLayoutParams(layoutParams);
 
@@ -104,7 +104,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
                                 tableRow.addView(this.createTextView(history.getUser()));
                                 Date dt = new Date();
                                 dt.setTime(history.getTime());
-                                tableRow.addView(this.createTextView(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(dt)));
+                                tableRow.addView(this.createTextView(new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.GERMAN).format(dt)));
                                 tableRow.addView(this.createTextView(history.getOldValue()));
                                 tableRow.addView(this.createTextView(history.getNewValue()));
 
