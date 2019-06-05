@@ -131,7 +131,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
 
         try {
-            if (this.getContext() != null) {
+            if (this.getContext() != null && this.getActivity() != null) {
                 this.userAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item);
                 this.spIssueGeneralHandler.setAdapter(this.userAdapter);
                 this.userAdapter.notifyDataSetChanged();
@@ -199,7 +199,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
                                 this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
                             });
                         } catch (Exception ex) {
-                            this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
+                            if (this.getActivity() != null) {
+                                this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
+                            }
                         }
                     }).start();
                 }
