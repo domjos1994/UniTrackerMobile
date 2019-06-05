@@ -125,6 +125,8 @@
     <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
     <string name="settings_general_numberOfItems">Anzahl an angezeigten Fehlern</string>
     <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
+    <string name="settings_general_reload">Fehler automatisch neu laden</string>
+    <string name="settings_general_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren)</string>
 
     <string name="export">Export</string>
     <string name="export_path">Pfad</string>

@@ -112,4 +112,21 @@ public class Settings {
             return -1;
         }
     }
+
+    public int getReload() {
+        String strNumber = this.userPreferences.getString("txtReload", "-1");
+        if (strNumber != null) {
+            try {
+                int number = Integer.parseInt(strNumber);
+                if (number < -1) {
+                    return -1;
+                }
+                return number;
+            } catch (Exception ex) {
+                return -1;
+            }
+        } else {
+            return -1;
+        }
+    }
 }

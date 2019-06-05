@@ -42,6 +42,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
@@ -98,6 +100,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void initActions() {
+        this.navigationView.getHeaderView(0).setOnClickListener(v -> {
+            Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
+            startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
+        });
+
         this.lblMainCommand.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
@@ -318,6 +325,19 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reloadAccounts();
             this.changeAuthentication();
             this.reloadFilters();
+
+            Timer timer = new Timer();
+            if (this.settings.getReload() != -1) {
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (settings.getReload() == -1) {
+                            timer.cancel();
+                        }
+                        runOnUiThread(() -> reload());
+                    }
+                }, 0, (this.settings.getReload() * 1000));
+            }
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }

@@ -53,6 +53,7 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     }
 
 
+
     @Override
     protected void before() {
 
