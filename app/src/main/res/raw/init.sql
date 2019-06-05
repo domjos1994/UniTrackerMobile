@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS accounts(
     password VARCHAR(5000) DEFAULT '',
     description TEXT DEFAULT '',
     cover BLOB DEFAULT NULL,
-    tracker VARCHAR(50) NOT NULL
+    tracker VARCHAR(50) NOT NULL,
+    guest TINYINT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS filters(

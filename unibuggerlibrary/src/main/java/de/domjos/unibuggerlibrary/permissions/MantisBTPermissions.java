@@ -35,17 +35,17 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addProjects() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateProjects() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteProjects() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
@@ -55,17 +55,17 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addVersions() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateVersions() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteVersions() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
@@ -75,17 +75,17 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addIssues() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateIssues() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteIssues() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
@@ -95,17 +95,17 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addNotes() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateNotes() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteNotes() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
@@ -115,17 +115,17 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addAttachments() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateAttachments() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteAttachments() {
-        return true;
+        return !this.authentication.isGuest();
     }
 
     @Override
@@ -175,6 +175,6 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listProfiles() {
-        return true;
+        return !this.authentication.isGuest();
     }
 }

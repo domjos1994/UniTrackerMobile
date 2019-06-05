@@ -285,6 +285,7 @@ public final class AccountActivity extends AbstractActivity {
             this.txtAccountPassword.setText(this.currentAccount.getPassword());
             this.txtAccountAPI.setText(this.currentAccount.getAPIKey());
             this.txtAccountDescription.setText(this.currentAccount.getDescription());
+            this.chkAccountGuest.setChecked(this.currentAccount.isGuest());
             if (this.currentAccount.getTracker() != null) {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(this.currentAccount.getTracker()));
             } else {
@@ -309,6 +310,7 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setAPIKey(this.txtAccountAPI.getText().toString());
             this.currentAccount.setDescription(this.txtAccountDescription.getText().toString());
             this.currentAccount.setTracker(this.trackerAdapter.getItem(this.cmbAccountTracker.getSelectedItemPosition()));
+            this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
             if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
                 this.currentAccount.setCover(Converter.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
             } else {

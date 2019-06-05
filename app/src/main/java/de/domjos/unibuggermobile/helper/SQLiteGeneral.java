@@ -62,6 +62,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             authentication.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
             authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
             authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
+            authentication.setGuest(cursor.getLong(cursor.getColumnIndex("guest")) == 1);
             authentications.add(authentication);
         }
         cursor.close();
@@ -73,10 +74,10 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             SQLiteDatabase db = this.getWritableDatabase();
             SQLiteStatement stmt;
             if (authentication.getId() != null) {
-                stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=? WHERE ID=?");
-                stmt.bindLong(9, authentication.getId());
+                stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=?, guest=? WHERE ID=?");
+                stmt.bindLong(10, authentication.getId());
             } else {
-                stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker) VALUES(?,?,?,?,?,?,?,?)");
+                stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker, guest) VALUES(?,?,?,?,?,?,?,?,?)");
             }
             stmt.bindString(1, authentication.getTitle());
             stmt.bindString(2, authentication.getServer());
@@ -94,6 +95,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             } else {
                 stmt.bindString(8, Authentication.Tracker.Local.name());
             }
+            stmt.bindLong(9, authentication.isGuest() ? 1 : 0);
             stmt.execute();
         }
     }
