@@ -515,8 +515,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 attachment.setDownloadUrl(this.authentication.getServer() + attachmentObject.getString("url"));
                 try {
                     attachment.setContent(Base64.decode(attachmentObject.getString("base64Content"), Base64.DEFAULT));
-                } catch (Exception ex) {
-
+                } catch (Exception ignored) {
                 }
                 attachments.add(attachment);
             }
@@ -557,7 +556,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                         JSONArray jsonArray = jsonObject.getJSONArray("aggregatedUsers");
                         for (int j = 0; j <= jsonArray.length() - 1; j++) {
                             JSONObject userObject = jsonArray.getJSONObject(j);
-                            users.add(this.getUser(userObject.getString("ringId"), project_id));
+                            if (userObject.has("ringId")) {
+                                users.add(this.getUser(userObject.getString("ringId"), project_id));
+                            }
                         }
                     }
                 }
