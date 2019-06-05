@@ -46,6 +46,7 @@ public final class ProjectTask extends AbstractTask<Object, Void, List<Project>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<Project> doInBackground(Object... projects) {
         List<Project> result = new LinkedList<>();
         try {

@@ -27,7 +27,7 @@ import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.User;
 
-public class UserTask extends AbstractTask<Object, Void, List<User>> {
+public final class UserTask extends AbstractTask<Object, Void, List<User>> {
     private Object project_id;
     private boolean delete;
 
@@ -48,6 +48,7 @@ public class UserTask extends AbstractTask<Object, Void, List<User>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<User> doInBackground(Object... objects) {
         List<User> result = new LinkedList<>();
         try {
@@ -62,7 +63,6 @@ public class UserTask extends AbstractTask<Object, Void, List<User>> {
                     }
                 }
             }
-            //super.printMessage();
         } catch (Exception ex) {
             super.printException(ex);
         }

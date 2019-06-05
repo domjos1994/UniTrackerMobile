@@ -30,6 +30,7 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -81,13 +82,22 @@ public final class IssueHistoryFragment extends AbstractFragment {
             if (this.getActivity() != null) {
                 new Thread(() -> {
                     try {
-                        IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                        IBugService bugService = Helper.getCurrentBugService(IssueHistoryFragment.this.getActivity());
                         if (this.issue.getId() != null) {
-                            for (Object object : bugService.getHistory(String.valueOf(this.issue.getId()), "")) {
+                            List objects;
+                            try {
+                                Long id = (Long) this.issue.getId();
+                                objects = bugService.getHistory(id, 0L);
+                            } catch (Exception ex) {
+                                String id = String.valueOf(this.issue.getId());
+                                objects = bugService.getHistory(id, "");
+                            }
+
+                            for (Object object : objects) {
                                 History history = (History) object;
 
                                 LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 10);
-                                TableRow tableRow = new TableRow(this.getActivity());
+                                TableRow tableRow = new TableRow(IssueHistoryFragment.this.getActivity());
                                 tableRow.setLayoutParams(layoutParams);
 
                                 tableRow.addView(this.createTextView(history.getField()));

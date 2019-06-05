@@ -29,7 +29,7 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
 public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
-    protected WeakReference<Context> weakReference;
+    private WeakReference<Context> weakReference;
     protected final IBugService bugService;
     private final int icon;
     private int id;
@@ -81,7 +81,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
 
     protected abstract void after();
 
-    protected Object returnTemp(Object o) {
+    Object returnTemp(Object o) {
         Object tmp;
         try {
             tmp = Long.parseLong(String.valueOf(o));
@@ -92,7 +92,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     }
 
 
-    private Context getContext() {
+    protected Context getContext() {
         return this.weakReference.get();
     }
 }

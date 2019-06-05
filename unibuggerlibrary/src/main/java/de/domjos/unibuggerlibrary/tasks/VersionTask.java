@@ -50,6 +50,7 @@ public final class VersionTask extends AbstractTask<Object, Void, List<Version>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<Version> doInBackground(Object... versions) {
         List<Version> result = new LinkedList<>();
         try {

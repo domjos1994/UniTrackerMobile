@@ -29,6 +29,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -53,6 +54,7 @@ public final class AccountActivity extends AbstractActivity {
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
     private EditText txtAccountTitle, txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription;
+    private CheckBox chkAccountGuest;
     private ImageButton cmdAccountImageGallery;
 
     private BottomNavigationView navigationView;
@@ -92,8 +94,12 @@ public final class AccountActivity extends AbstractActivity {
                     }
                 }
 
-                if (trackerAdapter.getItem(position) == Authentication.Tracker.YouTrack) {
-                    accountValidator.addEmptyValidator(txtAccountAPI);
+                if (trackerAdapter.getItem(cmbAccountTracker.getSelectedItemPosition()) == Authentication.Tracker.YouTrack) {
+                    if (chkAccountGuest.isChecked()) {
+                        accountValidator.removeValidator(txtAccountAPI);
+                    } else {
+                        accountValidator.addEmptyValidator(txtAccountAPI);
+                    }
                 } else {
                     accountValidator.removeValidator(txtAccountAPI);
                 }
@@ -126,6 +132,18 @@ public final class AccountActivity extends AbstractActivity {
                     } catch (Exception ignored) {
                     }
                 }).run();
+            }
+        });
+
+        this.chkAccountGuest.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (trackerAdapter.getItem(this.cmbAccountTracker.getSelectedItemPosition()) == Authentication.Tracker.YouTrack) {
+                if (isChecked) {
+                    accountValidator.removeValidator(this.txtAccountAPI);
+                } else {
+                    accountValidator.addEmptyValidator(this.txtAccountAPI);
+                }
+            } else {
+                accountValidator.removeValidator(txtAccountAPI);
             }
         });
     }
@@ -167,7 +185,7 @@ public final class AccountActivity extends AbstractActivity {
                             new Thread(() -> {
                                 try {
                                     IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
-                                    if (bugService.testConnection()) {
+                                    if (chkAccountGuest.isChecked() || bugService.testConnection()) {
                                         AccountActivity.this.runOnUiThread(() -> {
                                             MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), AccountActivity.this);
                                             MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
@@ -202,6 +220,7 @@ public final class AccountActivity extends AbstractActivity {
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
 
+        this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
@@ -249,9 +268,11 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountDescription.setEnabled(editMode);
         this.cmdAccountImageGallery.setEnabled(editMode);
         this.cmbAccountTracker.setEnabled(editMode);
+        this.chkAccountGuest.setEnabled(editMode);
 
         if (reset) {
             this.currentAccount = new Authentication();
+            this.chkAccountGuest.setChecked(false);
             this.objectToControls();
         }
     }

@@ -65,6 +65,7 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<Issue> doInBackground(Object... issues) {
         List<Issue> result = new LinkedList<>();
         try {

@@ -30,9 +30,8 @@ import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
-public class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
+public final class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
     private String search, projects, versions;
     private boolean summary, description;
     private final List<ListObject> issues;
@@ -60,6 +59,7 @@ public class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected List<ListObject> doInBackground(Integer... issues) {
         try {
             List<String> projects = new LinkedList<>(Arrays.asList(this.projects.split(",")));
@@ -108,7 +108,7 @@ public class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
                             }
 
                             if (searchSuccess) {
-                                ListObject listObject = new ListObject(super.weakReference.get(), issues[0], issue);
+                                ListObject listObject = new ListObject(this.getContext(), issues[0], issue);
                                 listObject.getDescriptionObject().setDescription(service.getAuthentication().getTracker().name());
                                 listObject.getDescriptionObject().getHints().put("title", service.getAuthentication().getTitle());
                                 listObject.getDescriptionObject().getHints().put("project", project.getId().toString());
@@ -120,7 +120,7 @@ public class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
             }
 
         } catch (Exception ex) {
-            ((Activity) super.weakReference.get()).runOnUiThread(() -> MessageHelper.printException(ex, super.weakReference.get()));
+            this.printException(ex);
         }
         return this.issues;
     }
