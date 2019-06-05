@@ -739,8 +739,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 User<Long> user = new User<>();
                 user.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
                 user.setTitle(soapObject.getPropertyAsString("name"));
-                user.setRealName(soapObject.getPropertyAsString("real_name"));
-                user.setEmail(soapObject.getPropertyAsString("email"));
+                if (soapObject.hasProperty("real_name")) {
+                    user.setRealName(soapObject.getPropertyAsString("real_name"));
+                }
+                if (soapObject.hasProperty("email")) {
+                    user.setEmail(soapObject.getPropertyAsString("email"));
+                }
                 users.add(user);
             }
         }
