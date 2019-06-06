@@ -42,7 +42,8 @@
             <TableRow
                 android:id="@+id/rowNoConnection"
                 android:background="@color/colorPrimary"
-                android:padding="4dp">
+                android:padding="4dp"
+                android:visibility="gone">
                 <TextView
                     android:text="@string/messages_no_network"
                     android:textColor="#ffffff"

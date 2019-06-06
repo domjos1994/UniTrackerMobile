@@ -16,4 +16,38 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unitrackerlibrary'
+package de.domjos.unitrackermobile.settings;
+
+import android.content.Context;
+
+import de.domjos.unitrackermobile.helper.SQLiteGeneral;
+
+public class Globals {
+    private SQLiteGeneral sqLiteGeneral;
+    private String password;
+
+    public Globals() {
+        this.sqLiteGeneral = null;
+        this.password = "";
+    }
+
+    public SQLiteGeneral getSqLiteGeneral() {
+        return this.sqLiteGeneral;
+    }
+
+    public void setSqLiteGeneral(SQLiteGeneral sqLiteGeneral) {
+        this.sqLiteGeneral = sqLiteGeneral;
+    }
+
+    public Settings getSettings(Context context) {
+        return new Settings(context);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}

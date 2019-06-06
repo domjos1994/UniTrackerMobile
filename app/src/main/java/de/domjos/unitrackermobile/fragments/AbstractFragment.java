@@ -16,4 +16,28 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unitrackerlibrary'
+package de.domjos.unitrackermobile.fragments;
+
+import android.support.v4.app.Fragment;
+
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackermobile.helper.Validator;
+
+public abstract class AbstractFragment extends Fragment {
+
+    public abstract void setObject(DescriptionObject descriptionObject);
+
+    public abstract DescriptionObject getObject(DescriptionObject descriptionObject);
+
+    public abstract void manageControls(boolean editMode);
+
+    protected abstract void initData();
+
+    public abstract Validator initValidator();
+
+    public abstract void updateUITrackerSpecific();
+
+    public void setPid(String pid) {
+
+    }
+}

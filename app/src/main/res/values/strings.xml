@@ -17,7 +17,13 @@
   -->
 
 <resources>
-    <string name="app_name">UniBuggerMobile</string>
+    <string name="app_name">UniTrackerMobile</string>
+
+    <string name="pwd_title">Passwort zum Schutz der App eingeben!</string>
+    <string name="pwd_title_pwd">Passwort eingeben</string>
+    <string name="pwd_password1">Passwort eingeben</string>
+    <string name="pwd_password2">Passwort bestätigen</string>
+    <string name="pwd_submit">Eingaben bestätigen</string>
 
     <string name="accounts">Konten</string>
     <string name="accounts_cover">Cover</string>
