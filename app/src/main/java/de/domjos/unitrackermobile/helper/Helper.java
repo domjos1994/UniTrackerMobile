@@ -42,6 +42,7 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
 import de.domjos.unibuggerlibrary.services.tracker.Github;
+import de.domjos.unibuggerlibrary.services.tracker.Jira;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
 import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
@@ -106,6 +107,9 @@ public class Helper {
                         break;
                     case Github:
                         bugService = new Github(authentication);
+                        break;
+                    case Jira:
+                        bugService = new Jira(authentication);
                         break;
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context), authentication);

@@ -30,6 +30,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 import okhttp3.Call;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -80,6 +81,18 @@ public class JSONEngine {
 
     protected int executeRequest(String path, String body, String type) throws Exception {
         Call call = this.initAuthentication(path, body, type);
+        Response response = call.execute();
+        this.state = response.code();
+
+        ResponseBody responseBody = response.body();
+        if (responseBody != null) {
+            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+        }
+        return this.state;
+    }
+
+    protected int executeRequest(String path, byte[] data, String body, String type) throws Exception {
+        Call call = this.initAuthentication(path, data, body, type);
         Response response = call.execute();
         this.state = response.code();
 
@@ -181,6 +194,31 @@ public class JSONEngine {
                 break;
             case "PATCH":
                 request = this.initRequestBuilder(path).patch(requestBody).build();
+                break;
+            case "DELETE":
+                request = this.initRequestBuilder(path).delete().build();
+                break;
+            default:
+                request = this.initRequestBuilder(path).build();
+        }
+        return this.client.newCall(request);
+    }
+
+    private Call initAuthentication(String path, byte[] data, String body, String type) {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.addPart(RequestBody.create(OctetStream, data));
+        builder.addPart(RequestBody.create(JSON, body));
+
+        Request request;
+        switch (type.toUpperCase()) {
+            case "POST":
+                request = this.initRequestBuilder(path).post(builder.build()).build();
+                break;
+            case "PUT":
+                request = this.initRequestBuilder(path).put(builder.build()).build();
+                break;
+            case "PATCH":
+                request = this.initRequestBuilder(path).patch(builder.build()).build();
                 break;
             case "DELETE":
                 request = this.initRequestBuilder(path).delete().build();

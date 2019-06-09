@@ -113,7 +113,7 @@ public final class ProjectActivity extends AbstractActivity {
                     try {
                         task = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
                         task.execute(this.currentProject.getId()).get();
-                        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+                        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
                             MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
                         } else {
                             this.reload();
@@ -439,6 +439,12 @@ public final class ProjectActivity extends AbstractActivity {
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    break;
+                case Jira:
+                    this.rowProjectIcon.setVisibility(View.VISIBLE);
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     break;
                 case Local:
                     this.rowProjectState.setVisibility(View.VISIBLE);

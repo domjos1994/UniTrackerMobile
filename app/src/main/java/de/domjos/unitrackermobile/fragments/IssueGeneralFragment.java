@@ -252,7 +252,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
             issue.setTitle(this.txtIssueGeneralSummary.getText().toString());
             issue.setCategory(this.txtIssueGeneralCategory.getText().toString());
             issue.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralView, "issues_general_view_values"), this.spIssueGeneralView.getSelectedItem().toString());
-            issue.setSeverity(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, this.severityValueArray), this.spIssueGeneralSeverity.getSelectedItem().toString());
+            if (this.rowIssueGeneralSeverity.getVisibility() == View.VISIBLE) {
+                issue.setSeverity(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, this.severityValueArray), this.spIssueGeneralSeverity.getSelectedItem().toString());
+            }
             issue.setReproducibility(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, "issues_general_reproducibility_values"), this.spIssueGeneralReproducibility.getSelectedItem().toString());
             issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.spIssueGeneralPriority.getSelectedItem().toString());
             issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.spIssueGeneralStatus.getSelectedItem().toString());
@@ -448,6 +450,18 @@ public final class IssueGeneralFragment extends AbstractFragment {
             case Github:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                break;
+            case Jira:
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_jira_values";
+                this.statusValueArray = "issues_general_status_jira_values";
                 break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);

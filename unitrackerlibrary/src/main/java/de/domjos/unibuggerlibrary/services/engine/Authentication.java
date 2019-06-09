@@ -110,6 +110,7 @@ public class Authentication extends DescriptionObject<Long> {
         MantisBT,
         RedMine,
         Bugzilla,
-        Github
+        Github,
+        Jira
     }
 }

@@ -255,6 +255,28 @@
         <item>---</item>
     </array>
 
+    <array name="issues_general_priority_jira_values_0">
+        <item>1</item>
+        <item>Highest</item>
+    </array>
+    <array name="issues_general_priority_jira_values_1">
+        <item>2</item>
+        <item>High</item>
+    </array>
+    <array name="issues_general_priority_jira_values_2">
+        <item>3</item>
+        <item>Medium</item>
+    </array>
+    <array name="issues_general_priority_jira_values_3">
+        <item>4</item>
+        <item>Low</item>
+    </array>
+    <array name="issues_general_priority_jira_values_4">
+        <item>5</item>
+        <item>Lowest</item>
+    </array>
+
+
     <array name="issues_general_status_mantisbt_values_0">
         <item>10</item>
         <item>Neu</item>
@@ -369,6 +391,19 @@
     <array name="issues_general_status_bugzilla_values_2">
         <item>3</item>
         <item>RESOLVED</item>
+    </array>
+
+    <array name="issues_general_status_jira_values_0">
+        <item>3</item>
+        <item>In Arbeit</item>
+    </array>
+    <array name="issues_general_status_jira_values_1">
+        <item>10000</item>
+        <item>Aufgaben</item>
+    </array>
+    <array name="issues_general_status_jira_values_2">
+        <item>10002</item>
+        <item>Fertig</item>
     </array>
 
 

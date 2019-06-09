@@ -293,6 +293,12 @@ public final class VersionActivity extends AbstractActivity {
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     break;
+                case Jira:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    break;
                 case Local:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
