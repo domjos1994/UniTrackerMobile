@@ -446,6 +446,10 @@ public final class ProjectActivity extends AbstractActivity {
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     break;
+                case PivotalTracker:
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowTimestamps.setVisibility(View.VISIBLE);
+                    break;
                 case Local:
                     this.rowProjectState.setVisibility(View.VISIBLE);
                     this.rowSubProjects.setVisibility(View.VISIBLE);

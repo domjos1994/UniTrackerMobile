@@ -44,6 +44,7 @@ import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
 import de.domjos.unibuggerlibrary.services.tracker.Github;
 import de.domjos.unibuggerlibrary.services.tracker.Jira;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
+import de.domjos.unibuggerlibrary.services.tracker.PivotalTracker;
 import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
 import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
@@ -110,6 +111,9 @@ public class Helper {
                         break;
                     case Jira:
                         bugService = new Jira(authentication);
+                        break;
+                    case PivotalTracker:
+                        bugService = new PivotalTracker(authentication);
                         break;
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context), authentication);

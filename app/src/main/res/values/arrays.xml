@@ -162,6 +162,19 @@
         <item>enhancement</item>
     </array>
 
+    <array name="issues_general_severity_pivotal_values_0">
+        <item>0</item>
+        <item>Bug</item>
+    </array>
+    <array name="issues_general_severity_pivotal_values_1">
+        <item>1</item>
+        <item>Feature</item>
+    </array>
+    <array name="issues_general_severity_pivotal_values_2">
+        <item>2</item>
+        <item>Chore</item>
+    </array>
+
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>
@@ -404,6 +417,31 @@
     <array name="issues_general_status_jira_values_2">
         <item>10002</item>
         <item>Fertig</item>
+    </array>
+
+    <array name="issues_general_status_pivotal_values_0">
+        <item>0</item>
+        <item>Unstarted</item>
+    </array>
+    <array name="issues_general_status_pivotal_values_1">
+        <item>1</item>
+        <item>Started</item>
+    </array>
+    <array name="issues_general_status_pivotal_values_2">
+        <item>2</item>
+        <item>Finished</item>
+    </array>
+    <array name="issues_general_status_pivotal_values_3">
+        <item>3</item>
+        <item>Delivered</item>
+    </array>
+    <array name="issues_general_status_pivotal_values_4">
+        <item>4</item>
+        <item>Rejected</item>
+    </array>
+    <array name="issues_general_status_pivotal_values_5">
+        <item>5</item>
+        <item>Accepted</item>
     </array>
 
 

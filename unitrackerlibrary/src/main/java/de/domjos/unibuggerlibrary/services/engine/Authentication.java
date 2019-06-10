@@ -111,6 +111,7 @@ public class Authentication extends DescriptionObject<Long> {
         RedMine,
         Bugzilla,
         Github,
-        Jira
+        Jira,
+        PivotalTracker
     }
 }

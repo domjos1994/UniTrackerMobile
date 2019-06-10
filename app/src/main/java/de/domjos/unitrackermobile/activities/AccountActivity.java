@@ -82,26 +82,39 @@ public final class AccountActivity extends AbstractActivity {
         this.cmbAccountTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (trackerAdapter.getItem(position) == Authentication.Tracker.Local) {
-                    if (txtAccountServer.getText().toString().isEmpty()) {
-                        txtAccountServer.setText(Authentication.Tracker.Local.name());
-                    }
-                } else if (trackerAdapter.getItem(position) == Authentication.Tracker.Github) {
-                    txtAccountServer.setText(getString(R.string.accounts_github_server));
-                } else {
-                    if (txtAccountServer.getText().toString().equals(Authentication.Tracker.Local.name())) {
-                        txtAccountServer.setText("");
-                    }
+                if (txtAccountServer.getText().toString().equals(Authentication.Tracker.Local.name())) {
+                    txtAccountServer.setText("");
                 }
 
-                if (trackerAdapter.getItem(cmbAccountTracker.getSelectedItemPosition()) == Authentication.Tracker.YouTrack) {
-                    if (chkAccountGuest.isChecked()) {
-                        accountValidator.removeValidator(txtAccountAPI);
-                    } else {
-                        accountValidator.addEmptyValidator(txtAccountAPI);
+                Authentication.Tracker item = trackerAdapter.getItem(position);
+                if (item != null) {
+                    switch (item) {
+                        case Local:
+                            if (txtAccountServer.getText().toString().isEmpty()) {
+                                txtAccountServer.setText(Authentication.Tracker.Local.name());
+                            }
+                            break;
+                        case Github:
+                            txtAccountServer.setText(getString(R.string.accounts_github_server));
+                        case YouTrack:
+                            if (chkAccountGuest.isChecked()) {
+                                accountValidator.removeValidator(txtAccountAPI);
+                            } else {
+                                accountValidator.addEmptyValidator(txtAccountAPI);
+                            }
+                            break;
+                        case PivotalTracker:
+                            txtAccountServer.setText(R.string.accounts_pivotal_server);
+                            if (chkAccountGuest.isChecked()) {
+                                accountValidator.removeValidator(txtAccountAPI);
+                            } else {
+                                accountValidator.addEmptyValidator(txtAccountAPI);
+                            }
+                            break;
+                        default:
+                            accountValidator.removeValidator(txtAccountAPI);
+                            break;
                     }
-                } else {
-                    accountValidator.removeValidator(txtAccountAPI);
                 }
             }
 

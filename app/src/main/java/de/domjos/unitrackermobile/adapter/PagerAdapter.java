@@ -104,7 +104,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
             }
             i++;
         }
-        if (this.bugService.getPermissions().listCustomFields()) {
+        if (this.bugService.getPermissions().listHistory()) {
             if (position == i) {
                 return this.history;
             }

@@ -39,6 +39,7 @@ import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
+import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -86,11 +87,21 @@ public final class IssueHistoryFragment extends AbstractFragment {
                         if (this.issue.getId() != null) {
                             List objects;
                             try {
+                                Object projectId = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
+                                long project_id = 0l;
+                                if (projectId != null) {
+                                    project_id = Long.parseLong(String.valueOf(projectId));
+                                }
                                 Long id = (Long) this.issue.getId();
-                                objects = bugService.getHistory(id, 0L);
+                                objects = bugService.getHistory(id, project_id);
                             } catch (Exception ex) {
+                                Object projectId = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
+                                String project_id = "";
+                                if (projectId != null) {
+                                    project_id = (String) projectId;
+                                }
                                 String id = String.valueOf(this.issue.getId());
-                                objects = bugService.getHistory(id, "");
+                                objects = bugService.getHistory(id, project_id);
                             }
 
                             if (objects != null) {
