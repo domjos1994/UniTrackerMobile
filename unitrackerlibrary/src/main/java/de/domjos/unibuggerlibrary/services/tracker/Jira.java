@@ -524,15 +524,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("filename", attachment.getFilename());
-        this.executeRequest("api/2/issue/" + issue_id + "/attachments", attachment.getContent(), jsonObject.toString(), "POST");
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-        this.deleteRequest("/rest/api/2/attachment/" + id);
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
     }
 
     @Override
@@ -573,10 +569,15 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         jsonObject.put("password", user.getPassword());
 
         if (user.getId() != null) {
-            this.executeRequest("/rest/api/2/user?username=" + user.getTitle(), jsonObject.toString(), "PUT");
-            JSONObject passwordObject = new JSONObject();
-            passwordObject.put("password", user.getPassword());
-            this.executeRequest("/rest/api/2/user/password?username=" + user.getTitle(), passwordObject.toString(), "PUT");
+            List<User<Long>> users = this.getUsers(project_id);
+            for (User<Long> tmp : users) {
+                if (tmp.getId().equals(user.getId())) {
+                    this.executeRequest("/rest/api/2/user?username=" + tmp.getTitle(), jsonObject.toString(), "PUT");
+                    JSONObject passwordObject = new JSONObject();
+                    passwordObject.put("password", user.getPassword());
+                    this.executeRequest("/rest/api/2/user/password?username=" + user.getTitle(), passwordObject.toString(), "PUT");
+                }
+            }
         } else {
             this.executeRequest("/rest/api/2/user", jsonObject.toString(), "POST");
         }

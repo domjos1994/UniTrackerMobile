@@ -108,17 +108,17 @@ public class JiraPermissions implements IFunctionImplemented {
 
     @Override
     public boolean addAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateAttachments() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return true;
+        return false;
     }
 
     @Override
