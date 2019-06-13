@@ -1,8 +1,8 @@
 /*
  * Copyright (C)  2019 Domjos
- * This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
+ * This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
  *
- * UniBuggerMobile is free software: you can redistribute it and/or modify
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 apply plugin: 'com.android.application'
