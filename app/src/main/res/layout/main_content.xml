@@ -16,7 +16,7 @@
   ~ along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -104,6 +104,17 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cmdIssueAdd"
+            app:srcCompat="@drawable/ic_add_circle_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_gravity="end"
+            android:layout_alignEnd="@+id/pagination"
+            android:layout_alignRight="@+id/pagination"
+            android:layout_above="@+id/pagination" />
+
         <LinearLayout
             android:id="@+id/pagination"
             android:layout_width="match_parent"
@@ -126,13 +137,4 @@
                 app:srcCompat="@drawable/ic_navigate_next_black_24dp" />
         </LinearLayout>
     </RelativeLayout>
-
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/cmdIssueAdd"
-        app:srcCompat="@drawable/ic_add_circle_black_24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_gravity="bottom|end" />
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

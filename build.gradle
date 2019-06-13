@@ -55,8 +55,9 @@ task customZip(type: Zip) {
     include '*.java'
     include 'data/*'
     include 'app/**'
-    include 'unibuggerlibrary/**'
-    exclude 'unibuggerlibrary/build'
+    include 'unitrackerlibrary/**'
+    include 'gradle.properties'
+    exclude 'unitrackerlibrary/build'
     exclude 'app/build'
     archiveName rootProject.name + '.zip'
     destinationDir(file(rootProject.rootDir))

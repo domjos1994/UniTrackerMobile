@@ -19,11 +19,12 @@
 package de.domjos.unitrackermobile.activities;
 
 import android.content.Context;
-import android.support.design.widget.BottomNavigationView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.domjos.unibuggerlibrary.model.Filter;
 import de.domjos.unibuggerlibrary.model.ListObject;

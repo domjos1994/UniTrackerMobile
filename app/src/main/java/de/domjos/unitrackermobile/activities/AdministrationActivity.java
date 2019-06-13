@@ -31,14 +31,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Attachment;
-import de.domjos.unibuggerlibrary.model.issues.CustomField;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.AdministrationTask;
 import de.domjos.unibuggerlibrary.tasks.FieldTask;
 import de.domjos.unibuggerlibrary.tasks.IssueTask;
 import de.domjos.unibuggerlibrary.tasks.ProjectTask;
@@ -151,6 +147,15 @@ public final class AdministrationActivity extends AbstractActivity {
                     case 0:
                         ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, this.bugService1, false, notify);
                         this.dataItemAdapter1.addAll(projectTask.execute(0L).get());
+                        for (int i = 0; i <= dataItemAdapter1.getCount() - 1; i++) {
+                            DescriptionObject descriptionObject = dataItemAdapter1.getItem(i);
+                            if (descriptionObject != null) {
+                                if (descriptionObject.getId().equals(project1.getId())) {
+                                    spDataItem1.setSelection(i);
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     case 1:
                         IssueTask issueTask = new IssueTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, false, notify);
@@ -182,98 +187,8 @@ public final class AdministrationActivity extends AbstractActivity {
             DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
             int dataPosition = this.spData1.getSelectedItemPosition();
 
-            if (project2 != null && project1 != null) {
-                Object id;
-                switch (dataPosition) {
-                    case 0:
-                        Project project = (Project) dataItem1;
-                        if (project != null) {
-                            id = project.getId();
-                            project.setId(null);
-                            for (int i = 0; i <= project.getVersions().size() - 1; i++) {
-                                ((Version) project.getVersions().get(i)).setId(null);
-                            }
-                            ProjectTask projectTask = new ProjectTask(act, this.bugService2, false, notify);
-                            projectTask.execute(project).get();
-
-                            if (move) {
-                                projectTask = new ProjectTask(act, this.bugService1, true, notify);
-                                projectTask.execute(id).get();
-                            }
-
-                            if (chkWithIssues.isChecked()) {
-                                Object newId = null;
-                                projectTask = new ProjectTask(act, this.bugService2, false, notify);
-                                List<Project> projects = projectTask.execute("").get();
-                                for (Project newProject : projects) {
-                                    if (newProject.getId().equals(project.getId())) {
-                                        newId = newProject.getId();
-                                    }
-                                }
-
-                                IssueTask issueTask = new IssueTask(act, this.bugService1, id, false, false, notify);
-                                List<Issue> issues = issueTask.execute("").get();
-                                for (Issue issue : issues) {
-                                    issueTask = new IssueTask(act, this.bugService1, id, false, true, notify);
-                                    issue = issueTask.execute(issue.getId()).get().get(0);
-                                    issue.setId(null);
-                                    for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
-                                        ((Attachment) issue.getAttachments().get(i)).setId(null);
-                                    }
-                                    for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
-                                        ((Note) issue.getNotes().get(i)).setId(null);
-                                    }
-
-                                    IssueTask newTask = new IssueTask(act, this.bugService2, newId, false, false, notify);
-                                    newTask.execute(issue).get();
-
-                                    if (move) {
-                                        issueTask = new IssueTask(act, this.bugService1, id, true, true, notify);
-                                        issueTask.execute(issue.getId()).get().get(0);
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case 1:
-                        Issue issue = (Issue) dataItem1;
-                        if (issue != null) {
-                            id = issue.getId();
-                            issue.setId(null);
-                            for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
-                                ((Attachment) issue.getAttachments().get(i)).setId(null);
-                            }
-                            for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
-                                ((Note) issue.getNotes().get(i)).setId(null);
-                            }
-
-                            IssueTask issueTask = new IssueTask(act, this.bugService2, project2.getId(), false, false, notify);
-                            issueTask.execute(issue).get();
-
-                            if (move) {
-                                issueTask = new IssueTask(act, this.bugService1, project1.getId(), true, false, notify);
-                                issueTask.execute(id).get();
-                            }
-                        }
-                        break;
-                    case 2:
-                        CustomField customField = (CustomField) dataItem1;
-                        if (customField != null) {
-                            id = customField.getId();
-                            customField.setId(null);
-
-                            FieldTask fieldTask = new FieldTask(act, this.bugService2, project2.getId(), false, notify);
-                            fieldTask.execute(customField).get();
-
-                            if (move) {
-                                fieldTask = new FieldTask(act, this.bugService1, project1.getId(), false, notify);
-                                fieldTask.execute(id).get();
-                            }
-                        }
-                        break;
-                }
-            }
-
+            AdministrationTask administrationTask = new AdministrationTask(act, notify, move, chkWithIssues.isChecked(), project1, project2, dataItem1, dataPosition);
+            administrationTask.execute(bugService1, bugService2).get();
             this.reloadAuthentications();
 
             String message = String.format(

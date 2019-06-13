@@ -36,6 +36,7 @@ import static android.content.Context.MODE_PRIVATE;
 public class Settings {
     private static final String AUTH = "auth_id";
     private static final String PROJECT = "current_project";
+    private static final String FILTER = "current_filter";
 
     private SharedPreferences preferences;
     private SharedPreferences userPreferences;
@@ -90,6 +91,20 @@ public class Settings {
         SharedPreferences.Editor editor = this.preferences.edit();
         editor.putString(Settings.PROJECT, id);
         editor.apply();
+    }
+
+    public IBugService.IssueFilter getCurrentFilter() {
+        String filter = this.preferences.getString(Settings.FILTER, "");
+        if (filter != null) {
+            if (!filter.isEmpty()) {
+                return IBugService.IssueFilter.valueOf(filter);
+            }
+        }
+        return IBugService.IssueFilter.all;
+    }
+
+    public void setCurrentFilter(IBugService.IssueFilter filter) {
+        this.preferences.edit().putString(Settings.FILTER, filter.name()).apply();
     }
 
     public boolean isFirstLogin() {

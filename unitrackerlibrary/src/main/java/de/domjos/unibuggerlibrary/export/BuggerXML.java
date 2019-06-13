@@ -28,14 +28,14 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 
-public class BuggerXML {
-    private IBugService bugService;
+public class BuggerXML<T> {
+    private IBugService<T> bugService;
     private Type type;
     private String path;
-    private Object pid;
-    private List<Object> ids;
+    private T pid;
+    private List<T> ids;
 
-    public BuggerXML(IBugService bugService, Type type, Object pid, List<Object> ids, String path) {
+    public BuggerXML(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
         this.bugService = bugService;
         this.type = type;
         this.path = path;
@@ -47,21 +47,21 @@ public class BuggerXML {
         switch (this.type) {
             case Projects:
                 List<Project> projects = new LinkedList<>();
-                for (Object id : this.ids) {
+                for (T id : this.ids) {
                     projects.add(this.bugService.getProject(id));
                 }
                 ObjectXML.saveObjectListToXML("Projects", projects, this.path);
                 break;
             case Issues:
                 List<Issue> issues = new LinkedList<>();
-                for (Object id : this.ids) {
+                for (T id : this.ids) {
                     issues.add(this.bugService.getIssue(id, this.pid));
                 }
                 ObjectXML.saveObjectListToXML("Issues", issues, this.path);
                 break;
             case CustomFields:
                 List<CustomField> customFields = new LinkedList<>();
-                for (Object id : this.ids) {
+                for (T id : this.ids) {
                     customFields.add(this.bugService.getCustomField(id, this.pid));
                 }
                 ObjectXML.saveObjectListToXML("CustomFields", customFields, this.path);

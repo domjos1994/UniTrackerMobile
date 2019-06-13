@@ -16,28 +16,25 @@
  * along with UniBuggerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unitrackermobile.fragments;
+package de.domjos.unitrackermobile.utils;
 
-import androidx.fragment.app.Fragment;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unitrackermobile.helper.Validator;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-public abstract class AbstractFragment extends Fragment {
+import de.domjos.unibuggerlibrary.utils.Crypto;
 
-    public abstract void setObject(DescriptionObject descriptionObject);
+import static org.junit.Assert.assertEquals;
 
-    public abstract DescriptionObject getObject(DescriptionObject descriptionObject);
+@RunWith(AndroidJUnit4ClassRunner.class)
+public class CryptoTest {
 
-    public abstract void manageControls(boolean editMode);
-
-    protected abstract void initData();
-
-    public abstract Validator initValidator();
-
-    public abstract void updateUITrackerSpecific();
-
-    public void setPid(String pid) {
-
+    @Test
+    public void testEncryption() throws Exception {
+        Crypto crypto = new Crypto(Helper.getContext(), "dfasdfsdafasdf");
+        String encrypted = crypto.encryptString("dies ist ein test");
+        String decrypted = crypto.decryptString(encrypted);
+        assertEquals(decrypted, "dies ist ein test");
     }
 }

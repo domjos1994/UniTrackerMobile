@@ -39,4 +39,7 @@
 
     <string name="task_export_title">Export</string>
     <string name="task_export_contet">Export läuft…</string>
+
+    <string name="task_administration_title">Administration</string>
+    <string name="task_administration_contet">Vorgang läuft…</string>
 </resources>

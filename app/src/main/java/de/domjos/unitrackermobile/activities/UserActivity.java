@@ -18,9 +18,10 @@
 
 package de.domjos.unitrackermobile.activities;
 
-import android.support.design.widget.BottomNavigationView;
 import android.widget.EditText;
 import android.widget.ListView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;

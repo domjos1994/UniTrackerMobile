@@ -19,7 +19,6 @@
 package de.domjos.unitrackermobile.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,6 +34,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TableRow.LayoutParams;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;

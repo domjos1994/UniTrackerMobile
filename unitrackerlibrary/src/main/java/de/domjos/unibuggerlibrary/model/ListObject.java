@@ -24,6 +24,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 
 public class ListObject {
@@ -37,7 +39,7 @@ public class ListObject {
 
         this.context = context;
         this.icon = null;
-        this.drawable = this.context.getResources().getDrawable(resID);
+        this.drawable = ResourcesCompat.getDrawable(this.context.getResources(), resID, null);
         this.descriptionObject = descriptionObject;
     }
 
@@ -72,9 +74,5 @@ public class ListObject {
 
     public DescriptionObject getDescriptionObject() {
         return this.descriptionObject;
-    }
-
-    public void setDescriptionObject(DescriptionObject descriptionObject) {
-        this.descriptionObject = descriptionObject;
     }
 }

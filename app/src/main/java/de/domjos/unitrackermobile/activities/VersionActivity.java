@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackermobile.activities;
 
-import android.support.design.widget.BottomNavigationView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
@@ -27,6 +26,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

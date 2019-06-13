@@ -38,10 +38,6 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
         this(activity, bugService, project_id, 1, -1, "", delete, oneDetailed, showNotifications);
     }
 
-    public IssueTask(Activity activity, IBugService bugService, Object project_id, String filter, boolean delete, boolean oneDetailed, boolean showNotifications) {
-        this(activity, bugService, project_id, 1, -1, filter, delete, oneDetailed, showNotifications);
-    }
-
     public IssueTask(Activity activity, IBugService bugService, Object project_id, int page, int numberOfItems, String filter, boolean delete, boolean oneDetailed, boolean showNotifications) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
         this.delete = delete;

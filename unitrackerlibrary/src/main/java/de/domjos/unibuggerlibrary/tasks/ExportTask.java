@@ -50,6 +50,7 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected Void doInBackground(Object... objects) {
         try {
             List<Object> objectList = Arrays.asList(objects);

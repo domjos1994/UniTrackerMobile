@@ -18,7 +18,7 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
@@ -140,6 +140,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
 
         if (object != null) {
+            this.state = 200;
             if (project.getId() == null) {
                 return (Long) object;
             } else {

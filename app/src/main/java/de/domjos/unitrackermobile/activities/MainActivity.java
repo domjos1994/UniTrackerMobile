@@ -21,14 +21,6 @@ package de.domjos.unitrackermobile.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.NavigationView.OnNavigationItemSelectedListener;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +35,17 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
@@ -209,6 +212,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.spMainFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                settings.setCurrentFilter(IBugService.IssueFilter.valueOf(filterAdapter.getItem(position)));
                 page = 1;
                 reload();
             }
@@ -464,11 +468,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void reload(String search) {
         try {
             if (!MainActivity.GLOBALS.getPassword().isEmpty()) {
+                this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
                 if (this.settings.getNumberOfItems() == -1) {
                     this.page = 1;
-                    this.pagination.setVisibility(View.GONE);
+                    this.pagination.setVisibility(View.INVISIBLE);
+                    this.pagination.getLayoutParams().height = 0;
                 } else {
                     this.pagination.setVisibility(View.VISIBLE);
+                    this.pagination.getLayoutParams().height = LinearLayoutCompat.LayoutParams.WRAP_CONTENT;
                 }
                 this.issueAdapter.clear();
                 boolean isLocal = true;

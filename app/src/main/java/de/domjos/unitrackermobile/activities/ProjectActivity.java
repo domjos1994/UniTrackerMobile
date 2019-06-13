@@ -19,7 +19,6 @@
 package de.domjos.unitrackermobile.activities;
 
 import android.os.Build;
-import android.support.design.widget.BottomNavigationView;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -30,6 +29,8 @@ import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -273,7 +274,12 @@ public final class ProjectActivity extends AbstractActivity {
 
     private void objectToControls() {
         if (this.currentProject != null) {
-            this.txtProjectTitle.setText(this.currentProject.getTitle());
+            String title = this.currentProject.getTitle();
+            while (title.startsWith("-")) {
+                title = title.substring(1);
+            }
+
+            this.txtProjectTitle.setText(title);
             this.txtProjectAlias.setText(this.currentProject.getAlias());
             this.txtProjectDescription.setText(this.currentProject.getDescription());
             this.chkProjectEnabled.setChecked(this.currentProject.isEnabled());
