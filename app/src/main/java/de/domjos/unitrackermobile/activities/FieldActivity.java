@@ -81,8 +81,10 @@ public final class FieldActivity extends AbstractActivity {
         try {
             this.fieldAdapter.clear();
             if (this.permissions.listCustomFields()) {
-                for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
-                    this.fieldAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
+                if (this.currentProject != null) {
+                    for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
+                        this.fieldAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
+                    }
                 }
             }
         } catch (Exception ex) {
