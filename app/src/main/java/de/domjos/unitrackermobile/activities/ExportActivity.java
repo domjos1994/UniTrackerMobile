@@ -92,10 +92,10 @@ public final class ExportActivity extends AbstractActivity {
             }
         });
 
-        this.cmdExportPath.setOnClickListener(v -> {
+        this.cmdExportPath.setOnClickListener(v ->{
             this.dialog.setDialogSelectionListener(files -> {
-                if (files != null) {
-                    if (files.length >= 1) {
+                if(files!=null) {
+                    if(files.length >= 1) {
                         String name = files[0] + File.separatorChar + this.createFileName();
                         this.txtExportPath.setText(name);
                     }

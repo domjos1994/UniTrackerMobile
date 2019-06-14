@@ -329,83 +329,33 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
-            this.showDialog();
+            Helper.showPasswordDialog(MainActivity.this, this.settings.isFirstLogin(), false, this::executeOnSuccess);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
     }
 
-    private void showDialog() {
+    private void executeOnSuccess() {
         try {
-            boolean firstLogin = this.settings.isFirstLogin();
+            this.reloadAccounts();
+            this.changeAuthentication();
+            this.reloadFilters();
+            this.reload();
 
-            Dialog pwdDialog = new Dialog(MainActivity.this);
-            pwdDialog.setContentView(R.layout.password_dialog);
-            final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
-            final EditText password2 = pwdDialog.findViewById(R.id.txtPassword2);
-            final Button cmdSubmit = pwdDialog.findViewById(R.id.cmdSubmit);
-            pwdDialog.setCancelable(false);
-            pwdDialog.setCanceledOnTouchOutside(false);
-            if (!firstLogin) {
-                pwdDialog.setTitle(R.string.pwd_title);
-            } else {
-                password2.setVisibility(View.GONE);
-                pwdDialog.setTitle(R.string.pwd_title_pwd);
-            }
-            if (MainActivity.GLOBALS.getPassword().isEmpty()) {
-                pwdDialog.show();
-                new Thread(() -> {
-                    while (pwdDialog.isShowing()) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (Exception ignored) {
+            Timer timer = new Timer();
+            if (this.settings.getReload() != -1) {
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (settings.getReload() == -1) {
+                            timer.cancel();
                         }
+                        runOnUiThread(() -> reload());
                     }
-                }).start();
-            } else {
-                this.executeOnSuccess();
+                }, 0, (this.settings.getReload() * 1000));
             }
-            cmdSubmit.setOnClickListener(v -> {
-                try {
-                    if (!firstLogin) {
-                        if (password1.getText().toString().equals(password2.getText().toString()) && password1.getText().toString().length() >= 4) {
-                            MainActivity.GLOBALS.setPassword(password1.getText().toString());
-                            this.executeOnSuccess();
-                            pwdDialog.cancel();
-                        }
-                    } else {
-                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
-                        this.executeOnSuccess();
-                        pwdDialog.cancel();
-                    }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, MainActivity.this);
-                }
-            });
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
-        }
-    }
-
-    private void executeOnSuccess() throws Exception {
-        MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(this.getApplicationContext(), MainActivity.GLOBALS.getPassword()));
-
-        this.reloadAccounts();
-        this.changeAuthentication();
-        this.reloadFilters();
-        this.reload();
-
-        Timer timer = new Timer();
-        if (this.settings.getReload() != -1) {
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    if (settings.getReload() == -1) {
-                        timer.cancel();
-                    }
-                    runOnUiThread(() -> reload());
-                }
-            }, 0, (this.settings.getReload() * 1000));
         }
     }
 

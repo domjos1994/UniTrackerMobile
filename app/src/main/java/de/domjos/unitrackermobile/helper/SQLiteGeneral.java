@@ -35,6 +35,7 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
+    static final String NO_PASS = "noPassword";
     private Context context;
     private String password;
     private Crypto crypto;
@@ -43,7 +44,22 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         super(context, "general.db", null, Helper.getVersionCode(context));
         this.context = context;
         this.password = password;
+
         this.crypto = new Crypto(context, this.password);
+    }
+
+    public void changePassword(String newPassword) throws Exception {
+        List<Authentication> accounts = this.getAccounts("");
+        if(newPassword.isEmpty()) {
+            newPassword = SQLiteGeneral.NO_PASS;
+        }
+        this.crypto = new Crypto(context, newPassword);
+        for(Authentication authentication : accounts) {
+            this.insertOrUpdateAccount(authentication);
+        }
+        this.getWritableDatabase().rawExecSQL("PRAGMA key = '" + this.password + "';");
+        this.getWritableDatabase().rawExecSQL("PRAGMA rekey = '" + newPassword + "';");
+        this.password = newPassword;
     }
 
     @Override
@@ -61,31 +77,61 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         return super.getReadableDatabase(this.password);
     }
 
+    private SQLiteDatabase getReadableDatabase(boolean onlyCheck) {
+        try {
+            if(onlyCheck) {
+                return super.getReadableDatabase(this.password);
+            }
+        } catch (Exception ignored){}
+        return null;
+    }
+
     private SQLiteDatabase getWritableDatabase() {
         return super.getWritableDatabase(this.password);
     }
 
     public List<Authentication> getAccounts(String where) {
+        return this.getAccounts(where, false);
+    }
+
+    List<Authentication> getAccounts(String where, boolean onlyCheck) {
         List<Authentication> authentications = new LinkedList<>();
         try {
-            Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : ""), null);
-            while (cursor.moveToNext()) {
-                Authentication authentication = new Authentication();
-                authentication.setServer(this.crypto.decryptString(this.getString(cursor, "serverName")));
-                authentication.setUserName(this.crypto.decryptString(this.getString(cursor, "userName")));
-                authentication.setPassword(this.crypto.decryptString(this.getString(cursor, "password")));
-                authentication.setAPIKey(this.getString(cursor, "apiKey"));
-                authentication.setTitle(this.getString(cursor, "title"));
-                authentication.setDescription(this.getString(cursor, "description"));
-                authentication.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
-                authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
-                authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
-                authentication.setGuest(cursor.getLong(cursor.getColumnIndex("guest")) == 1);
-                authentications.add(authentication);
+            Cursor cursor = null;
+            String sql = "SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : "");
+            if(onlyCheck) {
+                SQLiteDatabase database = this.getReadableDatabase(true);
+                if(database!=null) {
+                    cursor = database.rawQuery(sql, null);
+                }
+            } else {
+                cursor = this.getReadableDatabase().rawQuery(sql, null);
             }
-            cursor.close();
+            if(cursor!=null) {
+                while (cursor.moveToNext()) {
+                    Authentication authentication = new Authentication();
+                    authentication.setServer(this.crypto.decryptString(this.getString(cursor, "serverName")));
+                    authentication.setUserName(this.crypto.decryptString(this.getString(cursor, "userName")));
+                    authentication.setPassword(this.crypto.decryptString(this.getString(cursor, "password")));
+                    authentication.setAPIKey(this.getString(cursor, "apiKey"));
+                    authentication.setTitle(this.getString(cursor, "title"));
+                    authentication.setDescription(this.getString(cursor, "description"));
+                    authentication.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
+                    authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
+                    authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
+                    authentication.setGuest(cursor.getLong(cursor.getColumnIndex("guest")) == 1);
+                    authentications.add(authentication);
+                }
+                cursor.close();
+            } else {
+                return null;
+            }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            if(onlyCheck) {
+                return null;
+            } else {
+                MessageHelper.printException(ex, this.context);
+            }
         }
         return authentications;
     }
@@ -102,10 +148,10 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker, guest) VALUES(?,?,?,?,?,?,?,?,?)");
                 }
                 stmt.bindString(1, authentication.getTitle());
-                stmt.bindString(2, this.crypto.encryptString(authentication.getServer()));
                 stmt.bindString(3, authentication.getAPIKey());
                 stmt.bindString(4, this.crypto.encryptString(authentication.getUserName()));
                 stmt.bindString(5, this.crypto.encryptString(authentication.getPassword()));
+                stmt.bindString(2, this.crypto.encryptString(authentication.getServer()));
                 stmt.bindString(6, authentication.getDescription());
                 if (authentication.getCover() != null) {
                     stmt.bindBlob(7, authentication.getCover());

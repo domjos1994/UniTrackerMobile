@@ -135,6 +135,12 @@
     <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
     <string name="settings_general_reload">Fehler automatisch neu laden</string>
     <string name="settings_general_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren)</string>
+    <string name="settings_security">Sicherheit</string>
+    <string name="settings_security_summary">Ändern Sie hier die Einstellungen zur Sicherheit der App!</string>
+    <string name="settings_security_enable">Verschlüsselung aktivieren!</string>
+    <string name="settings_security_enable_summary">Verschlüsselung der Datenbank aktivieren!</string>
+    <string name="settings_security_password">Passwort ändern!</string>
+    <string name="settings_security_password_summary">Ändern Sie das Passwort für die Verschlüsselung der Datenbank!</string>
 
     <string name="export">Export</string>
     <string name="export_path">Pfad</string>

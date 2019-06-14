@@ -53,7 +53,7 @@ final class ObjectPDF {
 
 
     static void saveObjectToPDF(List lst, String path) throws Exception {
-        Map<String, Font> fonts = new LinkedHashMap<>();
+        Map<String, Font> fonts  = new LinkedHashMap<>();
         fonts.put(H1, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC, BaseColor.BLACK));
         fonts.put(H2, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.BLACK));
         fonts.put(H3, new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLACK));
@@ -65,7 +65,7 @@ final class ObjectPDF {
         writer.setPageEvent(new Footer(lst.size()));
         pdfDocument.open();
 
-        for (Object object : lst) {
+        for(Object object : lst) {
             pdfDocument.newPage();
             ObjectPDF.saveElementToPDF(object, pdfDocument, fonts);
         }
@@ -74,7 +74,7 @@ final class ObjectPDF {
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
-        if (object instanceof Project) {
+        if(object instanceof Project) {
             Project project = (Project) object;
             pdfDocument.add(ObjectPDF.addTitle(project.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
@@ -97,10 +97,10 @@ final class ObjectPDF {
             pdfDocument.add(ObjectPDF.addParagraph("Description", project.getDescription(), fonts.get(H3), fonts.get(BODY)));
             pdfDocument.add(ObjectPDF.addEmptyLine(2));
 
-            if (!project.getVersions().isEmpty()) {
+            if(!project.getVersions().isEmpty()) {
                 List<String> header = Arrays.asList("Title", "Description", "Released", "Obsolete");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for (Object obj : project.getVersions()) {
+                for(Object obj : project.getVersions()) {
                     Version version = (Version) obj;
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
                     mp.add(new AbstractMap.SimpleEntry<>(version.getTitle(), BaseColor.LIGHT_GRAY));
@@ -111,7 +111,7 @@ final class ObjectPDF {
                 }
                 ObjectPDF.addTable(header, null, cells);
             }
-        } else if (object instanceof Issue) {
+        } else if(object instanceof Issue) {
             Issue issue = (Issue) object;
             pdfDocument.add(ObjectPDF.addTitle(issue.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
@@ -127,10 +127,10 @@ final class ObjectPDF {
             builder.append("Version").append("\t\t: ").append(issue.getVersion()).append("\n");
             builder.append("Target Version").append("\t\t: ").append(issue.getTargetVersion()).append("\n");
             builder.append("Fixed In Version").append("\t\t: ").append(issue.getFixedInVersion()).append("\n");
-            if (issue.getHandler() != null) {
+            if(issue.getHandler()!=null) {
                 builder.append("Handler").append("\t\t: ").append(issue.getHandler().getTitle()).append("\n");
             }
-            if (issue.getDueDate() != null) {
+            if(issue.getDueDate()!=null) {
                 builder.append("Due Date").append("\t\t: ").append(sdf.format(issue.getDueDate())).append("\n");
             }
             builder.append("Creation").append("\t\t: ").append(sdf.format(issue.getSubmitDate())).append("\n");
@@ -145,10 +145,10 @@ final class ObjectPDF {
             pdfDocument.add(ObjectPDF.addParagraph("Additional Information", issue.getAdditionalInformation(), fonts.get(H3), fonts.get(BODY)));
             pdfDocument.add(ObjectPDF.addEmptyLine(2));
 
-            if (!issue.getNotes().isEmpty()) {
+            if(!issue.getNotes().isEmpty()) {
                 List<String> headers = Arrays.asList("Title", "Description");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for (Object obj : issue.getNotes()) {
+                for(Object obj : issue.getNotes()) {
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
                     Note note = (Note) obj;
                     mp.add(new AbstractMap.SimpleEntry<>(note.getTitle(), BaseColor.LIGHT_GRAY));
@@ -159,10 +159,10 @@ final class ObjectPDF {
                 pdfDocument.add(ObjectPDF.addTable(headers, new float[]{20f, 80f}, cells));
             }
 
-            if (!issue.getCustomFields().isEmpty()) {
+            if(!issue.getCustomFields().isEmpty()) {
                 List<String> headers = Arrays.asList("Title", "Type", "Value");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for (Object obj : issue.getCustomFields().entrySet()) {
+                for(Object obj : issue.getCustomFields().entrySet()) {
                     Map.Entry entry = (Map.Entry) obj;
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
                     CustomField customField = (CustomField) entry.getKey();
@@ -174,7 +174,7 @@ final class ObjectPDF {
                 }
                 pdfDocument.add(ObjectPDF.addTable(headers, new float[]{20f, 20f, 60f}, cells));
             }
-        } else if (object instanceof CustomField) {
+        } else if(object instanceof CustomField) {
             CustomField customField = (CustomField) object;
             pdfDocument.add(ObjectPDF.addTitle(customField.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
@@ -207,19 +207,19 @@ final class ObjectPDF {
 
     private static PdfPTable addTable(List<String> headers, float[] headerWidth, List<List<Map.Entry<String, BaseColor>>> cells) throws Exception {
         PdfPTable table = new PdfPTable(headers.size());
-        if (headerWidth != null) {
+        if(headerWidth!=null) {
             table.setWidths(headerWidth);
         }
 
-        for (String header : headers) {
+        for(String header : headers) {
             PdfPCell cell = new PdfPCell(new Phrase(header, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC)));
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
             table.addCell(cell);
         }
 
-        for (List<Map.Entry<String, BaseColor>> row : cells) {
-            for (Map.Entry<String, BaseColor> cellItem : row) {
+        for(List<Map.Entry<String, BaseColor>> row : cells) {
+            for(Map.Entry<String, BaseColor> cellItem : row) {
                 PdfPCell cell = new PdfPCell(new Phrase(cellItem.getKey(), new Font(Font.FontFamily.HELVETICA, 14, Font.NORMAL)));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 cell.setBackgroundColor(cellItem.getValue());
@@ -247,7 +247,7 @@ final class ObjectPDF {
 
         public void onEndPage(PdfWriter writer, Document document) {
             Rectangle rect = writer.getBoxSize("art");
-            ColumnText.showTextAligned(writer.getDirectContent(), Element.ALIGN_CENTER, new Phrase(document.getPageNumber() + " / " + this.maxPage), rect.getRight(), rect.getBottom(), 0);
+            ColumnText.showTextAligned(writer.getDirectContent(),Element.ALIGN_CENTER, new Phrase(document.getPageNumber() + " / " + this.maxPage), rect.getRight(), rect.getBottom(), 0);
         }
     }
 }

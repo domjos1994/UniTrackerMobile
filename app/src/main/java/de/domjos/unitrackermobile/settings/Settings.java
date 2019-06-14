@@ -119,6 +119,10 @@ public class Settings {
         return this.userPreferences.getBoolean("swtNotifications", false);
     }
 
+    public boolean isEncryptionEnabled() {
+        return this.userPreferences.getBoolean("swtSecurityEnable", true);
+    }
+
     public int getNumberOfItems() {
         String strNumber = this.userPreferences.getString("txtNumberOfItems", "-1");
         if (strNumber != null) {

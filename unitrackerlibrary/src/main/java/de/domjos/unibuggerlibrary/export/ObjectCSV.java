@@ -32,7 +32,7 @@ final class ObjectCSV {
     static void saveObjectToCSV(List lst, String path) throws Exception {
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(path));
         StringBuilder content = new StringBuilder();
-        for (Object obj : lst) {
+        for(Object obj : lst) {
             content.append(ObjectCSV.convertObjectToString(obj, obj.getClass(), content));
             content.append("\n");
         }
@@ -41,7 +41,7 @@ final class ObjectCSV {
     }
 
     private static StringBuilder convertObjectToString(Object object, Class cls, StringBuilder content) throws Exception {
-        if (!cls.getName().contains("BaseObject")) {
+        if(!cls.getName().contains("BaseObject")) {
             if (cls.getSuperclass() != null) {
                 content.append(ObjectCSV.convertObjectToString(object, cls.getSuperclass(), content));
             }
@@ -56,7 +56,7 @@ final class ObjectCSV {
                         content.append(";");
                     } else if (field.getType() == Date.class) {
                         if (field.get(object) != null) {
-                            String date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format((Date) field.get(object));
+                            String date =  new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format((Date) field.get(object));
                             content.append(date);
                             content.append(";");
                         } else {
@@ -67,8 +67,8 @@ final class ObjectCSV {
                         for (Object subObject : (List) field.get(object)) {
                             content.append(ObjectCSV.convertObjectToString(subObject, subObject.getClass(), content));
                         }
-                    } else if (field.getType() == java.util.Map.class) {
-                        for (Object obj : ((Map) field.get(object)).entrySet()) {
+                    } else if(field.getType() == java.util.Map.class) {
+                        for(Object obj : ((Map)  field.get(object)).entrySet()) {
                             Map.Entry entry = (Map.Entry) obj;
                             content.append(entry.getKey().toString());
                             content.append("=");
@@ -76,7 +76,7 @@ final class ObjectCSV {
                             content.append(",");
                         }
                         content.append(";");
-                    } else {
+                    } else  {
                         content.append(ObjectCSV.convertObjectToString(field.get(object), field.get(object).getClass(), content));
                     }
                 }
