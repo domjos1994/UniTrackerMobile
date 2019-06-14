@@ -39,8 +39,7 @@
         <activity
             android:name="de.domjos.unitrackermobile.activities.ExportActivity"
             android:label="@string/export"
-            android:parentActivityName="de.domjos.unitrackermobile.activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:parentActivityName="de.domjos.unitrackermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.domjos.unitrackermobile.activities.MainActivity" />

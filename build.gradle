@@ -53,7 +53,7 @@ task customZip(type: Zip) {
     include 'LICENSE'
     include 'README.md'
     include '*.java'
-    include 'data/*'
+    include 'data/**'
     include 'app/**'
     include 'unitrackerlibrary/**'
     include 'gradle.properties'

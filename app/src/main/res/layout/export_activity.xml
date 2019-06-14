@@ -178,7 +178,6 @@
         </TableRow>
 
         <TableRow>
-
             <ImageButton
                 android:id="@+id/cmdExportPath"
                 app:srcCompat="@drawable/ic_search_black_24dp"
