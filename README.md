@@ -44,7 +44,12 @@ A copy of the License is in the License-Folder.
 
 ###  Android FilePicker
 The Application uses Android FilePicker from Angad Singh.<br/>
-The Library is licensed under the Apache License Version 2..<br/>
+The Library is licensed under the Apache License Version 2.<br/>
+A copy of the License is in the License-Folder.
+
+### iTextG
+The Application uses iTextG developed by iText.<br/>
+The Library is licensed under the Apache GNU Affero General Public License version 3.<br/>
 A copy of the License is in the License-Folder.
 
 ## License

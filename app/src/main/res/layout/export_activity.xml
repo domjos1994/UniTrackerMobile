@@ -160,18 +160,29 @@
 
             <EditText
                 android:id="@+id/txtExportPath"
-                android:inputType="text"
-                android:layout_weight="9"
+                android:inputType="none"
+                android:layout_weight="7"
                 android:layout_width="0dp"
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:hint="@string/export_path"
                 android:layout_margin="4dp" />
 
+            <Spinner
+                android:id="@+id/spExportPath"
+                android:entries="@array/export_path_extensions"
+                android:layout_weight="3"
+                android:layout_width="0dp" />
+
+
+        </TableRow>
+
+        <TableRow>
+
             <ImageButton
                 android:id="@+id/cmdExportPath"
                 app:srcCompat="@drawable/ic_search_black_24dp"
-                android:layout_weight="1"
+                android:layout_weight="10"
                 android:layout_width="0dp" />
         </TableRow>
     </TableLayout>

@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 
+import androidx.annotation.NonNull;
+
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
@@ -57,7 +59,7 @@ public final class ExportActivity extends AbstractActivity {
     private Button cmdExport;
     private ImageButton cmdExportPath;
     private EditText txtExportPath;
-    private Spinner spBugTracker, spProjects, spData;
+    private Spinner spBugTracker, spProjects, spData, spExportPath;
     private ArrayAdapter<String> dataAdapter;
     private ArrayAdapter<IBugService> bugTrackerAdapter;
     private ArrayAdapter<Project> projectAdapter;
@@ -108,7 +110,7 @@ public final class ExportActivity extends AbstractActivity {
                 IBugService bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
                 Project project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
                 BuggerXML.Type type = BuggerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
-                String file = this.txtExportPath.getText().toString();
+                String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
                     ExportTask exportTask = new ExportTask(ExportActivity.this, bugService, type, project.getId(), file, notify);
@@ -148,6 +150,7 @@ public final class ExportActivity extends AbstractActivity {
 
         this.cmdExport = this.findViewById(R.id.cmdExport);
         this.cmdExportPath = this.findViewById(R.id.cmdExportPath);
+        this.spExportPath = this.findViewById(R.id.spExportPath);
         this.txtExportPath = this.findViewById(R.id.txtExportPath);
 
         this.spBugTracker = this.findViewById(R.id.spBugTracker);
@@ -170,7 +173,7 @@ public final class ExportActivity extends AbstractActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
             setResult(RESULT_OK);
@@ -201,7 +204,7 @@ public final class ExportActivity extends AbstractActivity {
     }
 
     private String createFileName() {
-        return "export_" + new Date().getTime() + ".xml";
+        return "export_" + new Date().getTime();
     }
 
     private void initDialog() {

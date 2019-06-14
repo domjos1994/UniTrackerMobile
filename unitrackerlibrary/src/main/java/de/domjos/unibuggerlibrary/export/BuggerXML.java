@@ -28,21 +28,13 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 
-public class BuggerXML<T> {
-    private IBugService<T> bugService;
-    private Type type;
-    private String path;
-    private T pid;
-    private List<T> ids;
+public final class BuggerXML<T> extends AbstractBugger<T> {
 
     public BuggerXML(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
-        this.bugService = bugService;
-        this.type = type;
-        this.path = path;
-        this.pid = pid;
-        this.ids = ids;
+        super(bugService, type, pid, ids, path);
     }
 
+    @Override
     public void doExport() throws Exception {
         switch (this.type) {
             case Projects:
@@ -70,11 +62,5 @@ public class BuggerXML<T> {
                 return;
         }
         Log.v("Msg", "finish!");
-    }
-
-    public enum Type {
-        Projects,
-        Issues,
-        CustomFields
     }
 }

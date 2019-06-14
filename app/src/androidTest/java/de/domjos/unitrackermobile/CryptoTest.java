@@ -18,7 +18,7 @@
 
 package de.domjos.unitrackermobile;
 
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,7 +27,7 @@ import de.domjos.unibuggerlibrary.utils.Crypto;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(AndroidJUnit4ClassRunner.class)
 public class CryptoTest {
 
     @Test

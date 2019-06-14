@@ -24,6 +24,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.R;
+import de.domjos.unibuggerlibrary.export.BuggerCSV;
+import de.domjos.unibuggerlibrary.export.BuggerPDF;
 import de.domjos.unibuggerlibrary.export.BuggerXML;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 
@@ -53,9 +55,25 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     @SuppressWarnings("unchecked")
     protected Void doInBackground(Object... objects) {
         try {
+            String[] splPath = this.path.split("\\.");
+            String extension = splPath[splPath.length - 1];
             List<Object> objectList = Arrays.asList(objects);
-            BuggerXML buggerXML = new BuggerXML(super.bugService, this.type, this.project_id, objectList, this.path);
-            buggerXML.doExport();
+
+            switch (extension.trim().toLowerCase()) {
+                case "xml":
+                    BuggerXML buggerXML = new BuggerXML(super.bugService, this.type, this.project_id, objectList, this.path);
+                    buggerXML.doExport();
+                    break;
+                case "txt":
+                case "csv":
+                    BuggerCSV buggerCSV = new BuggerCSV(super.bugService, this.type, this.project_id, objectList, this.path);
+                    buggerCSV.doExport();
+                    break;
+                case "pdf":
+                    BuggerPDF buggerPDF = new BuggerPDF(super.bugService, this.type, this.project_id, objectList, this.path);
+                    buggerPDF.doExport();
+                    break;
+            }
         } catch (Exception ex) {
             super.printException(ex);
         }
