@@ -138,6 +138,7 @@
 
     <string name="export">Export</string>
     <string name="export_path">Pfad</string>
+    <string name="export_path_choose">Datei wählen</string>
     <string name="export_success">Export erfolgreich!</string>
 
     <string name="administration">Administration</string>

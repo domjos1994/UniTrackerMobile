@@ -25,7 +25,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
+
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
 import java.util.Date;
@@ -50,12 +55,14 @@ import de.domjos.unitrackermobile.settings.Settings;
 
 public final class ExportActivity extends AbstractActivity {
     private Button cmdExport;
+    private ImageButton cmdExportPath;
     private EditText txtExportPath;
     private Spinner spBugTracker, spProjects, spData;
     private ArrayAdapter<String> dataAdapter;
     private ArrayAdapter<IBugService> bugTrackerAdapter;
     private ArrayAdapter<Project> projectAdapter;
     private Settings settings;
+    private FilePickerDialog dialog;
 
     public ExportActivity() {
         super(R.layout.export_activity);
@@ -81,6 +88,18 @@ public final class ExportActivity extends AbstractActivity {
             public void onNothingSelected(AdapterView<?> parent) {
                 projectAdapter.clear();
             }
+        });
+
+        this.cmdExportPath.setOnClickListener(v -> {
+            this.dialog.setDialogSelectionListener(files -> {
+                if (files != null) {
+                    if (files.length >= 1) {
+                        String name = files[0] + File.separatorChar + this.createFileName();
+                        this.txtExportPath.setText(name);
+                    }
+                }
+            });
+            this.dialog.show();
         });
 
         this.cmdExport.setOnClickListener(v -> {
@@ -128,6 +147,7 @@ public final class ExportActivity extends AbstractActivity {
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
         this.cmdExport = this.findViewById(R.id.cmdExport);
+        this.cmdExportPath = this.findViewById(R.id.cmdExportPath);
         this.txtExportPath = this.findViewById(R.id.txtExportPath);
 
         this.spBugTracker = this.findViewById(R.id.spBugTracker);
@@ -174,7 +194,27 @@ public final class ExportActivity extends AbstractActivity {
                 return;
             }
         }
-        File file = new File(dir.getAbsolutePath() + File.separatorChar + "export_" + new Date().getTime() + ".xml");
+        File file = new File(dir.getAbsolutePath() + File.separatorChar + this.createFileName());
         this.txtExportPath.setText(file.toString());
+
+        this.initDialog();
+    }
+
+    private String createFileName() {
+        return "export_" + new Date().getTime() + ".xml";
+    }
+
+    private void initDialog() {
+        DialogProperties dialogProperties = new DialogProperties();
+        dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
+        dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
+        dialogProperties.extensions = null;
+
+        this.dialog = new FilePickerDialog(ExportActivity.this, dialogProperties);
+        this.dialog.setCancelable(true);
+        this.dialog.setTitle(this.getString(R.string.export_path_choose));
     }
 }

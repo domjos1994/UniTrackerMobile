@@ -42,6 +42,11 @@ The Application uses KSoap2-Android from simpligility.<br/>
 The Library is under the MIT-License.<br/>
 A copy of the License is in the License-Folder.
 
+###  Android FilePicker
+The Application uses Android FilePicker from Angad Singh.<br/>
+The Library is licensed under the Apache License Version 2..<br/>
+A copy of the License is in the License-Folder.
+
 ## License
 
 Copyright (C)  2019 Domjos
