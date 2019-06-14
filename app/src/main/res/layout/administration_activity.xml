@@ -126,7 +126,7 @@
                 android:text="@string/administration_data"
                 android:layout_margin="4dp" />
         </TableRow>
-
+        ,
         <TableRow>
 
             <TextView

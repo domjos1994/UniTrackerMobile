@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -82,6 +83,7 @@ public final class AdministrationActivity extends AbstractActivity {
                         dataAdapter1.clear();
                         dataAdapter1.addAll(Arrays.asList(getResources().getStringArray(R.array.administration_data)));
                     }
+                    checkPermissions();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, AdministrationActivity.this);
                 }
@@ -103,6 +105,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     for (Object object : projectTask.execute(0L).get()) {
                         projectAdapter2.add((Project) object);
                     }
+                    checkPermissions();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, AdministrationActivity.this);
                 }
@@ -116,6 +119,7 @@ public final class AdministrationActivity extends AbstractActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 reloadData1(spData1.getSelectedItemPosition(), position);
+                checkPermissions();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
@@ -126,6 +130,7 @@ public final class AdministrationActivity extends AbstractActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 reloadData1(position, spProject1.getSelectedItemPosition());
+                checkPermissions();
             }
 
             @Override
@@ -133,8 +138,69 @@ public final class AdministrationActivity extends AbstractActivity {
             }
         });
 
+        this.chkWithIssues.setOnCheckedChangeListener((buttonView, isChecked) -> checkPermissions());
         this.cmdCopy.setOnClickListener((v) -> this.writeData(false));
         this.cmdMove.setOnClickListener((v) -> this.writeData(true));
+    }
+
+    private void checkPermissions() {
+        if (this.bugService1 != null) {
+            if (this.bugService1.getPermissions() != null) {
+                IFunctionImplemented func = this.bugService1.getPermissions();
+
+                switch (this.spData1.getSelectedItemPosition()) {
+                    case 0:
+                        this.cmdMove.setEnabled(func.deleteProjects() && func.listProjects());
+                        this.cmdCopy.setEnabled(func.listProjects());
+                        if (this.chkWithIssues.isChecked()) {
+                            if (this.cmdMove.isEnabled()) {
+                                this.cmdMove.setEnabled(func.deleteIssues() && func.listIssues());
+                            }
+                            if (this.cmdCopy.isEnabled()) {
+                                this.cmdCopy.setEnabled(func.listIssues());
+                            }
+                        }
+                        break;
+                    case 1:
+                        this.cmdMove.setEnabled(func.deleteIssues() && func.listIssues());
+                        this.cmdCopy.setEnabled(func.listIssues());
+                        break;
+                    case 2:
+                        this.cmdMove.setEnabled(func.deleteCustomFields() && func.listCustomFields());
+                        this.cmdCopy.setEnabled(func.listCustomFields());
+                        break;
+                }
+            }
+        }
+
+        if (this.bugService2 != null) {
+            if (this.bugService2.getPermissions() != null) {
+                IFunctionImplemented func = this.bugService2.getPermissions();
+
+                switch (this.spData1.getSelectedItemPosition()) {
+                    case 0:
+                        this.cmdMove.setEnabled(this.cmdMove.isEnabled() && func.addProjects());
+                        this.cmdCopy.setEnabled(this.cmdCopy.isEnabled() && func.addProjects());
+                        if (this.chkWithIssues.isChecked()) {
+                            if (this.cmdMove.isEnabled()) {
+                                this.cmdMove.setEnabled(func.deleteIssues() && func.addIssues());
+                            }
+                            if (this.cmdCopy.isEnabled()) {
+                                this.cmdCopy.setEnabled(func.addIssues());
+                            }
+                        }
+                        break;
+                    case 1:
+                        this.cmdMove.setEnabled(this.cmdMove.isEnabled() && func.addIssues());
+                        this.cmdCopy.setEnabled(this.cmdCopy.isEnabled() && func.addIssues());
+                        break;
+                    case 2:
+                        this.cmdMove.setEnabled(this.cmdMove.isEnabled() && func.addCustomFields());
+                        this.cmdCopy.setEnabled(this.cmdCopy.isEnabled() && func.addCustomFields());
+                        break;
+                }
+            }
+        }
     }
 
     private void reloadData1(int data, int projectPosition) {
