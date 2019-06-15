@@ -73,10 +73,12 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
                         if (project != null) {
                             id = project.getId();
                             project.setId(null);
+                            project.setTitle(project.getTitle().replace("-", ""));
+
                             for (int i = 0; i <= project.getVersions().size() - 1; i++) {
                                 ((Version) project.getVersions().get(i)).setId(null);
                             }
-                            bugService2.insertOrUpdateProject(project);
+                            Object objId = bugService2.insertOrUpdateProject(project);
 
                             if (move) {
                                 bugService1.deleteProject(id);
@@ -87,7 +89,7 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
 
                                 List<Project> projects = bugService2.getProjects();
                                 for (Project newProject : projects) {
-                                    if (newProject.getId().equals(project.getId())) {
+                                    if (newProject.getId().equals(objId)) {
                                         newId = newProject.getId();
                                     }
                                 }
@@ -102,6 +104,8 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
                                     for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
                                         ((Note) issue.getNotes().get(i)).setId(null);
                                     }
+
+                                    issue.getCustomFields().clear();
 
                                     bugService2.insertOrUpdateIssue(issue, newId);
 

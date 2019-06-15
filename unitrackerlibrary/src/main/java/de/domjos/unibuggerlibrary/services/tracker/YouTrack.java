@@ -123,6 +123,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             method = "POST";
         }
         JSONObject jsonObject = new JSONObject();
+        if (project.getAlias().trim().isEmpty()) {
+            project.setAlias(project.getTitle().replace(" ", "_").toLowerCase().replace("-", "_"));
+        }
         jsonObject.put("shortName", project.getAlias());
         jsonObject.put("name", project.getTitle());
         jsonObject.put("description", project.getDescription());
@@ -283,99 +286,101 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     @Override
     public Issue<String> getIssue(String id, String project_id) throws Exception {
         Issue<String> issue = new Issue<>();
-        if (!id.equals("")) {
-            int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
-            if (status == 200 || status == 201) {
-                JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-                issue.setId(jsonObject.getString("id"));
-                this.getHistory(issue.getId(), project_id);
-                issue.setTitle(jsonObject.getString("summary"));
-                issue.setDescription(jsonObject.getString("description"));
+        if (id != null) {
+            if (!id.equals("")) {
+                int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
+                if (status == 200 || status == 201) {
+                    JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                    issue.setId(jsonObject.getString("id"));
+                    this.getHistory(issue.getId(), project_id);
+                    issue.setTitle(jsonObject.getString("summary"));
+                    issue.setDescription(jsonObject.getString("description"));
 
-                if (jsonObject.has("created")) {
-                    long created = jsonObject.getLong("created");
-                    if (created != 0) {
-                        Date date = new Date();
-                        date.setTime(created);
-                        issue.setSubmitDate(date);
-                    }
-                }
-                if (jsonObject.has("updated")) {
-                    long updated = jsonObject.getLong("updated");
-                    if (updated != 0) {
-                        Date date = new Date();
-                        date.setTime(updated);
-                        issue.setLastUpdated(date);
-                    }
-                }
-
-                if (jsonObject.has("tags")) {
-                    if (!jsonObject.isNull("tags")) {
-                        JSONArray jsonArray = jsonObject.getJSONArray("tags");
-                        StringBuilder tags = new StringBuilder();
-                        for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                            tags.append(jsonArray.getJSONObject(i).getString("name"));
-                            tags.append(",");
+                    if (jsonObject.has("created")) {
+                        long created = jsonObject.getLong("created");
+                        if (created != 0) {
+                            Date date = new Date();
+                            date.setTime(created);
+                            issue.setSubmitDate(date);
                         }
-                        issue.setTags(tags.toString());
                     }
-                }
+                    if (jsonObject.has("updated")) {
+                        long updated = jsonObject.getLong("updated");
+                        if (updated != 0) {
+                            Date date = new Date();
+                            date.setTime(updated);
+                            issue.setLastUpdated(date);
+                        }
+                    }
+
+                    if (jsonObject.has("tags")) {
+                        if (!jsonObject.isNull("tags")) {
+                            JSONArray jsonArray = jsonObject.getJSONArray("tags");
+                            StringBuilder tags = new StringBuilder();
+                            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                                tags.append(jsonArray.getJSONObject(i).getString("name"));
+                                tags.append(",");
+                            }
+                            issue.setTags(tags.toString());
+                        }
+                    }
 
 
-                JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
-                for (int i = 0; i <= customFieldArray.length() - 1; i++) {
-                    JSONObject customFieldObject = customFieldArray.getJSONObject(i);
-                    if (customFieldObject.has("projectCustomField")) {
-                        if (!customFieldObject.isNull("projectCustomField")) {
-                            JSONObject projectCustomField = customFieldObject.getJSONObject("projectCustomField");
-                            if (projectCustomField.has("field")) {
-                                if (!projectCustomField.isNull("field")) {
-                                    String fieldId = projectCustomField.getJSONObject("field").getString("id");
+                    JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
+                    for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                        JSONObject customFieldObject = customFieldArray.getJSONObject(i);
+                        if (customFieldObject.has("projectCustomField")) {
+                            if (!customFieldObject.isNull("projectCustomField")) {
+                                JSONObject projectCustomField = customFieldObject.getJSONObject("projectCustomField");
+                                if (projectCustomField.has("field")) {
+                                    if (!projectCustomField.isNull("field")) {
+                                        String fieldId = projectCustomField.getJSONObject("field").getString("id");
 
 
-                                    String valueName = "";
-                                    if (customFieldObject.has("value")) {
-                                        if (!customFieldObject.isNull("value")) {
-                                            if (customFieldObject.get("value") instanceof Long) {
-                                                Date date = new Date();
-                                                date.setTime(customFieldObject.getLong("value"));
-                                                valueName = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date);
-                                            } else if (customFieldObject.get("value") instanceof Integer) {
-                                                valueName = customFieldObject.getString("value");
-                                            } else if (customFieldObject.get("value") instanceof Float) {
-                                                valueName = customFieldObject.getString("value");
-                                            } else if (customFieldObject.get("value") instanceof JSONObject) {
-                                                JSONObject valueObject = customFieldObject.getJSONObject("value");
-                                                valueName = this.getName(valueObject);
-                                                if (valueObject.has("text")) {
-                                                    if (!valueObject.isNull("text")) {
-                                                        valueName = valueObject.getString("text");
+                                        String valueName = "";
+                                        if (customFieldObject.has("value")) {
+                                            if (!customFieldObject.isNull("value")) {
+                                                if (customFieldObject.get("value") instanceof Long) {
+                                                    Date date = new Date();
+                                                    date.setTime(customFieldObject.getLong("value"));
+                                                    valueName = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date);
+                                                } else if (customFieldObject.get("value") instanceof Integer) {
+                                                    valueName = customFieldObject.getString("value");
+                                                } else if (customFieldObject.get("value") instanceof Float) {
+                                                    valueName = customFieldObject.getString("value");
+                                                } else if (customFieldObject.get("value") instanceof JSONObject) {
+                                                    JSONObject valueObject = customFieldObject.getJSONObject("value");
+                                                    valueName = this.getName(valueObject);
+                                                    if (valueObject.has("text")) {
+                                                        if (!valueObject.isNull("text")) {
+                                                            valueName = valueObject.getString("text");
+                                                        }
+                                                    }
+                                                } else if (customFieldObject.get("value") instanceof JSONArray) {
+                                                    JSONArray valueArray = customFieldObject.getJSONArray("value");
+                                                    if (valueArray.length() >= 1) {
+                                                        JSONObject valueObject = valueArray.getJSONObject(0);
+                                                        valueName = this.getName(valueObject);
                                                     }
                                                 }
-                                            } else if (customFieldObject.get("value") instanceof JSONArray) {
-                                                JSONArray valueArray = customFieldObject.getJSONArray("value");
-                                                if (valueArray.length() >= 1) {
-                                                    JSONObject valueObject = valueArray.getJSONObject(0);
-                                                    valueName = this.getName(valueObject);
-                                                }
+
                                             }
-
                                         }
-                                    }
 
-                                CustomField<String> customField = this.getCustomField(fieldId, project_id);
-                                    if (customField != null) {
-                                        customField.setDescription(customFieldObject.getString("$type"));
-                                        issue.getCustomFields().put(customField, valueName);
+                                        CustomField<String> customField = this.getCustomField(fieldId, project_id);
+                                        if (customField != null) {
+                                            customField.setDescription(customFieldObject.getString("$type"));
+                                            issue.getCustomFields().put(customField, valueName);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
-                issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+                    issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
+                    issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+                }
             }
         }
         return issue;
