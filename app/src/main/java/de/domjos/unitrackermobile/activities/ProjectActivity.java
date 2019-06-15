@@ -30,6 +30,8 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.text.SimpleDateFormat;
@@ -102,7 +104,7 @@ public final class ProjectActivity extends AbstractActivity {
         // init bottom-navigation
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            ProjectTask task;
+            final ProjectTask[] task = new ProjectTask[1];
             switch (menuItem.getItemId()) {
                 case R.id.navAdd:
                     this.manageControls(true, false, false);
@@ -112,14 +114,23 @@ public final class ProjectActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        task = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
-                        task.execute(this.currentProject.getId()).get();
-                        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
-                            MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
-                        } else {
-                            this.reload();
-                            this.manageControls(false, false, false);
-                        }
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
+                        builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
+                        builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
+                            try {
+                                task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
+                                task[0].execute(this.currentProject.getId()).get();
+                                if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
+                                    MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
+                                } else {
+                                    this.reload();
+                                    this.manageControls(false, false, false);
+                                }
+                            } catch (Exception ex) {
+                                MessageHelper.printException(ex, this.getApplicationContext());
+                            }
+                        });
+                        builder.create().show();
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, this.getApplicationContext());
                     }
@@ -131,8 +142,8 @@ public final class ProjectActivity extends AbstractActivity {
                     try {
                         if (this.projectValidator.getState()) {
                             this.controlsToObject();
-                            task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
-                            task.execute(this.currentProject).get();
+                            task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
+                            task[0].execute(this.currentProject).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                                 MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
                             } else {

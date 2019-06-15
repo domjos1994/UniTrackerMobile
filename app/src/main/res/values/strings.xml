@@ -52,6 +52,8 @@
     <string name="projects_icon_url">Icon-Url</string>
     <string name="projects_version">Version</string>
     <string name="projects_version_default">unspecified</string>
+    <string name="projects_msg">Wollen Sie das Projekt wirklich löschen? Es könnten noch Bugs dem Projekt zugeordnet sein!</string>
+    <string name="projects_msg_positive">Wirklich löschen!</string>
     <string-array name="project_state_mantis">
         <item>Development</item>
         <item>Release</item>
