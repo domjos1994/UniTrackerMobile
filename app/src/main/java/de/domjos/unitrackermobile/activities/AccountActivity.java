@@ -28,6 +28,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -35,6 +36,9 @@ import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Arrays;
+import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.ListObject;
@@ -53,8 +57,9 @@ public final class AccountActivity extends AbstractActivity {
     private ListAdapter listAdapter;
     private Spinner cmbAccountTracker;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
-    private EditText txtAccountTitle, txtAccountServer, txtAccountUserName, txtAccountPassword,
+    private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription;
+    private AutoCompleteTextView txtAccountTitle;
     private CheckBox chkAccountGuest;
     private ImageButton cmdAccountImageGallery;
 
@@ -236,6 +241,8 @@ public final class AccountActivity extends AbstractActivity {
 
         this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
+        List<Authentication.Tracker> ls = Arrays.asList(Authentication.Tracker.values());
+        this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1, ls));
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
