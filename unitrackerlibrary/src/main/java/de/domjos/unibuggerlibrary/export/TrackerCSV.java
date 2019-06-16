@@ -28,9 +28,9 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 
-public final class BuggerCSV<T> extends AbstractBugger<T> {
+public final class TrackerCSV<T> extends AbstractTracker<T> {
 
-    public BuggerCSV(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
+    public TrackerCSV(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
         super(bugService, type, pid, ids, path);
     }
 

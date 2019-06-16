@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.export.BuggerXML;
+import de.domjos.unibuggerlibrary.export.TrackerXML;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -109,7 +109,7 @@ public final class ExportActivity extends AbstractActivity {
                 boolean notify = this.settings.showNotifications();
                 IBugService bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
                 Project project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
-                BuggerXML.Type type = BuggerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
+                TrackerXML.Type type = TrackerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
                 String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
@@ -187,7 +187,7 @@ public final class ExportActivity extends AbstractActivity {
             this.bugTrackerAdapter.add(bugService);
         }
 
-        for (BuggerXML.Type type : BuggerXML.Type.values()) {
+        for (TrackerXML.Type type : TrackerXML.Type.values()) {
             this.dataAdapter.add(type.name());
         }
 

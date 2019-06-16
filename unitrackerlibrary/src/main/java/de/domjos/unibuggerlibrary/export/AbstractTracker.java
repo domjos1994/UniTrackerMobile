@@ -22,14 +22,14 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 
-public abstract class AbstractBugger<T> {
+public abstract class AbstractTracker<T> {
     protected IBugService<T> bugService;
     protected Type type;
     protected String path;
     protected T pid;
     List<T> ids;
 
-    AbstractBugger(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
+    AbstractTracker(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
         this.bugService = bugService;
         this.type = type;
         this.pid = pid;

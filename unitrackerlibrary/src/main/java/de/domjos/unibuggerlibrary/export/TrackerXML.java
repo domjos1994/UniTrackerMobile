@@ -28,10 +28,9 @@ import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 
-public final class BuggerPDF<T> extends AbstractBugger<T> {
+public final class TrackerXML<T> extends AbstractTracker<T> {
 
-
-    public BuggerPDF(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
+    public TrackerXML(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
         super(bugService, type, pid, ids, path);
     }
 
@@ -43,21 +42,21 @@ public final class BuggerPDF<T> extends AbstractBugger<T> {
                 for (T id : this.ids) {
                     projects.add(this.bugService.getProject(id));
                 }
-                ObjectPDF.saveObjectToPDF(projects, this.path);
+                ObjectXML.saveObjectListToXML("Projects", projects, this.path);
                 break;
             case Issues:
                 List<Issue> issues = new LinkedList<>();
                 for (T id : this.ids) {
                     issues.add(this.bugService.getIssue(id, this.pid));
                 }
-                ObjectPDF.saveObjectToPDF(issues, this.path);
+                ObjectXML.saveObjectListToXML("Issues", issues, this.path);
                 break;
             case CustomFields:
                 List<CustomField> customFields = new LinkedList<>();
                 for (T id : this.ids) {
                     customFields.add(this.bugService.getCustomField(id, this.pid));
                 }
-                ObjectPDF.saveObjectToPDF(customFields, this.path);
+                ObjectXML.saveObjectListToXML("CustomFields", customFields, this.path);
                 break;
             default:
                 return;

@@ -24,17 +24,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.R;
-import de.domjos.unibuggerlibrary.export.BuggerCSV;
-import de.domjos.unibuggerlibrary.export.BuggerPDF;
-import de.domjos.unibuggerlibrary.export.BuggerXML;
+import de.domjos.unibuggerlibrary.export.TrackerCSV;
+import de.domjos.unibuggerlibrary.export.TrackerPDF;
+import de.domjos.unibuggerlibrary.export.TrackerXML;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 
 public final class ExportTask extends AbstractTask<Object, Void, Void> {
     private String path;
-    private BuggerXML.Type type;
+    private TrackerXML.Type type;
     private Object project_id;
 
-    public ExportTask(Activity activity, IBugService bugService, BuggerXML.Type type, Object project_id, String path, boolean showNotifications) {
+    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications);
         this.path = path;
         this.type = type;
@@ -61,16 +61,16 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
 
             switch (extension.trim().toLowerCase()) {
                 case "xml":
-                    BuggerXML buggerXML = new BuggerXML(super.bugService, this.type, this.project_id, objectList, this.path);
+                    TrackerXML buggerXML = new TrackerXML(super.bugService, this.type, this.project_id, objectList, this.path);
                     buggerXML.doExport();
                     break;
                 case "txt":
                 case "csv":
-                    BuggerCSV buggerCSV = new BuggerCSV(super.bugService, this.type, this.project_id, objectList, this.path);
+                    TrackerCSV buggerCSV = new TrackerCSV(super.bugService, this.type, this.project_id, objectList, this.path);
                     buggerCSV.doExport();
                     break;
                 case "pdf":
-                    BuggerPDF buggerPDF = new BuggerPDF(super.bugService, this.type, this.project_id, objectList, this.path);
+                    TrackerPDF buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, objectList, this.path);
                     buggerPDF.doExport();
                     break;
             }
