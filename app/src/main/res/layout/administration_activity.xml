@@ -20,13 +20,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AdministrationActivity">
+    tools:context=".activities.AdministrationActivity"
+    android:background="@drawable/background">
 
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="10"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:background="@drawable/controls_background">
 
         <TableRow>
 
@@ -126,7 +128,7 @@
                 android:text="@string/administration_data"
                 android:layout_margin="4dp" />
         </TableRow>
-        ,
+
         <TableRow>
 
             <TextView

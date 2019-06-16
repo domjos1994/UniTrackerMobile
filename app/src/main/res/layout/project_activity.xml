@@ -22,7 +22,8 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AccountActivity">
+    tools:context=".activities.AccountActivity"
+    android:background="@drawable/background">
 
     <LinearLayout
         android:layout_width="match_parent"

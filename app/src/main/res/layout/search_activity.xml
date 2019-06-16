@@ -23,7 +23,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="20"
-    tools:context=".activities.SearchActivity">
+    tools:context=".activities.SearchActivity"
+    android:background="@drawable/background">
 
     <ListView
         android:id="@+id/lvSearchResults"

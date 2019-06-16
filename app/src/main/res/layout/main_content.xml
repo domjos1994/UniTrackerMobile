@@ -37,7 +37,8 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="10"
-            android:layout_alignParentTop="true">
+            android:layout_alignParentTop="true"
+            android:background="@drawable/controls_background">
 
             <TableRow
                 android:id="@+id/rowNoConnection"
