@@ -734,7 +734,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         List<User<Long>> users = new LinkedList<>();
         SoapObject request = new SoapObject(NAMESPACE, "mc_project_get_users");
         request.addProperty("project_id", pid);
-        request.addProperty("access", 0);
+        request.addProperty("access", 25);
         Object object = this.executeAction(request, "mc_project_get_users", true);
         object = this.getResult(object);
         if (object instanceof Vector) {
