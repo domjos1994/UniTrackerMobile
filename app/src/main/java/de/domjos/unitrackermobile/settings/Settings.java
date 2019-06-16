@@ -49,7 +49,10 @@ public class Settings {
     public Authentication getCurrentAuthentication() {
         long authID = this.preferences.getLong(Settings.AUTH, 0);
         if (authID != 0) {
-            return MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
+            List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID);
+            if (authentications.size() >= 1) {
+                return MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
+            }
         }
         Authentication authentication = new Authentication();
         authentication.setTracker(Authentication.Tracker.Local);

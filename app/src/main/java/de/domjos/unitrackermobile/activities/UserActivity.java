@@ -74,9 +74,11 @@ public final class UserActivity extends AbstractActivity {
     protected void reload() {
         try {
             this.userAdapter.clear();
-            if (this.permissions.listUsers()) {
-                for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
-                    this.userAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
+            if (this.currentProject != null) {
+                if (this.permissions.listUsers()) {
+                    for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
+                        this.userAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
+                    }
                 }
             }
         } catch (Exception ex) {
