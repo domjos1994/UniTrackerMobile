@@ -318,26 +318,104 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 CustomField<Long> customField = new CustomField<>();
                 customField.setId(jsonObject.getLong("id"));
+                customField.setTitle(jsonObject.getString("name"));
+                customField.setDescription(jsonObject.getString("description"));
 
+                StringBuilder defaultValues = new StringBuilder();
+                if (jsonObject.has("items")) {
+                    JSONArray itemsArray = jsonObject.getJSONArray("items");
+                    for (int j = 0; j <= itemsArray.length() - 1; j++) {
+                        JSONObject itemsObject = itemsArray.getJSONObject(j);
+                        defaultValues.append(itemsObject.getString("name")).append("|");
+                    }
+                }
+
+                switch (jsonObject.getInt("typeId")) {
+                    case 1:
+                        customField.setType(CustomField.Type.TEXT);
+                        break;
+                    case 2:
+                        customField.setType(CustomField.Type.TEXT_AREA);
+                        break;
+                    case 3:
+                        customField.setType(CustomField.Type.NUMBER);
+                        customField.setMinLength(jsonObject.getInt("min"));
+                        customField.setMaxLength(jsonObject.getInt("max"));
+                        customField.setDefaultValue(jsonObject.getString("initialValue"));
+                        break;
+                    case 4:
+                        customField.setType(CustomField.Type.DATE);
+                        break;
+                    case 5:
+                        customField.setType(CustomField.Type.LIST);
+                        customField.setPossibleValues(defaultValues.toString());
+                        break;
+                    case 6:
+                        customField.setType(CustomField.Type.MULTI_SELECT_LIST);
+                        customField.setPossibleValues(defaultValues.toString());
+                        break;
+                }
+                customFields.add(customField);
             }
         }
-        return null;
+        return customFields;
     }
 
     @Override
-    public CustomField<Long> getCustomField(Long id, Long project_id) throws Exception {
-
+    public CustomField<Long> getCustomField(Long id, Long project_id) {
         return null;
     }
 
     @Override
     public void insertOrUpdateCustomField(CustomField<Long> customField, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", customField.getTitle());
+        jsonObject.put("description", customField.getDescription());
+        switch (customField.getType()) {
+            case TEXT:
+                jsonObject.put("typeId", 1);
+                break;
+            case TEXT_AREA:
+                jsonObject.put("typeId", 2);
+                break;
+            case NUMBER:
+                jsonObject.put("min", customField.getMinLength());
+                jsonObject.put("max", customField.getMaxLength());
+                jsonObject.put("initialValue", customField.getDefaultValue());
+                jsonObject.put("typeId", 3);
+                break;
+            case DATE:
+                jsonObject.put("typeId", 4);
+                JSONArray jsonArray = new JSONArray();
+                for (String item : customField.getPossibleValues().split("\\|")) {
+                    if (!item.isEmpty()) {
+                        jsonArray.put(item);
+                    }
+                }
+                jsonObject.put("items", jsonArray);
+                break;
+            case LIST:
+                jsonObject.put("typeId", 5);
+                JSONArray array = new JSONArray();
+                for (String item : customField.getPossibleValues().split("\\|")) {
+                    if (!item.isEmpty()) {
+                        array.put(item);
+                    }
+                }
+                jsonObject.put("items", array);
+                break;
+        }
 
+        if (customField.getId() != null) {
+            this.executeRequest("/api/v2/projects/" + project_id + "/customFields/" + customField.getId() + "?" + this.authParams, jsonObject.toString(), "PATCH");
+        } else {
+            this.executeRequest("/api/v2/projects/" + project_id + "/customFields?" + this.authParams, jsonObject.toString(), "POST");
+        }
     }
 
     @Override
     public void deleteCustomField(Long id, Long project_id) throws Exception {
-
+        this.deleteRequest("/api/v2/projects/" + project_id + "/customFields/" + id + "?" + this.authParams);
     }
 
     @Override

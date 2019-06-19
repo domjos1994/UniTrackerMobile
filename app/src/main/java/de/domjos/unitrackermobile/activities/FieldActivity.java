@@ -50,7 +50,7 @@ public final class FieldActivity extends AbstractActivity {
     private EditText txtFieldTitle, txtFieldDefault;
     private Spinner cmbFieldType;
     private CheckBox chkFieldNullable;
-    private ArrayAdapter<String> fieldTypeAdapter;
+    private ArrayAdapter<CustomField.Type> fieldTypeAdapter;
 
     private IBugService bugService;
     private IFunctionImplemented permissions;
@@ -184,7 +184,7 @@ public final class FieldActivity extends AbstractActivity {
         this.txtFieldTitle.setText(this.currentField.getTitle());
         this.txtFieldDefault.setText(this.currentField.getDefaultValue());
         if (this.currentField.getType() != null) {
-            this.cmbFieldType.setSelection(this.fieldTypeAdapter.getPosition(this.currentField.getType().name()));
+            this.cmbFieldType.setSelection(this.fieldTypeAdapter.getPosition(this.currentField.getType()));
         }
         this.chkFieldNullable.setChecked(this.currentField.isNullable());
     }
@@ -208,14 +208,22 @@ public final class FieldActivity extends AbstractActivity {
             case MantisBT:
             case Local:
                 for (CustomField.Type type : CustomField.Type.values()) {
-                    this.fieldTypeAdapter.add(type.name());
+                    this.fieldTypeAdapter.add(type);
                 }
                 break;
             case YouTrack:
-                this.fieldTypeAdapter.add(CustomField.Type.TEXT.name());
-                this.fieldTypeAdapter.add(CustomField.Type.TEXT_AREA.name());
-                this.fieldTypeAdapter.add(CustomField.Type.DATE.name());
-                this.fieldTypeAdapter.add(CustomField.Type.NUMBER.name());
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT);
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT_AREA);
+                this.fieldTypeAdapter.add(CustomField.Type.DATE);
+                this.fieldTypeAdapter.add(CustomField.Type.NUMBER);
+                break;
+            case Backlog:
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT);
+                this.fieldTypeAdapter.add(CustomField.Type.TEXT_AREA);
+                this.fieldTypeAdapter.add(CustomField.Type.DATE);
+                this.fieldTypeAdapter.add(CustomField.Type.NUMBER);
+                this.fieldTypeAdapter.add(CustomField.Type.LIST);
+                this.fieldTypeAdapter.add(CustomField.Type.MULTI_SELECT_LIST);
                 break;
         }
     }

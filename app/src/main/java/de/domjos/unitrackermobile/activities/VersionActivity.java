@@ -39,6 +39,7 @@ import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.VersionTask;
+import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.ListAdapter;
@@ -173,6 +174,7 @@ public final class VersionActivity extends AbstractActivity {
     protected void initValidators() {
         this.versionValidator = new Validator(this.getApplicationContext());
         this.versionValidator.addEmptyValidator(this.txtVersionTitle);
+        this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
     }
 
     @Override
@@ -244,8 +246,7 @@ public final class VersionActivity extends AbstractActivity {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
                 String strDate = this.txtVersionReleasedAt.getText().toString();
-                Date dt = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).parse(strDate);
-                this.currentVersion.setReleasedVersionAt(dt.getTime());
+                this.currentVersion.setReleasedVersionAt(Converter.convertStringToDate(strDate, Converter.DATE_FORMAT).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }
@@ -271,14 +272,12 @@ public final class VersionActivity extends AbstractActivity {
             switch (tracker) {
                 case MantisBT:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionFilter.setVisibility(View.VISIBLE);
                     break;
                 case RedMine:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
@@ -286,7 +285,6 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case YouTrack:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
@@ -295,30 +293,25 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case Github:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     break;
                 case Jira:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case OpenProject:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case Backlog:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case Local:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionFilter.setVisibility(View.VISIBLE);
