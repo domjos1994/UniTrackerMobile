@@ -93,6 +93,29 @@ public class Validator {
         txt.addTextChangedListener(textWatcher);
     }
 
+    public void addValueEqualsDate(EditText txt) {
+        final String regex = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))";
+
+        this.controlFieldEqualsRegex(txt, R.string.validator_noDate, regex);
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                controlFieldEqualsRegex(txt, R.string.validator_noDate, regex);
+            }
+        };
+        textWatchers.put(txt.getId(), textWatcher);
+        txt.addTextChangedListener(textWatcher);
+    }
+
     public boolean getState() {
         for (Map.Entry<Integer, Map.Entry<EditText, String>> entry : this.executeLater.entrySet()) {
             String[] field = entry.getValue().getValue().split(":");
@@ -145,12 +168,16 @@ public class Validator {
     }
 
     private void controlFieldEqualsRegex(EditText txt, String regex) {
+        this.controlFieldEqualsRegex(txt, R.string.validator_matches, regex);
+    }
+
+    private void controlFieldEqualsRegex(EditText txt, int stringId, String regex) {
         if (txt != null) {
             if (txt.getText() != null) {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(txt.getText().toString());
                 if (!matcher.matches()) {
-                    txt.setError(String.format(this.context.getString(R.string.validator_matches), txt.getHint()));
+                    txt.setError(String.format(this.context.getString(stringId), txt.getHint()));
                     this.states.put(txt.getId(), false);
                     return;
                 }
