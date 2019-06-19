@@ -30,6 +30,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 import okhttp3.Call;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -113,6 +114,24 @@ public class JSONEngine {
         }
     }
 
+    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String type) throws Exception {
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MediaType.get("multipart/form-data"));
+        builder.addFormDataPart("metadata", jsonBody);
+        RequestBody requestBody = RequestBody.create(MediaType.get(contentType), data);
+        builder.addFormDataPart("file", "attachment", requestBody);
+
+        Call call = this.initAuthentication(path, builder.build(), type);
+        Response response = call.execute();
+        this.state = response.code();
+
+        ResponseBody responseBody = response.body();
+        if (responseBody != null) {
+            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+        }
+        return this.state;
+    }
+
     protected long getLong(JSONObject object, String key) throws Exception {
         long value = 0L;
         if (object.has(key)) {
@@ -145,6 +164,27 @@ public class JSONEngine {
             }
         }
 
+        Request request;
+        switch (type.toUpperCase()) {
+            case "POST":
+                request = this.initRequestBuilder(path).post(requestBody).build();
+                break;
+            case "PUT":
+                request = this.initRequestBuilder(path).put(requestBody).build();
+                break;
+            case "PATCH":
+                request = this.initRequestBuilder(path).patch(requestBody).build();
+                break;
+            case "DELETE":
+                request = this.initRequestBuilder(path).delete().build();
+                break;
+            default:
+                request = this.initRequestBuilder(path).build();
+        }
+        return this.client.newCall(request);
+    }
+
+    private Call initAuthentication(String path, MultipartBody requestBody, String type) {
         Request request;
         switch (type.toUpperCase()) {
             case "POST":

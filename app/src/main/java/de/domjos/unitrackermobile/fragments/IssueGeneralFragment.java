@@ -473,6 +473,19 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.statusValueArray = "issues_general_status_pivotal_values";
                 this.severityValueArray = "issues_general_severity_pivotal_values";
                 break;
+            case OpenProject:
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralCategory.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_openproject_values";
+                this.statusValueArray = "issues_general_status_openproject_values";
+                this.severityValueArray = "issues_general_severity_openproject_values";
+                break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);

@@ -300,12 +300,22 @@ public final class VersionActivity extends AbstractActivity {
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
+                case OpenProject:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    break;
+                case Backlog:
+                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
+                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    break;
                 case Local:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
                     this.rowVersionReleased.setVisibility(View.VISIBLE);
                     this.rowVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionFilter.setVisibility(View.VISIBLE);
                     break;
+
             }
         }
     }

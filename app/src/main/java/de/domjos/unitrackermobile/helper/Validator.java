@@ -159,5 +159,4 @@ public class Validator {
             this.states.put(txt.getId(), true);
         }
     }
-
 }

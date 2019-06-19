@@ -112,6 +112,8 @@ public class Authentication extends DescriptionObject<Long> {
         Bugzilla,
         Github,
         Jira,
-        PivotalTracker
+        PivotalTracker,
+        OpenProject,
+        Backlog
     }
 }

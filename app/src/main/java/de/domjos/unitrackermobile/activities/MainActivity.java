@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackermobile.activities;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
@@ -26,8 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -67,7 +64,6 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.helper.Helper;
-import de.domjos.unitrackermobile.helper.SQLiteGeneral;
 import de.domjos.unitrackermobile.settings.Globals;
 import de.domjos.unitrackermobile.settings.Settings;
 

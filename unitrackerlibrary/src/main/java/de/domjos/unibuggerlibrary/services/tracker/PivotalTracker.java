@@ -42,7 +42,7 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.utils.Converter;
 
-public class PivotalTracker extends JSONEngine implements IBugService<Long> {
+public final class PivotalTracker extends JSONEngine implements IBugService<Long> {
     private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private Authentication authentication;
 

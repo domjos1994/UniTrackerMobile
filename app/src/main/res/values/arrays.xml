@@ -175,6 +175,15 @@
         <item>Chore</item>
     </array>
 
+    <array name="issues_general_severity_openproject_values_0">
+        <item>4</item>
+        <item>Feature</item>
+    </array>
+    <array name="issues_general_severity_openproject_values_1">
+        <item>7</item>
+        <item>Bug</item>
+    </array>
+
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>
@@ -287,6 +296,23 @@
     <array name="issues_general_priority_jira_values_4">
         <item>5</item>
         <item>Lowest</item>
+    </array>
+
+    <array name="issues_general_priority_openproject_values_0">
+        <item>7</item>
+        <item>Low</item>
+    </array>
+    <array name="issues_general_priority_openproject_values_1">
+        <item>8</item>
+        <item>Normal</item>
+    </array>
+    <array name="issues_general_priority_openproject_values_2">
+        <item>9</item>
+        <item>High</item>
+    </array>
+    <array name="issues_general_priority_openproject_values_3">
+        <item>10</item>
+        <item>Immediate</item>
     </array>
 
 
@@ -442,6 +468,67 @@
     <array name="issues_general_status_pivotal_values_5">
         <item>5</item>
         <item>Accepted</item>
+    </array>
+
+    <array name="issues_general_status_openproject_values_0">
+        <item>1</item>
+        <item>New</item>
+    </array>
+    <array name="issues_general_status_openproject_values_1">
+        <item>2</item>
+        <item>In specification</item>
+    </array>
+    <array name="issues_general_status_openproject_values_2">
+        <item>3</item>
+        <item>Specified</item>
+    </array>
+    <array name="issues_general_status_openproject_values_3">
+        <item>4</item>
+        <item>Confirmed</item>
+    </array>
+    <array name="issues_general_status_openproject_values_4">
+        <item>5</item>
+        <item>To be scheduled</item>
+    </array>
+    <array name="issues_general_status_openproject_values_5">
+        <item>6</item>
+        <item>Scheduled</item>
+    </array>
+    <array name="issues_general_status_openproject_values_6">
+        <item>7</item>
+        <item>In progress</item>
+    </array>
+    <array name="issues_general_status_openproject_values_7">
+        <item>8</item>
+        <item>In development</item>
+    </array>
+    <array name="issues_general_status_openproject_values_8">
+        <item>9</item>
+        <item>Developed</item>
+    </array>
+    <array name="issues_general_status_openproject_values_9">
+        <item>10</item>
+        <item>In testing</item>
+    </array>
+    <array name="issues_general_status_openproject_values_10">
+        <item>11</item>
+        <item>Tested</item>
+    </array>
+    <array name="issues_general_status_openproject_values_11">
+        <item>12</item>
+        <item>Test failed</item>
+    </array>
+    <array name="issues_general_status_openproject_values_12">
+        <item>13</item>
+        <item>Closed</item>
+    </array>
+    <array name="issues_general_status_openproject_values_13">
+        <item>14</item>
+        <item>On hold</item>
+    </array>
+    <array name="issues_general_status_openproject_values_14">
+        <item>15</item>
+        <item>Rejected</item>
     </array>
 
 

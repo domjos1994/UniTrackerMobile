@@ -23,6 +23,7 @@ import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 public class Attachment<T> extends DescriptionObject<T> {
     private String filename;
     private String downloadUrl;
+    private String contentType;
     private byte[] content;
 
     public Attachment() {
@@ -30,6 +31,7 @@ public class Attachment<T> extends DescriptionObject<T> {
 
         this.filename = "";
         this.downloadUrl = "";
+        this.contentType = "";
     }
 
     public String getFilename() {
@@ -55,5 +57,13 @@ public class Attachment<T> extends DescriptionObject<T> {
 
     public void setContent(byte[] content) {
         this.content = content;
+    }
+
+    public String getContentType() {
+        return this.contentType;
+    }
+
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 }

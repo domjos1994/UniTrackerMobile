@@ -45,10 +45,12 @@ import java.util.Properties;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.tracker.Backlog;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
 import de.domjos.unibuggerlibrary.services.tracker.Github;
 import de.domjos.unibuggerlibrary.services.tracker.Jira;
 import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
+import de.domjos.unibuggerlibrary.services.tracker.OpenProject;
 import de.domjos.unibuggerlibrary.services.tracker.PivotalTracker;
 import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
@@ -118,6 +120,12 @@ public class Helper {
                         break;
                     case PivotalTracker:
                         bugService = new PivotalTracker(authentication);
+                        break;
+                    case OpenProject:
+                        bugService = new OpenProject(authentication);
+                        break;
+                    case Backlog:
+                        bugService = new Backlog(authentication);
                         break;
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context), authentication);

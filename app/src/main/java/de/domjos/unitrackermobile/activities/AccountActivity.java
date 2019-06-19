@@ -91,6 +91,7 @@ public final class AccountActivity extends AbstractActivity {
                 if (txtAccountServer.getText().toString().equals(Authentication.Tracker.Local.name())) {
                     txtAccountServer.setText("");
                 }
+                txtAccountAPI.setVisibility(View.VISIBLE);
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {
@@ -116,6 +117,12 @@ public final class AccountActivity extends AbstractActivity {
                             } else {
                                 accountValidator.addEmptyValidator(txtAccountAPI);
                             }
+                            break;
+                        case OpenProject:
+                            String user = "apikey";
+                            txtAccountUserName.setText(user);
+                            txtAccountUserName.setHint(txtAccountAPI.getHint());
+                            txtAccountAPI.setVisibility(View.GONE);
                             break;
                         default:
                             accountValidator.removeValidator(txtAccountAPI);

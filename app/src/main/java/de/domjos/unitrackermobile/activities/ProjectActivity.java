@@ -427,6 +427,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowProjectIcon.setVisibility(View.GONE);
         this.rowProjectVersion.setVisibility(View.GONE);
         this.rowProjectPrivate.setVisibility(View.GONE);
+        this.txtProjectDescription.setVisibility(View.VISIBLE);
 
         if (tracker != null) {
             switch (tracker) {
@@ -466,6 +467,11 @@ public final class ProjectActivity extends AbstractActivity {
                 case PivotalTracker:
                     this.rowProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
+                    break;
+                case Backlog:
+                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.txtProjectDescription.setVisibility(View.GONE);
                     break;
                 case Local:
                     this.rowProjectState.setVisibility(View.VISIBLE);

@@ -39,6 +39,7 @@ import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
@@ -130,13 +131,20 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 if (data != null) {
                     if (data.getData() != null) {
                         if (this.getContext() != null) {
-                            InputStream iStream = this.getContext().getContentResolver().openInputStream(data.getData());
-                            byte[] inputData = getBytes(iStream);
-
                             Attachment attachment = new Attachment();
                             attachment.setDownloadUrl(data.getData().getPath());
                             attachment.setFilename(data.getData().getPath());
-                            attachment.setContent(inputData);
+
+                            InputStream iStream = this.getContext().getContentResolver().openInputStream(data.getData());
+                            if (iStream != null) {
+                                byte[] inputData = getBytes(iStream);
+                                attachment.setContent(inputData);
+                                iStream.close();
+                            }
+
+                            String type = this.getContext().getContentResolver().getType(data.getData());
+                            attachment.setContentType(type);
+
                             this.attachmentAdapter.add(new ListObject(this.getActivity(), R.drawable.ic_file_upload_black_24dp, attachment));
                         }
                     }
@@ -147,7 +155,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         }
     }
 
-    public byte[] getBytes(InputStream inputStream) throws IOException {
+    private byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
@@ -195,7 +203,14 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.attachmentAdapter.clear();
         for (Object obj : this.issue.getAttachments()) {
             Attachment attachment = (Attachment) obj;
-            this.attachmentAdapter.add(new ListObject(this.getContext(), R.drawable.ic_file_upload_black_24dp, attachment));
+
+            byte[] content;
+            if (attachment.getContentType().contains("image")) {
+                content = attachment.getContent();
+            } else {
+                content = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
+            }
+            this.attachmentAdapter.add(new ListObject(this.getContext(), content, attachment));
         }
     }
 
