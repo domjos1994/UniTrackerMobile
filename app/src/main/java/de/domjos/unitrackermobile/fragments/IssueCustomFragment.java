@@ -147,15 +147,19 @@ public final class IssueCustomFragment extends AbstractFragment {
                         if (!customField.getPossibleValues().isEmpty()) {
                             editText = new AutoCompleteTextView(this.getActivity());
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
-                            for (String item : customField.getDefaultValue().split("\\|")) {
-                                arrayAdapter.add(item.trim());
+                            if (customField.getDefaultValue() != null) {
+                                for (String item : customField.getDefaultValue().split("\\|")) {
+                                    arrayAdapter.add(item.trim());
+                                }
                             }
                             ((AutoCompleteTextView) editText).setAdapter(arrayAdapter);
                         } else if (customField.getType() == CustomField.Type.MULTI_SELECT_LIST) {
                             editText = new MultiAutoCompleteTextView(this.getActivity());
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1);
-                            for (String item : customField.getDefaultValue().split("\\|")) {
-                                arrayAdapter.add(item.trim());
+                            if (customField.getDefaultValue() != null) {
+                                for (String item : customField.getDefaultValue().split("\\|")) {
+                                    arrayAdapter.add(item.trim());
+                                }
                             }
                             ((MultiAutoCompleteTextView) editText).setAdapter(arrayAdapter);
                             ((MultiAutoCompleteTextView) editText).setTokenizer(new CommaTokenizer());
@@ -263,7 +267,9 @@ public final class IssueCustomFragment extends AbstractFragment {
                             spinner.setLayoutParams(layoutParams);
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
                             if (customField.isNullable()) {
-                                arrayAdapter.add(customField.getDefaultValue());
+                                if (customField.getDefaultValue() != null) {
+                                    arrayAdapter.add(customField.getDefaultValue());
+                                }
                             }
                             for (String item : customField.getPossibleValues().split("\\|")) {
                                 arrayAdapter.add(item.split(":")[0].trim());
@@ -279,8 +285,10 @@ public final class IssueCustomFragment extends AbstractFragment {
                             if (!value.isEmpty()) {
                                 selected = value.trim();
                             } else {
-                                if (!customField.getDefaultValue().isEmpty()) {
-                                    selected = customField.getDefaultValue().trim();
+                                if (customField.getDefaultValue() != null) {
+                                    if (!customField.getDefaultValue().isEmpty()) {
+                                        selected = customField.getDefaultValue().trim();
+                                    }
                                 }
                             }
 

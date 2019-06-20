@@ -184,6 +184,23 @@
         <item>Bug</item>
     </array>
 
+    <array name="issues_general_severity_backlog_values_0">
+        <item>90201</item>
+        <item>Task</item>
+    </array>
+    <array name="issues_general_severity_backlog_values_1">
+        <item>90200</item>
+        <item>Bug</item>
+    </array>
+    <array name="issues_general_severity_backlog_values_2">
+        <item>90202</item>
+        <item>Request</item>
+    </array>
+    <array name="issues_general_severity_backlog_values_3">
+        <item>90203</item>
+        <item>Other</item>
+    </array>
+
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>
@@ -313,6 +330,19 @@
     <array name="issues_general_priority_openproject_values_3">
         <item>10</item>
         <item>Immediate</item>
+    </array>
+
+    <array name="issues_general_priority_backlog_values_0">
+        <item>2</item>
+        <item>High</item>
+    </array>
+    <array name="issues_general_priority_backlog_values_1">
+        <item>3</item>
+        <item>Normal</item>
+    </array>
+    <array name="issues_general_priority_backlog_values_2">
+        <item>4</item>
+        <item>Low</item>
     </array>
 
 
@@ -529,6 +559,23 @@
     <array name="issues_general_status_openproject_values_14">
         <item>15</item>
         <item>Rejected</item>
+    </array>
+
+    <array name="issues_general_status_backlog_values_0">
+        <item>1</item>
+        <item>Open</item>
+    </array>
+    <array name="issues_general_status_backlog_values_1">
+        <item>2</item>
+        <item>In Progress</item>
+    </array>
+    <array name="issues_general_status_backlog_values_2">
+        <item>3</item>
+        <item>Resolved</item>
+    </array>
+    <array name="issues_general_status_backlog_values_3">
+        <item>4</item>
+        <item>Closed</item>
     </array>
 
 

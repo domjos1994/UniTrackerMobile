@@ -63,62 +63,62 @@ public final class BacklogPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteIssues() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteNotes() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean listAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateAttachments() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteAttachments() {
-        return false;
+        return true;
     }
 
     @Override
@@ -163,7 +163,7 @@ public final class BacklogPermissions implements IFunctionImplemented {
 
     @Override
     public boolean listHistory() {
-        return false;
+        return true;
     }
 
     @Override

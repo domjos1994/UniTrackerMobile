@@ -47,7 +47,7 @@ public final class FieldActivity extends AbstractActivity {
     private ListView lvFields;
     private ListAdapter fieldAdapter;
 
-    private EditText txtFieldTitle, txtFieldDefault;
+    private EditText txtFieldTitle, txtFieldDefault, txtFieldPossibleValues;
     private Spinner cmbFieldType;
     private CheckBox chkFieldNullable;
     private ArrayAdapter<CustomField.Type> fieldTypeAdapter;
@@ -144,6 +144,7 @@ public final class FieldActivity extends AbstractActivity {
 
         this.txtFieldTitle = this.findViewById(R.id.txtFieldTitle);
         this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
+        this.txtFieldPossibleValues = this.findViewById(R.id.txtFieldPossibleValues);
         this.cmbFieldType = this.findViewById(R.id.cmbFieldType);
         this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, android.R.layout.simple_spinner_item);
         this.cmbFieldType.setAdapter(this.fieldTypeAdapter);
@@ -171,6 +172,7 @@ public final class FieldActivity extends AbstractActivity {
 
         this.txtFieldTitle.setEnabled(editMode);
         this.txtFieldDefault.setEnabled(editMode);
+        this.txtFieldPossibleValues.setEnabled(editMode);
         this.cmbFieldType.setEnabled(editMode);
         this.chkFieldNullable.setEnabled(editMode);
 
@@ -183,6 +185,7 @@ public final class FieldActivity extends AbstractActivity {
     private void objectToControls() {
         this.txtFieldTitle.setText(this.currentField.getTitle());
         this.txtFieldDefault.setText(this.currentField.getDefaultValue());
+        this.txtFieldPossibleValues.setText(this.currentField.getPossibleValues());
         if (this.currentField.getType() != null) {
             this.cmbFieldType.setSelection(this.fieldTypeAdapter.getPosition(this.currentField.getType()));
         }
@@ -192,7 +195,8 @@ public final class FieldActivity extends AbstractActivity {
     private void controlsToObject() {
         this.currentField.setTitle(this.txtFieldTitle.getText().toString());
         this.currentField.setDefaultValue(this.txtFieldDefault.getText().toString());
-        this.currentField.setType(this.cmbFieldType.getSelectedItemPosition());
+        this.currentField.setPossibleValues(this.txtFieldPossibleValues.getText().toString());
+        this.currentField.setType(this.fieldTypeAdapter.getItem(this.cmbFieldType.getSelectedItemPosition()));
         this.currentField.setNullable(this.chkFieldNullable.isChecked());
     }
 

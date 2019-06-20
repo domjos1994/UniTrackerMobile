@@ -91,6 +91,7 @@
     <string name="fields_type">Typ</string>
     <string name="fields_default">Standard-Wert</string>
     <string name="fields_nullable">Null-Werte</string>
+    <string name="fields_possible_values">Mögliche Werte (durch | getrennt)</string>
 
     <string name="issues">Fehler</string>
     <string name="issues_general">Generell</string>

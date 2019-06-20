@@ -72,7 +72,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private ArrayAdapter<User> userAdapter;
     private ArrayAdapter<String> tagAdapter;
 
-    private String priorityValueArray, statusValueArray, severityValueArray;
+    private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
     private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory,
             rowIssueGeneralVersion, rowIssueGeneralTargetVersion, rowIssueGeneralFixedInVersion,
             rowIssueGeneralTags;
@@ -259,7 +259,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             issue.setReproducibility(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, "issues_general_reproducibility_values"), this.spIssueGeneralReproducibility.getSelectedItem().toString());
             issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.spIssueGeneralPriority.getSelectedItem().toString());
             issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.spIssueGeneralStatus.getSelectedItem().toString());
-            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, "issues_general_resolution_values"), this.spIssueGeneralResolution.getSelectedItem().toString());
+            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, this.resolutionValueArray), this.spIssueGeneralResolution.getSelectedItem().toString());
             issue.setVersion(this.txtIssueGeneralVersion.getText().toString());
             issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
             issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
@@ -318,7 +318,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getSeverity().getKey().toString()), this.severityValueArray, spIssueGeneralSeverity);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getReproducibility().getKey().toString()), "issues_general_reproducibility_values", spIssueGeneralReproducibility);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getStatus().getKey().toString()), this.statusValueArray, spIssueGeneralStatus);
-            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getResolution().getKey().toString()), "issues_general_resolution_values", spIssueGeneralResolution);
+            ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getResolution().getKey().toString()), this.resolutionValueArray, spIssueGeneralResolution);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getPriority().getKey().toString()), this.priorityValueArray, spIssueGeneralPriority);
             this.spIssueGeneralHandler.setSelection(this.userAdapter.getPosition(this.issue.getHandler()));
             this.txtIssueGeneralVersion.setText(this.issue.getVersion());
@@ -413,6 +413,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
+                this.resolutionValueArray = "issues_general_resolution_mantisbt_values";
                 break;
             case YouTrack:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
@@ -486,6 +487,21 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.statusValueArray = "issues_general_status_openproject_values";
                 this.severityValueArray = "issues_general_severity_openproject_values";
                 break;
+            case Backlog:
+                this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralResolution.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralCategory.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.priorityValueArray = "issues_general_priority_backlog_values";
+                this.statusValueArray = "issues_general_status_backlog_values";
+                this.severityValueArray = "issues_general_severity_backlog_values";
+                this.resolutionValueArray = "issues_general_resolution_backlog_values";
+                break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
@@ -503,6 +519,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
+                this.resolutionValueArray = "issues_general_resolution_mantisbt_values";
                 break;
         }
 

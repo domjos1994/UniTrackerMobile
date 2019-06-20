@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -47,6 +48,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class Backlog extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private final String authParams;
 
     public Backlog(Authentication authentication) {
@@ -191,67 +193,335 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id) throws Exception {
-        return null;
+        return this.getIssues(project_id, 1, -1, IssueFilter.all);
     }
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id, IssueFilter filter) throws Exception {
-        return null;
+        return this.getIssues(project_id, 1, -1, filter);
     }
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems) throws Exception {
-        return null;
+        return this.getIssues(project_id, page, numberOfItems, IssueFilter.all);
     }
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems, IssueFilter filter) throws Exception {
-        return null;
+        List<Issue<Long>> issues = new LinkedList<>();
+
+        String pagination = "";
+        if (numberOfItems != -1) {
+            pagination = "&offset=" + (page * numberOfItems) + "&count=" + numberOfItems;
+        }
+
+        String query = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                query = "&statusId[]=3&statusId[]=4";
+            } else {
+                query = "&statusId[]=1&statusId[]=2";
+            }
+        }
+
+        int status = this.executeRequest("/api/v2/issues?" + this.authParams + pagination + query);
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Issue<Long> issue = new Issue<>();
+                issue.setId(jsonObject.getLong("id"));
+                issue.setTitle(jsonObject.getString("summary"));
+                issue.setDescription(jsonObject.getString("description"));
+                issues.add(issue);
+            }
+        }
+
+        return issues;
     }
 
     @Override
     public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
-        return null;
+        Issue<Long> issue = new Issue<>();
+
+        int status = this.executeRequest("/api/v2/issues/" + id + "?" + this.authParams);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            issue.setId(jsonObject.getLong("id"));
+            issue.setTitle(jsonObject.getString("summary"));
+            issue.setDescription(jsonObject.getString("description"));
+            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
+            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
+
+            if (!jsonObject.isNull("issueType")) {
+                JSONObject typeObject = jsonObject.getJSONObject("issueType");
+                issue.setSeverity(typeObject.getInt("id"), typeObject.getString("name"));
+            }
+
+            if (!jsonObject.isNull("priority")) {
+                JSONObject priorityObject = jsonObject.getJSONObject("priority");
+                issue.setPriority(priorityObject.getInt("id"), priorityObject.getString("name"));
+            }
+
+            if (!jsonObject.isNull("resolution")) {
+                JSONObject resolutionObject = jsonObject.getJSONObject("resolution");
+                issue.setStatus(resolutionObject.getInt("id"), resolutionObject.getString("name"));
+            }
+
+            if (!jsonObject.isNull("status")) {
+                JSONObject statusObject = jsonObject.getJSONObject("status");
+                issue.setStatus(statusObject.getInt("id"), statusObject.getString("name"));
+            }
+
+            if (!jsonObject.isNull("category")) {
+                if (jsonObject.getJSONArray("category").length() >= 1) {
+                    JSONObject categoryObject = jsonObject.getJSONArray("category").getJSONObject(0);
+                    issue.setStatus(categoryObject.getInt("id"), categoryObject.getString("name"));
+                }
+            }
+
+            if (!jsonObject.isNull("assignee")) {
+                JSONObject assignee = jsonObject.getJSONObject("assignee");
+                issue.setHandler(this.getUser(assignee.getLong("id"), project_id));
+            }
+
+            if (!jsonObject.isNull("versions")) {
+                if (jsonObject.getJSONArray("versions").length() >= 1) {
+                    JSONObject versionsObject = jsonObject.getJSONArray("versions").getJSONObject(0);
+                    issue.setVersion(versionsObject.getString("name"));
+                }
+            }
+
+            if (!jsonObject.isNull("dueDate")) {
+                String dueDate = jsonObject.getString("dueDate");
+                issue.setDueDate(Converter.convertStringToDate(dueDate, Backlog.DATE_TIME_FORMAT));
+            }
+
+            if (!jsonObject.isNull("customFields")) {
+                JSONArray customFieldArray = jsonObject.getJSONArray("customFields");
+                List<CustomField<Long>> customFields = this.getCustomFields(project_id);
+                for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                    JSONObject customFieldObject = customFieldArray.getJSONObject(i);
+                    for (CustomField<Long> customField : customFields) {
+                        if (customField.getId() == customFieldObject.getLong("id")) {
+                            issue.getCustomFields().put(customField, customFieldObject.getString("value"));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
+            issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+        }
+
+        return issue;
     }
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
 
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("summary", issue.getTitle());
+        jsonObject.put("description", issue.getDescription());
+        if (issue.getDueDate() != null) {
+            jsonObject.put("dueDate", sdf.format(issue.getDueDate()));
+        }
+        jsonObject.put("issueTypeId", issue.getSeverity().getKey());
+        jsonObject.put("priorityId", issue.getPriority().getKey());
+
+        if (issue.getHandler() != null) {
+            jsonObject.put("assigneeId", issue.getHandler().getId());
+        }
+
+        if (!issue.getCategory().isEmpty()) {
+            String category = issue.getCategory();
+            int categoryStatus = this.executeRequest("/api/v2/projects/" + project_id + "/categories");
+            if (categoryStatus == 200 || categoryStatus == 201) {
+                JSONArray categoryArray = new JSONArray(this.getCurrentMessage());
+                for (int i = 0; i <= categoryArray.length() - 1; i++) {
+                    if (category.equals(categoryArray.getJSONObject(i).getString("name"))) {
+                        JSONArray jsonArray = new JSONArray();
+                        jsonArray.put(categoryArray.getJSONObject(i).getLong("id"));
+                        jsonObject.put("categoryId", jsonArray);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!issue.getVersion().isEmpty()) {
+            String version = issue.getVersion();
+            List<Version<Long>> versions = this.getVersions("", project_id);
+            for (Version<Long> tmp : versions) {
+                if (tmp.getTitle().equals(version)) {
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.put(tmp.getId());
+                    jsonObject.put("versionId", jsonArray);
+                    break;
+                }
+            }
+        }
+
+        if (!issue.getCustomFields().isEmpty()) {
+            for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
+                JSONObject fieldObject = new JSONObject();
+                fieldObject.put("value", entry.getValue());
+                jsonObject.put("customField_" + entry.getKey().getId(), fieldObject);
+            }
+        }
+
+        if (issue.getId() != null) {
+            for (Attachment<Long> attachment : this.getAttachments(Long.parseLong(String.valueOf(issue.getId())), project_id)) {
+                this.deleteAttachment(attachment.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
+            }
+        }
+
+        if (!issue.getAttachments().isEmpty()) {
+            JSONArray jsonArray = new JSONArray();
+            for (Attachment<Long> attachment : issue.getAttachments()) {
+                jsonArray.put(this.uploadAttachment(attachment));
+            }
+            jsonObject.put("attachmentId", jsonArray);
+        }
+
+        int status;
+        if (issue.getId() == null) {
+            jsonObject.put("projectId", project_id);
+            status = this.executeRequest("/api/v2/issues?" + this.authParams, jsonObject.toString(), "POST");
+        } else {
+            jsonObject.put("statusId", issue.getStatus().getKey());
+            jsonObject.put("resolutionId", issue.getResolution().getKey());
+            jsonObject.put("comment", "Updated by UniTrackerMobileApp");
+            status = this.executeRequest("/api/v2/issues/" + issue.getId() + "?" + this.authParams, jsonObject.toString(), "PATCH");
+        }
+
+        if (status == 200 || status == 201) {
+            JSONObject response = new JSONObject(this.getCurrentMessage());
+            if (issue.getId() == null) {
+                issue.setId(response.getLong("id"));
+            }
+            issue.setId(Long.parseLong(String.valueOf(issue.getId())));
+
+            if (!issue.getNotes().isEmpty()) {
+                List<Note<Long>> oldNotes = this.getNotes(issue.getId(), project_id);
+                for (Note<Long> oldNote : oldNotes) {
+                    boolean contains = false;
+                    for (Note<Long> note : issue.getNotes()) {
+                        if (oldNote.getId().equals(note.getId())) {
+                            contains = true;
+                            break;
+                        }
+                    }
+
+                    if (!contains) {
+                        this.deleteNote(oldNote.getId(), issue.getId(), project_id);
+                    }
+                }
+
+                for (Note<Long> note : issue.getNotes()) {
+                    this.insertOrUpdateNote(note, issue.getId(), project_id);
+                }
+            }
+        }
+    }
+
+    private Long uploadAttachment(Attachment<Long> attachment) {
+        long id = 0L;
+        try {
+            JSONObject jsonObject = new JSONObject();
+            int status = this.addMultiPart("/api/v2/space/attachment?" + this.authParams, jsonObject.toString(), attachment.getContentType(), attachment.getContent(), "POST");
+
+
+            if (status == 200 || status == 201) {
+                JSONObject response = new JSONObject(this.getCurrentMessage());
+                id = response.getLong("id");
+            }
+        } catch (Exception ignored) {
+        }
+        return id;
     }
 
     @Override
     public void deleteIssue(Long id, Long project_id) throws Exception {
-
+        this.deleteRequest("/api/v2/issues/" + id + "?" + this.authParams);
     }
 
     @Override
     public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<Note<Long>> notes = new LinkedList<>();
+
+        int status = this.executeRequest("/api/v2/issues/" + issue_id + "/comments?" + this.authParams);
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Note<Long> note = new Note<>();
+                note.setId(jsonObject.getLong("id"));
+                String content = jsonObject.getString("content");
+                if (!content.equals("null")) {
+                    if (content.length() >= 50) {
+                        note.setTitle(content.substring(0, 50));
+                    } else {
+                        note.setTitle(content);
+                    }
+                    note.setDescription(content);
+                    note.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
+                    note.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
+                    notes.add(note);
+                }
+            }
+        }
+
+        return notes;
     }
 
     @Override
     public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("content", note.getDescription());
 
+        if (note.getId() != null) {
+            this.executeRequest("/api/v2/issues/" + issue_id + "/comments/" + note.getId() + "?" + this.authParams, jsonObject.toString(), "PATCH");
+        } else {
+            this.executeRequest("/api/v2/issues/" + issue_id + "/comments?" + this.authParams, jsonObject.toString(), "POST");
+        }
     }
 
     @Override
     public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
-
+        this.deleteRequest("/api/v2/issues/" + issue_id + "/comments/" + id + "?" + this.authParams);
     }
 
     @Override
     public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<Attachment<Long>> attachments = new LinkedList<>();
+
+        int status = this.executeRequest("/api/v2/issues/" + issue_id + "/attachments?" + this.authParams);
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Attachment<Long> attachment = new Attachment<>();
+                attachment.setId(jsonObject.getLong("id"));
+                attachment.setFilename(jsonObject.getString("name"));
+
+                attachments.add(attachment);
+            }
+        }
+
+        return attachments;
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
-
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
     }
 
     @Override
     public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-
+        this.deleteRequest("/api/v2/issues/" + issue_id + "/attachments/" + id + "?" + this.authParams);
     }
 
     @Override
@@ -320,6 +590,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 customField.setId(jsonObject.getLong("id"));
                 customField.setTitle(jsonObject.getString("name"));
                 customField.setDescription(jsonObject.getString("description"));
+                customField.setNullable(jsonObject.getBoolean("required"));
 
                 StringBuilder defaultValues = new StringBuilder();
                 if (jsonObject.has("items")) {
@@ -371,6 +642,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", customField.getTitle());
         jsonObject.put("description", customField.getDescription());
+        jsonObject.put("required", !customField.isNullable());
         switch (customField.getType()) {
             case TEXT:
                 jsonObject.put("typeId", 1);
@@ -407,6 +679,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
         }
 
         if (customField.getId() != null) {
+            jsonObject.remove("typeId");
             this.executeRequest("/api/v2/projects/" + project_id + "/customFields/" + customField.getId() + "?" + this.authParams, jsonObject.toString(), "PATCH");
         } else {
             this.executeRequest("/api/v2/projects/" + project_id + "/customFields?" + this.authParams, jsonObject.toString(), "POST");
@@ -420,22 +693,63 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<String> getCategories(Long project_id) throws Exception {
-        return null;
+        List<String> categories = new LinkedList<>();
+
+        int status = this.executeRequest("/api/v2/projects/" + project_id + "/categories?" + this.authParams);
+        if (status == 200 || status == 201) {
+
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                categories.add(jsonObject.getString("name"));
+            }
+        }
+
+        return categories;
     }
 
     @Override
-    public List<Tag<Long>> getTags(Long project_id) throws Exception {
-        return null;
+    public List<Tag<Long>> getTags(Long project_id) {
+        return new LinkedList<>();
     }
 
     @Override
     public List<History<Long>> getHistory(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<History<Long>> histories = new LinkedList<>();
+
+        int status = this.executeRequest("/api/v2/projects/" + project_id + "/activities?" + this.authParams + "&activityTypeId[]=1&activityTypeId[]=2&activityTypeId[]=3&activityTypeId[]=4");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject contentObject = jsonObject.getJSONObject("content");
+                JSONObject createdUserObject = jsonObject.getJSONObject("createdUser");
+                Date dt = Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT);
+
+                if (contentObject.has("changes")) {
+                    if (!contentObject.isNull("changes")) {
+                        JSONArray changeArray = contentObject.getJSONArray("changes");
+                        for (int j = 0; j <= changeArray.length() - 1; j++) {
+                            JSONObject changeObject = changeArray.getJSONObject(j);
+                            History<Long> history = new History<>();
+                            history.setUser(createdUserObject.getString("name"));
+                            history.setTime(dt.getTime());
+                            history.setField(changeObject.getString("field"));
+                            history.setNewValue(changeObject.getString("new_value"));
+                            history.setOldValue(changeObject.getString("old_value"));
+                            histories.add(history);
+                        }
+                    }
+                }
+            }
+        }
+
+        return histories;
     }
 
     @Override
-    public List<Profile<Long>> getProfiles() throws Exception {
-        return null;
+    public List<Profile<Long>> getProfiles() {
+        return new LinkedList<>();
     }
 
     @Override

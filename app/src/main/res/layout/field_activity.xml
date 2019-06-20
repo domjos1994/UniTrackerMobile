@@ -89,6 +89,17 @@
 
                 <TableRow>
 
+                    <EditText
+                        android:id="@+id/txtFieldPossibleValues"
+                        android:hint="@string/fields_possible_values"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
                     <CheckBox
                         android:id="@+id/chkFieldNullable"
                         android:text="@string/fields_nullable"

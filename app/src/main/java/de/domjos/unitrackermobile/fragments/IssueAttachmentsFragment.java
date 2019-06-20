@@ -208,7 +208,12 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             if (attachment.getContentType().contains("image")) {
                 content = attachment.getContent();
             } else {
-                content = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
+                try {
+                    content = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
+                } catch (Exception ex) {
+                    this.attachmentAdapter.add(new ListObject(this.getContext(), R.drawable.ic_file_upload_black_24dp, attachment));
+                    continue;
+                }
             }
             this.attachmentAdapter.add(new ListObject(this.getContext(), content, attachment));
         }
