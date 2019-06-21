@@ -29,9 +29,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.settings.Settings;
 
 public class Validator {
     private Context context;
@@ -94,9 +96,7 @@ public class Validator {
     }
 
     public void addValueEqualsDate(EditText txt) {
-        final String regex = "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))";
-
-        this.controlFieldEqualsRegex(txt, R.string.validator_noDate, regex);
+        this.controlFieldEqualsDate(txt);
 
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -109,7 +109,7 @@ public class Validator {
 
             @Override
             public void afterTextChanged(Editable s) {
-                controlFieldEqualsRegex(txt, R.string.validator_noDate, regex);
+                controlFieldEqualsDate(txt);
             }
         };
         textWatchers.put(txt.getId(), textWatcher);
@@ -168,22 +168,45 @@ public class Validator {
     }
 
     private void controlFieldEqualsRegex(EditText txt, String regex) {
-        this.controlFieldEqualsRegex(txt, R.string.validator_matches, regex);
-    }
-
-    private void controlFieldEqualsRegex(EditText txt, int stringId, String regex) {
         if (txt != null) {
             if (txt.getText() != null) {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(txt.getText().toString());
                 if (!matcher.matches()) {
-                    txt.setError(String.format(this.context.getString(stringId), txt.getHint()));
+                    txt.setError(String.format(this.context.getString(R.string.validator_matches), txt.getHint()));
                     this.states.put(txt.getId(), false);
                     return;
                 }
             }
             txt.setError(null);
             this.states.put(txt.getId(), true);
+        }
+    }
+
+    private void controlFieldEqualsDate(EditText txt) {
+        Settings settings = MainActivity.GLOBALS.getSettings(this.context);
+        if (txt != null) {
+            if (txt.getText() != null) {
+                String value = txt.getText().toString();
+                if (!tryFormat(value, settings.getDateFormat() + " " + settings.getTimeFormat())) {
+                    if (!tryFormat(value, settings.getDateFormat())) {
+                        txt.setError(String.format(this.context.getString(R.string.validator_noDate), txt.getHint()));
+                        this.states.put(txt.getId(), false);
+                        return;
+                    }
+                }
+            }
+            txt.setError(null);
+            this.states.put(txt.getId(), true);
+        }
+    }
+
+    private boolean tryFormat(String value, String format) {
+        try {
+            Converter.convertStringToDate(value, format);
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
     }
 }

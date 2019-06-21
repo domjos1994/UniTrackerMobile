@@ -29,21 +29,17 @@ import android.widget.TableRow;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.VersionTask;
-import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -232,9 +228,7 @@ public final class VersionActivity extends AbstractActivity {
         if (this.currentVersion != null) {
             this.txtVersionTitle.setText(this.currentVersion.getTitle());
             this.txtVersionDescription.setText(this.currentVersion.getDescription());
-            Date date = new Date();
-            date.setTime(this.currentVersion.getReleasedVersionAt());
-            this.txtVersionReleasedAt.setText(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date));
+            this.txtVersionReleasedAt.setText(DateConverter.convertLongToString(this.currentVersion.getReleasedVersionAt(), this.getApplicationContext()));
             this.chkVersionDeprecated.setChecked(this.currentVersion.isDeprecatedVersion());
             this.chkVersionReleased.setChecked(this.currentVersion.isReleasedVersion());
         }
@@ -246,7 +240,7 @@ public final class VersionActivity extends AbstractActivity {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
                 String strDate = this.txtVersionReleasedAt.getText().toString();
-                this.currentVersion.setReleasedVersionAt(Converter.convertStringToDate(strDate, Converter.DATE_FORMAT).getTime());
+                this.currentVersion.setReleasedVersionAt(DateConverter.convertStringToDate(strDate, getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }

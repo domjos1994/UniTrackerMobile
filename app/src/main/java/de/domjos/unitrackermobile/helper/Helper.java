@@ -219,6 +219,8 @@ public class Helper {
                             if(Helper.checkDatabase()) {
                                 successRunnable.run();
                                 pwdDialog.cancel();
+                            } else {
+                                password1.setError(activity.getString(R.string.messages_wrong_password));
                             }
                         }
                     } else {
@@ -230,6 +232,8 @@ public class Helper {
                         if(Helper.checkDatabase()) {
                             successRunnable.run();
                             pwdDialog.cancel();
+                        } else {
+                            password1.setError(activity.getString(R.string.messages_wrong_password));
                         }
                     }
                 } catch (Exception ex) {

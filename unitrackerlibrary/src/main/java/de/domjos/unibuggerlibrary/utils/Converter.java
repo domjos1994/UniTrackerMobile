@@ -40,9 +40,6 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Converter {
-    public final static String DATE_FORMAT = "yyyy-MM-dd";
-    public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
     public static String convertStreamToString(InputStream stream) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));
         StringBuilder sb = new StringBuilder();

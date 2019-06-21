@@ -138,6 +138,12 @@
     <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
     <string name="settings_general_reload">Fehler automatisch neu laden</string>
     <string name="settings_general_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren)</string>
+    <string name="settings_general_date">Datumsformat</string>
+    <string name="settings_general_date_summary">Geben Sie hier das korrekte Datumsformat an</string>
+    <string name="settings_general_date_default">yyyy-MM-dd</string>
+    <string name="settings_general_time">Zeitformat</string>
+    <string name="settings_general_time_summary">Geben Sie hier das korrekte Zeitformat an</string>
+    <string name="settings_general_time_default">HH:mm:ss</string>
     <string name="settings_security">Sicherheit</string>
     <string name="settings_security_summary">Ändern Sie hier die Einstellungen zur Sicherheit der App!</string>
     <string name="settings_security_enable">Verschlüsselung aktivieren!</string>
@@ -201,8 +207,9 @@
     <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>
     <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
     <string name="validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
-    <string name="validator_noDate">Feld \'%s\' enthält kein zulässiges Datum! (yyyy-MM-dd)</string>
+    <string name="validator_noDate">Feld \'%s\' enthält kein zulässiges Datum!</string>
     <string name="validator_no_success">Felder sind nicht valide!</string>
 
     <string name="messages_no_network">Kein Internetzugang!</string>
+    <string name="messages_wrong_password">Falsches Passwort!</string>
 </resources>
