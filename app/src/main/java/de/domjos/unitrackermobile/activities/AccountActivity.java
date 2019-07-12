@@ -103,6 +103,7 @@ public final class AccountActivity extends AbstractActivity {
                             break;
                         case Github:
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
+                            break;
                         case YouTrack:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
@@ -112,6 +113,13 @@ public final class AccountActivity extends AbstractActivity {
                             break;
                         case PivotalTracker:
                             txtAccountServer.setText(R.string.accounts_pivotal_server);
+                            if (chkAccountGuest.isChecked()) {
+                                accountValidator.removeValidator(txtAccountAPI);
+                            } else {
+                                accountValidator.addEmptyValidator(txtAccountAPI);
+                            }
+                            break;
+                        case Bugzilla:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
