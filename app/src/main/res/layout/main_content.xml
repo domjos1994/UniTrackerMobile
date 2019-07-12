@@ -98,12 +98,19 @@
             android:layout_height="1dp"
             android:background="@color/colorPrimaryDark" />
 
-        <ListView
-            android:layout_below="@+id/separator"
-            android:layout_above="@+id/pagination"
-            android:id="@+id/lvMainIssues"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_below="@+id/separator"
+            android:layout_above="@+id/pagination">
+
+            <ListView
+                android:id="@+id/lvMainIssues"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cmdIssueAdd"

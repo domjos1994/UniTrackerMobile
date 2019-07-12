@@ -39,6 +39,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -79,6 +80,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private ListView lvMainIssues;
     private ListAdapter issueAdapter;
     private LinearLayout pagination;
+    private SwipeRefreshLayout swipeRefreshLayout;
     private ImageButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
@@ -270,6 +272,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.page++;
             this.reload();
         });
+
+        this.swipeRefreshLayout.setOnRefreshListener(() -> {
+            this.reload();
+            this.swipeRefreshLayout.setRefreshing(false);
+        });
     }
 
     @Override
@@ -307,6 +314,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
             this.spMainProjects.setAdapter(this.projectList);
             this.projectList.notifyDataSetChanged();
+
+            this.swipeRefreshLayout = this.findViewById(R.id.swipeRefresh);
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.issueAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_bug_report_black_24dp);
