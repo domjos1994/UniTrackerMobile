@@ -64,9 +64,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public boolean testConnection() throws Exception {
-        SoapObject request = new SoapObject(super.soapPath, "mc_login");
-        Object object = this.executeAction(request, "mc_login", true);
-        return object instanceof SoapObject;
+        if (super.isWSDLAvailable()) {
+            SoapObject request = new SoapObject(super.soapPath, "mc_login");
+            Object object = this.executeAction(request, "mc_login", true);
+            return object instanceof SoapObject;
+        }
+        return false;
     }
 
     @Override

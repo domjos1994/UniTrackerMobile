@@ -38,4 +38,18 @@
         android:inputType="number"
         android:title="@string/settings_general_reload"
         android:summary="@string/settings_general_reload_summary" />
+
+    <EditTextPreference
+        android:key="txtFormatDate"
+        android:inputType="text"
+        android:title="@string/settings_general_date_format"
+        android:summary="@string/settings_general_date_format_summary"
+        android:defaultValue="@string/settings_general_date_format_default" />
+
+    <EditTextPreference
+        android:key="txtFormatTime"
+        android:inputType="text"
+        android:title="@string/settings_general_time_format"
+        android:summary="@string/settings_general_time_format_summary"
+        android:defaultValue="@string/settings_general_time_format_default" />
 </PreferenceScreen>

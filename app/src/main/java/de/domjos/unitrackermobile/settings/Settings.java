@@ -159,4 +159,12 @@ public class Settings {
             return -1;
         }
     }
+
+    public String getDateFormat() {
+        return this.userPreferences.getString("txtFormatDate", "");
+    }
+
+    public String getTimeFormat() {
+        return this.userPreferences.getString("txtFormatTime", "");
+    }
 }

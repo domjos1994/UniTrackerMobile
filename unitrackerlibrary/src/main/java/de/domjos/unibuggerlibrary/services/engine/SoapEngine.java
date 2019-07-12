@@ -24,7 +24,9 @@ import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 
+import java.net.HttpURLConnection;
 import java.net.Proxy;
+import java.net.URL;
 
 public class SoapEngine {
     private Authentication authentication;
@@ -54,6 +56,21 @@ public class SoapEngine {
         new MarshalBase64().register(envelope);
         transportSE.call(this.soapPath + "/" + action, envelope);
         return envelope.getResponse();
+    }
+
+    protected boolean isWSDLAvailable() {
+        HttpURLConnection c = null;
+        try {
+            URL u = new URL(this.soapPath + "?wsdl");
+            c = (HttpURLConnection) u.openConnection();
+            c.setRequestMethod("HEAD");
+            c.getInputStream();
+            return c.getResponseCode() == 200;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (c != null) c.disconnect();
+        }
     }
 
     private SoapSerializationEnvelope getEnvelope(SoapObject request) {
