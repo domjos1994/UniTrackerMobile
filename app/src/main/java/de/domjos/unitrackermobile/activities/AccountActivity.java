@@ -92,7 +92,6 @@ public final class AccountActivity extends AbstractActivity {
                     txtAccountServer.setText("");
                 }
                 txtAccountAPI.setVisibility(View.VISIBLE);
-                txtAccountUserName.setHint(getString(R.string.users_login));
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {

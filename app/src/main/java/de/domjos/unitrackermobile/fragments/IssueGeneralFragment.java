@@ -34,8 +34,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -45,17 +47,14 @@ import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.ListTask;
 import de.domjos.unibuggerlibrary.tasks.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
-import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
-import de.domjos.unitrackermobile.settings.Settings;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -71,6 +70,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private MultiAutoCompleteTextView txtIssueGeneralTags;
     private ImageButton cmdIssueGeneralSmartPhone;
     private ArrayAdapter<User> userAdapter;
+    private ArrayAdapter<String> tagAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
     private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory,
@@ -137,68 +137,76 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.spIssueGeneralHandler.setAdapter(this.userAdapter);
                 this.userAdapter.notifyDataSetChanged();
 
-                ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
-                this.txtIssueGeneralTags.setAdapter(tagAdapter);
+                this.tagAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+                this.txtIssueGeneralTags.setAdapter(this.tagAdapter);
                 this.txtIssueGeneralTags.setTokenizer(new CommaTokenizer());
-                tagAdapter.notifyDataSetChanged();
+                this.tagAdapter.notifyDataSetChanged();
 
 
                 if (this.getActivity() != null) {
-                    Settings settings = MainActivity.GLOBALS.getSettings(getActivity());
-
-                    ListTask<User> userTask = new ListTask<>(getActivity(), this.bugService, ListTask.ListItem.Profiles, settings.showNotifications());
-                    List<User> users = userTask.execute(this.pid).get();
-
-                    ListTask<Tag> tagTask = new ListTask<>(getActivity(), bugService, ListTask.ListItem.Tags, settings.showNotifications());
-                    for (Tag tag : tagTask.execute(this.pid).get()) {
-                        tagAdapter.add(tag.getTitle());
-                    }
-
-                    ListTask<Profile> profileTask = new ListTask<>(getActivity(), bugService, ListTask.ListItem.Profiles, settings.showNotifications());
-                    List<String> platform = new LinkedList<>();
-                    List<String> os = new LinkedList<>();
-                    List<String> build = new LinkedList<>();
-                    List<Profile> profiles = profileTask.execute(this.pid).get();
-                    for (Profile profile : profiles) {
-                        if (!profile.getPlatform().isEmpty()) {
-                            if (!platform.contains(profile.getPlatform())) {
-                                platform.add(profile.getPlatform());
+                    new Thread(() -> {
+                        try {
+                            List<User> users = new LinkedList<>();
+                            if (this.bugService.getPermissions().listUsers()) {
+                                users.addAll(this.bugService.getUsers(this.pid));
                             }
-                        }
-                        if (!profile.getOs().isEmpty()) {
-                            if (!os.contains(profile.getOs())) {
-                                os.add(profile.getOs());
-                            }
-                        }
-                        if (!profile.getOs_build().isEmpty()) {
-                            if (!build.contains(profile.getOs_build())) {
-                                build.add(profile.getOs_build());
-                            }
-                        }
-                    }
+                            users.add(0, new User());
 
+                            for (Object tag : this.bugService.getTags(this.pid)) {
+                                this.tagAdapter.add(((Tag) tag).getTitle());
+                            }
 
-                    for (User user : users) {
-                        this.userAdapter.add(user);
-                    }
-                    if (this.issue != null) {
-                        if (this.issue.getHandler() != null) {
-                            for (int i = 0; i <= this.userAdapter.getCount() - 1; i++) {
-                                User user = this.userAdapter.getItem(i);
-                                if (user != null) {
-                                    if (user.toString().equals(this.issue.getHandler().toString())) {
-                                        this.spIssueGeneralHandler.setSelection(i);
-                                        break;
+                            List<String> platform = new LinkedList<>();
+                            List<String> os = new LinkedList<>();
+                            List<String> build = new LinkedList<>();
+                            List<Profile> profiles = this.bugService.getProfiles();
+                            for (Profile profile : profiles) {
+                                if (!profile.getPlatform().isEmpty()) {
+                                    if (!platform.contains(profile.getPlatform())) {
+                                        platform.add(profile.getPlatform());
+                                    }
+                                }
+                                if (!profile.getOs().isEmpty()) {
+                                    if (!os.contains(profile.getOs())) {
+                                        os.add(profile.getOs());
+                                    }
+                                }
+                                if (!profile.getOs_build().isEmpty()) {
+                                    if (!build.contains(profile.getOs_build())) {
+                                        build.add(profile.getOs_build());
                                     }
                                 }
                             }
 
+                            this.getActivity().runOnUiThread(() -> {
+                                for (User user : users) {
+                                    this.userAdapter.add(user);
+                                }
+                                if (this.issue != null) {
+                                    if (this.issue.getHandler() != null) {
+                                        for (int i = 0; i <= this.userAdapter.getCount() - 1; i++) {
+                                            User user = this.userAdapter.getItem(i);
+                                            if (user != null) {
+                                                if (user.toString().equals(this.issue.getHandler().toString())) {
+                                                    this.spIssueGeneralHandler.setSelection(i);
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                    this.txtIssueGeneralTags.setText(this.issue.getTags());
+                                }
+                                this.txtIssueGeneralPlatform.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, platform));
+                                this.txtIssueGeneralOs.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, os));
+                                this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
+                            });
+                        } catch (Exception ex) {
+                            if (this.getActivity() != null) {
+                                this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
+                            }
                         }
-                        this.txtIssueGeneralTags.setText(this.issue.getTags());
-                    }
-                    this.txtIssueGeneralPlatform.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, platform));
-                    this.txtIssueGeneralOs.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, os));
-                    this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
+                    }).start();
                 }
 
 
@@ -238,7 +246,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
 
@@ -267,7 +274,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
             try {
                 if (!this.txtIssueGeneralDueDate.getText().toString().equals("")) {
-                    issue.setDueDate(DateConverter.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), this.getContext()));
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+                    issue.setDueDate(sdf.parse(this.txtIssueGeneralDueDate.getText().toString()));
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, this.getActivity());
@@ -326,14 +334,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralBuild.setText("");
             }
 
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.issue.getSubmitDate() != null) {
-                this.txtIssueGeneralSubmitted.setText(DateConverter.convertDateTimeToString(this.issue.getSubmitDate(), this.getContext()));
+                this.txtIssueGeneralSubmitted.setText(sdf.format(this.issue.getSubmitDate()));
             }
             if (this.issue.getLastUpdated() != null) {
-                this.txtIssueGeneralUpdated.setText(DateConverter.convertDateTimeToString(this.issue.getLastUpdated(), this.getContext()));
+                this.txtIssueGeneralUpdated.setText(sdf.format(this.issue.getLastUpdated()));
             }
             if (this.issue.getDueDate() != null) {
-                this.txtIssueGeneralDueDate.setText(DateConverter.convertDateToString(this.issue.getDueDate(), this.getContext()));
+                this.txtIssueGeneralDueDate.setText(sdf.format(this.issue.getDueDate()));
             }
 
             this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {
@@ -523,20 +532,22 @@ public final class IssueGeneralFragment extends AbstractFragment {
     }
 
     private void initCategories() {
-        try {
-            if (this.getContext() != null && this.getActivity() != null) {
-                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
-                if (this.bugService != null) {
-                    ListTask<String> categoryTask = new ListTask<>(getActivity(), bugService, ListTask.ListItem.Categories, MainActivity.GLOBALS.getSettings(getActivity()).showNotifications());
-                    List<String> categories = categoryTask.execute(this.pid).get();
-                    for (String category : categories) {
-                        arrayAdapter.add(category);
+        if (this.getContext() != null && this.getActivity() != null) {
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+            new Thread(() -> {
+                try {
+                    if (this.bugService != null) {
+                        List<String> categories = this.bugService.getCategories(this.pid);
+                        for (String category : categories) {
+                            arrayAdapter.add(category);
+                        }
+                        this.getActivity().runOnUiThread(() -> txtIssueGeneralCategory.setAdapter(arrayAdapter));
                     }
-                    txtIssueGeneralCategory.setAdapter(arrayAdapter);
+                } catch (Exception ex) {
+                    this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
                 }
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getActivity());
+
+            }).start();
         }
     }
 

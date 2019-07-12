@@ -28,9 +28,6 @@
     <string name="task_issues_list_title">Bugs</string>
     <string name="task_issue_content">Bug aktualisieren…</string>
 
-    <string name="task_list_title">Listen</string>
-    <string name="task_list_content">Lade Listen....</string>
-
     <string name="task_field_list_title">Felder</string>
     <string name="task_field_content">Felder aktualisieren…</string>
 

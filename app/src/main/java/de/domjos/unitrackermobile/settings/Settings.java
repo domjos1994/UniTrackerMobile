@@ -29,7 +29,6 @@ import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -41,12 +40,10 @@ public class Settings {
 
     private SharedPreferences preferences;
     private SharedPreferences userPreferences;
-    private Context context;
 
     Settings(Context context) {
         this.preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        this.context = context;
     }
 
     public Authentication getCurrentAuthentication() {
@@ -161,13 +158,5 @@ public class Settings {
         } else {
             return -1;
         }
-    }
-
-    public String getDateFormat() {
-        return this.userPreferences.getString("txtDateFormat", this.context.getString(R.string.settings_general_date_default));
-    }
-
-    public String getTimeFormat() {
-        return this.userPreferences.getString("txtTimeFormat", this.context.getString(R.string.settings_general_time_default));
     }
 }

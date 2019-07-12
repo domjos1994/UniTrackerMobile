@@ -19,8 +19,6 @@
 package de.domjos.unitrackermobile.helper;
 
 import android.content.Context;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.widget.EditText;
 
 import java.util.AbstractMap;
@@ -29,184 +27,121 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.domjos.unibuggerlibrary.utils.Converter;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.settings.Settings;
 
 public class Validator {
     private Context context;
-    private Map<Integer, Boolean> states;
-    private Map<Integer, Map.Entry<EditText, String>> executeLater;
-    private Map<Integer, TextWatcher> textWatchers;
+    private Map<EditText, Map.Entry<ValidatorType, String>> executeLater;
 
 
     public Validator(Context context) {
         this.context = context;
-        this.states = new LinkedHashMap<>();
         this.executeLater = new LinkedHashMap<>();
-        this.textWatchers = new LinkedHashMap<>();
     }
 
     public void addEmptyValidator(EditText txt) {
-        this.controlFieldIsEmpty(txt);
-
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                controlFieldIsEmpty(txt);
-            }
-        };
-        textWatchers.put(txt.getId(), textWatcher);
-        txt.addTextChangedListener(textWatcher);
+        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.empty, ""));
     }
 
     public void addDuplicatedEntry(EditText txt, String table, String column, long id) {
-        this.executeLater.put(txt.getId(), new AbstractMap.SimpleEntry<>(txt, table + ":" + column + ":" + id));
+        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.duplicated, table + ":" + column + ":" + id));
     }
 
     public void addValueEqualsRegex(EditText txt, String regex) {
-        this.controlFieldEqualsRegex(txt, regex);
-
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                controlFieldEqualsRegex(txt, regex);
-            }
-        };
-        textWatchers.put(txt.getId(), textWatcher);
-        txt.addTextChangedListener(textWatcher);
+        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.regex, regex));
     }
 
     public void addValueEqualsDate(EditText txt) {
-        this.controlFieldEqualsDate(txt);
-
-        TextWatcher textWatcher = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                controlFieldEqualsDate(txt);
-            }
-        };
-        textWatchers.put(txt.getId(), textWatcher);
-        txt.addTextChangedListener(textWatcher);
+        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.regex, "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"));
     }
 
     public boolean getState() {
-        for (Map.Entry<Integer, Map.Entry<EditText, String>> entry : this.executeLater.entrySet()) {
-            String[] field = entry.getValue().getValue().split(":");
-            if (field.length == 3) {
-                boolean state = this.controlFieldIsDuplicated(entry.getValue().getKey(), field[0], field[1], Long.parseLong(field[2]));
-                if (!state) {
-                    return false;
-                }
+        boolean state = true;
+        for (Map.Entry<EditText, Map.Entry<ValidatorType, String>> entry : this.executeLater.entrySet()) {
+            ValidatorType type = entry.getValue().getKey();
+            EditText txt = entry.getKey();
+            String value = entry.getValue().getValue();
+
+            boolean currentState;
+            switch (type) {
+                case empty:
+                    currentState = this.controlFieldIsEmpty(txt);
+                    if (!currentState) {
+                        state = false;
+                    }
+                    break;
+                case duplicated:
+                    String[] field = value.split(":");
+                    if (field.length == 3) {
+                        currentState = this.controlFieldIsDuplicated(txt, field[0], field[1], Long.parseLong(field[2]));
+                        if (!currentState) {
+                            state = false;
+                        }
+                    }
+                    break;
+                case regex:
+                    currentState = this.controlFieldEqualsRegex(txt, value);
+                    if (!currentState) {
+                        state = false;
+                    }
+                    break;
             }
         }
 
-        for (Map.Entry<Integer, Boolean> entry : this.states.entrySet()) {
-            if (!entry.getValue()) {
-                return false;
-            }
-        }
-        return true;
+        return state;
     }
 
     public void removeValidator(EditText txt) {
-        this.states.remove(txt.getId());
-        txt.removeTextChangedListener(this.textWatchers.get(txt.getId()));
         txt.setError(null);
     }
 
-    private void controlFieldIsEmpty(EditText txt) {
+    private boolean controlFieldIsEmpty(EditText txt) {
         if (txt != null) {
             if (txt.getText() != null) {
                 if (txt.getText().toString().isEmpty()) {
                     txt.setError(String.format(this.context.getString(R.string.validator_empty), txt.getHint()));
-                    this.states.put(txt.getId(), false);
+                    return false;
                 } else {
                     txt.setError(null);
-                    this.states.put(txt.getId(), true);
+                    return true;
                 }
             }
         }
+        return true;
     }
 
     private boolean controlFieldIsDuplicated(EditText txt, String table, String column, long id) {
         if (txt != null) {
             if (txt.getText() != null) {
                 if (MainActivity.GLOBALS.getSqLiteGeneral().duplicated(table, column, txt.getText().toString(), "ID<>" + id)) {
-                    MessageHelper.printMessage(String.format(this.context.getString(R.string.validator_duplicated), txt.getText().toString(), txt.getHint()), this.context);
+                    txt.setError(String.format(this.context.getString(R.string.validator_duplicated), txt.getText().toString(), txt.getHint()));
                     return false;
                 }
             }
+            txt.setError(null);
         }
         return true;
     }
 
-    private void controlFieldEqualsRegex(EditText txt, String regex) {
+    private boolean controlFieldEqualsRegex(EditText txt, String regex) {
         if (txt != null) {
             if (txt.getText() != null) {
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(txt.getText().toString());
                 if (!matcher.matches()) {
                     txt.setError(String.format(this.context.getString(R.string.validator_matches), txt.getHint()));
-                    this.states.put(txt.getId(), false);
-                    return;
+                    return false;
                 }
             }
             txt.setError(null);
-            this.states.put(txt.getId(), true);
         }
+        return true;
     }
 
-    private void controlFieldEqualsDate(EditText txt) {
-        Settings settings = MainActivity.GLOBALS.getSettings(this.context);
-        if (txt != null) {
-            if (txt.getText() != null) {
-                String value = txt.getText().toString();
-                if (!tryFormat(value, settings.getDateFormat() + " " + settings.getTimeFormat())) {
-                    if (!tryFormat(value, settings.getDateFormat())) {
-                        txt.setError(String.format(this.context.getString(R.string.validator_noDate), txt.getHint()));
-                        this.states.put(txt.getId(), false);
-                        return;
-                    }
-                }
-            }
-            txt.setError(null);
-            this.states.put(txt.getId(), true);
-        }
-    }
-
-    private boolean tryFormat(String value, String format) {
-        try {
-            Converter.convertStringToDate(value, format);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
+    private enum ValidatorType {
+        empty,
+        duplicated,
+        regex
     }
 }

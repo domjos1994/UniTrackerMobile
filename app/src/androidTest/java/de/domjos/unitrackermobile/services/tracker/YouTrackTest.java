@@ -38,47 +38,47 @@ import static org.junit.Assert.assertNotEquals;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class YouTrackTest {
-    private IBugService<String> redmine;
+    private IBugService<String> youtrack;
 
     @Before
     public void init() throws Exception {
-        this.redmine = new YouTrack(Helper.getAuthFromRes(R.raw.test_credentials, "youtrack"));
-        for (Project project : this.redmine.getProjects()) {
-            this.redmine.deleteProject(String.valueOf(project.getId()));
+        this.youtrack = new YouTrack(Helper.getAuthFromRes(R.raw.test_credentials, "youtrack"));
+        for (Project project : this.youtrack.getProjects()) {
+            this.youtrack.deleteProject(String.valueOf(project.getId()));
         }
     }
 
     @Test
     public void testProjects() throws Exception {
-        List<Project<String>> projects = this.redmine.getProjects();
+        List<Project<String>> projects = this.youtrack.getProjects();
         assertNotNull(projects);
 
         int count = projects.size();
 
-        Project project = new Project();
+        Project<String> project = new Project<>();
         project.setAlias("test");
         project.setTitle("Test");
         project.setDescription("This is a test!");
-        String id = this.redmine.insertOrUpdateProject(project);
+        String id = this.youtrack.insertOrUpdateProject(project);
         assertNotEquals("0", id);
 
-        project.setId(Long.parseLong(id));
+        project.setId(id);
         project.setDescription("This is a new test!");
-        id = this.redmine.insertOrUpdateProject(project);
+        id = this.youtrack.insertOrUpdateProject(project);
 
-        projects = this.redmine.getProjects();
+        projects = this.youtrack.getProjects();
         assertNotNull(projects);
         assertNotEquals(count, projects.size());
         for (Project current : projects) {
             if (id.equals(String.valueOf(current.getId()))) {
-                Project selected = this.redmine.getProject(String.valueOf(current.getId()));
+                Project selected = this.youtrack.getProject(String.valueOf(current.getId()));
                 assertNotNull(selected);
                 assertEquals("This is a new test!", selected.getDescription());
                 break;
             }
         }
 
-        this.redmine.deleteProject(id);
-        assertEquals(count, this.redmine.getProjects().size());
+        this.youtrack.deleteProject(id);
+        assertEquals(count, this.youtrack.getProjects().size());
     }
 }
