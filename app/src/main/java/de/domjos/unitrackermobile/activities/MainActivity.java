@@ -359,6 +359,16 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     }
                 }, 0, (this.settings.getReload() * 1000));
             }
+
+            List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
+            if (authentications != null) {
+                if (!authentications.isEmpty()) {
+                    return;
+                }
+            }
+            Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
+            intent.putExtra(AccountActivity.ON_BOARDING, true);
+            startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }

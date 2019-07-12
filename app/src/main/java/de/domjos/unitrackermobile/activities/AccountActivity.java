@@ -68,6 +68,9 @@ public final class AccountActivity extends AbstractActivity {
     private Authentication currentAccount;
     private Validator accountValidator;
 
+    static final String ON_BOARDING = "onBoarding";
+    private boolean onBoarding = false;
+
     public AccountActivity() {
         super(R.layout.account_activity);
     }
@@ -230,7 +233,11 @@ public final class AccountActivity extends AbstractActivity {
                                         AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this));
                                     }
                                 } catch (Exception ex) {
-                                    AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+                                    if (ex.getMessage().contains("PHP SOAP")) {
+                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), AccountActivity.this));
+                                    } else {
+                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+                                    }
                                 }
                             }).start();
                         } else {
@@ -267,6 +274,13 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+
+        Intent intent = this.getIntent();
+        if (intent != null) {
+            if (intent.hasExtra(AccountActivity.ON_BOARDING)) {
+                this.onBoarding = intent.getBooleanExtra(AccountActivity.ON_BOARDING, false);
+            }
+        }
     }
 
     @Override
@@ -279,6 +293,11 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
+        if (this.onBoarding) {
+            this.onBoarding = false;
+            this.manageControls(true, true, false);
+        }
+
         this.listAdapter.clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
             ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
