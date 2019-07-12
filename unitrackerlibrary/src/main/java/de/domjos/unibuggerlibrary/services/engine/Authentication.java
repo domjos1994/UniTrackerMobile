@@ -114,6 +114,7 @@ public class Authentication extends DescriptionObject<Long> {
         Jira,
         PivotalTracker,
         OpenProject,
-        Backlog
+        Backlog,
+        Tuleap
     }
 }

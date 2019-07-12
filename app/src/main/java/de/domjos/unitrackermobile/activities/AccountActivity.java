@@ -129,6 +129,13 @@ public final class AccountActivity extends AbstractActivity {
                                 accountValidator.addEmptyValidator(txtAccountAPI);
                             }
                             break;
+                        case Tuleap:
+                            if (chkAccountGuest.isChecked()) {
+                                accountValidator.removeValidator(txtAccountAPI);
+                            } else {
+                                accountValidator.addEmptyValidator(txtAccountAPI);
+                            }
+                            break;
                         case OpenProject:
                             String user = "apikey";
                             txtAccountUserName.setText(user);

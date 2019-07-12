@@ -138,6 +138,12 @@
     <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
     <string name="settings_general_reload">Fehler automatisch neu laden</string>
     <string name="settings_general_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren)</string>
+    <string name="settings_general_date_format">Datums-Format</string>
+    <string name="settings_general_date_format_summary">Geben Sie hier das Datums-Format an!</string>
+    <string name="settings_general_date_format_default">dd.MM.yyyy</string>
+    <string name="settings_general_time_format">Zeit-Format</string>
+    <string name="settings_general_time_format_summary">Geben Sie hier das Zeit-Format an!</string>
+    <string name="settings_general_time_format_default">HH:mm:ss</string>
     <string name="settings_security">Sicherheit</string>
     <string name="settings_security_summary">Ändern Sie hier die Einstellungen zur Sicherheit der App!</string>
     <string name="settings_security_enable">Verschlüsselung aktivieren!</string>
