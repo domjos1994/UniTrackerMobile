@@ -23,15 +23,12 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
@@ -39,11 +36,11 @@ import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.VersionTask;
-import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -51,8 +48,7 @@ import de.domjos.unitrackermobile.settings.Settings;
 public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
-    private ListView lvVersions;
-    private ListAdapter versionAdapter;
+    private SwipeRefreshDeleteList lvVersions;
     private EditText txtVersionTitle, txtVersionDescription, txtVersionReleasedAt;
     private CheckBox chkVersionReleased, chkVersionDeprecated;
     private Spinner spVersionFilter;
@@ -75,16 +71,30 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvVersions.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                ListObject listObject = this.versionAdapter.getItem(position);
-                if (listObject != null) {
-                    this.currentVersion = (Version) listObject.getDescriptionObject();
-                    this.objectToControls();
-                    this.manageControls(false, false, true);
+        this.lvVersions.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                try {
+                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "").execute(listObject.getDescriptionObject().getId()).get();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, VersionActivity.this);
                 }
-            } catch (Exception ex) {
-                MessageHelper.printException(ex, VersionActivity.this);
+            }
+        });
+
+        this.lvVersions.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                currentVersion = (Version) listObject.getDescriptionObject();
+                objectToControls();
+                manageControls(false, false, true);
+            }
+        });
+
+        this.lvVersions.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
             }
         });
 
@@ -148,10 +158,6 @@ public final class VersionActivity extends AbstractActivity {
 
         // init controls
         this.lvVersions = this.findViewById(R.id.lvVersions);
-        this.versionAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_update_black_24dp);
-        this.lvVersions.setAdapter(this.versionAdapter);
-        this.versionAdapter.notifyDataSetChanged();
-
         this.txtVersionTitle = this.findViewById(R.id.txtVersionTitle);
         this.txtVersionDescription = this.findViewById(R.id.txtVersionDescription);
         this.txtVersionReleasedAt = this.findViewById(R.id.txtVersionReleasedAt);
@@ -182,7 +188,7 @@ public final class VersionActivity extends AbstractActivity {
         try {
             if (this.permissions.listVersions()) {
                 if (this.currentProject != null) {
-                    this.versionAdapter.clear();
+                    this.lvVersions.getAdapter().clear();
                     String filterAction = "versions";
                     if (filter != null) {
                         if (this.filter.equals(getString(R.string.versions_released))) {
@@ -196,7 +202,7 @@ public final class VersionActivity extends AbstractActivity {
                     VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction);
                     for (Version version : versionTask.execute(0).get()) {
                         ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
-                        this.versionAdapter.add(listObject);
+                        this.lvVersions.getAdapter().add(listObject);
                     }
 
                 }
@@ -234,7 +240,7 @@ public final class VersionActivity extends AbstractActivity {
             this.txtVersionDescription.setText(this.currentVersion.getDescription());
             Date date = new Date();
             date.setTime(this.currentVersion.getReleasedVersionAt());
-            this.txtVersionReleasedAt.setText(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date));
+            this.txtVersionReleasedAt.setText(DateConverter.convertDateTimeToString(date, this.getApplicationContext()));
             this.chkVersionDeprecated.setChecked(this.currentVersion.isDeprecatedVersion());
             this.chkVersionReleased.setChecked(this.currentVersion.isReleasedVersion());
         }
@@ -246,7 +252,7 @@ public final class VersionActivity extends AbstractActivity {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
                 String strDate = this.txtVersionReleasedAt.getText().toString();
-                this.currentVersion.setReleasedVersionAt(Converter.convertStringToDate(strDate, Converter.DATE_FORMAT).getTime());
+                this.currentVersion.setReleasedVersionAt(DateConverter.convertStringToDate(strDate, this.getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }

@@ -16,11 +16,13 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/navAdd"
         android:title="@string/sys_add"
+        app:showAsAction="always"
         android:icon="@drawable/ic_add_circle_black_24dp" />
     <item
         android:id="@+id/navEdit"

@@ -34,10 +34,6 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unibuggerlibrary.model.ListObject;
@@ -50,6 +46,7 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -300,16 +297,11 @@ public final class ProjectActivity extends AbstractActivity {
             this.txtProjectIconUrl.setText(this.currentProject.getIconUrl());
             this.txtProjectVersion.setText(this.currentProject.getDefaultVersion());
 
-            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss", Locale.GERMAN);
             if (this.currentProject.getCreatedAt() != 0) {
-                Date dt = new Date();
-                dt.setTime(this.currentProject.getCreatedAt());
-                this.lblCreatedAt.setText(sdf.format(dt));
+                this.lblCreatedAt.setText(DateConverter.convertLongToString(this.currentProject.getCreatedAt(), this.getApplicationContext()));
             }
             if (this.currentProject.getUpdatedAt() != 0) {
-                Date dt = new Date();
-                dt.setTime(this.currentProject.getUpdatedAt());
-                this.lblUpdatedAt.setText(sdf.format(dt));
+                this.lblUpdatedAt.setText(DateConverter.convertLongToString(this.currentProject.getUpdatedAt(), this.getApplicationContext()));
             }
 
             StringBuilder builder = new StringBuilder();

@@ -57,7 +57,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <ListView
+        <de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList
             android:id="@+id/lvVersions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -65,6 +65,7 @@
             android:padding="5dp" />
 
         <ScrollView
+            android:id="@+id/viewControls"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"
@@ -73,7 +74,7 @@
 
             <TableLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:weightSum="10">
 
                 <TableRow>

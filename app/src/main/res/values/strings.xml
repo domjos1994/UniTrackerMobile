@@ -175,7 +175,7 @@
         <item>@string/issues</item>
         <item>@string/issues_custom</item>
     </string-array>
-    <string name="administration_message">%s erfolgreich %s!</string>
+    <string name="administration_message" formatted="false">%s erfolgreich %s!</string>
 
     <string name="filter">Filter</string>
     <string-array name="filter_view">
@@ -193,6 +193,10 @@
     <string name="search">Erweiterte Suche</string>
     <string name="search_content">Suche</string>
 
+    <string name="help">Hilfe</string>
+    <string name="help_no_connection_title">App kann keine Verbindung zum Bugtracker aufbauen!</string>
+    <string name="help_no_connection_text">Dies kann viele Gründe haben: Haben Sie eine aktive Internet-Verbindung? Stimmen die Daten wie Server, Benutzername, Passwort? Ist bei Ihnen die Schnittstelle freigeschaltet? Brauchen Sie vielleicht einen API-Schlüssel?…</string>
+
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>
     <string name="sys_delete">Löschen</string>
@@ -204,13 +208,19 @@
 
     <string name="general_description">Beschreibung</string>
 
-    <string name="validator_empty">Feld \'%s\' ist ein Pflichtfeld!</string>
-    <string name="validator_duplicated">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
-    <string name="validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
-    <string name="validator_noDate">Feld \'%s\' enthält kein zulässiges Datum! (yyyy-MM-dd)</string>
+    <string name="validator_empty" formatted="false">Feld \'%s\' ist ein Pflichtfeld!</string>
+    <string name="validator_duplicated" formatted="false">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
+    <string name="validator_matches" formatted="false">Feld \'%s\' enthält unzulässige Zeichen!</string>
+    <string name="validator_noDate" formatted="false">Feld \'%s\' enthält kein zulässiges Datum! (yyyy-MM-dd)</string>
     <string name="validator_no_success">Felder sind nicht valide!</string>
 
     <string name="messages_no_network">Kein Internetzugang!</string>
     <string name="messages_no_soap">Soap ist wohl auf dem Server nicht installiert oder nicht aktiviert!</string>
     <string name="messages_wrong_password">Passwort falsch!</string>
+
+    <string name="messages_tutorial_new_account_title">Neuen Account anlegen:</string>
+    <string name="messages_tutorial_new_account_hamburger">Um einen neuen Bugtracker-Account anzulegen, öffnen Sie die Toolbar!</string>
+    <string name="messages_tutorial_new_account_drawer_header">Berühren Sie den Kopfbereich des Menus!</string>
+    <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
+    <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
 </resources>

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (C)  2019 Domjos
   ~ This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
   ~
@@ -21,9 +22,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.MainActivity">
+    android:fitsSystemWindows="true"
+    tools:context="de.domjos.unitrackermobile.activities.HelpActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
@@ -32,19 +35,11 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            <androidx.appcompat.widget.SearchView
-                android:id="@+id/cmdSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="3dp" />
-        </androidx.appcompat.widget.Toolbar>
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/main_content" />
+    <include layout="@layout/help_content" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

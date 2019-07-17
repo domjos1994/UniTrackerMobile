@@ -30,9 +30,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -43,6 +40,7 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -230,12 +228,11 @@ public final class IssueNotesFragment extends AbstractFragment {
             this.txtIssueNotesText.setText(this.currentNote.getDescription());
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.currentNote.getState().getKey().toString()), this.statusValueArray, this.spIssueNotesView);
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.currentNote.getLastUpdated() != null) {
-                this.txtIssueNotesLastUpdated.setText(sdf.format(this.currentNote.getLastUpdated()));
+                this.txtIssueNotesLastUpdated.setText(DateConverter.convertDateTimeToString(this.currentNote.getLastUpdated(), this.getContext()));
             }
             if (this.currentNote.getSubmitDate() != null) {
-                this.txtIssueNotesSubmitDate.setText(sdf.format(this.currentNote.getSubmitDate()));
+                this.txtIssueNotesSubmitDate.setText(DateConverter.convertDateTimeToString(this.currentNote.getSubmitDate(), this.getContext()));
             }
 
         }

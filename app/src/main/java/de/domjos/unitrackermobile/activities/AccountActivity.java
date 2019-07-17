@@ -69,7 +69,6 @@ public final class AccountActivity extends AbstractActivity {
     private Validator accountValidator;
 
     static final String ON_BOARDING = "onBoarding";
-    private boolean onBoarding = false;
 
     public AccountActivity() {
         super(R.layout.account_activity);
@@ -129,13 +128,13 @@ public final class AccountActivity extends AbstractActivity {
                                 accountValidator.addEmptyValidator(txtAccountAPI);
                             }
                             break;
-                        case Tuleap:
+                        /*case Tuleap:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
                                 accountValidator.addEmptyValidator(txtAccountAPI);
                             }
-                            break;
+                            break;*/
                         case OpenProject:
                             String user = "apikey";
                             txtAccountUserName.setText(user);
@@ -281,13 +280,6 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
-
-        Intent intent = this.getIntent();
-        if (intent != null) {
-            if (intent.hasExtra(AccountActivity.ON_BOARDING)) {
-                this.onBoarding = intent.getBooleanExtra(AccountActivity.ON_BOARDING, false);
-            }
-        }
     }
 
     @Override
@@ -300,11 +292,6 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
-        if (this.onBoarding) {
-            this.onBoarding = false;
-            this.manageControls(true, true, false);
-        }
-
         this.listAdapter.clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
             ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);

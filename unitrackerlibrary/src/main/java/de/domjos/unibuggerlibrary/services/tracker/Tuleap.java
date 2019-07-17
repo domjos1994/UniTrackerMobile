@@ -21,6 +21,7 @@ package de.domjos.unibuggerlibrary.services.tracker;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -61,18 +62,41 @@ public final class Tuleap extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public String getTrackerVersion() throws Exception {
-        return "";
+    public String getTrackerVersion() {
+        return "1";
     }
 
     @Override
     public List<Project<Long>> getProjects() throws Exception {
-        return null;
+        List<Project<Long>> projects = new LinkedList<>();
+        int status = this.executeRequest("/api/projects?query={\"is_member_of\": true}");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Project<Long> project = new Project<>();
+                project.setId(jsonObject.getLong("id"));
+                project.setTitle(jsonObject.getString("label"));
+                project.setAlias(jsonObject.getString("shortname"));
+                project.setEnabled(jsonObject.getString("status").equals("active"));
+                projects.add(project);
+            }
+        }
+        return projects;
     }
 
     @Override
     public Project<Long> getProject(Long id) throws Exception {
-        return null;
+        Project<Long> project = new Project<>();
+        int status = this.executeRequest("/api/projects/" + id);
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            project.setId(jsonObject.getLong("id"));
+            project.setTitle(jsonObject.getString("label"));
+            project.setAlias(jsonObject.getString("shortname"));
+            project.setEnabled(jsonObject.getString("status").equals("active"));
+        }
+        return project;
     }
 
     @Override

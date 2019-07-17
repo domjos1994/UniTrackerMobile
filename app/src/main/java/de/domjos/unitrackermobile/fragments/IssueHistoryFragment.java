@@ -29,10 +29,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.History;
@@ -41,6 +38,7 @@ import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -115,9 +113,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
                                     tableRow.addView(this.createTextView(history.getField()));
                                     tableRow.addView(this.createTextView(history.getUser()));
-                                    Date dt = new Date();
-                                    dt.setTime(history.getTime());
-                                    tableRow.addView(this.createTextView(new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.GERMAN).format(dt)));
+                                    tableRow.addView(this.createTextView(DateConverter.convertLongToString(history.getTime(), this.getContext())));
                                     tableRow.addView(this.createTextView(history.getOldValue()));
                                     tableRow.addView(this.createTextView(history.getNewValue()));
 

@@ -127,6 +127,9 @@ public class Helper {
                     case Backlog:
                         bugService = new Backlog(authentication);
                         break;
+                    /*case Tuleap:
+                        bugService = new Tuleap(authentication);
+                        break;*/
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context), authentication);
                         break;

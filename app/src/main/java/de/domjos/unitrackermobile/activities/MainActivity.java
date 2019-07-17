@@ -28,18 +28,17 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
@@ -62,9 +61,10 @@ import de.domjos.unibuggerlibrary.tasks.IssueTask;
 import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
+import de.domjos.unitrackermobile.helper.SpotlightHelper;
 import de.domjos.unitrackermobile.settings.Globals;
 import de.domjos.unitrackermobile.settings.Settings;
 
@@ -77,10 +77,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private TextView lblAccountTitle;
     private Spinner spMainAccounts, spMainFilters, spMainProjects;
     private TableRow rowNoConnection;
-    private ListView lvMainIssues;
-    private ListAdapter issueAdapter;
+    private SwipeRefreshDeleteList lvMainIssues;
     private LinearLayout pagination;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private ImageButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
@@ -88,8 +86,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private IBugService bugService;
     private IFunctionImplemented permissions;
     private Settings settings;
-    private ImageButton cmdRefresh;
     private SearchView cmdSearch;
+    private Toolbar toolbar;
     private int page;
 
     private static final int RELOAD_PROJECTS = 98;
@@ -97,7 +95,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private static final int RELOAD_ISSUES = 101;
     private static final int RELOAD_SETTINGS = 102;
     private static final int RELOAD_FILTERS = 103;
+    private static final int ON_BOARDING = 104;
     public static final Globals GLOBALS = new Globals();
+    private boolean firstLogIn = false, secondSteps = false;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -172,32 +172,33 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.lvMainIssues.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject ls = this.issueAdapter.getItem(position);
-            if (ls != null) {
-                Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
-                intent.putExtra("id", String.valueOf(ls.getDescriptionObject().getId()));
-                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
-                this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+        this.lvMainIssues.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
+                    intent.putExtra("id", String.valueOf(listObject.getDescriptionObject().getId()));
+                    intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
+                    startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+                }
             }
         });
 
-        this.lvMainIssues.setOnItemLongClickListener((parent, view, position, id) -> {
-            try {
-                if (this.permissions.deleteIssues()) {
-                    ListObject listObject = this.issueAdapter.getItem(position);
+        this.lvMainIssues.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                try {
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
-                            Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, this.bugService);
-                            new IssueTask(MainActivity.this, this.bugService, project.getId(), true, false, this.settings.showNotifications()).execute((listObject.getDescriptionObject()).getId()).get();
+                            Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
+                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications()).execute((listObject.getDescriptionObject()).getId()).get();
                             reload();
                         }
                     }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, getApplicationContext());
                 }
-            } catch (Exception ex) {
-                MessageHelper.printException(ex, this.getApplicationContext());
             }
-            return true;
         });
 
         this.cmdIssuesAdd.setOnClickListener(v -> {
@@ -218,11 +219,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
             }
-        });
-
-        this.cmdRefresh.setOnClickListener(v -> {
-            this.reload();
-            this.reloadAccounts();
         });
 
         this.cmdSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -260,7 +256,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         });
 
         this.cmdNext.setOnLongClickListener(v -> {
-            while (this.issueAdapter.getCount() == this.settings.getNumberOfItems()) {
+            while (this.lvMainIssues.getAdapter().getItemCount() == this.settings.getNumberOfItems()) {
                 this.page++;
                 this.reload();
             }
@@ -273,9 +269,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reload();
         });
 
-        this.swipeRefreshLayout.setOnRefreshListener(() -> {
-            this.reload();
-            this.swipeRefreshLayout.setRefreshing(false);
+        this.lvMainIssues.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
+            }
         });
     }
 
@@ -284,8 +282,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             SQLiteDatabase.loadLibs(this);
             // init Toolbar
-            Toolbar toolbar = this.findViewById(R.id.toolbar);
-            this.setSupportActionBar(toolbar);
+            this.toolbar = this.findViewById(R.id.toolbar);
+            this.setSupportActionBar(this.toolbar);
 
             // init Drawer-Layout
             this.drawerLayout = this.findViewById(R.id.drawer_layout);
@@ -298,7 +296,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.navigationView.setNavigationItemSelectedListener(this);
 
             this.cmdSearch = this.findViewById(R.id.cmdSearch);
-            this.cmdRefresh = this.findViewById(R.id.cmdRefresh);
 
             this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
@@ -315,12 +312,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.spMainProjects.setAdapter(this.projectList);
             this.projectList.notifyDataSetChanged();
 
-            this.swipeRefreshLayout = this.findViewById(R.id.swipeRefresh);
-
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
-            this.issueAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_bug_report_black_24dp);
-            this.lvMainIssues.setAdapter(this.issueAdapter);
-            this.issueAdapter.notifyDataSetChanged();
 
             this.spMainFilters = this.findViewById(R.id.spMainFilters);
             this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
@@ -333,8 +325,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
+            this.firstLogIn = this.settings.isFirstLogin();
 
-            Helper.showPasswordDialog(MainActivity.this, this.settings.isFirstLogin(), false, this::executeOnSuccess);
+            Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -360,17 +353,42 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }, 0, (this.settings.getReload() * 1000));
             }
 
-            List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
-            if (authentications != null) {
-                if (!authentications.isEmpty()) {
-                    return;
-                }
-            }
-            Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
-            intent.putExtra(AccountActivity.ON_BOARDING, true);
-            startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
+            this.startTutorial();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
+        }
+    }
+
+    private void startTutorial() {
+        if (!this.firstLogIn && !this.secondSteps) {
+            SpotlightHelper helper = new SpotlightHelper(MainActivity.this);
+            helper.addTargetToHamburger(this.toolbar, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_hamburger, null, () -> drawerLayout.openDrawer(navigationView));
+            helper.show();
+
+            drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                }
+
+                @Override
+                public void onDrawerOpened(@NonNull View drawerView) {
+                    SpotlightHelper helper = new SpotlightHelper(MainActivity.this);
+                    helper.addTarget(ivMainCover, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_drawer_header, null, () -> {
+                        Intent intent = new Intent(MainActivity.this.getApplicationContext(), AccountActivity.class);
+                        intent.putExtra(AccountActivity.ON_BOARDING, true);
+                        startActivityForResult(intent, MainActivity.ON_BOARDING);
+                    });
+                    helper.show();
+                }
+
+                @Override
+                public void onDrawerClosed(@NonNull View drawerView) {
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+                }
+            });
         }
     }
 
@@ -442,7 +460,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     this.pagination.setVisibility(View.VISIBLE);
                     this.pagination.getLayoutParams().height = LinearLayoutCompat.LayoutParams.WRAP_CONTENT;
                 }
-                this.issueAdapter.clear();
+                this.lvMainIssues.getAdapter().clear();
                 boolean isLocal = true;
                 if (this.bugService != null) {
                     if (this.bugService.getAuthentication() != null) {
@@ -472,7 +490,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 for (Object issue : listIssueTask.execute(0).get()) {
                                     Issue tmp = (Issue) issue;
                                     if (tmp.getTitle().contains(search)) {
-                                        this.issueAdapter.add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                                        this.lvMainIssues.getAdapter().add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
                                     }
                                 }
                             }
@@ -543,6 +561,34 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_FILTERS) {
             this.reloadFilters();
         }
+
+        if (resultCode == RESULT_OK && requestCode == MainActivity.ON_BOARDING) {
+            this.secondSteps = true;
+            this.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+                @Override
+                public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+                }
+
+                @Override
+                public void onDrawerOpened(@NonNull View drawerView) {
+                    SpotlightHelper spotlightHelper = new SpotlightHelper(MainActivity.this);
+                    spotlightHelper.addTarget(spMainAccounts, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_choose, null, () -> drawerLayout.closeDrawer(drawerLayout));
+                    spotlightHelper.addTarget(spMainProjects, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_project, null, null);
+                    spotlightHelper.show();
+                }
+
+                @Override
+                public void onDrawerClosed(@NonNull View drawerView) {
+
+                }
+
+                @Override
+                public void onDrawerStateChanged(int newState) {
+
+                }
+            });
+            this.drawerLayout.openDrawer(this.drawerLayout);
+        }
     }
 
     @Override
@@ -563,10 +609,15 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
-        if (item.getItemId() == R.id.menSettings) {
-            intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-        } else {
-            intent = null;
+        switch (item.getItemId()) {
+            case R.id.menSettings:
+                intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+                break;
+            case R.id.menHelp:
+                intent = new Intent(this.getApplicationContext(), HelpActivity.class);
+                break;
+            default:
+                intent = null;
         }
 
         if (intent != null) {

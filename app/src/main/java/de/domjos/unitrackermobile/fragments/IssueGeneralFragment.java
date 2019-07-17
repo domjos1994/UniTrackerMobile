@@ -34,10 +34,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import java.text.SimpleDateFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Locale;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
@@ -53,6 +51,7 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
+import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -274,8 +273,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
             try {
                 if (!this.txtIssueGeneralDueDate.getText().toString().equals("")) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
-                    issue.setDueDate(sdf.parse(this.txtIssueGeneralDueDate.getText().toString()));
+                    issue.setDueDate(DateConverter.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), this.getContext()));
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, this.getActivity());
@@ -334,15 +332,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralBuild.setText("");
             }
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if (this.issue.getSubmitDate() != null) {
-                this.txtIssueGeneralSubmitted.setText(sdf.format(this.issue.getSubmitDate()));
+                this.txtIssueGeneralSubmitted.setText(DateConverter.convertDateTimeToString(this.issue.getSubmitDate(), this.getContext()));
+
             }
             if (this.issue.getLastUpdated() != null) {
-                this.txtIssueGeneralUpdated.setText(sdf.format(this.issue.getLastUpdated()));
+                this.txtIssueGeneralUpdated.setText(DateConverter.convertDateTimeToString(this.issue.getLastUpdated(), this.getContext()));
             }
             if (this.issue.getDueDate() != null) {
-                this.txtIssueGeneralDueDate.setText(sdf.format(this.issue.getDueDate()));
+                this.txtIssueGeneralDueDate.setText(DateConverter.convertDateTimeToString(this.issue.getDueDate(), this.getContext()));
             }
 
             this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {
