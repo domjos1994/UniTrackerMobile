@@ -36,7 +36,7 @@ public class ExpandableTextView extends LinearLayout {
     private Context context;
     private AttributeSet attributeSet;
     private ImageView imageView;
-    private TextView content;
+    private TextView content, header;
 
     public ExpandableTextView(Context context) {
         this(context, null);
@@ -63,6 +63,22 @@ public class ExpandableTextView extends LinearLayout {
         });
     }
 
+    public String getTitle() {
+        return this.header.getText().toString();
+    }
+
+    public void setTitle(String title) {
+        this.header.setText(title);
+    }
+
+    public String getContent() {
+        return this.content.getText().toString();
+    }
+
+    public void setContent(String content) {
+        this.content.setText(content);
+    }
+
     private void addControls() {
         LinearLayout linearContent = new LinearLayout(this.context);
         linearContent.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
@@ -80,15 +96,15 @@ public class ExpandableTextView extends LinearLayout {
         linearLayout.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 8));
         linearLayout.setOrientation(VERTICAL);
 
-        TextView header = new TextView(this.context);
+        this.header = new TextView(this.context);
         layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.setMargins(3, 3, 3, 3);
-        header.setLayoutParams(layoutParams);
-        header.setTextSize(20);
-        header.setTypeface(null, Typeface.BOLD);
-        header.setPadding(3, 3, 3, 3);
-        header.setText(this.getContentFromAttr(R.styleable.ExpandableTextView_title));
-        linearLayout.addView(header);
+        this.header.setLayoutParams(layoutParams);
+        this.header.setTextSize(16);
+        this.header.setTypeface(null, Typeface.BOLD);
+        this.header.setPadding(3, 3, 3, 3);
+        this.header.setText(this.getContentFromAttr(R.styleable.ExpandableTextView_title));
+        linearLayout.addView(this.header);
 
 
         this.content = new TextView(this.context);

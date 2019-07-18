@@ -27,10 +27,34 @@
     tools:context="de.domjos.unitrackermobile.activities.HelpActivity"
     tools:showIn="@layout/help_activity">
 
-    <de.domjos.unitrackermobile.custom.ExpandableTextView
+    <LinearLayout
+        android:id="@+id/pnlQuestions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        custom:title="@string/help_no_connection_title"
-        custom:text="@string/help_no_connection_text" />
+        android:orientation="vertical">
 
+        <EditText
+            android:id="@+id/txtSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/search_content" />
+
+        <de.domjos.unitrackermobile.custom.ExpandableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:title="@string/help_no_connection_title"
+            custom:text="@string/help_no_connection_text" />
+
+        <de.domjos.unitrackermobile.custom.ExpandableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:title="@string/help_key_youtrack_title"
+            custom:text="@string/help_key_youtrack_text" />
+
+        <de.domjos.unitrackermobile.custom.ExpandableTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:title="@string/help_problem_mantis_title"
+            custom:text="@string/help_problem_mantis_text" />
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

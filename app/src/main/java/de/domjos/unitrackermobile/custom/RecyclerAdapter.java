@@ -94,7 +94,7 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
         return data.size();
     }
 
-    void deleteItem(int position) {
+    public void deleteItem(int position) {
         this.data.remove(position);
         notifyItemRemoved(position);
     }

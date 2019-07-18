@@ -62,14 +62,6 @@
                 android:value="de.domjos.unitrackermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.FilterActivity"
-            android:label="@string/filter"
-            android:parentActivityName=".activities.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
-        </activity>
-        <activity
             android:name=".activities.AdministrationActivity"
             android:label="@string/administration"
             android:parentActivityName=".activities.MainActivity">

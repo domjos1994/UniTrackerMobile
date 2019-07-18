@@ -21,7 +21,6 @@ package de.domjos.unitrackermobile.activities;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,8 +34,8 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.FieldTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -44,8 +43,7 @@ import de.domjos.unitrackermobile.settings.Settings;
 public final class FieldActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
-    private ListView lvFields;
-    private ListAdapter fieldAdapter;
+    private SwipeRefreshDeleteList lvFields;
 
     private EditText txtFieldTitle, txtFieldDefault, txtFieldPossibleValues;
     private Spinner cmbFieldType;
@@ -66,12 +64,34 @@ public final class FieldActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvFields.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject ls = this.fieldAdapter.getItem(position);
-            if (ls != null) {
-                this.currentField = (CustomField) ls.getDescriptionObject();
-                this.manageControls(false, false, true);
-                this.objectToControls();
+        this.lvFields.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    currentField = (CustomField) listObject.getDescriptionObject();
+                    manageControls(false, false, true);
+                    objectToControls();
+                }
+            }
+        });
+
+        this.lvFields.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                try {
+                    new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications()).execute(listObject.getDescriptionObject().getId()).get();
+                    reload();
+                    manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, FieldActivity.this);
+                }
+            }
+        });
+
+        this.lvFields.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
             }
         });
     }
@@ -79,11 +99,11 @@ public final class FieldActivity extends AbstractActivity {
     @Override
     protected void reload() {
         try {
-            this.fieldAdapter.clear();
+            this.lvFields.getAdapter().clear();
             if (this.permissions.listCustomFields()) {
                 if(this.currentProject!=null) {
                     for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
-                        this.fieldAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
+                        this.lvFields.getAdapter().add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
                     }
                 }
             }
@@ -138,10 +158,6 @@ public final class FieldActivity extends AbstractActivity {
 
         // init controls
         this.lvFields = this.findViewById(R.id.lvFields);
-        this.fieldAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp);
-        this.lvFields.setAdapter(this.fieldAdapter);
-        this.fieldAdapter.notifyDataSetChanged();
-
         this.txtFieldTitle = this.findViewById(R.id.txtFieldTitle);
         this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
         this.txtFieldPossibleValues = this.findViewById(R.id.txtFieldPossibleValues);

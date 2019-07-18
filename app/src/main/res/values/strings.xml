@@ -196,6 +196,10 @@
     <string name="help">Hilfe</string>
     <string name="help_no_connection_title">App kann keine Verbindung zum Bugtracker aufbauen!</string>
     <string name="help_no_connection_text">Dies kann viele Gründe haben: Haben Sie eine aktive Internet-Verbindung? Stimmen die Daten wie Server, Benutzername, Passwort? Ist bei Ihnen die Schnittstelle freigeschaltet? Brauchen Sie vielleicht einen API-Schlüssel?…</string>
+    <string name="help_key_youtrack_title">Woher bekomme ich den API-Schlüssel von Youtrack?</string>
+    <string name="help_key_youtrack_text">Melden Sie sich mit Ihrem Account bei Youtrack an. Öffnen Sie Ihr Profil und klicken auf den Link neben Hub-Konto. Sie gelangen in die Administration. Klicken Sie dort auf den Tab Authentifizierung und erstellen Sie dort einen neuen Token.</string>
+    <string name="help_problem_mantis_title">Die App kann keine Verbindung zur MantisBT-API aufbauen!</string>
+    <string name="help_problem_mantis_text">Stimmen die Benutzerdaten? Haben Sie auf Ihrem Webserver die PHP-Soap-Extension installiert?</string>
 
     <string name="sys_add">Hinzufügen</string>
     <string name="sys_edit">Bearbeiten</string>

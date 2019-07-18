@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -38,7 +37,7 @@ import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -48,8 +47,7 @@ import de.domjos.unitrackermobile.helper.Validator;
  * A placeholder fragment containing a simple view.
  */
 public final class IssueNotesFragment extends AbstractFragment {
-    private ListView lvIssueNotes;
-    private ListAdapter notesAdapter;
+    private SwipeRefreshDeleteList lvIssueNotes;
     private ImageButton cmdIssueNotesAdd, cmdIssueNotesEdit, cmdIssueNotesDelete, cmdIssueNotesCancel, cmdIssueNotesSave;
     private EditText txtIssueNotesText;
     private TextView txtIssueNotesSubmitDate, txtIssueNotesLastUpdated;
@@ -73,9 +71,6 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         this.lvIssueNotes = this.root.findViewById(R.id.lvIssuesNote);
         if (this.getContext() != null) {
-            this.notesAdapter = new ListAdapter(this.getContext(), R.drawable.ic_note_black_24dp);
-            this.lvIssueNotes.setAdapter(this.notesAdapter);
-            this.notesAdapter.notifyDataSetChanged();
             this.bugService = Helper.getCurrentBugService(this.getContext());
         }
         this.cmdIssueNotesAdd = this.root.findViewById(R.id.cmdIssueNotesAdd);
@@ -89,13 +84,15 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
         this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
 
-        this.lvIssueNotes.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject object = this.notesAdapter.getItem(position);
-            if (object != null) {
-                this.currentNote = (Note) object.getDescriptionObject();
-                this.noteToFields();
+        this.lvIssueNotes.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    currentNote = (Note) listObject.getDescriptionObject();
+                    noteToFields();
+                }
+                manageNoteControls(false, false, true);
             }
-            this.manageNoteControls(false, false, true);
         });
 
         this.cmdIssueNotesAdd.setOnClickListener(v -> {
@@ -108,17 +105,17 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         this.cmdIssueNotesDelete.setOnClickListener(v -> {
             Object id = this.currentNote.getId();
-            for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
-                ListObject listObject = this.notesAdapter.getItem(i);
+            for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
+                ListObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                 if (listObject != null) {
                     if (id != null) {
                         if (id.equals(listObject.getDescriptionObject().getId())) {
-                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
+                            this.lvIssueNotes.getAdapter().deleteItem(i);
                             break;
                         }
                     } else {
                         if (this.currentNote.getDescription().equals(listObject.getDescriptionObject().getDescription())) {
-                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
+                            this.lvIssueNotes.getAdapter().deleteItem(i);
                             break;
                         }
                     }
@@ -138,18 +135,18 @@ public final class IssueNotesFragment extends AbstractFragment {
             this.fieldsToNote();
             Object id = this.currentNote.getId();
             if (id != null) {
-                for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
-                    ListObject listObject = this.notesAdapter.getItem(i);
+                for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
+                    ListObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                     if (listObject != null) {
                         if (id.equals(listObject.getDescriptionObject().getId())) {
-                            this.notesAdapter.remove(this.notesAdapter.getItem(i));
-                            this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+                            this.lvIssueNotes.getAdapter().deleteItem(i);
+                            this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
                             break;
                         }
                     }
                 }
             } else {
-                this.notesAdapter.add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+                this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
             }
             this.manageNoteControls(false, true, false);
         });
@@ -171,8 +168,8 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         if (this.root != null) {
             issue.getNotes().clear();
-            for (int i = 0; i <= this.notesAdapter.getCount() - 1; i++) {
-                ListObject object = this.notesAdapter.getItem(i);
+            for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
+                ListObject object = this.lvIssueNotes.getAdapter().getItem(i);
                 if (object != null) {
                     issue.getNotes().add(object.getDescriptionObject());
                 }
@@ -193,10 +190,10 @@ public final class IssueNotesFragment extends AbstractFragment {
 
     @Override
     protected void initData() {
-        this.notesAdapter.clear();
+        this.lvIssueNotes.getAdapter().clear();
         for (Object note : this.issue.getNotes()) {
             this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
-            this.notesAdapter.add(new ListObject(this.getContext(), R.drawable.ic_note_black_24dp, (Note) note));
+            this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.drawable.ic_note_black_24dp, (Note) note));
         }
     }
 

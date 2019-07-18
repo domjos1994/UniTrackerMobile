@@ -18,13 +18,22 @@
 
 package de.domjos.unitrackermobile.activities;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.ExpandableTextView;
 
 public final class HelpActivity extends AbstractActivity {
+    private LinearLayout pnlQuestions;
+    private EditText txtSearch;
 
     /**
      * Constructor with the Layout-Resource-ID
@@ -35,7 +44,41 @@ public final class HelpActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+        this.txtSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                search(s.toString());
+            }
+        });
+    }
+
+    private void search(String search) {
+        for (int i = 0; i <= this.pnlQuestions.getChildCount() - 1; i++) {
+            this.pnlQuestions.getChildAt(i).setVisibility(View.VISIBLE);
+        }
+
+        for (int i = 0; i <= this.pnlQuestions.getChildCount() - 1; i++) {
+            if (this.pnlQuestions.getChildAt(i) instanceof ExpandableTextView) {
+                ExpandableTextView txt = (ExpandableTextView) this.pnlQuestions.getChildAt(i);
+
+                if (txt.getTitle().toLowerCase().trim().contains(search.toLowerCase().trim())) {
+                    continue;
+                }
+                if (!txt.getContent().toLowerCase().trim().contains(search.toLowerCase().trim())) {
+                    txt.setVisibility(View.GONE);
+                }
+            }
+        }
     }
 
     @Override
@@ -48,5 +91,8 @@ public final class HelpActivity extends AbstractActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
         }
+
+        this.pnlQuestions = this.findViewById(R.id.pnlQuestions);
+        this.txtSearch = this.findViewById(R.id.txtSearch);
     }
 }

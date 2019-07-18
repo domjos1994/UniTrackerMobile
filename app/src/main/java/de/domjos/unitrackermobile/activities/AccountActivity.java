@@ -32,7 +32,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -46,15 +45,14 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
 
 public final class AccountActivity extends AbstractActivity {
-    private ListView lvAccounts;
-    private ListAdapter listAdapter;
+    private SwipeRefreshDeleteList lvAccounts;
     private Spinner cmbAccountTracker;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
     private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
@@ -76,15 +74,32 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-
-        this.lvAccounts.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject listObject = this.listAdapter.getItem(position);
-            if (listObject != null) {
-                this.currentAccount = (Authentication) listObject.getDescriptionObject();
-                this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, "accounts", "title", this.currentAccount.getId());
+        this.lvAccounts.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    currentAccount = (Authentication) listObject.getDescriptionObject();
+                    accountValidator.addDuplicatedEntry(txtAccountTitle, "accounts", "title", currentAccount.getId());
+                }
+                objectToControls();
+                manageControls(false, false, true);
             }
-            this.objectToControls();
-            this.manageControls(false, false, true);
+        });
+
+        this.lvAccounts.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
+            }
+        });
+
+        this.lvAccounts.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getDescriptionObject().getId());
+                manageControls(false, true, false);
+                reload();
+            }
         });
 
         this.cmbAccountTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -258,10 +273,6 @@ public final class AccountActivity extends AbstractActivity {
         });
 
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
-        this.listAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_account_circle_black_24dp);
-        this.lvAccounts.setAdapter(this.listAdapter);
-        this.listAdapter.notifyDataSetChanged();
-
         this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
         this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item, Authentication.Tracker.values());
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
@@ -292,10 +303,10 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
-        this.listAdapter.clear();
+        this.lvAccounts.getAdapter().clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
             ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
-            this.listAdapter.add(listObject);
+            this.lvAccounts.getAdapter().add(listObject);
         }
     }
 

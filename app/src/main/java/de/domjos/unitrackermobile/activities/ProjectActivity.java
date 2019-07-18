@@ -24,7 +24,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -43,9 +42,9 @@ import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
@@ -54,8 +53,7 @@ import de.domjos.unitrackermobile.settings.Settings;
 @SuppressWarnings("unchecked")
 public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
-    private ListView lvProjects;
-    private ListAdapter listAdapter;
+    private SwipeRefreshDeleteList lvProjects;
 
     private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription, txtProjectWebsite;
     private EditText txtProjectIconUrl, txtProjectVersion;
@@ -80,16 +78,49 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvProjects.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                ListObject listObject = this.listAdapter.getItem(position);
+        this.lvProjects.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
                 if (listObject != null) {
-                    this.currentProject = (Project) listObject.getDescriptionObject();
-                    this.objectToControls();
-                    this.manageControls(false, false, true);
+                    currentProject = (Project) listObject.getDescriptionObject();
+                    objectToControls();
+                    manageControls(false, false, true);
                 }
-            } catch (Exception ex) {
-                MessageHelper.printException(ex, this.getApplicationContext());
+            }
+        });
+
+        this.lvProjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                try {
+                    final ProjectTask[] task = new ProjectTask[1];
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
+                    builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
+                    builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
+                        try {
+                            task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications());
+                            task[0].execute(listObject.getDescriptionObject().getId()).get();
+                            if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
+                                MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
+                            } else {
+                                reload();
+                                manageControls(false, false, false);
+                            }
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, getApplicationContext());
+                        }
+                    });
+                    builder.create().show();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, getApplicationContext());
+                }
+            }
+        });
+
+        this.lvProjects.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
             }
         });
     }
@@ -160,10 +191,6 @@ public final class ProjectActivity extends AbstractActivity {
 
         // init controls
         this.lvProjects = this.findViewById(R.id.lvProjects);
-        this.listAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_apps_black_24dp);
-        this.lvProjects.setAdapter(this.listAdapter);
-        this.listAdapter.notifyDataSetChanged();
-
         this.txtProjectTitle = this.findViewById(R.id.txtProjectTitle);
         this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
         this.txtProjectDescription = this.findViewById(R.id.txtProjectDescription);
@@ -244,10 +271,10 @@ public final class ProjectActivity extends AbstractActivity {
         try {
             if (this.permissions.listProjects()) {
                 ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
-                this.listAdapter.clear();
+                this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute(0).get()) {
-                    ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
+                    ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_apps_black_24dp, project);
                     if (project.getIconUrl() != null) {
                         if (!project.getIconUrl().isEmpty()) {
                             try {
@@ -261,6 +288,9 @@ public final class ProjectActivity extends AbstractActivity {
                                                 listObject.setIcon(null);
                                             }
                                         }
+                                        if (listObject.getIcon() == null) {
+                                            listObject.setIcon(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
+                                        }
                                     } catch (Exception ex) {
                                         runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
                                     }
@@ -271,7 +301,7 @@ public final class ProjectActivity extends AbstractActivity {
                         }
                     }
                     subProjects.add(listObject.getDescriptionObject().getTitle());
-                    this.listAdapter.add(listObject);
+                    this.lvProjects.getAdapter().add(listObject);
                 }
                 this.txtProjectsSubProject.setAdapter(subProjects);
             }
@@ -331,8 +361,8 @@ public final class ProjectActivity extends AbstractActivity {
             if (this.txtProjectsSubProject.getText().toString().contains(",")) {
                 for (String text : this.txtProjectsSubProject.getText().toString().split(",")) {
                     text = text.trim();
-                    for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
-                        ListObject object = this.listAdapter.getItem(i);
+                    for (int i = 0; i <= this.lvProjects.getAdapter().getItemCount() - 1; i++) {
+                        ListObject object = this.lvProjects.getAdapter().getItem(i);
                         if (object != null) {
                             if (text.equals(object.getDescriptionObject().getTitle())) {
                                 Project project = new Project();
@@ -346,8 +376,8 @@ public final class ProjectActivity extends AbstractActivity {
                 }
             } else {
                 String text = this.txtProjectsSubProject.getText().toString().trim();
-                for (int i = 0; i <= this.listAdapter.getCount() - 1; i++) {
-                    ListObject object = this.listAdapter.getItem(i);
+                for (int i = 0; i <= this.lvProjects.getAdapter().getItemCount() - 1; i++) {
+                    ListObject object = this.lvProjects.getAdapter().getItem(i);
                     if (object != null) {
                         if (text.equals(object.getDescriptionObject().getTitle())) {
                             Project project = new Project();

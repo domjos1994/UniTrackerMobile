@@ -19,7 +19,6 @@
 package de.domjos.unitrackermobile.activities;
 
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -32,8 +31,8 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.UserTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -41,8 +40,7 @@ import de.domjos.unitrackermobile.settings.Settings;
 public final class UserActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
-    private ListView lvUsers;
-    private ListAdapter userAdapter;
+    private SwipeRefreshDeleteList lvUsers;
     private EditText txtUserPassword, txtUserPasswordRepeat;
     private EditText txtUserName, txtUserFullName, txtUserEmail;
 
@@ -60,12 +58,34 @@ public final class UserActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvUsers.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject ls = this.userAdapter.getItem(position);
-            if (ls != null) {
-                this.currentUser = (User) ls.getDescriptionObject();
-                this.objectToControls();
-                this.manageControls(false, false, true);
+        this.lvUsers.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    currentUser = (User) listObject.getDescriptionObject();
+                    objectToControls();
+                    manageControls(false, false, true);
+                }
+            }
+        });
+
+        this.lvUsers.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                reload();
+            }
+        });
+
+        this.lvUsers.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                try {
+                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications()).execute(listObject.getDescriptionObject().getId()).get();
+                    reload();
+                    manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, UserActivity.this);
+                }
             }
         });
     }
@@ -73,11 +93,11 @@ public final class UserActivity extends AbstractActivity {
     @Override
     protected void reload() {
         try {
-            this.userAdapter.clear();
+            this.lvUsers.getAdapter().clear();
             if (this.currentProject != null) {
                 if (this.permissions.listUsers()) {
                     for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
-                        this.userAdapter.add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
+                        this.lvUsers.getAdapter().add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
                     }
                 }
             }
@@ -132,10 +152,6 @@ public final class UserActivity extends AbstractActivity {
 
         // init controls
         this.lvUsers = this.findViewById(R.id.lvUsers);
-        this.userAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_person_black_24dp);
-        this.lvUsers.setAdapter(this.userAdapter);
-        this.userAdapter.notifyDataSetChanged();
-
         this.txtUserName = this.findViewById(R.id.txtUserName);
         this.txtUserFullName = this.findViewById(R.id.txtUserFullName);
         this.txtUserEmail = this.findViewById(R.id.txtUserEmail);

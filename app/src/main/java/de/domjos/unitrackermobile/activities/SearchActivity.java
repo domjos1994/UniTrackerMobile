@@ -25,7 +25,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
 
 import java.util.Arrays;
@@ -40,14 +39,13 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.SearchTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 
 public final class SearchActivity extends AbstractActivity {
-    private ListView lvSearchResults;
-    private ListAdapter searchResultAdapter;
+    private SwipeRefreshDeleteList lvSearchResults;
 
     private ImageButton cmdSearch;
     private EditText txtSearch;
@@ -62,29 +60,38 @@ public final class SearchActivity extends AbstractActivity {
     @Override
     protected void initActions() {
         this.cmdSearch.setOnClickListener(v -> {
-            this.searchResultAdapter.clear();
+            this.lvSearchResults.getAdapter().clear();
             this.search();
         });
 
-        this.lvSearchResults.setOnItemClickListener((parent, view, position, id) -> {
-            ListObject listObject = this.searchResultAdapter.getItem(position);
-            if (listObject != null) {
-                for (IBugService bugService : this.bugServices) {
-                    Object title = listObject.getDescriptionObject().getHints().get("title");
-                    if (title != null) {
-                        if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
-                            MainActivity.GLOBALS.getSettings(this.getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
-                            Object project = listObject.getDescriptionObject().getHints().get("project");
-                            if (project != null) {
-                                MainActivity.GLOBALS.getSettings(this.getApplicationContext()).setCurrentProject(project.toString());
-                                Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
-                                intent.putExtra("id", listObject.getDescriptionObject().getId().toString());
-                                intent.putExtra("pid", project.toString());
-                                startActivity(intent);
+        this.lvSearchResults.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    for (IBugService bugService : bugServices) {
+                        Object title = listObject.getDescriptionObject().getHints().get("title");
+                        if (title != null) {
+                            if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
+                                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
+                                Object project = listObject.getDescriptionObject().getHints().get("project");
+                                if (project != null) {
+                                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(project.toString());
+                                    Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
+                                    intent.putExtra("id", listObject.getDescriptionObject().getId().toString());
+                                    intent.putExtra("pid", project.toString());
+                                    startActivity(intent);
+                                }
                             }
                         }
                     }
                 }
+            }
+        });
+
+        this.lvSearchResults.reload(new SwipeRefreshDeleteList.ReloadListener() {
+            @Override
+            public void onReload() {
+                search();
             }
         });
 
@@ -118,7 +125,7 @@ public final class SearchActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications()
                     );
             for (ListObject obj : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
-                this.searchResultAdapter.add(obj);
+                this.lvSearchResults.getAdapter().add(obj);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, SearchActivity.this);
@@ -128,10 +135,6 @@ public final class SearchActivity extends AbstractActivity {
     @Override
     protected void initControls() {
         this.lvSearchResults = this.findViewById(R.id.lvSearchResults);
-        this.searchResultAdapter = new ListAdapter(this.getApplicationContext(), R.drawable.ic_search_black_24dp);
-        this.lvSearchResults.setAdapter(this.searchResultAdapter);
-        this.searchResultAdapter.notifyDataSetChanged();
-
         this.cmdSearch = this.findViewById(R.id.cmdSearch);
         this.txtSearch = this.findViewById(R.id.txtSearch);
         this.chkSearchSummary = this.findViewById(R.id.chkSearchSummary);

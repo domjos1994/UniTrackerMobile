@@ -25,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 
@@ -43,7 +42,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.adapter.ListAdapter;
+import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -53,8 +52,7 @@ import static android.app.Activity.RESULT_OK;
  * A placeholder fragment containing a simple view.
  */
 public final class IssueAttachmentsFragment extends AbstractFragment {
-    private ListView lvIssueAttachments;
-    private ListAdapter attachmentAdapter;
+    private SwipeRefreshDeleteList lvIssueAttachments;
     private ImageButton cmdIssueAttachmentAdd;
     private IBugService bugService;
 
@@ -75,41 +73,32 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
         this.lvIssueAttachments = this.root.findViewById(R.id.lvIssueAttachments);
         if (this.getActivity() != null) {
-            this.attachmentAdapter = new ListAdapter(this.getActivity(), R.drawable.ic_file_upload_black_24dp);
-            this.lvIssueAttachments.setAdapter(this.attachmentAdapter);
-            this.attachmentAdapter.notifyDataSetChanged();
-
             this.bugService = Helper.getCurrentBugService(this.getActivity());
         }
         this.cmdIssueAttachmentAdd = this.root.findViewById(R.id.cmdIssueAttachmentAdd);
 
-        this.lvIssueAttachments.setOnItemClickListener((parent, view, position, id) -> {
-            try {
-                ListObject ls = attachmentAdapter.getItem(position);
-                if (ls != null) {
-                    if (this.getContext() != null) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(((Attachment) ls.getDescriptionObject()).getDownloadUrl()));
+        this.lvIssueAttachments.click(new SwipeRefreshDeleteList.ClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+                if (listObject != null) {
+                    if (getContext() != null) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(((Attachment) listObject.getDescriptionObject()).getDownloadUrl()));
                         startActivity(browserIntent);
                     }
                 }
-            } catch (Exception ex) {
-                MessageHelper.printException(ex, this.getActivity());
             }
         });
 
-        this.lvIssueAttachments.setOnItemLongClickListener((parent, view, position, id) -> {
-            if (this.issue != null) {
-                for (int i = 0; i <= this.issue.getAttachments().size() - 1; i++) {
-                    ListObject lsObj = this.attachmentAdapter.getItem(position);
-                    if (lsObj != null) {
-                        if (lsObj.getDescriptionObject().getId().equals(((Attachment) this.issue.getAttachments().get(i)).getId())) {
-                            this.attachmentAdapter.remove(lsObj);
-                            break;
-                        }
+        this.lvIssueAttachments.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+            @Override
+            public void onDelete(ListObject listObject) {
+                for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
+                    ListObject current = lvIssueAttachments.getAdapter().getItem(i);
+                    if (current.getDescriptionObject().getId() == listObject.getDescriptionObject().getId()) {
+                        lvIssueAttachments.getAdapter().deleteItem(i);
                     }
                 }
             }
-            return true;
         });
 
         this.cmdIssueAttachmentAdd.setOnClickListener(v -> {
@@ -145,7 +134,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                             String type = this.getContext().getContentResolver().getType(data.getData());
                             attachment.setContentType(type);
 
-                            this.attachmentAdapter.add(new ListObject(this.getActivity(), R.drawable.ic_file_upload_black_24dp, attachment));
+                            this.lvIssueAttachments.getAdapter().add(new ListObject(this.getActivity(), R.drawable.ic_file_upload_black_24dp, attachment));
                         }
                     }
                 }
@@ -178,8 +167,8 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
         if (this.root != null) {
             issue.getAttachments().clear();
-            for (int i = 0; i <= attachmentAdapter.getCount() - 1; i++) {
-                ListObject ls = attachmentAdapter.getItem(i);
+            for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
+                ListObject ls = lvIssueAttachments.getAdapter().getItem(i);
                 if (ls != null) {
                     issue.getAttachments().add(ls.getDescriptionObject());
                 }
@@ -200,7 +189,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
     @Override
     protected void initData() {
-        this.attachmentAdapter.clear();
+        this.lvIssueAttachments.getAdapter().clear();
         for (Object obj : this.issue.getAttachments()) {
             Attachment attachment = (Attachment) obj;
 
@@ -211,11 +200,11 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 try {
                     content = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
                 } catch (Exception ex) {
-                    this.attachmentAdapter.add(new ListObject(this.getContext(), R.drawable.ic_file_upload_black_24dp, attachment));
+                    this.lvIssueAttachments.getAdapter().add(new ListObject(this.getContext(), R.drawable.ic_file_upload_black_24dp, attachment));
                     continue;
                 }
             }
-            this.attachmentAdapter.add(new ListObject(this.getContext(), content, attachment));
+            this.lvIssueAttachments.getAdapter().add(new ListObject(this.getContext(), content, attachment));
         }
     }
 
