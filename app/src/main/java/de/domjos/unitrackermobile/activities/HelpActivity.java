@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackermobile.activities;
 
+import android.content.pm.PackageInfo;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -27,11 +28,14 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 
+import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.services.tracker.MantisBTSpecific.ChangeLog;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.ExpandableTextView;
 
 public final class HelpActivity extends AbstractActivity {
+    private ExpandableTextView lblWhatsNew;
     private LinearLayout pnlQuestions;
     private EditText txtSearch;
 
@@ -93,6 +97,23 @@ public final class HelpActivity extends AbstractActivity {
         }
 
         this.pnlQuestions = this.findViewById(R.id.pnlQuestions);
+        this.lblWhatsNew = this.findViewById(R.id.lblWhatsNew);
         this.txtSearch = this.findViewById(R.id.txtSearch);
+
+        try {
+            PackageInfo packageInfo = this.getApplicationContext().getPackageManager().getPackageInfo(getPackageName(), 0);
+            final String version = packageInfo.versionName;
+
+            new Thread(() -> {
+                Authentication authentication = new Authentication();
+                authentication.setServer("https://mantis.dojodev.de/");
+                authentication.setTracker(Authentication.Tracker.MantisBT);
+                authentication.setUserName("PUBLIC");
+                String content = new ChangeLog(authentication).getChangeLog(version);
+                runOnUiThread(() -> lblWhatsNew.setContent(content));
+
+            }).start();
+        } catch (Exception ignored) {
+        }
     }
 }
