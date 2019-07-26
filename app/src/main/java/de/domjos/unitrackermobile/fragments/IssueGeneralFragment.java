@@ -147,6 +147,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                         try {
                             List<User> users = new LinkedList<>();
                             if (this.bugService.getPermissions().listUsers()) {
+                                List<User<?>> userList = this.bugService.getUsers(this.pid);
                                 users.addAll(this.bugService.getUsers(this.pid));
                             }
                             users.add(0, new User());
@@ -158,21 +159,24 @@ public final class IssueGeneralFragment extends AbstractFragment {
                             List<String> platform = new LinkedList<>();
                             List<String> os = new LinkedList<>();
                             List<String> build = new LinkedList<>();
-                            List<Profile> profiles = this.bugService.getProfiles();
-                            for (Profile profile : profiles) {
-                                if (!profile.getPlatform().isEmpty()) {
-                                    if (!platform.contains(profile.getPlatform())) {
-                                        platform.add(profile.getPlatform());
+                            List profiles = this.bugService.getProfiles();
+                            for (Object object : profiles) {
+                                if (object instanceof Profile) {
+                                    Profile profile = (Profile) object;
+                                    if (!profile.getPlatform().isEmpty()) {
+                                        if (!platform.contains(profile.getPlatform())) {
+                                            platform.add(profile.getPlatform());
+                                        }
                                     }
-                                }
-                                if (!profile.getOs().isEmpty()) {
-                                    if (!os.contains(profile.getOs())) {
-                                        os.add(profile.getOs());
+                                    if (!profile.getOs().isEmpty()) {
+                                        if (!os.contains(profile.getOs())) {
+                                            os.add(profile.getOs());
+                                        }
                                     }
-                                }
-                                if (!profile.getOs_build().isEmpty()) {
-                                    if (!build.contains(profile.getOs_build())) {
-                                        build.add(profile.getOs_build());
+                                    if (!profile.getOs_build().isEmpty()) {
+                                        if (!build.contains(profile.getOs_build())) {
+                                            build.add(profile.getOs_build());
+                                        }
                                     }
                                 }
                             }

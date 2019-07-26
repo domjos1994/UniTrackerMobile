@@ -305,8 +305,13 @@ public final class AccountActivity extends AbstractActivity {
     protected void reload() {
         this.lvAccounts.getAdapter().clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
-            this.lvAccounts.getAdapter().add(listObject);
+            if (authentication.getCover() != null) {
+                ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
+                this.lvAccounts.getAdapter().add(listObject);
+            } else {
+                ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_account_circle_black_24dp, authentication);
+                this.lvAccounts.getAdapter().add(listObject);
+            }
         }
     }
 
