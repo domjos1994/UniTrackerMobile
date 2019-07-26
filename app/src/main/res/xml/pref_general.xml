@@ -32,14 +32,6 @@
         android:summary="@string/settings_general_numberOfItems_summary" />
 
     <EditTextPreference
-        android:key="txtReload"
-        android:defaultValue="-1"
-        android:digits="-10123456789"
-        android:inputType="number"
-        android:title="@string/settings_general_reload"
-        android:summary="@string/settings_general_reload_summary" />
-
-    <EditTextPreference
         android:key="txtFormatDate"
         android:inputType="text"
         android:title="@string/settings_general_date_format"

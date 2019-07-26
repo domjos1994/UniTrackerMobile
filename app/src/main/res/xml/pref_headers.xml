@@ -24,6 +24,12 @@
         android:summary="@string/settings_general_summary" />
 
     <header
+        android:fragment="de.domjos.unitrackermobile.activities.SettingsActivity$InternetPreferenceFragment"
+        android:icon="@drawable/ic_sync_black_24dp"
+        android:title="@string/settings_internet"
+        android:summary="@string/settings_internet_summary" />
+
+    <header
         android:fragment="de.domjos.unitrackermobile.activities.SettingsActivity$SecurityPreferenceFragment"
         android:icon="@drawable/ic_security_black_24dp"
         android:title="@string/settings_security"

@@ -31,6 +31,7 @@ import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.helper.Helper;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -147,7 +148,12 @@ public class Settings {
     }
 
     public int getReload() {
-        String strNumber = this.userPreferences.getString("txtReload", "-1");
+        String strNumber;
+        if (Helper.isInWLan(this.context)) {
+            strNumber = this.userPreferences.getString("txtWLanReload", "-1");
+        } else {
+            strNumber = this.userPreferences.getString("txtMobileReload", "-1");
+        }
         if (strNumber != null) {
             try {
                 int number = Integer.parseInt(strNumber);
@@ -161,6 +167,10 @@ public class Settings {
         } else {
             return -1;
         }
+    }
+
+    public boolean isBlockMobile() {
+        return this.userPreferences.getBoolean("swtBlockMobile", false);
     }
 
     public String getDateFormat() {

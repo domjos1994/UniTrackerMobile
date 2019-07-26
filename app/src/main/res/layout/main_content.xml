@@ -125,14 +125,12 @@
             android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:background="@drawable/controls_background">
-
             <TextView
                 android:id="@+id/lblItems"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:layout_gravity="center" />
-
             <LinearLayout
                 android:id="@+id/pagination"
                 android:layout_width="match_parent"
@@ -140,14 +138,12 @@
                 android:layout_gravity="bottom|end"
                 android:orientation="horizontal"
                 android:weightSum="10">
-
                 <ImageButton
                     android:id="@+id/cmdBefore"
                     android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_navigate_before_black_24dp" />
-
                 <ImageButton
                     android:id="@+id/cmdNext"
                     android:layout_weight="5"

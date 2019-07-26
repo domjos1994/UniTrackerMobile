@@ -171,7 +171,17 @@ public class Helper {
     public static boolean isNetworkAvailable(Activity activity) {
         ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        if (MainActivity.GLOBALS.getSettings(activity).isBlockMobile()) {
+            return false;
+        } else {
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+    }
+
+    public static boolean isInWLan(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
     public static boolean isStoragePermissionGranted(Activity activity) {
