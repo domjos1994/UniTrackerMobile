@@ -236,4 +236,5 @@
     <string name="messages_tutorial_new_account_drawer_header">Berühren Sie den Kopfbereich des Menus!</string>
     <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
     <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
+    <string name="messages_issues">%s - %s</string>
 </resources>

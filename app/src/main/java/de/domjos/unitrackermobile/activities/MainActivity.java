@@ -80,6 +80,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private TableRow rowNoConnection;
     private SwipeRefreshDeleteList lvMainIssues;
     private LinearLayout pagination;
+    private TextView lblItems;
     private ImageButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project> projectList;
@@ -321,6 +322,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.spMainFilters.setAdapter(this.filterAdapter);
             this.filterAdapter.notifyDataSetChanged();
 
+            this.lblItems = this.findViewById(R.id.lblItems);
             this.pagination = this.findViewById(R.id.pagination);
             this.cmdPrevious = this.findViewById(R.id.cmdBefore);
             this.cmdNext = this.findViewById(R.id.cmdNext);
@@ -564,6 +566,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     }
                 }
             }
+
+            int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
+            int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
+            this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
