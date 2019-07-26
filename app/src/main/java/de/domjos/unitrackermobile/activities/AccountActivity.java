@@ -204,6 +204,34 @@ public final class AccountActivity extends AbstractActivity {
                 accountValidator.removeValidator(txtAccountAPI);
             }
         });
+
+        this.txtAccountTitle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = s.toString().trim().toLowerCase();
+
+                for (int i = 0; i <= trackerAdapter.getCount() - 1; i++) {
+                    if (trackerAdapter.getItem(i) != null) {
+                        Authentication.Tracker item = trackerAdapter.getItem(i);
+                        if (item != null) {
+                            String itemString = item.name().trim().toLowerCase();
+                            if (text.contains(itemString)) {
+                                cmbAccountTracker.setSelection(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @Override
