@@ -18,7 +18,10 @@
 
 package de.domjos.unitrackermobile.custom;
 
+import android.app.Activity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -39,8 +42,11 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
     private ArrayList<ListObject> data;
     private View.OnClickListener mClickListener;
     private RecyclerView recyclerView;
+    private int menuId = -1;
+    private Activity activity;
+    private String currentTitle;
 
-    class RecycleViewHolder extends ViewHolder {
+    class RecycleViewHolder extends ViewHolder implements View.OnCreateContextMenuListener {
         private TextView mTitle, mSubTitle;
         private ImageView ivIcon;
 
@@ -50,12 +56,34 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
             mTitle = itemView.findViewById(R.id.lblTitle);
             mSubTitle = itemView.findViewById(R.id.lblSubTitle);
             ivIcon = itemView.findViewById(R.id.ivIcon);
+            itemView.setOnCreateContextMenuListener(this);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            if (menuId != -1) {
+                currentTitle = mTitle.getText().toString();
+                MenuInflater inflater = activity.getMenuInflater();
+                inflater.inflate(menuId, menu);
+            }
         }
     }
 
-    RecyclerAdapter(RecyclerView recyclerView) {
+    RecyclerAdapter(RecyclerView recyclerView, Activity activity) {
         this.data = new ArrayList<>();
         this.recyclerView = recyclerView;
+        this.activity = activity;
+    }
+
+    public ListObject getObject() {
+        if (!this.currentTitle.isEmpty()) {
+            for (ListObject listObject : data) {
+                if (listObject.getDescriptionObject().getTitle().equals(this.currentTitle)) {
+                    return listObject;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -71,6 +99,10 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
 
     void onSwipeListener(SwipeToDeleteCallback callback) {
         new ItemTouchHelper(callback).attachToRecyclerView(this.recyclerView);
+    }
+
+    void setContextMenu(int menuId) {
+        this.menuId = menuId;
     }
 
     @Override

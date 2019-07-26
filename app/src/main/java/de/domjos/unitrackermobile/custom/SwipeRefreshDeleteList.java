@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackermobile.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.TableLayout;
@@ -62,7 +63,7 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     }
 
     private void initAdapter() {
-        this.adapter = new RecyclerAdapter(this.recyclerView);
+        this.adapter = new RecyclerAdapter(this.recyclerView, (Activity) this.context);
         this.recyclerView.setAdapter(this.adapter);
         this.recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
         this.adapter.notifyDataSetChanged();
@@ -102,6 +103,10 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
 
     public void click(ClickListener clickListener) {
         this.clickListener = clickListener;
+    }
+
+    public void setContextMenu(int menuId) {
+        this.adapter.setContextMenu(menuId);
     }
 
     public abstract static class ReloadListener {

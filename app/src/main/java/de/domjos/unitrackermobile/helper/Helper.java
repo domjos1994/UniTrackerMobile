@@ -20,11 +20,13 @@ package de.domjos.unitrackermobile.helper;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -35,15 +37,26 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.tracker.Backlog;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
@@ -239,6 +252,93 @@ public class Helper {
                     MessageHelper.printException(ex, activity);
                 }
             });
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, activity);
+        }
+    }
+
+    public static void showAttachmentDialog(Activity activity, List<Attachment> attachments) {
+        try {
+            AtomicInteger id = new AtomicInteger();
+            Dialog attachmentDialog = new Dialog(activity);
+            attachmentDialog.setContentView(R.layout.attachment_dialog);
+            final ImageView iv = attachmentDialog.findViewById(R.id.ivCurrentAttachment);
+            final ImageButton cmdPrevious = attachmentDialog.findViewById(R.id.cmdPrevious);
+            final ImageButton cmdNext = attachmentDialog.findViewById(R.id.cmdNext);
+
+            Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
+            cmdPrevious.setOnClickListener(v -> {
+                if (id.get() != 0) {
+                    id.getAndDecrement();
+                    Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
+                }
+            });
+            cmdNext.setOnClickListener(v -> {
+                if (id.get() != attachments.size() - 1) {
+                    id.getAndIncrement();
+                    Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
+                }
+            });
+            attachmentDialog.show();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, activity);
+        }
+    }
+
+    private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment attachment) {
+        if (attachment.getContentType().toLowerCase().contains("image") ||
+                attachment.getFilename().toLowerCase().endsWith("png") ||
+                attachment.getFilename().toLowerCase().endsWith("jpg") ||
+                attachment.getFilename().toLowerCase().endsWith("jpeg") ||
+                attachment.getFilename().toLowerCase().endsWith("bmp") ||
+                attachment.getFilename().toLowerCase().endsWith("gif")) {
+
+            iv.setImageBitmap(BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length));
+        } else {
+            iv.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_file_download_black_24dp));
+        }
+
+        iv.setOnClickListener(v -> {
+            DialogProperties dialogProperties = new DialogProperties();
+            dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
+            dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
+            dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+            dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
+            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
+            dialogProperties.extensions = null;
+
+            FilePickerDialog filePickerDialog = new FilePickerDialog(activity, dialogProperties);
+            filePickerDialog.setCancelable(true);
+            filePickerDialog.setDialogSelectionListener(files -> {
+                try {
+                    if (files != null) {
+                        String path = files[0];
+                        File file = new File(path + File.separatorChar + attachment.getFilename());
+                        if (file.createNewFile()) {
+                            Helper.saveAttachment(file, attachment.getContent(), activity);
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                            builder.setTitle(R.string.issues_context_attachment_overwrite);
+                            builder.setPositiveButton(R.string.issues_context_attachment_overwrite_yes, (dialog, which) -> Helper.saveAttachment(file, attachment.getContent(), activity));
+                            builder.setNegativeButton(R.string.issues_context_attachment_overwrite_no, (dialog, which) -> dialog.dismiss());
+                            builder.create().show();
+                        }
+                    }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, activity);
+                }
+            });
+            filePickerDialog.show();
+        });
+    }
+
+    private static void saveAttachment(File file, byte[] content, Activity activity) {
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bos.write(content);
+            bos.flush();
+            bos.close();
+            MessageHelper.printMessage(activity.getString(R.string.issues_context_attachment_saved), activity);
         } catch (Exception ex) {
             MessageHelper.printException(ex, activity);
         }

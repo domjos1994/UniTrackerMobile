@@ -115,6 +115,12 @@
     <string name="issues_general_platform">Plattform</string>
     <string name="issues_general_os">OS</string>
     <string name="issues_general_build">Version</string>
+    <string name="issues_context_solve">Bug lösen</string>
+    <string name="issues_context_attachment">Anhänge anzeigen</string>
+    <string name="issues_context_attachment_overwrite">Soll die Datei überschrieben werden?</string>
+    <string name="issues_context_attachment_overwrite_yes">Ja</string>
+    <string name="issues_context_attachment_overwrite_no">Nein</string>
+    <string name="issues_context_attachment_saved">Anhang erfolgreich gespeichert!</string>
 
     <string name="issues_descriptions">Beschreibungen</string>
     <string name="issues_descriptions_website">Website</string>

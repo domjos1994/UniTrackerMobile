@@ -313,6 +313,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.notifyDataSetChanged();
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
+            this.lvMainIssues.setContextMenu(R.menu.context_main);
 
             this.spMainFilters = this.findViewById(R.id.spMainFilters);
             this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
@@ -331,6 +332,34 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        try {
+            Object pid = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId();
+            boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
+            ListObject currentObject = lvMainIssues.getAdapter().getObject();
+            switch (item.getItemId()) {
+                case R.id.ctxSolve:
+
+                    break;
+                case R.id.ctxShowAttachment:
+                    IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show);
+                    Issue issue = issueTask.execute(currentObject.getDescriptionObject().getId()).get().get(0);
+                    if (issue != null) {
+                        if (issue.getAttachments() != null) {
+                            if (!issue.getAttachments().isEmpty()) {
+                                Helper.showAttachmentDialog(MainActivity.this, issue.getAttachments());
+                            }
+                        }
+                    }
+                    break;
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, MainActivity.this);
+        }
+        return super.onContextItemSelected(item);
     }
 
     private void executeOnSuccess() {
