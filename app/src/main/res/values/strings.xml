@@ -216,7 +216,7 @@
     <string name="general_description">Beschreibung</string>
 
     <string name="validator_empty" formatted="false">Feld \'%s\' ist ein Pflichtfeld!</string>
-    <string name="validator_duplicated" formatted="false">Wert \'%s\' des Feldes \'%s\' wird bereitsverwendet!</string>
+    <string name="validator_duplicated" formatted="false">Wert \'%s\' des Feldes \'%s\' wird bereits verwendet!</string>
     <string name="validator_matches" formatted="false">Feld \'%s\' enthält unzulässige Zeichen!</string>
     <string name="validator_noDate" formatted="false">Feld \'%s\' enthält kein zulässiges Datum! (yyyy-MM-dd)</string>
     <string name="validator_no_success">Felder sind nicht valide!</string>
