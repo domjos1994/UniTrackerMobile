@@ -274,7 +274,7 @@ public final class ProjectActivity extends AbstractActivity {
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute(0).get()) {
-                    ListObject listObject = new ListObject(this.getApplicationContext(), null, project);
+                    ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_apps_black_24dp, project);
                     if (project.getIconUrl() != null) {
                         if (!project.getIconUrl().isEmpty()) {
                             try {
@@ -285,7 +285,7 @@ public final class ProjectActivity extends AbstractActivity {
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                                                 listObject.setIcon(Converter.convertSVGToByteArray(getApplicationContext(), project.getIconUrl()));
                                             } else {
-                                                listObject.setIcon(null);
+                                                listObject.setIcon(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
                                             }
                                         }
                                     } catch (Exception ex) {
