@@ -43,7 +43,10 @@ public class ArrayHelper {
     }
 
     public static int getIdOfEnum(Context context, Spinner spinner, String key) {
-        int position = spinner.getSelectedItemPosition();
+        return ArrayHelper.getIdOfEnum(context, spinner.getSelectedItemPosition(), key);
+    }
+
+    public static int getIdOfEnum(Context context, int position, String key) {
         List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
         for (int i = 0; i <= typedArrays.size() - 1; i++) {
             if (position == i) {

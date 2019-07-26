@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -57,6 +58,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
+import de.domjos.unibuggerlibrary.model.issues.Issue;
+import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.tracker.Backlog;
 import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
@@ -68,6 +71,7 @@ import de.domjos.unibuggerlibrary.services.tracker.PivotalTracker;
 import de.domjos.unibuggerlibrary.services.tracker.Redmine;
 import de.domjos.unibuggerlibrary.services.tracker.SQLite;
 import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
+import de.domjos.unibuggerlibrary.tasks.IssueTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
@@ -252,6 +256,42 @@ public class Helper {
                     MessageHelper.printException(ex, activity);
                 }
             });
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, activity);
+        }
+    }
+
+    public static void showResolveDialog(Activity activity, String array, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
+        try {
+            Dialog resolveDialog = new Dialog(activity);
+            resolveDialog.setContentView(R.layout.resolve_dialog);
+            final Spinner cmbState = resolveDialog.findViewById(R.id.cmbStatus);
+            cmbState.setAdapter(Helper.setAdapter(activity, array));
+            final EditText txtDescription = resolveDialog.findViewById(R.id.txtComment);
+            final ImageButton cmdSave = resolveDialog.findViewById(R.id.cmdResolve);
+
+            cmdSave.setOnClickListener(v -> {
+                try {
+                    String noteContent = txtDescription.getText().toString();
+                    if (!noteContent.isEmpty()) {
+                        Note note = new Note();
+                        note.setDescription(noteContent);
+                        note.setTitle(noteContent);
+                        note.setState(10, "öffentlich");
+                        issue.getNotes().add(note);
+                    }
+                    issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
+
+                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show);
+                    issueTask.execute(issue).get();
+                    resolveDialog.dismiss();
+                    runnable.run();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, activity);
+                }
+            });
+            resolveDialog.setCancelable(true);
+            resolveDialog.show();
         } catch (Exception ex) {
             MessageHelper.printException(ex, activity);
         }

@@ -63,6 +63,7 @@ import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.SpotlightHelper;
 import de.domjos.unitrackermobile.settings.Globals;
@@ -340,13 +341,49 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Object pid = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId();
             boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
             ListObject currentObject = lvMainIssues.getAdapter().getObject();
+            IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show);
+            Issue issue = issueTask.execute(currentObject.getDescriptionObject().getId()).get().get(0);
+
             switch (item.getItemId()) {
                 case R.id.ctxSolve:
+                    String statusArray = "";
+                    Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
+                    switch (authentication.getTracker()) {
+                        case MantisBT:
+                            statusArray = "issues_general_status_mantisbt_values";
+                            issue.setResolution(ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_values"), "erledigt");
+                            break;
+                        case YouTrack:
+                            statusArray = "issues_general_status_youtrack_values";
+                            break;
+                        case RedMine:
+                            statusArray = "issues_general_status_redmine_values";
+                            break;
+                        case Bugzilla:
+                            statusArray = "issues_general_status_bugzilla_values";
+                            break;
+                        case Jira:
+                            statusArray = "issues_general_status_jira_values";
+                            break;
+                        case PivotalTracker:
+                            statusArray = "issues_general_status_pivotal_values";
+                            break;
+                        case OpenProject:
+                            statusArray = "issues_general_status_openproject_values";
+                            break;
+                        case Backlog:
+                            statusArray = "issues_general_status_backlog_values";
+                            break;
+                        case Local:
+                            statusArray = "issues_general_status_mantisbt_values";
+                            break;
+                    }
 
+                    if (!statusArray.isEmpty()) {
+                        Helper.showResolveDialog(MainActivity.this, statusArray, issue, bugService, pid, show, this::reload);
+                    }
                     break;
                 case R.id.ctxShowAttachment:
-                    IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show);
-                    Issue issue = issueTask.execute(currentObject.getDescriptionObject().getId()).get().get(0);
                     if (issue != null) {
                         if (issue.getAttachments() != null) {
                             if (!issue.getAttachments().isEmpty()) {
