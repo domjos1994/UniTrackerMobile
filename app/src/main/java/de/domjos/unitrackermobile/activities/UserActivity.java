@@ -80,7 +80,7 @@ public final class UserActivity extends AbstractActivity {
             @Override
             public void onDelete(ListObject listObject) {
                 try {
-                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications()).execute(listObject.getDescriptionObject().getId()).get();
+                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
                     reload();
                     manageControls(false, true, false);
                 } catch (Exception ex) {
@@ -96,7 +96,7 @@ public final class UserActivity extends AbstractActivity {
             this.lvUsers.getAdapter().clear();
             if (this.currentProject != null) {
                 if (this.permissions.listUsers()) {
-                    for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(0).get()) {
+                    for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(0).get()) {
                         this.lvUsers.getAdapter().add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
                     }
                 }
@@ -122,7 +122,7 @@ public final class UserActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications()).execute(this.currentUser.getId()).get();
+                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(this.currentUser.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -136,7 +136,7 @@ public final class UserActivity extends AbstractActivity {
                     try {
                         if (this.userValidator.getState()) {
                             this.controlsToObject();
-                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications()).execute(this.currentUser).get();
+                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(this.currentUser).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {

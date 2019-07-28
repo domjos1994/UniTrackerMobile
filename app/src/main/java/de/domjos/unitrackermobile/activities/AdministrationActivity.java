@@ -73,7 +73,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     bugService1 = Helper.getCurrentBugService(authentication, ctx);
 
                     boolean showData = false;
-                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications());
+                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                     for (Object object : projectTask.execute(0L).get()) {
                         projectAdapter1.add((Project) object);
                         showData = true;
@@ -101,7 +101,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     Authentication authentication = bugTrackerAdapter2.getItem(position);
                     bugService2 = Helper.getCurrentBugService(authentication, ctx);
 
-                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications());
+                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                     for (Object object : projectTask.execute(0L).get()) {
                         projectAdapter2.add((Project) object);
                     }
@@ -211,7 +211,7 @@ public final class AdministrationActivity extends AbstractActivity {
                 this.dataItemAdapter1.clear();
                 switch (data) {
                     case 0:
-                        ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, this.bugService1, false, notify);
+                        ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, this.bugService1, false, notify, R.drawable.ic_apps_black_24dp);
                         this.dataItemAdapter1.addAll(projectTask.execute(0L).get());
                         for (int i = 0; i <= dataItemAdapter1.getCount() - 1; i++) {
                             DescriptionObject descriptionObject = dataItemAdapter1.getItem(i);
@@ -224,11 +224,11 @@ public final class AdministrationActivity extends AbstractActivity {
                         }
                         break;
                     case 1:
-                        IssueTask issueTask = new IssueTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, false, notify);
+                        IssueTask issueTask = new IssueTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, false, notify, R.drawable.ic_bug_report_black_24dp);
                         this.dataItemAdapter1.addAll(issueTask.execute(0L).get());
                         break;
                     case 2:
-                        FieldTask fieldTask = new FieldTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, notify);
+                        FieldTask fieldTask = new FieldTask(AdministrationActivity.this, this.bugService1, project1.getId(), false, notify, R.drawable.ic_text_fields_black_24dp);
                         this.dataItemAdapter1.addAll(fieldTask.execute(0L).get());
                         break;
                 }
@@ -253,7 +253,7 @@ public final class AdministrationActivity extends AbstractActivity {
             DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
             int dataPosition = this.spData1.getSelectedItemPosition();
 
-            AdministrationTask administrationTask = new AdministrationTask(act, notify, move, chkWithIssues.isChecked(), project1, project2, dataItem1, dataPosition);
+            AdministrationTask administrationTask = new AdministrationTask(act, notify, move, chkWithIssues.isChecked(), project1, project2, dataItem1, dataPosition, R.drawable.ic_settings_black_24dp);
             administrationTask.execute(bugService1, bugService2).get();
             this.reloadAuthentications();
 

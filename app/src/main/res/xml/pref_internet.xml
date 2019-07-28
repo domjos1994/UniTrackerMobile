@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C)  2019 Domjos
+  ~ This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
+  ~
+  ~ UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:key="txtWLanReload"
+        android:defaultValue="-1"
+        android:digits="-10123456789"
+        android:inputType="number"
+        android:title="@string/settings_internet_wlan_reload"
+        android:summary="@string/settings_internet_wlan_reload_summary" />
+
+    <EditTextPreference
+        android:key="txtMobileReload"
+        android:defaultValue="-1"
+        android:digits="-10123456789"
+        android:inputType="number"
+        android:title="@string/settings_internet_mobile_reload"
+        android:summary="@string/settings_internet_mobile_reload_summary" />
+
+    <SwitchPreference
+        android:key="swtBlockMobile"
+        android:defaultValue="false"
+        android:title="@string/settings_internet_mobile_block"
+        android:summary="@string/settings_internet_mobile_block_summary" />
+</PreferenceScreen>

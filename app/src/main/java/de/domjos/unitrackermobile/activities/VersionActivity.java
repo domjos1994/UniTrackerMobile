@@ -75,7 +75,7 @@ public final class VersionActivity extends AbstractActivity {
             @Override
             public void onDelete(ListObject listObject) {
                 try {
-                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "").execute(listObject.getDescriptionObject().getId()).get();
+                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, VersionActivity.this);
                 }
@@ -128,7 +128,7 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "").execute(this.currentVersion.getId()).get();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(this.currentVersion.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -142,7 +142,7 @@ public final class VersionActivity extends AbstractActivity {
                     try {
                         if (this.versionValidator.getState()) {
                             this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "").execute(this.currentVersion).get();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
@@ -199,7 +199,7 @@ public final class VersionActivity extends AbstractActivity {
                             filterAction = "versions";
                         }
                     }
-                    VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction);
+                    VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction, R.drawable.ic_update_black_24dp);
                     for (Version version : versionTask.execute(0).get()) {
                         ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
                         this.lvVersions.getAdapter().add(listObject);

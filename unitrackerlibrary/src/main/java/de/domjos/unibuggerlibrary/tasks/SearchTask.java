@@ -37,8 +37,8 @@ public final class SearchTask extends AbstractTask<Integer, Void, List<ListObjec
     private final List<ListObject> issues;
     private final List<IBugService> bugServices;
 
-    public SearchTask(Activity activity, String search, boolean summary, boolean description, String projects, String versions, List<IBugService> bugServices, boolean notify) {
-        super(activity, bugServices.get(0), R.string.task_search_title, R.string.task_search_content, notify);
+    public SearchTask(Activity activity, String search, boolean summary, boolean description, String projects, String versions, List<IBugService> bugServices, boolean notify, int icon) {
+        super(activity, bugServices.get(0), R.string.task_search_title, R.string.task_search_content, notify, icon);
         this.issues = new LinkedList<>();
         this.bugServices = bugServices;
         this.search = search;

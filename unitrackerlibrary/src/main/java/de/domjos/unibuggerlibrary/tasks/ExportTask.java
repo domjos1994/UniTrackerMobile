@@ -34,8 +34,8 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     private TrackerXML.Type type;
     private Object project_id;
 
-    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications) {
-        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications);
+    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon) {
+        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
         this.path = path;
         this.type = type;
         this.project_id = project_id;

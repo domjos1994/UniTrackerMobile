@@ -193,7 +193,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (listObject != null) {
                         if (listObject.getDescriptionObject() != null) {
                             Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
-                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications()).execute((listObject.getDescriptionObject()).getId()).get();
+                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute((listObject.getDescriptionObject()).getId()).get();
                             reload();
                         }
                     }
@@ -343,7 +343,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Object pid = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId();
             boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
             ListObject currentObject = lvMainIssues.getAdapter().getObject();
-            IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show);
+            IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
             Issue issue = issueTask.execute(currentObject.getDescriptionObject().getId()).get().get(0);
 
             switch (item.getItemId()) {
@@ -554,7 +554,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                     filter = this.spMainFilters.getSelectedItem().toString();
                                 }
 
-                                IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications());
+                                IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp);
                                 for (Object issue : listIssueTask.execute(0).get()) {
                                     Issue tmp = (Issue) issue;
                                     if (tmp.getTitle().contains(search)) {
@@ -596,7 +596,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.clear();
             this.projectList.add(new Project());
 
-            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications()).execute(0).get();
+            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp).execute(0).get();
             if (projects != null) {
                 for (Project project : projects) {
                     this.projectList.add(project);

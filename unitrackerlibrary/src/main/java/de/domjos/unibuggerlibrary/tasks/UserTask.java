@@ -31,8 +31,8 @@ public final class UserTask extends AbstractTask<Object, Void, List<User>> {
     private Object project_id;
     private boolean delete;
 
-    public UserTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications) {
-        super(activity, bugService, R.string.task_user_list_title, R.string.task_user_content, showNotifications);
+    public UserTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
+        super(activity, bugService, R.string.task_user_list_title, R.string.task_user_content, showNotifications, icon);
         this.project_id = project_id;
         this.delete = delete;
     }

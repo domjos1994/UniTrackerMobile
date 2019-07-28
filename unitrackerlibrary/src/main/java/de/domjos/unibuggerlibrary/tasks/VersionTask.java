@@ -32,8 +32,8 @@ public final class VersionTask extends AbstractTask<Object, Void, List<Version>>
     private Object project_id;
     private String filter;
 
-    public VersionTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, String filter) {
-        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications);
+    public VersionTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, String filter, int icon) {
+        super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications, icon);
         this.delete = delete;
         this.project_id = project_id;
         this.filter = filter;

@@ -292,7 +292,7 @@ public class Helper {
                     }
                     issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
 
-                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show);
+                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
                     issueTask.execute(issue).get();
                     resolveDialog.dismiss();
                     runnable.run();

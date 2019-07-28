@@ -559,7 +559,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions").execute(0).get();
+                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.ic_update_black_24dp).execute(0).get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

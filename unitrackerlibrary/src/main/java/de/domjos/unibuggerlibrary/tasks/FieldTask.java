@@ -31,8 +31,8 @@ public final class FieldTask extends AbstractTask<Object, Void, List<CustomField
     private Object project_id;
     private boolean delete;
 
-    public FieldTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications) {
-        super(activity, bugService, R.string.task_field_list_title, R.string.task_field_content, showNotifications);
+    public FieldTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
+        super(activity, bugService, R.string.task_field_list_title, R.string.task_field_content, showNotifications, icon);
         this.project_id = project_id;
         this.delete = delete;
     }

@@ -98,7 +98,7 @@ public final class ProjectActivity extends AbstractActivity {
                     builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
                     builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
                         try {
-                            task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications());
+                            task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                             task[0].execute(listObject.getDescriptionObject().getId()).get();
                             if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
                                 MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
@@ -146,7 +146,7 @@ public final class ProjectActivity extends AbstractActivity {
                         builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
                         builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
                             try {
-                                task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications());
+                                task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                                 task[0].execute(this.currentProject.getId()).get();
                                 if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
                                     MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -170,7 +170,7 @@ public final class ProjectActivity extends AbstractActivity {
                     try {
                         if (this.projectValidator.getState()) {
                             this.controlsToObject();
-                            task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
+                            task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                             task[0].execute(this.currentProject).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
                                 MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
@@ -270,7 +270,7 @@ public final class ProjectActivity extends AbstractActivity {
     protected void reload() {
         try {
             if (this.permissions.listProjects()) {
-                ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications());
+                ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute(0).get()) {

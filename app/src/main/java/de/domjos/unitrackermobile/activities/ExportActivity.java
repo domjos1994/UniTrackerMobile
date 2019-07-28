@@ -78,7 +78,7 @@ public final class ExportActivity extends AbstractActivity {
                 try {
                     projectAdapter.clear();
                     IBugService bugService = bugTrackerAdapter.getItem(position);
-                    ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, settings.showNotifications());
+                    ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                     List<Project> projects = projectTask.execute(0).get();
                     projectAdapter.addAll(projects);
                 } catch (Exception ex) {
@@ -113,23 +113,23 @@ public final class ExportActivity extends AbstractActivity {
                 String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
-                    ExportTask exportTask = new ExportTask(ExportActivity.this, bugService, type, project.getId(), file, notify);
+                    ExportTask exportTask = new ExportTask(ExportActivity.this, bugService, type, project.getId(), file, notify, R.drawable.ic_import_export_black_24dp);
                     List<Object> objects = new LinkedList<>();
                     switch (type) {
                         case Projects:
-                            ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, notify);
+                            ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, notify, R.drawable.ic_apps_black_24dp);
                             for (Project projects : projectTask.execute(0).get()) {
                                 objects.add(projects.getId());
                             }
                             break;
                         case Issues:
-                            IssueTask issueTask = new IssueTask(ExportActivity.this, bugService, project.getId(), false, false, notify);
+                            IssueTask issueTask = new IssueTask(ExportActivity.this, bugService, project.getId(), false, false, notify, R.drawable.ic_bug_report_black_24dp);
                             for (Issue issue : issueTask.execute(0).get()) {
                                 objects.add(issue.getId());
                             }
                             break;
                         case CustomFields:
-                            FieldTask fieldTask = new FieldTask(ExportActivity.this, bugService, project.getId(), false, notify);
+                            FieldTask fieldTask = new FieldTask(ExportActivity.this, bugService, project.getId(), false, notify, R.drawable.ic_text_fields_black_24dp);
                             for (CustomField customField : fieldTask.execute(0).get()) {
                                 objects.add(customField.getId());
                             }

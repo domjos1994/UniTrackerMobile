@@ -64,12 +64,12 @@ public final class IssueActivity extends AbstractActivity {
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
             if (this.id.equals("")) {
-                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications()).execute(0).get();
+                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(0).get();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
                 }
             } else {
-                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications()).execute(this.id).get();
+                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(this.id).get();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
                 }
@@ -99,7 +99,7 @@ public final class IssueActivity extends AbstractActivity {
                         if (this.pagerAdapter.validate()) {
                             this.issue = (Issue) this.pagerAdapter.getObject();
                             this.issue.setId(this.id.equals("") ? null : this.id);
-                            new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications()).execute(this.issue).get();
+                            new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();

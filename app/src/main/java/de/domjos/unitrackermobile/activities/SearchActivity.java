@@ -122,7 +122,8 @@ public final class SearchActivity extends AbstractActivity {
                             this.txtSearchProjects.getText().toString(),
                             this.txtSearchVersions.getText().toString(),
                             this.bugServices,
-                            MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications()
+                            MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
+                            R.drawable.ic_search_black_24dp
                     );
             for (ListObject obj : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
                 this.lvSearchResults.getAdapter().add(obj);

@@ -24,7 +24,6 @@ import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
 
-import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 
@@ -36,10 +35,10 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     private final String title, content;
     private boolean showNotifications;
 
-    AbstractTask(Activity activity, IBugService bugService, int title, int content, boolean showNotifications) {
+    AbstractTask(Activity activity, IBugService bugService, int title, int content, boolean showNotifications, int icon) {
         super();
         this.weakReference = new WeakReference<>(activity);
-        this.icon = R.mipmap.ic_launcher_round;
+        this.icon = icon;
         this.title = activity.getString(title);
         this.content = activity.getString(content);
         this.bugService = bugService;

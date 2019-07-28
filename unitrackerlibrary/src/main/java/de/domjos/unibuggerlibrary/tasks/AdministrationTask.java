@@ -38,8 +38,8 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
     private final DescriptionObject dataItem;
     private final int dataPosition;
 
-    public AdministrationTask(Activity activity, boolean showNotifications, boolean move, boolean withIssues, Project project1, Project project2, DescriptionObject dataItem, int dataPosition) {
-        super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications);
+    public AdministrationTask(Activity activity, boolean showNotifications, boolean move, boolean withIssues, Project project1, Project project2, DescriptionObject dataItem, int dataPosition, int icon) {
+        super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon);
         this.move = move;
         this.withIssues = withIssues;
         this.project1 = project1;

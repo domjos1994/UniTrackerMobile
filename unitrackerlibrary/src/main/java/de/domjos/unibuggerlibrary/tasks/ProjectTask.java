@@ -30,8 +30,8 @@ import de.domjos.unibuggerlibrary.model.projects.Project;
 public final class ProjectTask extends AbstractTask<Object, Void, List<Project>> {
     private boolean delete;
 
-    public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications) {
-        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications);
+    public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
+        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
         this.delete = delete;
     }
 
