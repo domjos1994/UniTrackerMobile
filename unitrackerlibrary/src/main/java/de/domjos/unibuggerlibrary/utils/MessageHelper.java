@@ -48,6 +48,10 @@ public class MessageHelper {
                 builder.append(String.format("%s.%s#%s(%s)%n", element.getFileName(), element.getClassName(), element.getMethodName(), element.getLineNumber()));
             }
             MessageHelper.printMessage(ex.toString(), context);
+            if (context instanceof Activity) {
+                LogHelper logHelper = new LogHelper((Activity) context);
+                logHelper.logError(ex);
+            }
         } catch (Exception ignored) {
         }
         Log.e("Exception", "Error", ex);
