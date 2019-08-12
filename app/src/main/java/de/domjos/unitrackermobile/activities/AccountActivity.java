@@ -50,6 +50,7 @@ import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
+import de.domjos.unitrackermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvAccounts;
@@ -66,14 +67,13 @@ public final class AccountActivity extends AbstractActivity {
     private Authentication currentAccount;
     private Validator accountValidator;
 
-    static final String ON_BOARDING = "onBoarding";
-
     public AccountActivity() {
         super(R.layout.account_activity);
     }
 
     @Override
     protected void initActions() {
+
         this.lvAccounts.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
             public void onClick(ListObject listObject) {
@@ -288,6 +288,7 @@ public final class AccountActivity extends AbstractActivity {
                                         AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
                                     }
                                 }
+                                runOnUiThread(() -> OnBoardingHelper.tutorialStep3(AccountActivity.this));
                             }).start();
                         } else {
                             MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
@@ -319,6 +320,8 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+
+        OnBoardingHelper.tutorialStep2(AccountActivity.this, () -> this.manageControls(true, true, false), this.findViewById(R.id.tblControls));
     }
 
     @Override

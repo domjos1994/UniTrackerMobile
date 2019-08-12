@@ -240,6 +240,9 @@
     <string name="messages_tutorial_new_account_title">Neuen Account anlegen:</string>
     <string name="messages_tutorial_new_account_hamburger">Um einen neuen Bugtracker-Account anzulegen, öffnen Sie die Toolbar!</string>
     <string name="messages_tutorial_new_account_drawer_header">Berühren Sie den Kopfbereich des Menus!</string>
+    <string name="messages_tutorial_new_account_add">Fügen Sie über den Plus-Button einen neuen Account hinzu!</string>
+    <string name="messages_tutorial_new_account_save">Daten eingeben und auf speichern klicken!</string>
+    <string name="messages_tutorial_new_account_hamburger2">Öffnen Sie die Toolbar!</string>
     <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
     <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
     <string name="messages_issues">%s - %s</string>

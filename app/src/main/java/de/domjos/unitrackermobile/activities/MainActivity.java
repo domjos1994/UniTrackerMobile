@@ -32,7 +32,6 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
@@ -65,9 +64,9 @@ import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
-import de.domjos.unitrackermobile.helper.SpotlightHelper;
 import de.domjos.unitrackermobile.settings.Globals;
 import de.domjos.unitrackermobile.settings.Settings;
+import de.domjos.unitrackermobile.spotlight.OnBoardingHelper;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
@@ -97,9 +96,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private static final int RELOAD_ISSUES = 101;
     private static final int RELOAD_SETTINGS = 102;
     private static final int RELOAD_FILTERS = 103;
-    private static final int ON_BOARDING = 104;
     public static final Globals GLOBALS = new Globals();
-    private boolean firstLogIn = false, secondSteps = false;
+    private boolean firstLogIn = false;
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -151,6 +149,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 changeAuthentication();
                 fillFields();
                 reload();
+
+                OnBoardingHelper.tutorialStep5(MainActivity.this, spMainProjects, drawerLayout, navigationView);
             }
 
             @Override
@@ -421,42 +421,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }, 0, (this.settings.getReload() * 1000));
             }
 
-            this.startTutorial();
+            OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
-        }
-    }
-
-    private void startTutorial() {
-        if (!this.firstLogIn && !this.secondSteps) {
-            SpotlightHelper helper = new SpotlightHelper(MainActivity.this);
-            helper.addTargetToHamburger(this.toolbar, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_hamburger, null, () -> drawerLayout.openDrawer(navigationView));
-            helper.show();
-
-            drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-                @Override
-                public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                }
-
-                @Override
-                public void onDrawerOpened(@NonNull View drawerView) {
-                    SpotlightHelper helper = new SpotlightHelper(MainActivity.this);
-                    helper.addTarget(ivMainCover, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_drawer_header, null, () -> {
-                        Intent intent = new Intent(MainActivity.this.getApplicationContext(), AccountActivity.class);
-                        intent.putExtra(AccountActivity.ON_BOARDING, true);
-                        startActivityForResult(intent, MainActivity.ON_BOARDING);
-                    });
-                    helper.show();
-                }
-
-                @Override
-                public void onDrawerClosed(@NonNull View drawerView) {
-                }
-
-                @Override
-                public void onDrawerStateChanged(int newState) {
-                }
-            });
         }
     }
 
@@ -634,33 +601,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reloadFilters();
         }
 
-        if (resultCode == RESULT_OK && requestCode == MainActivity.ON_BOARDING) {
-            this.secondSteps = true;
-            this.drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-                @Override
-                public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-                }
-
-                @Override
-                public void onDrawerOpened(@NonNull View drawerView) {
-                    SpotlightHelper spotlightHelper = new SpotlightHelper(MainActivity.this);
-                    spotlightHelper.addTarget(spMainAccounts, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_choose, null, () -> drawerLayout.closeDrawer(drawerLayout));
-                    spotlightHelper.addTarget(spMainProjects, R.string.messages_tutorial_new_account_title, R.string.messages_tutorial_new_account_project, null, null);
-                    spotlightHelper.show();
-                }
-
-                @Override
-                public void onDrawerClosed(@NonNull View drawerView) {
-
-                }
-
-                @Override
-                public void onDrawerStateChanged(int newState) {
-
-                }
-            });
-            this.drawerLayout.openDrawer(this.drawerLayout);
-        }
+        OnBoardingHelper.tutorialStep4(resultCode, requestCode, MainActivity.this, this.spMainAccounts, this::reloadAccounts);
     }
 
     @Override
