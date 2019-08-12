@@ -48,6 +48,12 @@ public abstract class AbstractActivity extends AppCompatActivity {
         this.reload();
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_OK);
+        finish();
+    }
+
     /**
      * Function to initialize the Controls
      *
