@@ -89,7 +89,9 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
                 }
             }
         } catch (Exception ex) {
-            super.printException(ex);
+            if (!ex.getMessage().contains("Undefined variable: p_bug_id")) {
+                super.printException(ex);
+            }
         }
         return result;
     }

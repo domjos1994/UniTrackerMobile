@@ -74,7 +74,9 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
                 if (deleteListener != null) {
                     deleteListener.onDelete(adapter.getItem(viewHolder.getAdapterPosition()));
                 }
-                getAdapter().deleteItem(viewHolder.getAdapterPosition());
+                if (viewHolder.getAdapterPosition() != -1) {
+                    getAdapter().deleteItem(viewHolder.getAdapterPosition());
+                }
             }
         });
 

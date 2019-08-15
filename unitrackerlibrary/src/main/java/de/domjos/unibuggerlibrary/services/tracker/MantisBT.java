@@ -500,6 +500,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         } else {
             action = "mc_issue_add";
             request = new SoapObject(super.soapPath, action);
+            request.addProperty("id", 0);
         }
         SoapObject issueObject = new SoapObject(NAMESPACE, "IssueData");
         if (action.equals("mc_issue_add")) {
