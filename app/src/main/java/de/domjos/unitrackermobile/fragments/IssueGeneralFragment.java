@@ -45,6 +45,8 @@ import de.domjos.unibuggerlibrary.model.issues.User;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unibuggerlibrary.tasks.LoaderTask;
+import de.domjos.unibuggerlibrary.tasks.UserTask;
 import de.domjos.unibuggerlibrary.tasks.VersionTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
@@ -69,7 +71,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private MultiAutoCompleteTextView txtIssueGeneralTags;
     private ImageButton cmdIssueGeneralSmartPhone;
     private ArrayAdapter<User> userAdapter;
-    private ArrayAdapter<String> tagAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
     private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory,
@@ -136,83 +137,87 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.spIssueGeneralHandler.setAdapter(this.userAdapter);
                 this.userAdapter.notifyDataSetChanged();
 
-                this.tagAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
-                this.txtIssueGeneralTags.setAdapter(this.tagAdapter);
+                ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+                this.txtIssueGeneralTags.setAdapter(tagAdapter);
                 this.txtIssueGeneralTags.setTokenizer(new CommaTokenizer());
-                this.tagAdapter.notifyDataSetChanged();
+                tagAdapter.notifyDataSetChanged();
 
 
                 if (this.getActivity() != null) {
-                    new Thread(() -> {
-                        try {
-                            List<User> users = new LinkedList<>();
-                            if (this.bugService.getPermissions().listUsers()) {
-                                List<User<?>> userList = this.bugService.getUsers(this.pid);
-                                users.addAll(this.bugService.getUsers(this.pid));
-                            }
-                            users.add(0, new User());
+                    boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
+                    UserTask userTask = new UserTask(this.getActivity(), this.bugService, this.pid, false, show, R.drawable.ic_person_black_24dp);
+                    List<User> users = userTask.execute(0).get();
+                    users.add(0, new User());
 
-                            for (Object tag : this.bugService.getTags(this.pid)) {
-                                this.tagAdapter.add(((Tag) tag).getTitle());
-                            }
-
-                            List<String> platform = new LinkedList<>();
-                            List<String> os = new LinkedList<>();
-                            List<String> build = new LinkedList<>();
-                            List profiles = this.bugService.getProfiles();
-                            for (Object object : profiles) {
-                                if (object instanceof Profile) {
-                                    Profile profile = (Profile) object;
-                                    if (!profile.getPlatform().isEmpty()) {
-                                        if (!platform.contains(profile.getPlatform())) {
-                                            platform.add(profile.getPlatform());
-                                        }
-                                    }
-                                    if (!profile.getOs().isEmpty()) {
-                                        if (!os.contains(profile.getOs())) {
-                                            os.add(profile.getOs());
-                                        }
-                                    }
-                                    if (!profile.getOs_build().isEmpty()) {
-                                        if (!build.contains(profile.getOs_build())) {
-                                            build.add(profile.getOs_build());
-                                        }
-                                    }
-                                }
-                            }
-
-                            this.getActivity().runOnUiThread(() -> {
-                                for (User user : users) {
-                                    this.userAdapter.add(user);
-                                }
-                                if (this.issue != null) {
-                                    if (this.issue.getHandler() != null) {
-                                        for (int i = 0; i <= this.userAdapter.getCount() - 1; i++) {
-                                            User user = this.userAdapter.getItem(i);
-                                            if (user != null) {
-                                                if (user.toString().equals(this.issue.getHandler().toString())) {
-                                                    this.spIssueGeneralHandler.setSelection(i);
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                    this.txtIssueGeneralTags.setText(this.issue.getTags());
-                                }
-                                this.txtIssueGeneralPlatform.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, platform));
-                                this.txtIssueGeneralOs.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, os));
-                                this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
-                            });
-                        } catch (Exception ex) {
-                            if (this.getActivity() != null) {
-                                this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
+                    LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Tags);
+                    Object result = loaderTask.execute(this.pid).get();
+                    if (result instanceof List) {
+                        List lst = (List) result;
+                        for (Object item : lst) {
+                            if (item instanceof Tag) {
+                                tagAdapter.add(((Tag) item).getTitle());
                             }
                         }
-                    }).start();
+                    }
+
+                    loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Profiles);
+                    List<String> platform = new LinkedList<>();
+                    List<String> os = new LinkedList<>();
+                    List<String> build = new LinkedList<>();
+
+                    result = loaderTask.execute(0).get();
+                    List<Profile> profiles = new LinkedList<>();
+                    if (result instanceof List) {
+                        List lst = (List) result;
+                        for (Object object : lst) {
+                            if (object instanceof Profile) {
+                                profiles.add((Profile) object);
+                            }
+                        }
+                    }
+                    for (Object object : profiles) {
+                        if (object instanceof Profile) {
+                            Profile profile = (Profile) object;
+                            if (!profile.getPlatform().isEmpty()) {
+                                if (!platform.contains(profile.getPlatform())) {
+                                    platform.add(profile.getPlatform());
+                                }
+                            }
+                            if (!profile.getOs().isEmpty()) {
+                                if (!os.contains(profile.getOs())) {
+                                    os.add(profile.getOs());
+                                }
+                            }
+                            if (!profile.getOs_build().isEmpty()) {
+                                if (!build.contains(profile.getOs_build())) {
+                                    build.add(profile.getOs_build());
+                                }
+                            }
+                        }
+                    }
+
+                    for (User user : users) {
+                        this.userAdapter.add(user);
+                    }
+                    if (this.issue != null) {
+                        if (this.issue.getHandler() != null) {
+                            for (int i = 0; i <= this.userAdapter.getCount() - 1; i++) {
+                                User user = this.userAdapter.getItem(i);
+                                if (user != null) {
+                                    if (user.toString().equals(this.issue.getHandler().toString())) {
+                                        this.spIssueGeneralHandler.setSelection(i);
+                                        break;
+                                    }
+                                }
+                            }
+
+                        }
+                        this.txtIssueGeneralTags.setText(this.issue.getTags());
+                    }
+                    this.txtIssueGeneralPlatform.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, platform));
+                    this.txtIssueGeneralOs.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, os));
+                    this.txtIssueGeneralBuild.setAdapter(new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, build));
                 }
-
-
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.getActivity());
@@ -535,21 +540,24 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
     private void initCategories() {
         if (this.getContext() != null && this.getActivity() != null) {
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
-            new Thread(() -> {
-                try {
-                    if (this.bugService != null) {
-                        List<String> categories = this.bugService.getCategories(this.pid);
-                        for (String category : categories) {
-                            arrayAdapter.add(category);
-                        }
-                        this.getActivity().runOnUiThread(() -> txtIssueGeneralCategory.setAdapter(arrayAdapter));
-                    }
-                } catch (Exception ex) {
-                    this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
-                }
+            try {
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
 
-            }).start();
+                boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
+                LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Categories);
+                Object categoriesObjectList = loaderTask.execute(this.pid).get();
+                if (categoriesObjectList instanceof List) {
+                    List lst = (List) categoriesObjectList;
+                    for (Object categoryObject : lst) {
+                        if (categoryObject instanceof String) {
+                            arrayAdapter.add((String) categoryObject);
+                        }
+                    }
+                }
+                this.txtIssueGeneralCategory.setAdapter(arrayAdapter);
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, this.getActivity());
+            }
         }
     }
 

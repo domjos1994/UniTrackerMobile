@@ -81,13 +81,17 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     protected abstract void after();
 
     Object returnTemp(Object o) {
-        Object tmp;
-        try {
-            tmp = Long.parseLong(String.valueOf(o));
-        } catch (Exception ex) {
-            tmp = o;
+        if (o.equals(0) || o.equals("")) {
+            return null;
+        } else {
+            Object tmp;
+            try {
+                tmp = Long.parseLong(String.valueOf(o));
+            } catch (Exception ex) {
+                tmp = o;
+            }
+            return tmp;
         }
-        return tmp;
     }
 
 

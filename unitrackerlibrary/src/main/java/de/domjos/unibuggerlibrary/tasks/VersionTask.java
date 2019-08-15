@@ -54,18 +54,21 @@ public final class VersionTask extends AbstractTask<Object, Void, List<Version>>
     protected List<Version> doInBackground(Object... versions) {
         List<Version> result = new LinkedList<>();
         try {
-            for (Object version : versions) {
-                if (version instanceof Version) {
-                    super.bugService.insertOrUpdateVersion((Version) version, super.returnTemp(this.project_id));
-                } else {
-                    if (this.delete) {
-                        super.bugService.deleteVersion(super.returnTemp(version), super.returnTemp(this.project_id));
+            Object pid = super.returnTemp(this.project_id);
+            if (pid != null) {
+                for (Object version : versions) {
+                    if (version instanceof Version) {
+                        super.bugService.insertOrUpdateVersion((Version) version, pid);
                     } else {
-                        result.addAll(super.bugService.getVersions(this.filter, super.returnTemp(this.project_id)));
+                        if (this.delete) {
+                            super.bugService.deleteVersion(super.returnTemp(version), pid);
+                        } else {
+                            result.addAll(super.bugService.getVersions(this.filter, pid));
+                        }
                     }
                 }
+                super.printMessage();
             }
-            super.printMessage();
         } catch (Exception ex) {
             super.printException(ex);
         }

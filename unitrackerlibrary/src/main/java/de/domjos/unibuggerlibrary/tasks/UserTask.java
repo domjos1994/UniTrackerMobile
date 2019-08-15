@@ -52,14 +52,17 @@ public final class UserTask extends AbstractTask<Object, Void, List<User>> {
     protected List<User> doInBackground(Object... objects) {
         List<User> result = new LinkedList<>();
         try {
-            for (Object user : objects) {
-                if (user instanceof User) {
-                    super.bugService.insertOrUpdateUser((User) user, this.project_id);
-                } else {
-                    if (this.delete) {
-                        super.bugService.deleteUser(super.returnTemp(user), this.project_id);
+            Object pid = this.returnTemp(this.project_id);
+            if (pid != null) {
+                for (Object user : objects) {
+                    if (user instanceof User) {
+                        super.bugService.insertOrUpdateUser((User) user, pid);
                     } else {
-                        result.addAll(super.bugService.getUsers(this.project_id));
+                        if (this.delete) {
+                            super.bugService.deleteUser(super.returnTemp(user), pid);
+                        } else {
+                            result.addAll(super.bugService.getUsers(pid));
+                        }
                     }
                 }
             }

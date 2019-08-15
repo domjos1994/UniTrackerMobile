@@ -42,4 +42,7 @@
 
     <string name="task_administration_title">Administration</string>
     <string name="task_administration_contet">Vorgang läuft…</string>
+
+    <string name="task_loader_title">Lade Daten</string>
+    <string name="task_loader_content">Lade Daten…</string>
 </resources>
