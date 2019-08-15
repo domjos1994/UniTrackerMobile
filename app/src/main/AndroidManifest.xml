@@ -37,6 +37,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
+            android:name=".activities.LocalSyncActivity"
+            android:label="@string/local_sync"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.HelpActivity"
             android:label="@string/help"
             android:parentActivityName=".activities.MainActivity"
@@ -139,7 +147,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="de.domjos.unitrackermobile.provider"
+            android:authorities="de.domjos.unitrackermobile.provider.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

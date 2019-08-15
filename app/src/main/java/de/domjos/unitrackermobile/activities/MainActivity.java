@@ -662,6 +662,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             case R.id.navAdministration:
                 intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
                 break;
+            case R.id.navLocalSync:
+                intent = new Intent(this.getApplicationContext(), LocalSyncActivity.class);
+                break;
             case R.id.navExtendedSearch:
                 intent = new Intent(this.getApplicationContext(), SearchActivity.class);
                 break;

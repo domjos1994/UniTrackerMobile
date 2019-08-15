@@ -191,6 +191,9 @@
     </string-array>
     <string name="administration_message" formatted="false">%s erfolgreich %s!</string>
 
+    <string name="local_sync">Lokale Synchronisation</string>
+    <string name="local_sync_sync">Synchronisieren</string>
+
     <string name="filter">Filter</string>
     <string-array name="filter_view">
         <item />

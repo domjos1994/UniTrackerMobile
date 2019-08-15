@@ -45,4 +45,7 @@
 
     <string name="task_loader_title">Lade Daten</string>
     <string name="task_loader_content">Lade Daten…</string>
+
+    <string name="task_local_title">Synchronisiere Bugs in den lokalen Speicher!</string>
+    <string name="task_local_content">Synchronisiere Bugs in den lokalen Speicher…</string>
 </resources>

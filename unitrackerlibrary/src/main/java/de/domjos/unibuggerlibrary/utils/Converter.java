@@ -31,6 +31,8 @@ import com.caverock.androidsvg.SVG;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -113,5 +115,11 @@ public class Converter {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public static void convertByteArrayToFile(byte[] content, File file) throws Exception {
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.write(content);
+        fos.close();
     }
 }
