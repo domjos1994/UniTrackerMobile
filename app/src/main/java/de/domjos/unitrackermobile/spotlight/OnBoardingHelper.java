@@ -62,6 +62,7 @@ public class OnBoardingHelper {
                         activity.startActivityForResult(intent, OnBoardingHelper.ON_BOARDING_ID);
                     });
                     helper.show();
+                    drawerLayout.removeDrawerListener(this);
                 }
 
                 @Override

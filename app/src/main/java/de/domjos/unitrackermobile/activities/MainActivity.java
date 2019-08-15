@@ -525,7 +525,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 for (Object issue : listIssueTask.execute(0).get()) {
                                     Issue tmp = (Issue) issue;
                                     if (tmp.getTitle().contains(search)) {
-                                        this.lvMainIssues.getAdapter().add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, (Issue) issue));
+                                        this.lvMainIssues.getAdapter().add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, tmp));
                                     }
                                 }
                             }
@@ -537,6 +537,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
             int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
             this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+            this.lvMainIssues.getAdapter().notifyDataSetChanged();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
