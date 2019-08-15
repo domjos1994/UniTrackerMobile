@@ -148,6 +148,8 @@
     <string name="settings_general_time_format">Zeit-Format</string>
     <string name="settings_general_time_format_summary">Geben Sie hier das Zeit-Format an!</string>
     <string name="settings_general_time_format_default">HH:mm:ss</string>
+    <string name="settings_general_list_scroll_title">Listen-Element scrollen</string>
+    <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
     <string name="settings_internet">Internet</string>
     <string name="settings_internet_summary">Ändern Sie hier die Einstellungen, welche die Synchronisation mit entfernten Daten betrifft!</string>
     <string name="settings_internet_wlan_reload">Fehler im Wlan automatisch neu laden</string>

@@ -44,4 +44,10 @@
         android:title="@string/settings_general_time_format"
         android:summary="@string/settings_general_time_format_summary"
         android:defaultValue="@string/settings_general_time_format_default" />
+
+    <SwitchPreference
+        android:key="swtScrollListElement"
+        android:defaultValue="false"
+        android:title="@string/settings_general_list_scroll_title"
+        android:summary="@string/settings_general_list_scroll_summary" />
 </PreferenceScreen>

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 
 import de.domjos.unibuggerlibrary.model.ListObject;
 import de.domjos.unitrackermobile.R;
+import de.domjos.unitrackermobile.activities.MainActivity;
 
 public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> {
     private ArrayList<ListObject> data;
@@ -53,8 +54,12 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
         RecycleViewHolder(View itemView) {
             super(itemView);
 
+            boolean scroll = MainActivity.GLOBALS.getSettings(itemView.getContext()).isScrollList();
+
             mTitle = itemView.findViewById(R.id.lblTitle);
+            mTitle.setSelected(scroll);
             mSubTitle = itemView.findViewById(R.id.lblSubTitle);
+            mSubTitle.setSelected(scroll);
             ivIcon = itemView.findViewById(R.id.ivIcon);
             itemView.setOnCreateContextMenuListener(this);
         }

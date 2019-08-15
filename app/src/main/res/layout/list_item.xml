@@ -39,6 +39,13 @@
         android:textSize="16sp"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:layout_toEndOf="@+id/ivIcon"
         android:layout_toRightOf="@+id/ivIcon" />
 
@@ -51,6 +58,13 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="2dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:singleLine="true"
+        android:ellipsize="marquee"
+        android:fadingEdge="horizontal"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:scrollHorizontally="true"
         android:layout_toEndOf="@+id/ivIcon"
         android:layout_toRightOf="@+id/ivIcon"
         android:layout_below="@+id/lblTitle" />

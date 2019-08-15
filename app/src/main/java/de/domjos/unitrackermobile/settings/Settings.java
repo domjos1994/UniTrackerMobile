@@ -180,4 +180,8 @@ public class Settings {
     public String getTimeFormat() {
         return this.userPreferences.getString("txtFormatTime", this.context.getString(R.string.settings_general_time_format_default));
     }
+
+    public boolean isScrollList() {
+        return this.userPreferences.getBoolean("swtScrollListElement", false);
+    }
 }
