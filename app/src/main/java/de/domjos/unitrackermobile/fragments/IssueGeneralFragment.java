@@ -69,7 +69,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private Spinner spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
     private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
-    private ImageButton cmdIssueGeneralSmartPhone;
+    private ImageButton cmdIssueGeneralSmartPhone, cmdIssueGeneralSummaryToDescription;
     private ArrayAdapter<User> userAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
@@ -85,6 +85,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private boolean editMode;
     private Object pid;
     private IBugService bugService;
+    private IssueDescriptionsFragment issueDescriptionsFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -230,6 +231,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.txtIssueGeneralVersion = this.root.findViewById(R.id.txtIssueGeneralVersion);
         this.txtIssueGeneralTargetVersion = this.root.findViewById(R.id.txtIssueGeneralTargetVersion);
         this.txtIssueGeneralFixedInVersion = this.root.findViewById(R.id.txtIssueGeneralFixedInVersion);
+        this.cmdIssueGeneralSummaryToDescription = this.root.findViewById(R.id.cmdIssueGeneralSummaryToDescription);
+
         this.initVersions();
 
         this.updateUITrackerSpecific();
@@ -360,7 +363,13 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralOs.setText(android);
                 this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
             });
+
+            this.cmdIssueGeneralSummaryToDescription.setOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.txtIssueGeneralSummary.getText().toString()));
         }
+    }
+
+    public void setDescriptionFragment(IssueDescriptionsFragment issueDescriptionsFragment) {
+        this.issueDescriptionsFragment = issueDescriptionsFragment;
     }
 
     @Override

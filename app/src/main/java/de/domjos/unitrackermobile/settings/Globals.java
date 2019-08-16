@@ -25,10 +25,12 @@ import de.domjos.unitrackermobile.helper.SQLiteGeneral;
 public class Globals {
     private SQLiteGeneral sqLiteGeneral;
     private String password;
+    private String logFile;
 
     public Globals() {
         this.sqLiteGeneral = null;
         this.password = "";
+        this.logFile = "";
     }
 
     public SQLiteGeneral getSqLiteGeneral() {
@@ -49,5 +51,13 @@ public class Globals {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getLogFile() {
+        return this.logFile;
+    }
+
+    public void setLogFile(String logFile) {
+        this.logFile = logFile;
     }
 }

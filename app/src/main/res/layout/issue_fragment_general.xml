@@ -30,13 +30,21 @@
         android:weightSum="10">
 
         <TableRow>
+
             <EditText
                 android:id="@+id/txtIssueGeneralSummary"
+                android:layout_width="0dp"
+                android:layout_weight="9"
                 android:hint="@string/issues_general_summary"
                 android:inputType="textMultiLine"
-                android:layout_weight="10"
-                android:layout_width="0dp"
                 tools:ignore="Autofill" />
+
+            <ImageButton
+                android:id="@+id/cmdIssueGeneralSummaryToDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_description_black_24dp" />
         </TableRow>
 
         <TableRow android:id="@+id/rowIssueGeneralCategory">

@@ -96,6 +96,10 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         }
     }
 
+    public void setDescription(String text) {
+        this.txtIssueDescriptionsDescription.setText(text);
+    }
+
     @Override
     protected void initData() {
         if (this.issue != null) {

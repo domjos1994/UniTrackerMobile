@@ -59,6 +59,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.general = new IssueGeneralFragment();
         this.notes = new IssueNotesFragment();
         this.descriptions = new IssueDescriptionsFragment();
+        ((IssueGeneralFragment) this.general).setDescriptionFragment((IssueDescriptionsFragment) this.descriptions);
         this.attachments = new IssueAttachmentsFragment();
         this.custom = new IssueCustomFragment();
         this.history = new IssueHistoryFragment();
