@@ -122,6 +122,23 @@ public final class IssueActivity extends AbstractActivity {
         tabs.setupWithViewPager(viewPager);
         this.pagerAdapter.setObject(this.issue);
         this.pagerAdapter.setPid(pid);
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                IssueActivity.this.setTitle(pagerAdapter.getTitle(position));
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                IssueActivity.this.setTitle(pagerAdapter.getTitle(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
 

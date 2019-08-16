@@ -151,6 +151,46 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 && this.history.initValidator().getState();
     }
 
+    public CharSequence getTitle(int position) {
+        String title = this.context.getString(R.string.issues) + " - ";
+
+        int i = 2;
+        switch (position) {
+            case 0:
+                title += this.context.getString(R.string.issues_general);
+                break;
+            case 1:
+                title += this.context.getString(R.string.issues_descriptions);
+                break;
+        }
+
+        if (this.bugService.getPermissions().listNotes()) {
+            if (position == i) {
+                title += this.context.getString(R.string.issues_notes);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listAttachments()) {
+            if (position == i) {
+                title += this.context.getString(R.string.issues_attachments);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listCustomFields()) {
+            if (position == i) {
+                title += this.context.getString(R.string.issues_custom);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listHistory()) {
+            if (position == i) {
+                title += this.context.getString(R.string.issues_history);
+            }
+        }
+
+        return title;
+    }
+
     @Nullable
     @Override
     public CharSequence getPageTitle(int position) {
