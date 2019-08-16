@@ -164,6 +164,12 @@
     <string name="settings_security_enable_summary">Verschlüsselung der Datenbank aktivieren!</string>
     <string name="settings_security_password">Passwort ändern!</string>
     <string name="settings_security_password_summary">Ändern Sie das Passwort für die Verschlüsselung der Datenbank!</string>
+    <string name="settings_sync">Synchronisation</string>
+    <string name="settings_sync_summary">Ändern Sie hier die Einstellungen für die lokale Synchronisation!</string>
+    <string name="settings_sync_automatically_title">Automatisch Synchronisieren</string>
+    <string name="settings_sync_automatically_summary">Lokale Synchronisation jedes Mal automatisch durchführen, wenn der entsprechende Bildschirm geöffnet wird!</string>
+    <string name="settings_sync_path_title">Pfad ändern</string>
+    <string name="settings_sync_path_summary">Ändern Sie hier den Pfad für die lokale Synchronisation!</string>
 
     <string name="export">Export</string>
     <string name="export_path">Pfad</string>
@@ -251,4 +257,6 @@
     <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
     <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
     <string name="messages_issues">%s - %s</string>
+
+    <string name="messages_no_item">Kein Eintrag vorhanden!</string>
 </resources>

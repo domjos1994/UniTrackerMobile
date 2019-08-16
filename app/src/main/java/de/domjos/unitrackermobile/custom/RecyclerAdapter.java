@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import java.util.ArrayList;
 
 import de.domjos.unibuggerlibrary.model.ListObject;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 
@@ -43,7 +44,7 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
     private ArrayList<ListObject> data;
     private View.OnClickListener mClickListener;
     private RecyclerView recyclerView;
-    private int menuId = -1;
+    private int menuId = -1, noEntryItem = -1;
     private Activity activity;
     private String currentTitle;
 
@@ -142,9 +143,20 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
             data.subList(0, size).clear();
             notifyItemRangeRemoved(0, size);
         }
+
+        DescriptionObject descriptionObject = new DescriptionObject();
+        descriptionObject.setTitle(this.activity.getString(R.string.messages_no_item));
+        ListObject obj = new ListObject(this.activity, null, descriptionObject);
+        this.data.add(obj);
+        this.noEntryItem = this.data.indexOf(obj);
     }
 
     public void add(ListObject object) {
+        if (this.noEntryItem != -1) {
+            this.data.remove(this.noEntryItem);
+            this.noEntryItem = -1;
+        }
+
         data.add(object);
 
         synchronized (this) {

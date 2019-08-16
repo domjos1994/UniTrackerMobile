@@ -173,7 +173,10 @@ public final class SettingsActivity extends PreferenceActivity {
     }
 
     protected boolean isValidFragment(String fragmentName) {
-        return GeneralPreferenceFragment.class.getName().equals(fragmentName) || SecurityPreferenceFragment.class.getName().equals(fragmentName) || InternetPreferenceFragment.class.getName().equals(fragmentName);
+        return GeneralPreferenceFragment.class.getName().equals(fragmentName) ||
+                SecurityPreferenceFragment.class.getName().equals(fragmentName) ||
+                InternetPreferenceFragment.class.getName().equals(fragmentName) ||
+                SyncPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
@@ -244,6 +247,20 @@ public final class SettingsActivity extends PreferenceActivity {
                 }
                 return true;
             }));
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class SyncPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_sync);
         }
 
         @Override

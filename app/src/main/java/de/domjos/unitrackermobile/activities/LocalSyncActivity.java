@@ -20,11 +20,14 @@ package de.domjos.unitrackermobile.activities;
 
 
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Spinner;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -90,22 +93,7 @@ public final class LocalSyncActivity extends AbstractActivity {
         BottomNavigationView bottomNavigationView = this.findViewById(R.id.nav_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.navLocalSync) {
-                try {
-                    IBugService bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(this.spLocalSyncBugTracker.getSelectedItemPosition()), this.activity);
-                    Object pid = null;
-                    if (this.spLocalSyncProjects.getSelectedItem() != null) {
-                        Project project = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
-                        if (project != null) {
-                            pid = project.getId();
-                        }
-                    }
-
-                    LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.activity.getFilesDir().getAbsolutePath(), pid);
-                    localSyncTask.execute().get();
-                    this.reload();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, this.activity);
-                }
+                this.sync();
             }
             return true;
         });
@@ -127,7 +115,41 @@ public final class LocalSyncActivity extends AbstractActivity {
         this.expLvLocalSync = this.findViewById(R.id.expLvLocalSync);
 
         try {
+            Helper.isStoragePermissionGranted(LocalSyncActivity.this);
             this.reloadProjects(this.spLocalSyncBugTracker.getSelectedItemPosition());
+
+            if (this.settings.isLocalSyncAutomatically()) {
+                this.sync();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.activity);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults.length <= 0 || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+
+    private void sync() {
+        try {
+            IBugService bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(this.spLocalSyncBugTracker.getSelectedItemPosition()), this.activity);
+            Object pid = null;
+            if (this.spLocalSyncProjects.getSelectedItem() != null) {
+                Project project = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
+                if (project != null) {
+                    pid = project.getId();
+                }
+            }
+
+            LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.settings.getLocalSyncPath(), pid);
+            MessageHelper.printMessage(localSyncTask.execute().get(), LocalSyncActivity.this);
+            this.reload();
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.activity);
         }
@@ -176,7 +198,7 @@ public final class LocalSyncActivity extends AbstractActivity {
             }
             project = LocalSyncTask.renameToPathPart(pro.getTitle());
 
-            LocalSyncAdapter localSyncAdapter = new LocalSyncAdapter(this.getFilesDir().getAbsolutePath() + File.separatorChar + bugTracker + File.separatorChar + project, LocalSyncActivity.this);
+            LocalSyncAdapter localSyncAdapter = new LocalSyncAdapter(this.settings.getLocalSyncPath() + File.separatorChar + bugTracker + File.separatorChar + project, LocalSyncActivity.this);
             this.expLvLocalSync.setAdapter(localSyncAdapter);
             localSyncAdapter.notifyDataSetChanged();
         } catch (Exception ex) {

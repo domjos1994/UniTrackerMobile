@@ -184,4 +184,21 @@ public class Settings {
     public boolean isScrollList() {
         return this.userPreferences.getBoolean("swtScrollListElement", false);
     }
+
+    public boolean isLocalSyncAutomatically() {
+        return this.userPreferences.getBoolean("swtSyncAutomatically", false);
+    }
+
+    public String getLocalSyncPath() {
+        String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
+        if (path != null) {
+            if (path.equals("")) {
+                return this.context.getFilesDir().getAbsolutePath();
+            }
+        } else {
+            return this.context.getFilesDir().getAbsolutePath();
+        }
+        path = path.replace(":", "");
+        return path;
+    }
 }

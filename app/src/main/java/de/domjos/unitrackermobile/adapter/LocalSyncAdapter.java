@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.unibuggerlibrary.tasks.LocalSyncTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.provider.FileProvider;
@@ -91,7 +92,7 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
             convertView = Helper.getRowView(this.context, parent, R.layout.local_sync_group);
         }
 
-        ((CheckedTextView) convertView).setText(this.content.get(groupPosition).getKey());
+        ((CheckedTextView) convertView).setText(LocalSyncTask.pathPartToContent(this.content.get(groupPosition).getKey()));
         ((CheckedTextView) convertView).setChecked(isExpanded);
         return convertView;
     }
@@ -124,7 +125,7 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
         ImageView ivChild = convertView.findViewById(R.id.ivChild);
 
         if (lblChild != null) {
-            lblChild.setText(item);
+            lblChild.setText(LocalSyncTask.pathPartToContent(item));
         }
         if (ivChild != null) {
             if (item.toLowerCase().trim().contains("issue.pdf")) {

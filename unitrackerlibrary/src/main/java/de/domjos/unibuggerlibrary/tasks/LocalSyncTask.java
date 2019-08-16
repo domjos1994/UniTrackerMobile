@@ -34,7 +34,7 @@ import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.utils.Converter;
 
-public final class LocalSyncTask extends AbstractTask<Void, Void, Void> {
+public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
     private String path;
     private Object pid;
 
@@ -56,13 +56,13 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, Void> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Void doInBackground(Void... voids) {
+    protected String doInBackground(Void... voids) {
         try {
             // create base-directory
             File directory = new File(this.path);
             if (!directory.exists()) {
                 if (!directory.mkdirs()) {
-                    return null;
+                    return String.format(this.getContext().getString(R.string.messages_local_sync_dir), directory.getAbsolutePath());
                 }
             }
 
@@ -71,7 +71,7 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, Void> {
             File bugPath = new File(directory.getAbsolutePath() + File.separatorChar + name);
             if (!bugPath.exists()) {
                 if (!bugPath.mkdirs()) {
-                    return null;
+                    return String.format(this.getContext().getString(R.string.messages_local_sync_dir), bugPath.getAbsolutePath());
                 }
             }
 
@@ -89,60 +89,77 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, Void> {
                 File pPath = new File(bugPath.getAbsolutePath() + File.separatorChar + pName);
                 if (!pPath.exists()) {
                     if (!pPath.mkdirs()) {
-                        return null;
+                        return String.format(this.getContext().getString(R.string.messages_local_sync_dir), pPath.getAbsolutePath());
                     }
                 }
 
                 List<Issue> issues = super.bugService.getIssues(project.getId());
                 for (Issue issue : issues) {
-                    String iName = LocalSyncTask.renameToPathPart(issue.getTitle());
-                    File iPath = new File(pPath.getAbsolutePath() + File.separatorChar + iName);
-                    if (!iPath.exists()) {
-                        if (!iPath.mkdirs()) {
-                            return null;
+                    try {
+                        String iName = LocalSyncTask.renameToPathPart(issue.getTitle());
+                        File iPath = new File(pPath.getAbsolutePath() + File.separatorChar + iName);
+                        if (!iPath.exists()) {
+                            if (!iPath.mkdirs()) {
+                                return String.format(this.getContext().getString(R.string.messages_local_sync_dir), iPath.getAbsolutePath());
+                            }
                         }
-                    }
 
-                    List<Attachment> attachments = super.bugService.getIssue(issue.getId(), project.getId()).getAttachments();
-                    if (attachments != null) {
-                        if (!attachments.isEmpty()) {
-                            File aPath = new File(iPath.getAbsolutePath() + File.separatorChar + "attachments");
-                            if (!aPath.exists()) {
-                                if (!aPath.mkdirs()) {
-                                    return null;
+                        List<Attachment> attachments = super.bugService.getIssue(issue.getId(), project.getId()).getAttachments();
+                        if (attachments != null) {
+                            if (!attachments.isEmpty()) {
+                                File aPath = new File(iPath.getAbsolutePath() + File.separatorChar + "attachments");
+                                if (!aPath.exists()) {
+                                    if (!aPath.mkdirs()) {
+                                        return String.format(this.getContext().getString(R.string.messages_local_sync_dir), aPath.getAbsolutePath());
+                                    }
+                                }
+
+                                for (Attachment attachment : attachments) {
+                                    Converter.convertByteArrayToFile(attachment.getContent(), new File(aPath.getAbsolutePath() + File.separatorChar + attachment.getFilename()));
                                 }
                             }
-
-                            for (Attachment attachment : attachments) {
-                                Converter.convertByteArrayToFile(attachment.getContent(), new File(aPath.getAbsolutePath() + File.separatorChar + attachment.getFilename()));
-                            }
                         }
-                    }
 
-                    TrackerPDF trackerPDF = new TrackerPDF(
-                            super.bugService,
-                            AbstractTracker.Type.Issues,
-                            project.getId(),
-                            Collections.singletonList(issue.getId()),
-                            iPath.getAbsolutePath() + File.separatorChar + "issue.pdf"
-                    );
-                    trackerPDF.doExport();
+                        TrackerPDF trackerPDF = new TrackerPDF(
+                                super.bugService,
+                                AbstractTracker.Type.Issues,
+                                project.getId(),
+                                Collections.singletonList(issue.getId()),
+                                iPath.getAbsolutePath() + File.separatorChar + "issue.pdf"
+                        );
+                        trackerPDF.doExport();
+                    } catch (Exception ex) {
+                        super.printException(ex);
+                    }
                 }
             }
         } catch (Exception ex) {
             super.printException(ex);
         }
-        return null;
+        return this.getContext().getString(R.string.messages_local_sync_success);
     }
 
     public static String renameToPathPart(String name) {
-        name = name.toLowerCase();
         name = name.replaceAll("ä", "ae");
-        name = name.replaceAll("ö", "oe");
-        name = name.replaceAll("ü", "ue");
-        name = name.replaceAll("ß", "ss");
-        name = name.replaceAll(" ", "");
-        name = name.replaceAll("\\.", "");
-        return name.replaceAll("-", "_");
+        name = name.replaceAll("Ä", "#Ae#");
+        name = name.replaceAll("ö", "#oe#");
+        name = name.replaceAll("Ö", "#Oe#");
+        name = name.replaceAll("ü", "#ue#");
+        name = name.replaceAll("Ü", "#Ue#");
+        name = name.replaceAll("ß", "#ss#");
+        name = name.replaceAll(" ", "#_#");
+        return name.replaceAll("\\.", "#-#");
+    }
+
+    public static String pathPartToContent(String name) {
+        name = name.replaceAll("#ae#", "ä");
+        name = name.replaceAll("#Ae#", "Ä");
+        name = name.replaceAll("#oe#", "ö");
+        name = name.replaceAll("#Oe#", "Ö");
+        name = name.replaceAll("#ue#", "ü");
+        name = name.replaceAll("#Ue#", "Ü");
+        name = name.replaceAll("#ss#", "ß");
+        name = name.replaceAll("#_#", " ");
+        return name.replaceAll("#-#", ".");
     }
 }

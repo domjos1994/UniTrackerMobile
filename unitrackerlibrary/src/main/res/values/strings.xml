@@ -48,4 +48,7 @@
 
     <string name="task_local_title">Synchronisiere Bugs in den lokalen Speicher!</string>
     <string name="task_local_content">Synchronisiere Bugs in den lokalen Speicher…</string>
+
+    <string name="messages_local_sync_dir">Ordner \'%s\' kann nicht erstellt werden!</string>
+    <string name="messages_local_sync_success">Lokale Synchronisation erfolgreich!</string>
 </resources>
