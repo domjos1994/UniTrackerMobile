@@ -316,6 +316,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralBuild.setEnabled(editMode);
             this.txtIssueGeneralOs.setEnabled(editMode);
             this.cmdIssueGeneralSmartPhone.setEnabled(editMode);
+            this.cmdIssueGeneralSummaryToDescription.setEnabled(editMode);
         }
     }
 

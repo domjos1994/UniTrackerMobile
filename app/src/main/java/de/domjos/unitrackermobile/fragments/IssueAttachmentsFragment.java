@@ -54,13 +54,14 @@ import static android.app.Activity.RESULT_OK;
 public final class IssueAttachmentsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssueAttachments;
     private ImageButton cmdIssueAttachmentAdd;
+    private ImageButton cmdIssueAttachmentPhoto;
     private IBugService bugService;
 
     private View root;
     private Issue issue;
     private boolean editMode;
 
-    private final static int PICKFILE_REQUEST_CODE = 99;
+    private final static int PICKFILE_REQUEST_CODE = 99, PHOTO_GALLERY = 100;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             this.bugService = Helper.getCurrentBugService(this.getActivity());
         }
         this.cmdIssueAttachmentAdd = this.root.findViewById(R.id.cmdIssueAttachmentAdd);
+        this.cmdIssueAttachmentPhoto = this.root.findViewById(R.id.cmdIssueAttachmentPhoto);
 
         this.lvIssueAttachments.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
@@ -107,6 +109,12 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             startActivityForResult(intent, PICKFILE_REQUEST_CODE);
         });
 
+        this.cmdIssueAttachmentPhoto.setOnClickListener(v -> {
+            Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+            photoPickerIntent.setType("image/*");
+            startActivityForResult(photoPickerIntent, PHOTO_GALLERY);
+        });
+
         this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
@@ -116,6 +124,22 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
+            if (requestCode == PHOTO_GALLERY && resultCode == RESULT_OK) {
+                Uri imageUri = data.getData();
+                if (imageUri != null) {
+                    if (getContext() != null) {
+                        InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
+                        if (imageStream != null) {
+                            Attachment attachment = new Attachment();
+                            attachment.setDownloadUrl(imageUri.getPath());
+                            attachment.setFilename(imageUri.getPath());
+                            attachment.setContentType(data.getType());
+                            attachment.setContent(Converter.convertStreamToByteArray(imageStream));
+                            this.lvIssueAttachments.getAdapter().add(new ListObject(this.getActivity(), R.drawable.ic_file_upload_black_24dp, attachment));
+                        }
+                    }
+                }
+            }
             if (resultCode == RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
                 if (data != null) {
                     if (data.getData() != null) {
@@ -184,6 +208,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         if (this.root != null) {
             this.cmdIssueAttachmentAdd.setEnabled(editMode && this.bugService.getPermissions().addAttachments() || this.bugService.getPermissions().updateAttachments());
             this.lvIssueAttachments.setEnabled(editMode && this.bugService.getPermissions().deleteAttachments());
+            this.cmdIssueAttachmentPhoto.setEnabled(editMode && this.bugService.getPermissions().addAttachments() || this.bugService.getPermissions().updateAttachments());
         }
     }
 

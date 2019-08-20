@@ -82,7 +82,7 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.txtIssueNotesSubmitDate = this.root.findViewById(R.id.txtIssueNotesSubmitDate);
         this.txtIssueNotesLastUpdated = this.root.findViewById(R.id.txtIssueNotesLastUpdated);
         this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
-        this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
+
 
         this.lvIssueNotes.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
@@ -218,6 +218,9 @@ public final class IssueNotesFragment extends AbstractFragment {
                 this.statusValueArray = "issues_general_view_values";
                 break;
         }
+
+        this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
+        this.spIssueNotesView.setSelection(0);
     }
 
     private void noteToFields() {

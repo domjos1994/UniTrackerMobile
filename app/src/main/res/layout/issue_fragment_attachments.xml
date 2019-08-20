@@ -25,12 +25,27 @@
         android:id="@+id/lvIssueAttachments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/cmdIssueAttachmentAdd" />
+        android:layout_below="@+id/ll" />
 
-    <ImageButton
-        android:id="@+id/cmdIssueAttachmentAdd"
+    <LinearLayout
+        android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:srcCompat="@drawable/ic_file_upload_black_24dp" />
+        android:weightSum="10"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/cmdIssueAttachmentAdd"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            app:srcCompat="@drawable/ic_file_upload_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/cmdIssueAttachmentPhoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+    </LinearLayout>
 </RelativeLayout>

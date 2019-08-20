@@ -160,7 +160,7 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
         data.add(object);
 
         synchronized (this) {
-            notify();
+            notifyDataSetChanged();
         }
     }
 }
