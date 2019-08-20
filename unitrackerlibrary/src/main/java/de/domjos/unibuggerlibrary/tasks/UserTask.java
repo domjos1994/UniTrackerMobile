@@ -43,11 +43,6 @@ public final class UserTask extends AbstractTask<Object, Void, List<User>> {
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected List<User> doInBackground(Object... objects) {
         List<User> result = new LinkedList<>();

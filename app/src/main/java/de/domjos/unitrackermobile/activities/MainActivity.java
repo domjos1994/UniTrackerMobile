@@ -659,6 +659,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             case R.id.navFields:
                 intent = new Intent(this.getApplicationContext(), FieldActivity.class);
                 break;
+            case R.id.navStatistics:
+                intent = new Intent(this.getApplicationContext(), StatisticsActivity.class);
+                break;
             case R.id.navAdministration:
                 intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
                 break;

@@ -37,11 +37,6 @@ public final class LoaderTask extends AbstractTask<Object, Void, Object> {
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Object doInBackground(Object... objects) {
         try {

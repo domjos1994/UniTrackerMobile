@@ -201,6 +201,14 @@
     <string name="local_sync">Lokale Synchronisation</string>
     <string name="local_sync_sync">Synchronisieren</string>
 
+    <string name="statistics">Statistiken</string>
+    <string name="statistics_bugs">Fehler</string>
+    <string name="statistics_daily">Täglich</string>
+    <string name="statistics_monthly">Monatlich</string>
+    <string name="statistics_yearly">Jährlich</string>
+    <string name="statistics_value">Wert</string>
+    <string name="statistics_loaded">Daten sind geladen</string>
+
     <string name="filter">Filter</string>
     <string-array name="filter_view">
         <item />

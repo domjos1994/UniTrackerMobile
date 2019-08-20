@@ -44,6 +44,10 @@
     <item android:title="@string/administration_menu">
         <menu>
             <item
+                android:id="@+id/navStatistics"
+                android:icon="@drawable/ic_multiline_chart_black_24dp"
+                android:title="@string/statistics" />
+            <item
                 android:id="@+id/navAdministration"
                 android:icon="@drawable/ic_settings_black_24dp"
                 android:title="@string/administration" />

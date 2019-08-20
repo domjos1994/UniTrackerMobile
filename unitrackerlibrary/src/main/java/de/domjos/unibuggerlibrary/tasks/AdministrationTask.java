@@ -54,11 +54,6 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Void doInBackground(IBugService... iBugServices) {
         try {

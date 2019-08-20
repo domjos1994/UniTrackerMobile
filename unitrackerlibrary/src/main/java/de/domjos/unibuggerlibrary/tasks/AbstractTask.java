@@ -34,6 +34,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     private int id;
     private final String title, content;
     private boolean showNotifications;
+    private PostExecuteListener postExecuteListener;
 
     AbstractTask(Activity activity, IBugService bugService, int title, int content, boolean showNotifications, int icon) {
         super();
@@ -61,7 +62,9 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         if (this.showNotifications) {
             MessageHelper.stopProgressNotification((Activity) this.getContext(), this.id);
         }
-        this.after();
+        if (this.postExecuteListener != null) {
+            this.postExecuteListener.onPostExecute(result);
+        }
     }
 
     void printMessage() {
@@ -78,7 +81,9 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
 
     protected abstract void before();
 
-    protected abstract void after();
+    public void after(PostExecuteListener postExecuteListener) {
+        this.postExecuteListener = postExecuteListener;
+    }
 
     Object returnTemp(Object o) {
         if (o == null) {
@@ -101,5 +106,9 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
 
     protected Context getContext() {
         return this.weakReference.get();
+    }
+
+    public abstract static class PostExecuteListener<Result> {
+        public abstract void onPostExecute(Result result);
     }
 }

@@ -54,11 +54,6 @@ public final class SearchTask extends AbstractTask<Integer, Void, List<ListObjec
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected List<ListObject> doInBackground(Integer... issues) {
         try {

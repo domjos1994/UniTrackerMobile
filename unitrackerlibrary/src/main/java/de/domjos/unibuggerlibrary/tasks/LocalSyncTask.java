@@ -50,11 +50,6 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected String doInBackground(Void... voids) {
         try {

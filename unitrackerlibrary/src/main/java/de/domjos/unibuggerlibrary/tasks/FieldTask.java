@@ -43,11 +43,6 @@ public final class FieldTask extends AbstractTask<Object, Void, List<CustomField
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected List<CustomField> doInBackground(Object... customFields) {
         List<CustomField> result = new LinkedList<>();

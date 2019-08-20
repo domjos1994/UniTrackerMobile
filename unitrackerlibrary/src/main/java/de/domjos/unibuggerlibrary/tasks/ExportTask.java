@@ -47,11 +47,6 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     }
 
     @Override
-    protected void after() {
-
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Void doInBackground(Object... objects) {
         try {

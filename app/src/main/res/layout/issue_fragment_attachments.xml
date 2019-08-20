@@ -33,14 +33,12 @@
         android:layout_height="wrap_content"
         android:weightSum="10"
         android:orientation="horizontal">
-
         <ImageButton
             android:id="@+id/cmdIssueAttachmentAdd"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
             app:srcCompat="@drawable/ic_file_upload_black_24dp" />
-
         <ImageButton
             android:id="@+id/cmdIssueAttachmentPhoto"
             android:layout_width="0dp"
