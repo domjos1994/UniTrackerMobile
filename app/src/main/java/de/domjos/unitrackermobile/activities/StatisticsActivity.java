@@ -20,8 +20,11 @@ package de.domjos.unitrackermobile.activities;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -30,14 +33,10 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.components.Description;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,31 +51,35 @@ import de.domjos.unibuggerlibrary.tasks.StatisticsTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.helper.DiagramHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 
 public final class StatisticsActivity extends AbstractActivity {
-    private LineChart lcStatisticsBugs;
+    private BarChart bcStatisticsBugsPerProject;
+    private LineChart lcStatisticsBugsInTime;
     private RadioButton rbStatisticsMonthly, rbStatisticsYearly;
     private EditText txtStatisticsValue;
     private ProgressBar pbStatistics;
     private ImageButton cmdStatisticsReload;
+    private LinearLayout pnlControls;
 
     private Spinner spStatisticsBugTracker;
+    private ArrayAdapter<Authentication> bugTrackerAdapter;
 
-    private Map<Authentication, Map<Project, List<Issue>>> data = new LinkedHashMap<>();
+    private Map<Authentication, Map<Project, List<Issue>>> data;
 
     public StatisticsActivity() {
         super(R.layout.statistics_activity);
+        this.data = new LinkedHashMap<>();
     }
 
     @Override
     protected void initActions() {
 
-        this.cmdStatisticsReload.setOnClickListener(view -> reloadDiagram());
+        this.cmdStatisticsReload.setOnClickListener(view -> reloadCharts());
+        this.rbStatisticsMonthly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadCharts());
+        this.rbStatisticsYearly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadCharts());
 
-
-        this.rbStatisticsMonthly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadDiagram());
-        this.rbStatisticsYearly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadDiagram());
         this.txtStatisticsValue.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -88,95 +91,71 @@ public final class StatisticsActivity extends AbstractActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                reloadDiagram();
+                reloadCharts();
+            }
+        });
+
+        this.spStatisticsBugTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                reloadCharts();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
     }
 
     @Override
     protected void initControls() {
+        this.bcStatisticsBugsPerProject = this.findViewById(R.id.bcStatisticsBugsPerProject);
+        Description description = new Description();
+        description.setText(this.getString(R.string.statistics_bar_description));
+        this.bcStatisticsBugsPerProject.setDescription(description);
+
+        this.lcStatisticsBugsInTime = this.findViewById(R.id.lcStatisticsBugsInTime);
+        description = new Description();
+        description.setText(this.getString(R.string.statistics_line_description));
+        this.lcStatisticsBugsInTime.setDescription(description);
+
         this.rbStatisticsMonthly = this.findViewById(R.id.rbStatisticsMonthly);
         this.rbStatisticsYearly = this.findViewById(R.id.rbStatisticsYearly);
         this.txtStatisticsValue = this.findViewById(R.id.txtStatisticsValue);
-        this.lcStatisticsBugs = this.findViewById(R.id.lcStatisticsBugs);
         this.pbStatistics = this.findViewById(R.id.pbStatistics);
         this.cmdStatisticsReload = this.findViewById(R.id.cmdStatisticsSync);
+        this.pnlControls = this.findViewById(R.id.pnlControls);
 
         this.spStatisticsBugTracker = this.findViewById(R.id.spStatisticsBugTracker);
-        ArrayAdapter<Authentication> bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
         this.spStatisticsBugTracker.setAdapter(bugTrackerAdapter);
-        bugTrackerAdapter.notifyDataSetChanged();
-        bugTrackerAdapter.add(new Authentication());
+        this.bugTrackerAdapter.notifyDataSetChanged();
+        this.bugTrackerAdapter.add(new Authentication());
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            bugTrackerAdapter.add(authentication);
+            this.bugTrackerAdapter.add(authentication);
         }
         this.spStatisticsBugTracker.setSelection(0);
-
-        this.lcStatisticsBugs.setVisibleXRangeMinimum(0);
-        this.lcStatisticsBugs.setVisibleYRangeMinimum(0, YAxis.AxisDependency.LEFT);
 
         this.initData();
     }
 
-    protected void reloadDiagram() {
-        try {
-            load();
-            int type = Calendar.MONTH;
-            int x = Calendar.DAY_OF_MONTH;
-            int max = 30;
-            Calendar current = Calendar.getInstance();
-            current.setTime(new Date());
-
-            if (this.rbStatisticsYearly.isChecked()) {
-                type = Calendar.YEAR;
-                x = Calendar.MONTH;
-                max = 12;
-                try {
-                    current.set(type, Integer.parseInt(this.txtStatisticsValue.getText().toString()));
-                } catch (Exception ignored) {
-                }
-            }
-            if (this.rbStatisticsMonthly.isChecked()) {
-                type = Calendar.MONTH;
-                x = Calendar.DAY_OF_MONTH;
-                try {
-                    current.set(type, Integer.parseInt(this.txtStatisticsValue.getText().toString()));
-                } catch (Exception ignored) {
-                }
-                max = current.getActualMaximum(Calendar.DAY_OF_MONTH);
-            }
-
-            LineData lineData = new LineData();
-            for (Map.Entry<Authentication, Map<Project, List<Issue>>> authEntry : this.data.entrySet()) {
-                List<Entry> entries = new LinkedList<>();
-                for (int i = 1; i <= max; i++) {
-                    entries.add(new Entry(i, 0));
-                }
-
-                for (Map.Entry<Project, List<Issue>> projectEntry : authEntry.getValue().entrySet()) {
-                    for (Issue issue : projectEntry.getValue()) {
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(issue.getSubmitDate());
-
-                        if (calendar.get(type) == current.get(type)) {
-                            for (int i = 1; i <= max; i++) {
-                                if (i == calendar.get(x)) {
-                                    entries.get(i - 1).setX(entries.get(i - 1).getY() + 1);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                lineData.addDataSet(new LineDataSet(entries, authEntry.getKey().getTitle()));
-            }
-            this.lcStatisticsBugs.setData(lineData);
-            load();
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, StatisticsActivity.this);
-        }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_statistics, menu);
+        return true;
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menExport) {
+            this.lcStatisticsBugsInTime.saveToGallery("uniTrackerMobile_bugsInTime.jpg");
+            this.bcStatisticsBugsPerProject.saveToGallery("uniTrackerMobile_bugsPerProject.jpg");
+            MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), StatisticsActivity.this);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     private void initData() {
         List<IBugService> bugServices = new LinkedList<>();
@@ -202,21 +181,55 @@ public final class StatisticsActivity extends AbstractActivity {
             @Override
             public void onPostExecute(Map<Authentication, Map<Project, List<Issue>>> result) {
                 data = result;
-                reloadDiagram();
                 load();
+                reloadCharts();
+                MessageHelper.printMessage(getString(R.string.statistics_loaded), StatisticsActivity.this);
             }
         });
         statisticsTask.execute();
     }
 
+    private void reloadCharts() {
+        DiagramHelper diagramHelper = new DiagramHelper(this.data);
+        if (this.rbStatisticsMonthly.isChecked()) {
+            diagramHelper.setTimeSpan(DiagramHelper.TimeSpan.Month);
+        } else if (this.rbStatisticsYearly.isChecked()) {
+            diagramHelper.setTimeSpan(DiagramHelper.TimeSpan.Year);
+        }
+        diagramHelper.setTime(this.txtStatisticsValue.getText().toString());
+
+        if (this.spStatisticsBugTracker.getSelectedItem() != null) {
+            List<Authentication> authentications = new LinkedList<>();
+            Authentication authentication = this.bugTrackerAdapter.getItem(this.spStatisticsBugTracker.getSelectedItemPosition());
+            if (authentication != null) {
+                if (authentication.getId() != null) {
+                    authentications.add(this.bugTrackerAdapter.getItem(this.spStatisticsBugTracker.getSelectedItemPosition()));
+                    diagramHelper.setAuthentications(authentications);
+                } else {
+                    diagramHelper.setAuthentications(MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
+                }
+            } else {
+                diagramHelper.setAuthentications(MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
+            }
+        } else {
+            diagramHelper.setAuthentications(MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
+        }
+
+        diagramHelper.updateBarChart(this.bcStatisticsBugsPerProject);
+        diagramHelper.updateLineChart(this.lcStatisticsBugsInTime);
+    }
+
     private void load() {
         if (this.pbStatistics.getVisibility() == View.GONE) {
             this.pbStatistics.setVisibility(View.VISIBLE);
-            this.cmdStatisticsReload.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 9));
+            this.pbStatistics.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
+            this.pnlControls.setVisibility(View.INVISIBLE);
+            this.cmdStatisticsReload.setVisibility(View.GONE);
         } else {
             this.pbStatistics.setVisibility(View.GONE);
+            this.pnlControls.setVisibility(View.VISIBLE);
+            this.cmdStatisticsReload.setVisibility(View.VISIBLE);
             this.cmdStatisticsReload.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
-            MessageHelper.printMessage(this.getString(R.string.statistics_loaded), StatisticsActivity.this);
         }
     }
 }

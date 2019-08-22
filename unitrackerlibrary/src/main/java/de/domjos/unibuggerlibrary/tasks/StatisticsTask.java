@@ -57,7 +57,11 @@ public final class StatisticsTask extends AbstractTask<Void, Void, Map<Authentic
                     List<Issue> issues = bugService.getIssues(project.getId());
                     for (Issue issue : issues) {
                         try {
-                            currentIssues.add(bugService.getIssue(issue.getId(), project.getId()));
+                            if (issue.getLastUpdated() == null) {
+                                currentIssues.add(bugService.getIssue(issue.getId(), project.getId()));
+                            } else {
+                                currentIssues.add(issue);
+                            }
                         } catch (Exception ex) {
                             super.printException(ex);
                         }

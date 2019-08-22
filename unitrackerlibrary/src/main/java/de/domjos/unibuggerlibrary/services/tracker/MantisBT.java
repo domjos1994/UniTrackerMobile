@@ -239,6 +239,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
             for (int i = 0; i <= vector.size() - 1; i++) {
                 if (vector.get(i) instanceof SoapObject) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
@@ -246,6 +247,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     String category = soapObject.getPropertyAsString("category");
                     String summary = soapObject.getPropertyAsString("summary");
                     String view = soapObject.getPropertyAsString("view_state");
+                    Date dt = new Date();
+                    if (soapObject.hasProperty("last_updated")) {
+                        dt = sdf.parse(soapObject.getPropertyAsString("last_updated"));
+                    }
 
                     for (String enumViewItem : enumView) {
                         String[] spl = enumViewItem.split(":");
@@ -287,6 +292,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     issue.setId(Long.parseLong(id));
                     issue.setTitle(summary);
                     issue.setDescription(String.format("%s - %s - %s", category, view, status));
+                    issue.setLastUpdated(dt);
                     issues.add(issue);
                 }
             }

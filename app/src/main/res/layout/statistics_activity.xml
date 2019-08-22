@@ -39,7 +39,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="10">
+                android:weightSum="10"
+                android:id="@+id/pnlControls">
 
                 <RadioGroup
                     android:layout_width="0dp"
@@ -100,8 +101,12 @@
                 android:layout_height="1dp"
                 android:background="#000" />
 
+            <com.github.mikephil.charting.charts.BarChart
+                android:id="@+id/bcStatisticsBugsPerProject"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
             <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lcStatisticsBugs"
+                android:id="@+id/lcStatisticsBugsInTime"
                 android:layout_width="match_parent"
                 android:layout_height="300dp" />
         </LinearLayout>
