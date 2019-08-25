@@ -54,12 +54,14 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     private String currentMessage;
     private Authentication authentication;
     private int state;
+    private boolean showSub;
 
-    public MantisBT(Authentication authentication) {
+    public MantisBT(Authentication authentication, boolean showSub) {
         super(authentication, "/api/soap/mantisconnect.php");
         this.authentication = authentication;
         this.currentMessage = "";
         this.state = 0;
+        this.showSub = showSub;
     }
 
     @Override
@@ -91,9 +93,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object result = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) result;
-            for (int i = 0; i <= vector.size() - 1; i++) {
-                SoapObject soapObject = (SoapObject) vector.get(i);
-                projects.add(this.soapToProject(soapObject, null));
+            if (vector != null) {
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    SoapObject soapObject = (SoapObject) vector.get(i);
+                    projects.add(this.soapToProject(soapObject, null));
+                }
             }
         }
 
@@ -244,6 +248,18 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 if (vector.get(i) instanceof SoapObject) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
                     String id = soapObject.getPropertyAsString("id");
+
+                    if (!this.showSub) {
+                        try {
+                            String project = soapObject.getPropertyAsString("project");
+                            Long project_id = Long.parseLong(project);
+                            if (!pid.equals(project_id)) {
+                                continue;
+                            }
+                        } catch (Exception ignored) {
+                        }
+                    }
+
                     String category = soapObject.getPropertyAsString("category");
                     String summary = soapObject.getPropertyAsString("summary");
                     String view = soapObject.getPropertyAsString("view_state");

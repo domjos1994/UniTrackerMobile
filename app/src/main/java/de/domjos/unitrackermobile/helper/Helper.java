@@ -53,7 +53,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -78,15 +77,7 @@ import de.domjos.unitrackermobile.activities.MainActivity;
 
 public class Helper {
 
-    public static Properties readPropertiesFromRaw(int rawID, Context context) throws Exception {
-        Properties properties = new Properties();
-        Resources res = context.getResources();
-        InputStream in_s = res.openRawResource(rawID);
-        properties.load(in_s);
-        return properties;
-    }
-
-    public static String readStringFromRaw(int rawID, Context context) throws Exception {
+    static String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
         InputStream in_s = res.openRawResource(rawID);
 
@@ -95,7 +86,7 @@ public class Helper {
         return new String(b);
     }
 
-    public static int getVersionCode(Context context) throws Exception {
+    static int getVersionCode(Context context) throws Exception {
         PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         return info.versionCode;
     }
@@ -118,7 +109,7 @@ public class Helper {
             if (authentication != null) {
                 switch (authentication.getTracker()) {
                     case MantisBT:
-                        bugService = new MantisBT(authentication);
+                        bugService = new MantisBT(authentication, MainActivity.GLOBALS.getSettings(context).isShowBugsOfSubProjects());
                         break;
                     case Bugzilla:
                         bugService = new Bugzilla(authentication);
@@ -184,21 +175,18 @@ public class Helper {
         return activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
     }
 
-    public static boolean isStoragePermissionGranted(Activity activity) {
+    public static void isStoragePermissionGranted(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("dd", "Permission is granted");
-                return true;
             } else {
 
                 Log.v("dd", "Permission is revoked");
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-                return false;
             }
         } else { //permission is automatically granted on sdk<23 upon installation
             Log.v("dd", "Permission is granted");
-            return true;
         }
     }
 

@@ -174,6 +174,7 @@ public final class SettingsActivity extends PreferenceActivity {
 
     protected boolean isValidFragment(String fragmentName) {
         return GeneralPreferenceFragment.class.getName().equals(fragmentName) ||
+                BugTrackerPreferenceFragment.class.getName().equals(fragmentName) ||
                 SecurityPreferenceFragment.class.getName().equals(fragmentName) ||
                 InternetPreferenceFragment.class.getName().equals(fragmentName) ||
                 SyncPreferenceFragment.class.getName().equals(fragmentName);
@@ -185,6 +186,20 @@ public final class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class BugTrackerPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_bug_tracker);
         }
 
         @Override

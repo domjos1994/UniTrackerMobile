@@ -151,6 +151,11 @@
     <string name="settings_general_time_format_default">HH:mm:ss</string>
     <string name="settings_general_list_scroll_title">Listen-Element scrollen</string>
     <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
+    <string name="settings_bug_tracker">Bug-Tracker</string>
+    <string name="settings_bug_tracker_summary">Ändern Sie hier die Bug-Tracker spezifischen Einstellungen!</string>
+    <string name="settings_bug_tracker_mantis">MantisBT</string>
+    <string name="settings_bug_tracker_mantis_sub">Bugs von Unter-Projekten!</string>
+    <string name="settings_bug_tracker_mantis_sub_summary">Bugs von Unter-Projekten anzeigen!</string>
     <string name="settings_internet">Internet</string>
     <string name="settings_internet_summary">Ändern Sie hier die Einstellungen, welche die Synchronisation mit entfernten Daten betrifft!</string>
     <string name="settings_internet_wlan_reload">Fehler im Wlan automatisch neu laden</string>

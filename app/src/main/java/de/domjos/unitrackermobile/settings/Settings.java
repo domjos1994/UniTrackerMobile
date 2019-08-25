@@ -189,6 +189,10 @@ public class Settings {
         return this.userPreferences.getBoolean("swtSyncAutomatically", false);
     }
 
+    public boolean isShowBugsOfSubProjects() {
+        return this.userPreferences.getBoolean("swtBugTrackerSub", false);
+    }
+
     public String getLocalSyncPath() {
         String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
         if (path != null) {
