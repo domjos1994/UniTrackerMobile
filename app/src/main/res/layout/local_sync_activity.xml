@@ -42,6 +42,35 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:text="@string/search_content" />
+
+            <EditText
+                android:id="@+id/txtLocalSyncSearch"
+                android:layout_weight="6"
+                android:layout_width="0dp"
+                android:hint="@string/search_content"
+                android:inputType="text"
+                android:layout_height="wrap_content"
+                android:autofillHints="@string/search_content"
+                tools:targetApi="o" />
+
+            <ImageButton
+                android:id="@+id/cmdLocalSyncSearch"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/search_content"
+                app:srcCompat="@drawable/ic_search_black_24dp" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:text="@string/administration_bugTracker" />
 
             <Spinner

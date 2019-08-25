@@ -24,7 +24,9 @@ import android.content.pm.PackageManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -53,6 +55,9 @@ public final class LocalSyncActivity extends AbstractActivity {
     private ArrayAdapter<Project> projectArrayAdapter;
     private Settings settings;
     private Activity activity;
+
+    private EditText txtLocalSyncSearch;
+    private ImageButton cmdLocalSyncSearch;
 
     public LocalSyncActivity() {
         super(R.layout.local_sync_activity);
@@ -86,6 +91,15 @@ public final class LocalSyncActivity extends AbstractActivity {
 
             }
         });
+
+        this.cmdLocalSyncSearch.setOnClickListener(v -> {
+            String search = this.txtLocalSyncSearch.getText().toString().trim();
+            if (!search.isEmpty()) {
+                this.reload(search);
+            } else {
+                this.reload();
+            }
+        });
     }
 
     @Override
@@ -113,6 +127,9 @@ public final class LocalSyncActivity extends AbstractActivity {
         this.projectArrayAdapter.notifyDataSetChanged();
 
         this.expLvLocalSync = this.findViewById(R.id.expLvLocalSync);
+
+        this.txtLocalSyncSearch = this.findViewById(R.id.txtLocalSyncSearch);
+        this.cmdLocalSyncSearch = this.findViewById(R.id.cmdLocalSyncSearch);
 
         try {
             Helper.isStoragePermissionGranted(LocalSyncActivity.this);
@@ -170,6 +187,11 @@ public final class LocalSyncActivity extends AbstractActivity {
 
     @Override
     protected void reload() {
+        this.reload("");
+    }
+
+
+    private void reload(String search) {
         try {
             String bugTracker;
             String project;
@@ -198,7 +220,7 @@ public final class LocalSyncActivity extends AbstractActivity {
             }
             project = LocalSyncTask.renameToPathPart(pro.getTitle());
 
-            LocalSyncAdapter localSyncAdapter = new LocalSyncAdapter(this.settings.getLocalSyncPath() + File.separatorChar + bugTracker + File.separatorChar + project, LocalSyncActivity.this);
+            LocalSyncAdapter localSyncAdapter = new LocalSyncAdapter(this.settings.getLocalSyncPath() + File.separatorChar + bugTracker + File.separatorChar + project, LocalSyncActivity.this, search);
             this.expLvLocalSync.setAdapter(localSyncAdapter);
             localSyncAdapter.notifyDataSetChanged();
         } catch (Exception ex) {

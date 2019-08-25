@@ -43,11 +43,13 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
     private List<Map.Entry<String, List<String>>> content;
     private Context context;
     private String path;
+    private String search;
 
-    public LocalSyncAdapter(String path, Context context) {
+    public LocalSyncAdapter(String path, Context context, String search) {
         super();
         this.context = context;
         this.path = path;
+        this.search = search;
         this.reload();
     }
 
@@ -144,30 +146,36 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
 
     private void reload() {
         this.content = new LinkedList<>();
-        for (File content : new File(this.path).listFiles()) {
-            if (content.isDirectory()) {
-                List<String> children = new LinkedList<>();
-                for (File child : content.listFiles()) {
-                    if (child.isFile()) {
-                        if (child.getAbsolutePath().endsWith(".pdf")) {
-                            children.add(child.getName());
-                            break;
-                        }
-                    }
-                }
+        File tmp = new File(this.path);
+        if (tmp.exists()) {
+            for (File content : tmp.listFiles()) {
+                if (content.getName().toLowerCase().contains(this.search.trim().toLowerCase())) {
+                    if (content.isDirectory()) {
+                        List<String> children = new LinkedList<>();
 
-                for (File child : content.listFiles()) {
-                    if (child.isDirectory()) {
-                        if (child.getAbsolutePath().contains("attachments")) {
-                            for (File attachment : child.listFiles()) {
-                                children.add(attachment.getName());
+                        for (File child : content.listFiles()) {
+                            if (child.isFile()) {
+                                if (child.getAbsolutePath().endsWith(".pdf")) {
+                                    children.add(child.getName());
+                                    break;
+                                }
                             }
-                            break;
                         }
+
+                        for (File child : content.listFiles()) {
+                            if (child.isDirectory()) {
+                                if (child.getAbsolutePath().contains("attachments")) {
+                                    for (File attachment : child.listFiles()) {
+                                        children.add(attachment.getName());
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+
+                        this.content.add(new AbstractMap.SimpleEntry<>(content.getName(), children));
                     }
                 }
-
-                this.content.add(new AbstractMap.SimpleEntry<>(content.getName(), children));
             }
         }
     }
