@@ -43,18 +43,22 @@ public class Validator {
     }
 
     public void addEmptyValidator(EditText txt) {
+        this.addStar(txt);
         this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.empty, ""));
     }
 
     public void addDuplicatedEntry(EditText txt, String table, String column, long id) {
+        this.addStar(txt);
         this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.duplicated, table + ":" + column + ":" + id));
     }
 
     public void addValueEqualsRegex(EditText txt, String regex) {
+        this.addStar(txt);
         this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.regex, regex));
     }
 
     public void addValueEqualsDate(EditText txt) {
+        this.addStar(txt);
         this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.date, ""));
     }
 
@@ -161,6 +165,13 @@ public class Validator {
             txt.setError(null);
         }
         return true;
+    }
+
+    private void addStar(EditText txt) {
+        String hint = txt.getHint().toString();
+        if (!hint.endsWith(" *")) {
+            txt.setHint(hint + " *");
+        }
     }
 
     private enum ValidatorType {
