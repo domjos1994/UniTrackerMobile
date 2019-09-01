@@ -382,7 +382,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
             if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
                 validator.addEmptyValidator(this.txtIssueGeneralCategory);
-                validator.addEmptyValidator(this.txtIssueGeneralTargetVersion);
+                validator.addEmptyValidator(this.txtIssueGeneralVersion);
             }
         }
         return validator;
