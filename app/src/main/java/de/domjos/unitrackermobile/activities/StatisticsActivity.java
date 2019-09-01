@@ -36,10 +36,17 @@ import android.widget.Spinner;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
@@ -103,6 +110,52 @@ public final class StatisticsActivity extends AbstractActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        this.bcStatisticsBugsPerProject.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                String label = bcStatisticsBugsPerProject.getXAxis().getValueFormatter().getFormattedValue(e.getX(), bcStatisticsBugsPerProject.getXAxis());
+                MessageHelper.printMessage(label + ": " + (int) e.getY() + " Bugs", StatisticsActivity.this);
+            }
+
+            @Override
+            public void onNothingSelected() {
+            }
+        });
+
+        this.lcStatisticsBugsInTime.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                try {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(MainActivity.GLOBALS.getSettings(getApplicationContext()).getDateFormat(), Locale.GERMAN);
+                    String value = txtStatisticsValue.getText().toString().trim();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(new Date());
+                    if (rbStatisticsMonthly.isChecked()) {
+                        if (!value.isEmpty()) {
+                            calendar.set(Calendar.MONTH, Integer.parseInt(value));
+                        }
+                        calendar.set(Calendar.DAY_OF_MONTH, (int) e.getX());
+                        value = simpleDateFormat.format(calendar.getTime());
+                    } else {
+                        if (!value.isEmpty()) {
+                            calendar.set(Calendar.YEAR, Integer.parseInt(value));
+                        }
+                        calendar.set(Calendar.MONTH, (int) e.getX());
+                        value = simpleDateFormat.format(calendar.getTime());
+                        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+                        value += "-" + simpleDateFormat.format(calendar.getTime());
+                    }
+                    MessageHelper.printMessage(value + ": Bugs: " + e.getY(), StatisticsActivity.this);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, StatisticsActivity.this);
+                }
+            }
+
+            @Override
+            public void onNothingSelected() {
             }
         });
     }

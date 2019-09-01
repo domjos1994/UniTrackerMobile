@@ -79,6 +79,11 @@
                     android:layout_weight="5"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/settings_bug_tracker" />
+
                     <Spinner
                         android:id="@+id/spStatisticsBugTracker"
                         android:layout_width="match_parent"
@@ -88,11 +93,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:background="#000" />
-
-                    <Spinner
-                        android:id="@+id/spStatisticsProjects"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
                 </LinearLayout>
             </LinearLayout>
 
