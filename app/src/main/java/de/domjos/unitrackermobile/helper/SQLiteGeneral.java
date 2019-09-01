@@ -252,7 +252,9 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         try {
             String queries = Helper.readStringFromRaw(R.raw.update, context);
             for (String query : queries.split(";")) {
-                db.execSQL(query.trim());
+                if (!query.trim().isEmpty()) {
+                    db.execSQL(query.trim());
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.context);
