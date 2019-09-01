@@ -21,8 +21,10 @@ package de.domjos.unitrackermobile.helper;
 import android.content.Context;
 import android.widget.EditText;
 
+import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +55,7 @@ public class Validator {
     }
 
     public void addValueEqualsDate(EditText txt) {
-        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.regex, "([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))"));
+        this.executeLater.put(txt, new AbstractMap.SimpleEntry<>(ValidatorType.date, ""));
     }
 
     public boolean getState() {
@@ -82,6 +84,12 @@ public class Validator {
                     break;
                 case regex:
                     currentState = this.controlFieldEqualsRegex(txt, value);
+                    if (!currentState) {
+                        state = false;
+                    }
+                    break;
+                case date:
+                    currentState = this.controlFieldEqualsDate(txt);
                     if (!currentState) {
                         state = false;
                     }
@@ -124,6 +132,22 @@ public class Validator {
         return true;
     }
 
+    private boolean controlFieldEqualsDate(EditText txt) {
+        try {
+            String dateFormat = MainActivity.GLOBALS.getSettings(this.context).getDateFormat();
+            String timeFormat = MainActivity.GLOBALS.getSettings(this.context).getTimeFormat();
+            if (txt != null) {
+                if (txt.getText() != null) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat + " " + timeFormat, Locale.GERMAN);
+                    simpleDateFormat.parse(txt.getText().toString());
+                    return true;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return false;
+    }
+
     private boolean controlFieldEqualsRegex(EditText txt, String regex) {
         if (txt != null) {
             if (txt.getText() != null) {
@@ -142,6 +166,7 @@ public class Validator {
     private enum ValidatorType {
         empty,
         duplicated,
-        regex
+        regex,
+        date
     }
 }
