@@ -310,7 +310,7 @@ public final class AccountActivity extends AbstractActivity {
         this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
         List<Authentication.Tracker> ls = Arrays.asList(Authentication.Tracker.values());
-        this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1, ls));
+        this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_dropdown_item_1line, ls));
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);

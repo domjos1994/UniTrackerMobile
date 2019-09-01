@@ -60,7 +60,8 @@
                         android:hint="@string/general_title"
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        tools:ignore="Autofill"
+                        android:popupBackground="@color/colorAccent" />
                 </TableRow>
 
                 <TableRow>
