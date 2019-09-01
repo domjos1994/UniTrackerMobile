@@ -259,12 +259,18 @@ public class Helper {
         }
     }
 
-    public static void showResolveDialog(Activity activity, String array, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
+    public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
         try {
             Dialog resolveDialog = new Dialog(activity);
             resolveDialog.setContentView(R.layout.resolve_dialog);
             final Spinner cmbState = resolveDialog.findViewById(R.id.cmbStatus);
             cmbState.setAdapter(Helper.setAdapter(activity, array));
+            try {
+                if (position != -1) {
+                    cmbState.setSelection(position);
+                }
+            } catch (Exception ignored) {
+            }
             final EditText txtDescription = resolveDialog.findViewById(R.id.txtComment);
             final ImageButton cmdSave = resolveDialog.findViewById(R.id.cmdResolve);
 

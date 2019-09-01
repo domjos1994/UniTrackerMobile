@@ -349,40 +349,50 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             switch (item.getItemId()) {
                 case R.id.ctxSolve:
                     String statusArray = "";
+                    int position = -1;
                     Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
                     switch (authentication.getTracker()) {
                         case MantisBT:
+                            position = 5;
                             statusArray = "issues_general_status_mantisbt_values";
                             issue.setResolution(ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_values"), "erledigt");
                             break;
                         case YouTrack:
                             statusArray = "issues_general_status_youtrack_values";
+                            position = 7;
                             break;
                         case RedMine:
                             statusArray = "issues_general_status_redmine_values";
+                            position = 2;
                             break;
                         case Bugzilla:
                             statusArray = "issues_general_status_bugzilla_values";
+                            position = 2;
                             break;
                         case Jira:
                             statusArray = "issues_general_status_jira_values";
+                            position = 2;
                             break;
                         case PivotalTracker:
                             statusArray = "issues_general_status_pivotal_values";
+                            position = 5;
                             break;
                         case OpenProject:
                             statusArray = "issues_general_status_openproject_values";
+                            position = 12;
                             break;
                         case Backlog:
                             statusArray = "issues_general_status_backlog_values";
+                            position = 2;
                             break;
                         case Local:
                             statusArray = "issues_general_status_mantisbt_values";
+                            position = 5;
                             break;
                     }
 
                     if (!statusArray.isEmpty()) {
-                        Helper.showResolveDialog(MainActivity.this, statusArray, issue, bugService, pid, show, this::reload);
+                        Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload);
                     }
                     break;
                 case R.id.ctxShowAttachment:
