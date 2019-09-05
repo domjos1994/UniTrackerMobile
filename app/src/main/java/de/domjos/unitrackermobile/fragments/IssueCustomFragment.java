@@ -44,8 +44,11 @@ import java.util.Map;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unibuggerlibrary.tasks.FieldTask;
 import de.domjos.unitrackermobile.R;
+import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
 public final class IssueCustomFragment extends AbstractFragment {
@@ -54,6 +57,7 @@ public final class IssueCustomFragment extends AbstractFragment {
     private boolean editMode;
     private TableLayout tblCustomFields;
     private List<View> views;
+    private Object pid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,8 +135,20 @@ public final class IssueCustomFragment extends AbstractFragment {
 
     @Override
     protected void initData() {
+        this.pid = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
+
         if (this.issue != null) {
             if (this.getActivity() != null) {
+                if (this.issue.getCustomFields().isEmpty()) {
+                    try {
+                        FieldTask fieldTask = new FieldTask(getActivity(), Helper.getCurrentBugService(getContext()), this.pid, false, false, R.drawable.ic_text_fields_black_24dp);
+                        List<CustomField> customFields = fieldTask.execute(0).get();
+                        for (CustomField customField : customFields) {
+                            this.issue.getCustomFields().put(customField, "");
+                        }
+                    } catch (Exception ignored) {
+                    }
+                }
                 for (Object object : this.issue.getCustomFields().entrySet()) {
                     Map.Entry entry = (Map.Entry) object;
                     CustomField customField = (CustomField) entry.getKey();
@@ -271,8 +287,10 @@ public final class IssueCustomFragment extends AbstractFragment {
                                     arrayAdapter.add(customField.getDefaultValue());
                                 }
                             }
-                            for (String item : customField.getPossibleValues().split("\\|")) {
-                                arrayAdapter.add(item.split(":")[0].trim());
+                            if (customField.getPossibleValues() != null) {
+                                for (String item : customField.getPossibleValues().split("\\|")) {
+                                    arrayAdapter.add(item.split(":")[0].trim());
+                                }
                             }
                             spinner.setAdapter(arrayAdapter);
                             arrayAdapter.notifyDataSetChanged();

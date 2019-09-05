@@ -45,6 +45,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.YoutrackPermissions;
@@ -362,6 +363,8 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                                                         JSONObject valueObject = valueArray.getJSONObject(0);
                                                         valueName = this.getName(valueObject);
                                                     }
+                                                } else if (customFieldObject.getString("value") != null) {
+                                                    valueName = customFieldObject.getString("value");
                                                 }
 
                                             }
@@ -445,8 +448,10 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         }
 
         if (!issue.getAttachments().isEmpty()) {
-            for (Attachment<String> attachment : issue.getAttachments()) {
-                this.insertOrUpdateAttachment(attachment, issue.getId(), project_id);
+            for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                if (descriptionObject instanceof Attachment) {
+                    this.insertOrUpdateAttachment((Attachment<String>) descriptionObject, issue.getId(), project_id);
+                }
             }
         }
     }
