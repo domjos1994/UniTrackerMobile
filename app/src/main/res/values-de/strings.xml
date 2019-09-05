@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C)  2019 Domjos
+  ~ This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
+  ~
+  ~ UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+
+    <string name="pwd_title">Passwort zum Schutz der App eingeben!</string>
+    <string name="pwd_title_pwd">Passwort eingeben</string>
+    <string name="pwd_password1">Passwort eingeben</string>
+    <string name="pwd_password2">Passwort bestätigen</string>
+    <string name="pwd_submit">Eingaben bestätigen</string>
+
+    <string name="accounts">Konten</string>
+    <string name="accounts_noAccount">Kein Account</string>
+    <string name="accounts_add">Account hinzufügen</string>
+    <string name="accounts_change">Account ändern</string>
+    <string name="accounts_tracker">Tracker</string>
+    <string name="accounts_guest">Gast</string>
+    <string name="accounts_server">Servername</string>
+    <string name="accounts_user">Benutzername</string>
+    <string name="accounts_pwd">Passwort</string>
+    <string name="accounts_api">API-Schlüssel</string>
+    <string name="accounts_image_url">Pfad zum Bild</string>
+    <string name="accounts_image_gallery">Galerie</string>
+    <string name="accounts_connection_successfully">Verbindung erfolgreich!</string>
+    <string name="accounts_connection_not_successfully">Verbindung nicht erfolgreich!</string>
+
+    <string name="projects">Projekte</string>
+    <string name="projects_alias">Alias</string>
+    <string name="projects_private">Privat</string>
+    <string name="projects_state">Status</string>
+    <string name="projects_sub">Untergeordnete Projekte</string>
+    <string name="projects_website">Website</string>
+    <string name="projects_icon_url">Icon-Url</string>
+    <string name="projects_version">Version</string>
+    <string name="projects_version_default">unspecified</string>
+    <string name="projects_msg">Wollen Sie das Projekt wirklich löschen? Es könnten noch Bugs dem Projekt zugeordnet sein!</string>
+    <string name="projects_msg_positive">Wirklich löschen!</string>
+    <string-array name="project_state_mantis">
+        <item>Development</item>
+        <item>Release</item>
+        <item>Stable</item>
+        <item>Deprecated</item>
+    </string-array>
+    <string-array name="project_state_mantis_label">
+        <item>Entwicklung</item>
+        <item>Freigabe</item>
+        <item>Stabil</item>
+        <item>Veraltet</item>
+    </string-array>
+
+    <string name="versions">Versionen</string>
+    <string name="versions_released">Bereits erschienen</string>
+    <string name="versions_unReleased">Noch nicht erschienen</string>
+    <string name="versions_deprecated">Bereits veraltet</string>
+    <string name="versions_deprecated_redmine">Gesperrt</string>
+    <string name="versions_releasedAt">Erscheinungsdatum</string>
+    <string name="versions_filter">Filter</string>
+    <string-array name="versions_filer">
+        <item>@string/versions</item>
+        <item>@string/versions_unReleased</item>
+        <item>@string/versions_released</item>
+    </string-array>
+
+    <string name="users">Benutzer</string>
+    <string name="users_login">Login-Name</string>
+    <string name="users_fullName">Name</string>
+    <string name="users_email">Email</string>
+    <string name="users_password">Passwort</string>
+    <string name="users_password_repeat">Passwort bestätigen</string>
+
+    <string name="fields">Felder</string>
+    <string name="fields_type">Typ</string>
+    <string name="fields_default">Standard-Wert</string>
+    <string name="fields_nullable">Null-Werte</string>
+    <string name="fields_possible_values">Mögliche Werte (durch | getrennt)</string>
+
+    <string name="issues">Fehler</string>
+    <string name="issues_general">Generell</string>
+    <string name="issues_custom">Benutzerdefiniert</string>
+    <string name="issues_general_summary">Zusammenfassung</string>
+    <string name="issues_general_category">Kategorie</string>
+    <string name="issues_general_version">Produktversion</string>
+    <string name="issues_general_targetVersion">Zielversion</string>
+    <string name="issues_general_tags">Tags</string>
+    <string name="issues_general_fixedInVersion">Behoben in Version</string>
+    <string name="issues_general_submitted">Meldungsdatum</string>
+    <string name="issues_general_lastUpdated">Zuletzt aktualisiert</string>
+    <string name="issues_general_dueDate">Fälligkeitsdatum</string>
+    <string name="issues_general_view">Sichtbarkeit</string>
+    <string name="issues_general_reproducibility">Reproduzierbarkeit</string>
+    <string name="issues_general_severity">Auswirkung</string>
+    <string name="issues_general_priority">Priorität</string>
+    <string name="issue_general_handler">Bearbeitung durch</string>
+    <string name="issues_general_status">Status</string>
+    <string name="issues_general_resolution">Lösung</string>
+    <string name="issues_general_platform">Plattform</string>
+    <string name="issues_general_os">OS</string>
+    <string name="issues_general_build">Version</string>
+    <string name="issues_context_solve">Bug lösen</string>
+    <string name="issues_context_attachment">Anhänge anzeigen</string>
+    <string name="issues_context_attachment_overwrite">Soll die Datei überschrieben werden?</string>
+    <string name="issues_context_attachment_overwrite_yes">Ja</string>
+    <string name="issues_context_attachment_overwrite_no">Nein</string>
+    <string name="issues_context_attachment_saved">Anhang erfolgreich gespeichert!</string>
+
+    <string name="issues_descriptions">Beschreibungen</string>
+    <string name="issues_descriptions_website">Website</string>
+    <string name="issues_descriptions_steps">Schritte zur Reproduktion</string>
+    <string name="issues_descriptions_additional">Zusätzliche Informationen</string>
+    <string name="issues_notes">Notizen</string>
+    <string name="issues_attachments">Anhänge</string>
+
+    <string name="issues_history">Verlauf</string>
+    <string name="issues_history_oldValue">alt</string>
+    <string name="issues_history_newValue">neu</string>
+    <string name="issues_history_field">Feld</string>
+    <string name="issues_history_time">Zeit</string>
+    <string name="issues_history_user">Benutzer</string>
+
+    <string name="settings">Einstellungen</string>
+    <string name="settings_general">Generelle Einstellungen</string>
+    <string name="settings_general_summary">Ändern Sie hier die generellen Einstellungen der App!</string>
+    <string name="settings_general_notifications">Notifikationen</string>
+    <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
+    <string name="settings_general_numberOfItems">Anzahl an angezeigten Fehlern</string>
+    <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
+    <string name="settings_general_date_format">Datums-Format</string>
+    <string name="settings_general_date_format_summary">Geben Sie hier das Datums-Format an!</string>
+    <string name="settings_general_date_format_default">dd.MM.yyyy</string>
+    <string name="settings_general_time_format">Zeit-Format</string>
+    <string name="settings_general_time_format_summary">Geben Sie hier das Zeit-Format an!</string>
+    <string name="settings_general_time_format_default">HH:mm:ss</string>
+    <string name="settings_general_list_scroll_title">Listen-Element scrollen</string>
+    <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
+    <string name="settings_bug_tracker">Bug-Tracker</string>
+    <string name="settings_bug_tracker_summary">Ändern Sie hier die Bug-Tracker spezifischen Einstellungen!</string>
+    <string name="settings_bug_tracker_mantis">MantisBT</string>
+    <string name="settings_bug_tracker_mantis_sub">Bugs von Unter-Projekten!</string>
+    <string name="settings_bug_tracker_mantis_sub_summary">Bugs von Unter-Projekten anzeigen!</string>
+    <string name="settings_internet">Internet</string>
+    <string name="settings_internet_summary">Ändern Sie hier die Einstellungen, welche die Synchronisation mit entfernten Daten betrifft!</string>
+    <string name="settings_internet_wlan_reload">Fehler im Wlan automatisch neu laden</string>
+    <string name="settings_internet_wlan_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren), wenn mit Wlan verbunden!</string>
+    <string name="settings_internet_mobile_reload">Fehler im mobilen Netz automatisch neu laden</string>
+    <string name="settings_internet_mobile_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren), wenn mit mobilen Netz verbunden!</string>
+    <string name="settings_internet_mobile_block">Datenaustausch der App im Mobilen Netz blockieren</string>
+    <string name="settings_internet_mobile_block_summary">Den Datenaustausch der App blockieren, wenn mit mobilen Netz verbunden!</string>
+    <string name="settings_security">Sicherheit</string>
+    <string name="settings_security_summary">Ändern Sie hier die Einstellungen zur Sicherheit der App!</string>
+    <string name="settings_security_enable">Verschlüsselung aktivieren!</string>
+    <string name="settings_security_enable_summary">Verschlüsselung der Datenbank aktivieren!</string>
+    <string name="settings_security_password">Passwort ändern!</string>
+    <string name="settings_security_password_summary">Ändern Sie das Passwort für die Verschlüsselung der Datenbank!</string>
+    <string name="settings_sync">Synchronisation</string>
+    <string name="settings_sync_summary">Ändern Sie hier die Einstellungen für die lokale Synchronisation!</string>
+    <string name="settings_sync_automatically_title">Automatisch Synchronisieren</string>
+    <string name="settings_sync_automatically_summary">Lokale Synchronisation jedes Mal automatisch durchführen, wenn der entsprechende Bildschirm geöffnet wird!</string>
+    <string name="settings_sync_path_title">Pfad ändern</string>
+    <string name="settings_sync_path_summary">Ändern Sie hier den Pfad für die lokale Synchronisation!</string>
+    <string name="settings_log">Log-Datei</string>
+    <string name="settings_log_summary">Ändern Sie hier die Einstellungen, welche die Log-Datei betreffen.</string>
+    <string name="settings_log_create_log_title">Log-Datei erstellen</string>
+    <string name="settings_log_create_log_summary">Wählen Sie hier, ob die App eine Log-Datei erstellen soll, oder nicht!</string>
+    <string name="settings_log_log_normal_title">Meldungen loggen</string>
+    <string name="settings_log_log_normal_summary">Wählen Sie aus, ob Sie auch normale Meldungen und nicht nur Fehlermeldungen loggen wollen !</string>
+    <string name="settings_log_export_title">Log-Datei exportieren</string>
+    <string name="settings_log_export_summary">Exportieren Sie die Log-Datei!</string>
+    <string name="settings_log_clear_title">Log-Datei leeren</string>
+    <string name="settings_log_clear_summary">Aktivieren Sie die Option, um die Log-Datei zu leeren!</string>
+
+    <string name="export">Export</string>
+    <string name="export_path">Pfad</string>
+    <string-array name="export_path_extensions">
+        <item>xml</item>
+        <item>txt</item>
+        <item>csv</item>
+        <item>pdf</item>
+    </string-array>
+    <string name="export_path_choose">Datei wählen</string>
+    <string name="export_success">Export erfolgreich!</string>
+
+    <string name="administration">Administration</string>
+    <string name="administration_menu">Übergreifend</string>
+    <string name="administration_bugTracker">Account auswählen</string>
+    <string name="administration_project">Projekt auswählen</string>
+    <string name="administration_data">Daten auswählen</string>
+    <string name="administration_withIssues">mit Fehlern</string>
+    <string name="administration_copy">Kopieren</string>
+    <string name="administration_move">Verschieben</string>
+    <string-array name="administration_data">
+        <item>@string/projects</item>
+        <item>@string/issues</item>
+        <item>@string/issues_custom</item>
+    </string-array>
+    <string name="administration_message" formatted="false">%s erfolgreich %s!</string>
+
+    <string name="local_sync">Lokale Synchronisation</string>
+    <string name="local_sync_sync">Synchronisieren</string>
+
+    <string name="statistics">Statistiken</string>
+    <string name="statistics_bugs">Fehler</string>
+    <string name="statistics_daily">Täglich</string>
+    <string name="statistics_monthly">Monatlich</string>
+    <string name="statistics_yearly">Jährlich</string>
+    <string name="statistics_value">Wert</string>
+    <string name="statistics_loaded">Daten sind geladen</string>
+    <string name="statistics_bar_description">Bugs pro Projekt</string>
+    <string name="statistics_line_description">Bugs im Verlauf der Zeit</string>
+    <string name="statistics_export">Exportiere Diagramme</string>
+    <string name="statistics_export_succes">Export erfolgreich!</string>
+
+    <string name="filter">Filter</string>
+    <string-array name="filter_view">
+        <item />
+        <item>Privat</item>
+        <item>Öffentlich</item>
+    </string-array>
+    <string-array name="filter_status">
+        <item />
+        <item>Neu</item>
+        <item>Bestätigt</item>
+        <item>Erledigt</item>
+    </string-array>
+
+    <string name="search">Erweiterte Suche</string>
+    <string name="search_content">Suche</string>
+
+    <string name="help">Hilfe</string>
+    <string name="help_no_connection_title">App kann keine Verbindung zum Bugtracker aufbauen!</string>
+    <string name="help_no_connection_text">Dies kann viele Gründe haben: Haben Sie eine aktive Internet-Verbindung? Stimmen die Daten wie Server, Benutzername, Passwort? Ist bei Ihnen die Schnittstelle freigeschaltet? Brauchen Sie vielleicht einen API-Schlüssel?…</string>
+    <string name="help_problem_mantis_title">Die App kann keine Verbindung zur MantisBT-API aufbauen!</string>
+    <string name="help_problem_mantis_text">Stimmen die Benutzerdaten? Haben Sie auf Ihrem Webserver die PHP-Soap-Extension installiert?</string>
+    <string name="help_key_youtrack_title">Woher bekomme ich den API-Schlüssel von Youtrack?</string>
+    <string name="help_key_youtrack_text">Melden Sie sich mit Ihrem Account bei Youtrack an. Öffnen Sie Ihr Profil und klicken auf den Link neben Hub-Konto. Sie gelangen in die Administration. Klicken Sie dort auf den Tab Authentifizierung und erstellen Sie dort einen neuen Token.</string>
+    <string name="help_key_redmine_title">Woher bekomme ich den API-Schlüssel von Redmine?</string>
+    <string name="help_key_redmine_text">Melden Sie sich mit Ihrem Account bei Redmine an. Öffnen Sie Ihr Profil.</string>
+    <string name="help_need_help_title">Woher bekomme ich Hilfe?</string>
+    <string name="help_need_help_text">Besuchen Sie die offizielle Website der App, dort steht alles, was Sie wissen müssen und Sie können dort auch mit dem Entwickler Kontakt aufnehmen!</string>
+    <string name="help_key_whats_new_title">Was gibt es neues?</string>
+
+    <string name="sys_add">Hinzufügen</string>
+    <string name="sys_edit">Bearbeiten</string>
+    <string name="sys_delete">Löschen</string>
+    <string name="sys_cancel">Abbrechen</string>
+    <string name="sys_save">Speichern</string>
+
+    <string name="general_title">Titel</string>
+    <string name="general_enabled">Aktiviert</string>
+
+    <string name="general_description">Beschreibung</string>
+
+    <string name="validator_empty" formatted="false">Feld \'%s\' ist ein Pflichtfeld!</string>
+    <string name="validator_duplicated" formatted="false">Wert \'%s\' des Feldes \'%s\' wird bereits verwendet!</string>
+    <string name="validator_matches" formatted="false">Feld \'%s\' enthält unzulässige Zeichen!</string>
+    <string name="validator_noDate" formatted="false">Feld \'%s\' enthält kein zulässiges Datum! (yyyy-MM-dd)</string>
+    <string name="validator_no_success">Felder sind nicht valide!</string>
+
+    <string name="messages_no_network">Kein Internetzugang!</string>
+    <string name="messages_no_soap">Soap ist wohl auf dem Server nicht installiert oder nicht aktiviert!</string>
+    <string name="messages_wrong_password">Passwort falsch!</string>
+
+    <string name="messages_tutorial_new_account_title">Neuen Account anlegen:</string>
+    <string name="messages_tutorial_new_account_hamburger">Um einen neuen Bugtracker-Account anzulegen, öffnen Sie die Toolbar!</string>
+    <string name="messages_tutorial_new_account_drawer_header">Berühren Sie den Kopfbereich des Menus!</string>
+    <string name="messages_tutorial_new_account_add">Fügen Sie über den Plus-Button einen neuen Account hinzu!</string>
+    <string name="messages_tutorial_new_account_save">Daten eingeben und auf speichern klicken!</string>
+    <string name="messages_tutorial_new_account_hamburger2">Öffnen Sie die Toolbar!</string>
+    <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
+    <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
+    <string name="messages_issues">%s - %s</string>
+
+    <string name="messages_no_item">Kein Eintrag vorhanden!</string>
+</resources>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C)  2019 Domjos
   ~ This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
   ~
@@ -20,33 +19,33 @@
 <resources>
     <array name="issues_general_view_values_0">
         <item>10</item>
-        <item>public</item>
+        <item>öffentlich</item>
     </array>
     <array name="issues_general_view_values_1">
         <item>50</item>
-        <item>private</item>
+        <item>privat</item>
     </array>
 
 
     <array name="issues_general_reproducibility_values_0">
         <item>10</item>
-        <item>always</item>
+        <item>immer</item>
     </array>
     <array name="issues_general_reproducibility_values_1">
         <item>30</item>
-        <item>sometimes</item>
+        <item>manchmal</item>
     </array>
     <array name="issues_general_reproducibility_values_2">
         <item>50</item>
-        <item>random</item>
+        <item>zufällig</item>
     </array>
     <array name="issues_general_reproducibility_values_3">
         <item>70</item>
-        <item>not tested</item>
+        <item>nicht getestet</item>
     </array>
     <array name="issues_general_reproducibility_values_4">
         <item>90</item>
-        <item>not reproducible</item>
+        <item>nicht reproduzierbar</item>
     </array>
     <array name="issues_general_reproducibility_values_5">
         <item>100</item>
@@ -56,7 +55,7 @@
 
     <array name="issues_general_severity_mantisbt_values_0">
         <item>10</item>
-        <item>Feature-Wish</item>
+        <item>Feature-Wunsch</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_1">
         <item>20</item>
@@ -64,23 +63,23 @@
     </array>
     <array name="issues_general_severity_mantisbt_values_2">
         <item>30</item>
-        <item>Error in Text</item>
+        <item>Fehler im Text</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_3">
         <item>40</item>
-        <item>Tweak</item>
+        <item>Unschönheit</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_4">
         <item>50</item>
-        <item>Minor</item>
+        <item>kleinerer Fehler</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_5">
         <item>60</item>
-        <item>Major</item>
+        <item>schwerer Fehler</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_6">
         <item>70</item>
-        <item>Crash</item>
+        <item>Absturz</item>
     </array>
     <array name="issues_general_severity_mantisbt_values_7">
         <item>80</item>
@@ -93,11 +92,11 @@
     </array>
     <array name="issues_general_severity_youtrack_values_1">
         <item>6</item>
-        <item>Cosmetic</item>
+        <item>Kosmetik</item>
     </array>
     <array name="issues_general_severity_youtrack_values_2">
         <item>7</item>
-        <item>Exception</item>
+        <item>Ausnahme</item>
     </array>
     <array name="issues_general_severity_youtrack_values_3">
         <item>8</item>
@@ -105,15 +104,15 @@
     </array>
     <array name="issues_general_severity_youtrack_values_4">
         <item>9</item>
-        <item>Task</item>
+        <item>Aufgabe</item>
     </array>
     <array name="issues_general_severity_youtrack_values_5">
         <item>10</item>
-        <item>Operation Issue</item>
+        <item>Bedienungsproblem</item>
     </array>
     <array name="issues_general_severity_youtrack_values_6">
         <item>11</item>
-        <item>Performance Issue</item>
+        <item>Leistungsproblem</item>
     </array>
     <array name="issues_general_severity_youtrack_values_7">
         <item>12</item>
@@ -204,11 +203,11 @@
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>
-        <item>none</item>
+        <item>keine</item>
     </array>
     <array name="issues_general_priority_mantisbt_values_1">
         <item>20</item>
-        <item>low</item>
+        <item>niedrig</item>
     </array>
     <array name="issues_general_priority_mantisbt_values_2">
         <item>30</item>
@@ -216,15 +215,15 @@
     </array>
     <array name="issues_general_priority_mantisbt_values_3">
         <item>40</item>
-        <item>high</item>
+        <item>hoch</item>
     </array>
     <array name="issues_general_priority_mantisbt_values_4">
         <item>50</item>
-        <item>urgent</item>
+        <item>dringend</item>
     </array>
     <array name="issues_general_priority_mantisbt_values_5">
         <item>60</item>
-        <item>immediately</item>
+        <item>sofort</item>
     </array>
 
     <array name="issues_general_priority_youtrack_values_0">
@@ -233,11 +232,11 @@
     </array>
     <array name="issues_general_priority_youtrack_values_1">
         <item>1</item>
-        <item>Critical</item>
+        <item>Kritisch</item>
     </array>
     <array name="issues_general_priority_youtrack_values_2">
         <item>2</item>
-        <item>High</item>
+        <item>Hoch</item>
     </array>
     <array name="issues_general_priority_youtrack_values_3">
         <item>3</item>
@@ -245,7 +244,7 @@
     </array>
     <array name="issues_general_priority_youtrack_values_4">
         <item>4</item>
-        <item>Low</item>
+        <item>Niedrig</item>
     </array>
 
     <array name="issues_general_priority_redmine_values_0">
@@ -352,76 +351,76 @@
     </array>
     <array name="issues_general_status_mantisbt_values_1">
         <item>20</item>
-        <item>Feedback</item>
+        <item>Rückmeldung</item>
     </array>
     <array name="issues_general_status_mantisbt_values_2">
         <item>30</item>
-        <item>Accepted</item>
+        <item>anerkannt</item>
     </array>
     <array name="issues_general_status_mantisbt_values_3">
         <item>40</item>
-        <item>Approved</item>
+        <item>bestätigt</item>
     </array>
     <array name="issues_general_status_mantisbt_values_4">
         <item>50</item>
-        <item>Assigned</item>
+        <item>zugewiesen</item>
     </array>
     <array name="issues_general_status_mantisbt_values_5">
         <item>80</item>
-        <item>Done</item>
+        <item>erledigt</item>
     </array>
     <array name="issues_general_status_mantisbt_values_6">
         <item>90</item>
-        <item>Closed</item>
+        <item>geschlossen</item>
     </array>
 
     <array name="issues_general_status_youtrack_values_0">
         <item>0</item>
-        <item>Detected</item>
+        <item>Erfasst</item>
     </array>
     <array name="issues_general_status_youtrack_values_1">
         <item>1</item>
-        <item>Open</item>
+        <item>Offen</item>
     </array>
     <array name="issues_general_status_youtrack_values_2">
         <item>2</item>
-        <item>In Processing</item>
+        <item>In Bearbeitung</item>
     </array>
     <array name="issues_general_status_youtrack_values_3">
         <item>3</item>
-        <item>To discuss</item>
+        <item>Zu besprechen</item>
     </array>
     <array name="issues_general_status_youtrack_values_4">
         <item>4</item>
-        <item>Reopened</item>
+        <item>Wiedereröffnet</item>
     </array>
     <array name="issues_general_status_youtrack_values_5">
         <item>5</item>
-        <item>Not Reproducible</item>
+        <item>Nicht reproduzierbar</item>
     </array>
     <array name="issues_general_status_youtrack_values_6">
         <item>6</item>
-        <item>Duplicate</item>
+        <item>Duplikat</item>
     </array>
     <array name="issues_general_status_youtrack_values_7">
         <item>7</item>
-        <item>Fixed</item>
+        <item>Behoben</item>
     </array>
     <array name="issues_general_status_youtrack_values_8">
         <item>8</item>
-        <item>Will not be fixed</item>
+        <item>Wird nicht behoben</item>
     </array>
     <array name="issues_general_status_youtrack_values_9">
         <item>9</item>
-        <item>Incomplete</item>
+        <item>Unvollständig</item>
     </array>
     <array name="issues_general_status_youtrack_values_10">
         <item>10</item>
-        <item>Deprecated</item>
+        <item>Veraltet</item>
     </array>
     <array name="issues_general_status_youtrack_values_11">
         <item>11</item>
-        <item>Verified</item>
+        <item>Verifiziert</item>
     </array>
 
     <array name="issues_general_status_redmine_values_0">
@@ -464,20 +463,20 @@
 
     <array name="issues_general_status_jira_values_0">
         <item>3</item>
-        <item>In Progress</item>
+        <item>In Arbeit</item>
     </array>
     <array name="issues_general_status_jira_values_1">
         <item>10000</item>
-        <item>Tasks</item>
+        <item>Aufgaben</item>
     </array>
     <array name="issues_general_status_jira_values_2">
         <item>10002</item>
-        <item>Finish</item>
+        <item>Fertig</item>
     </array>
 
     <array name="issues_general_status_pivotal_values_0">
         <item>0</item>
-        <item>Not started</item>
+        <item>Unstarted</item>
     </array>
     <array name="issues_general_status_pivotal_values_1">
         <item>1</item>
@@ -581,38 +580,38 @@
 
     <array name="issues_general_resolution_values_0">
         <item>10</item>
-        <item>Open</item>
+        <item>offen</item>
     </array>
     <array name="issues_general_resolution_values_1">
         <item>20</item>
-        <item>Done</item>
+        <item>erledigt</item>
     </array>
     <array name="issues_general_resolution_values_2">
         <item>30</item>
-        <item>Reopened</item>
+        <item>wiedereröffnet</item>
     </array>
     <array name="issues_general_resolution_values_3">
         <item>40</item>
-        <item>Not reproducible</item>
+        <item>nicht reproduzierbar</item>
     </array>
     <array name="issues_general_resolution_values_4">
         <item>50</item>
-        <item>unsolvable</item>
+        <item>unlösbar</item>
     </array>
     <array name="issues_general_resolution_values_5">
         <item>60</item>
-        <item>duplicated</item>
+        <item>doppelt</item>
     </array>
     <array name="issues_general_resolution_values_6">
         <item>70</item>
-        <item>No change necessary</item>
+        <item>keine Änderung notwendig</item>
     </array>
     <array name="issues_general_resolution_values_7">
         <item>80</item>
-        <item>postponed</item>
+        <item>aufgeschoben</item>
     </array>
     <array name="issues_general_resolution_values_8">
         <item>90</item>
-        <item>Won\'t be fixed!</item>
+        <item>wird nicht behoben</item>
     </array>
 </resources>

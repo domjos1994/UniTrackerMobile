@@ -17,41 +17,41 @@
   -->
 
 <resources>
-    <string name="app_name">UniTrackerLibrary</string>
+    <string name="app_name" translatable="false">UniTrackerLibrary</string>
 
-    <string name="task_project_list_title">Projekte</string>
-    <string name="task_project_content">Projekt aktualisieren…</string>
+    <string name="task_project_list_title">Projects</string>
+    <string name="task_project_content">Update Projects…</string>
 
-    <string name="task_version_list_title">Versionen</string>
-    <string name="task_version_content">Version aktualisieren…</string>
+    <string name="task_version_list_title">Versions</string>
+    <string name="task_version_content">Update Version…</string>
 
     <string name="task_issues_list_title">Bugs</string>
-    <string name="task_issue_content">Bug aktualisieren…</string>
+    <string name="task_issue_content">Update Bug …</string>
 
     <string name="task_field_list_title">Felder</string>
-    <string name="task_field_content">Felder aktualisieren…</string>
+    <string name="task_field_content">Update fields…</string>
 
-    <string name="task_user_list_title">Benutzer</string>
-    <string name="task_user_content">Benutzer aktualisieren</string>
+    <string name="task_user_list_title">User</string>
+    <string name="task_user_content">Update user…</string>
 
-    <string name="task_search_title">Suche</string>
-    <string name="task_search_content">Suche läuft…</string>
+    <string name="task_search_title">Search</string>
+    <string name="task_search_content">Search is running…</string>
 
     <string name="task_export_title">Export</string>
-    <string name="task_export_contet">Export läuft…</string>
+    <string name="task_export_contet">übergreifend  Aussprache lernen  Export is running…</string>
 
     <string name="task_administration_title">Administration</string>
-    <string name="task_administration_contet">Vorgang läuft…</string>
+    <string name="task_administration_contet">übergreifend  Aussprache lernen  Process is running…</string>
 
-    <string name="task_loader_title">Lade Daten</string>
-    <string name="task_loader_content">Lade Daten…</string>
+    <string name="task_loader_title">Load Data</string>
+    <string name="task_loader_content">Load Data …</string>
 
-    <string name="task_local_title">Synchronisiere Bugs in den lokalen Speicher!</string>
-    <string name="task_local_content">Synchronisiere Bugs in den lokalen Speicher…</string>
+    <string name="task_local_title">Synchronize bugs in the local store!</string>
+    <string name="task_local_content">Sync bugs to the local storage…</string>
 
-    <string name="task_statistics_title">Statistiken</string>
-    <string name="task_statistics_content">Lade Daten für Statistiken…</string>
+    <string name="task_statistics_title">Statistics</string>
+    <string name="task_statistics_content">Load Data for statistics…</string>
 
-    <string name="messages_local_sync_dir">Ordner \'%s\' kann nicht erstellt werden!</string>
-    <string name="messages_local_sync_success">Lokale Synchronisation erfolgreich!</string>
+    <string name="messages_local_sync_dir">übergreifend  Aussprache lernen  Folder \'%s\' can not be created!</string>
+    <string name="messages_local_sync_success">Local synchronization successful!</string>
 </resources>
