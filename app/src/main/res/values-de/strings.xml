@@ -274,6 +274,8 @@
     <string name="messages_no_network">Kein Internetzugang!</string>
     <string name="messages_no_soap">Soap ist wohl auf dem Server nicht installiert oder nicht aktiviert!</string>
     <string name="messages_wrong_password">Passwort falsch!</string>
+    <string name="messages_passwords_dont_fit">Passwörter stimmen nicht überein!</string>
+    <string name="messages_passwords_too_small">Passwort zu kurz (mindestens 4 Zeichen)!</string>
 
     <string name="messages_tutorial_new_account_title">Neuen Account anlegen:</string>
     <string name="messages_tutorial_new_account_hamburger">Um einen neuen Bugtracker-Account anzulegen, öffnen Sie die Toolbar!</string>

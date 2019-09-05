@@ -97,12 +97,14 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     List<Authentication> getAccounts(String where, boolean onlyCheck) {
         List<Authentication> authentications = new LinkedList<>();
         try {
-            Cursor cursor = null;
+            Cursor cursor;
             String sql = "SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : "");
             if(onlyCheck) {
                 SQLiteDatabase database = this.getReadableDatabase(true);
                 if(database!=null) {
                     cursor = database.rawQuery(sql, null);
+                } else {
+                    return null;
                 }
             } else {
                 cursor = this.getReadableDatabase().rawQuery(sql, null);

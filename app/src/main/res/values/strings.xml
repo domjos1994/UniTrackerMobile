@@ -277,6 +277,8 @@
     <string name="messages_no_network">No Internet-Connection!</string>
     <string name="messages_no_soap">Soap is on the server not installed or not enabled!</string>
     <string name="messages_wrong_password">Wrong password!</string>
+    <string name="messages_passwords_dont_fit">Passwords don\'t fit!</string>
+    <string name="messages_passwords_too_small">Passwords too short (at least 4 Characters)!</string>
 
     <string name="messages_tutorial_new_account_title">Create a new account:</string>
     <string name="messages_tutorial_new_account_hamburger">To create a new bugtracker account, open the toolbar!</string>

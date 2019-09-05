@@ -36,7 +36,6 @@ public class Validator {
     private Context context;
     private Map<EditText, Map.Entry<ValidatorType, String>> executeLater;
 
-
     public Validator(Context context) {
         this.context = context;
         this.executeLater = new LinkedHashMap<>();

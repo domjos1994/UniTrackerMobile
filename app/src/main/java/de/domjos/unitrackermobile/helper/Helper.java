@@ -27,6 +27,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -231,15 +232,30 @@ public class Helper {
                 try {
                     if (!firstLogin || changePassword) {
                         if (password1.getText().toString().equals(password2.getText().toString())) {
-                            if(changePassword) {
-                                MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getText().toString());
+                            if (password1.getText().toString().length() >= 4) {
+                                password1.setTextColor(Color.GREEN);
+                                password2.setTextColor(Color.GREEN);
+
+                                new Thread(() -> activity.runOnUiThread(() -> {
+                                    try {
+                                        if (changePassword) {
+                                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getText().toString());
+                                        }
+                                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
+                                        MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
+                                        if (Helper.checkDatabase()) {
+                                            successRunnable.run();
+                                            pwdDialog.cancel();
+                                        }
+                                    } catch (Exception ex) {
+                                        MessageHelper.printException(ex, activity);
+                                    }
+                                })).start();
+                            } else {
+                                password2.setError(activity.getString(R.string.messages_passwords_too_small));
                             }
-                            MainActivity.GLOBALS.setPassword(password1.getText().toString());
-                            MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                            if(Helper.checkDatabase()) {
-                                successRunnable.run();
-                                pwdDialog.cancel();
-                            }
+                        } else {
+                            password2.setError(activity.getString(R.string.messages_passwords_dont_fit));
                         }
                     } else {
                         if(changePassword) {
@@ -248,8 +264,13 @@ public class Helper {
                         MainActivity.GLOBALS.setPassword(password1.getText().toString());
                         MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
                         if(Helper.checkDatabase()) {
-                            successRunnable.run();
-                            pwdDialog.cancel();
+                            password1.setTextColor(Color.GREEN);
+                            new Thread(() -> activity.runOnUiThread(() -> {
+                                successRunnable.run();
+                                pwdDialog.cancel();
+                            })).start();
+                        } else {
+                            password1.setError(activity.getString(R.string.messages_wrong_password));
                         }
                     }
                 } catch (Exception ex) {
