@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -194,16 +195,17 @@ public class Helper {
         try {
             Dialog pwdDialog = new Dialog(activity);
             pwdDialog.setContentView(R.layout.password_dialog);
+            final TextView lblTitle = pwdDialog.findViewById(R.id.lblTitle);
             final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
             final EditText password2 = pwdDialog.findViewById(R.id.txtPassword2);
             final Button cmdSubmit = pwdDialog.findViewById(R.id.cmdSubmit);
             pwdDialog.setCancelable(false);
             pwdDialog.setCanceledOnTouchOutside(false);
             if (!firstLogin || changePassword) {
-                pwdDialog.setTitle(R.string.pwd_title);
+                lblTitle.setText(R.string.pwd_title);
             } else {
                 password2.setVisibility(View.GONE);
-                pwdDialog.setTitle(R.string.pwd_title_pwd);
+                lblTitle.setText(R.string.pwd_title_pwd);
             }
             if (MainActivity.GLOBALS.getPassword().isEmpty() || changePassword) {
                 if(MainActivity.GLOBALS.getSettings(activity).isEncryptionEnabled()) {
