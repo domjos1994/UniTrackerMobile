@@ -243,6 +243,8 @@
     <string name="help_key_youtrack_text">Melden Sie sich mit Ihrem Account bei Youtrack an. Öffnen Sie Ihr Profil und klicken auf den Link neben Hub-Konto. Sie gelangen in die Administration. Klicken Sie dort auf den Tab Authentifizierung und erstellen Sie dort einen neuen Token.</string>
     <string name="help_key_redmine_title">Woher bekomme ich den API-Schlüssel von Redmine?</string>
     <string name="help_key_redmine_text">Melden Sie sich mit Ihrem Account bei Redmine an. Öffnen Sie Ihr Profil.</string>
+    <string name="help_need_help_title">Woher bekomme ich Hilfe?</string>
+    <string name="help_need_help_text">Besuchen Sie die offizielle Website der App, dort steht alles, was Sie wissen müssen und Sie können dort auch mit dem Entwickler Kontakt aufnehmen!</string>
     <string name="help_key_whats_new_title">Was gibt es neues?</string>
 
     <string name="sys_add">Hinzufügen</string>

@@ -75,8 +75,12 @@ public class ExpandableTextView extends LinearLayout {
         return this.content.getText().toString();
     }
 
-    public void setContent(String content) {
+    public void setContent(CharSequence content) {
         this.content.setText(content);
+    }
+
+    public TextView getContextTextView() {
+        return this.content;
     }
 
     private void addControls() {

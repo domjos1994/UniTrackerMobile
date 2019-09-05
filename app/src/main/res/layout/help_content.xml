@@ -63,6 +63,12 @@
             custom:text="@string/help_key_redmine_text" />
 
         <de.domjos.unitrackermobile.custom.ExpandableTextView
+            android:id="@+id/lblNeedsHelp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            custom:title="@string/help_need_help_title" />
+
+        <de.domjos.unitrackermobile.custom.ExpandableTextView
             android:id="@+id/lblWhatsNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
