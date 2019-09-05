@@ -106,6 +106,14 @@ public class Validator {
 
     public void removeValidator(EditText txt) {
         txt.setError(null);
+        for (Map.Entry<EditText, Map.Entry<ValidatorType, String>> entry : this.executeLater.entrySet()) {
+            if (txt.getId() == entry.getKey().getId()) {
+                this.executeLater.remove(entry.getKey());
+            }
+        }
+        if (txt.getHint().toString().endsWith(" *")) {
+            txt.setHint(txt.getHint().toString().replace(" *", ""));
+        }
     }
 
     private boolean controlFieldIsEmpty(EditText txt) {
