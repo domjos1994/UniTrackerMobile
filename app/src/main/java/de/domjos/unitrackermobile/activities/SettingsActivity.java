@@ -21,10 +21,12 @@ package de.domjos.unitrackermobile.activities;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -37,8 +39,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NavUtils;
 
+import com.github.angads25.filepicker.view.FilePickerPreference;
+
 import java.util.List;
 
+import de.domjos.unibuggerlibrary.utils.LogHelper;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -177,7 +182,8 @@ public final class SettingsActivity extends PreferenceActivity {
                 BugTrackerPreferenceFragment.class.getName().equals(fragmentName) ||
                 SecurityPreferenceFragment.class.getName().equals(fragmentName) ||
                 InternetPreferenceFragment.class.getName().equals(fragmentName) ||
-                SyncPreferenceFragment.class.getName().equals(fragmentName);
+                SyncPreferenceFragment.class.getName().equals(fragmentName) ||
+                LogPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     public static class GeneralPreferenceFragment extends PreferenceFragment {
@@ -276,6 +282,51 @@ public final class SettingsActivity extends PreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_sync);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public static class LogPreferenceFragment extends PreferenceFragment {
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_log);
+
+            FilePickerPreference preference = (FilePickerPreference) this.findPreference("fpLogExport");
+            preference.setOnPreferenceChangeListener((preference1, newValue) -> {
+                if (!newValue.toString().trim().equals("")) {
+                    try {
+                        LogHelper logHelper = new LogHelper(super.getActivity());
+                        logHelper.export(newValue.toString().replace(":", ""));
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, super.getActivity());
+                    } finally {
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(super.getActivity()).edit();
+                        editor.putString("fpLogExport", "");
+                        editor.apply();
+                    }
+                }
+                return true;
+            });
+
+            SwitchPreference switchPreference = (SwitchPreference) this.findPreference("swtLogClear");
+            switchPreference.setOnPreferenceChangeListener((preference1, newValue) -> {
+                try {
+                    LogHelper logHelper = new LogHelper(super.getActivity());
+                    logHelper.clearFile();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, super.getActivity());
+                } finally {
+                    SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(super.getActivity()).edit();
+                    editor.putBoolean("swtLogClear", false);
+                    editor.apply();
+                }
+                return true;
+            });
         }
 
         @Override

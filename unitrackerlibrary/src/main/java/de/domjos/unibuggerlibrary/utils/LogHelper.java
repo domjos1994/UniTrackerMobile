@@ -23,14 +23,18 @@ import android.util.Log;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 public class LogHelper {
     private File logFile;
 
 
-    LogHelper(Activity activity) {
+    public LogHelper(Activity activity) {
         try {
             this.logFile = new File(activity.getFilesDir().getAbsolutePath() + File.separatorChar + "error.log");
             if (!this.logFile.exists()) {
@@ -61,13 +65,44 @@ public class LogHelper {
         }
     }
 
-    public void clearFile() {
+    void logMessage(String message) {
         try {
             BufferedWriter buf = new BufferedWriter(new FileWriter(this.logFile, true));
-            buf.write("");
+            buf.append(message);
+            buf.newLine();
             buf.close();
         } catch (IOException e) {
             Log.e("Error", e.getMessage(), e);
+        }
+    }
+
+    public void clearFile() {
+        try {
+            if (this.logFile.delete()) {
+                if (this.logFile.createNewFile()) {
+                    this.logMessage("Successfully create a new Log-File!");
+                }
+            }
+        } catch (IOException e) {
+            Log.e("Error", e.getMessage(), e);
+        }
+    }
+
+    public void export(String folder) throws Exception {
+        File exportFile = new File(folder + File.separatorChar + this.logFile.getName());
+        this.copy(this.logFile, exportFile);
+    }
+
+    private void copy(File src, File dst) throws IOException {
+        try (InputStream in = new FileInputStream(src)) {
+            try (OutputStream out = new FileOutputStream(dst)) {
+                // Transfer bytes from in to out
+                byte[] buf = new byte[1024];
+                int len;
+                while ((len = in.read(buf)) > 0) {
+                    out.write(buf, 0, len);
+                }
+            }
         }
     }
 }

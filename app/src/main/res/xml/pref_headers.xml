@@ -46,4 +46,10 @@
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/settings_sync"
         android:summary="@string/settings_sync_summary" />
+
+    <header
+        android:fragment="de.domjos.unitrackermobile.activities.SettingsActivity$LogPreferenceFragment"
+        android:icon="@drawable/ic_error_black_24dp"
+        android:title="@string/settings_log"
+        android:summary="@string/settings_log_summary" />
 </preference-headers>

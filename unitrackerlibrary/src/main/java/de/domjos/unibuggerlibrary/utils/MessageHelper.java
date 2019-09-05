@@ -24,7 +24,9 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -47,21 +49,57 @@ public class MessageHelper {
             for (StackTraceElement element : ex.getStackTrace()) {
                 builder.append(String.format("%s.%s#%s(%s)%n", element.getFileName(), element.getClassName(), element.getMethodName(), element.getLineNumber()));
             }
-            MessageHelper.printMessage(ex.toString(), context);
-            if (context instanceof Activity) {
-                LogHelper logHelper = new LogHelper((Activity) context);
-                logHelper.logError(ex);
-            }
+            MessageHelper.printMessage(ex.toString(), context, false);
+            MessageHelper.log(ex, context);
         } catch (Exception ignored) {
         }
         Log.e("Exception", "Error", ex);
     }
 
     public static void printMessage(String message, Context context) {
+        MessageHelper.printMessage(message, context, true);
+    }
+
+    private static void printMessage(String message, Context context, boolean log) {
         if (context instanceof Activity) {
             MessageHelper.printMessage(message, (Activity) context);
         } else {
             Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+        }
+        if (log) {
+            if (MessageHelper.getSetting("swtLogCreateLog", true, context) &&
+                    MessageHelper.getSetting("swtLogNormalMessages", false, context)) {
+
+                MessageHelper.log(message, context);
+            }
+        }
+    }
+
+    private static boolean getSetting(String key, boolean defaultValue, Context context) {
+        SharedPreferences sharedPreferences;
+        if (context instanceof Activity) {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
+        } else {
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        }
+        return sharedPreferences.getBoolean(key, defaultValue);
+    }
+
+    private static void log(Exception ex, Context context) {
+        if (context instanceof Activity) {
+            if (MessageHelper.getSetting("swtLogCreateLog", true, context)) {
+                LogHelper logHelper = new LogHelper((Activity) context);
+                logHelper.logError(ex);
+            }
+        }
+    }
+
+    private static void log(String messages, Context context) {
+        if (context instanceof Activity) {
+            if (MessageHelper.getSetting("swtLogCreateLog", true, context)) {
+                LogHelper logHelper = new LogHelper((Activity) context);
+                logHelper.logMessage(messages);
+            }
         }
     }
 

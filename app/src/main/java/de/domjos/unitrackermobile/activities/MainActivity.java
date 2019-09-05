@@ -102,10 +102,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     public MainActivity() {
         super(R.layout.main_activity);
         this.page = 1;
+
     }
 
     @Override
     protected void initActions() {
+
         this.navigationView.getHeaderView(0).setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);

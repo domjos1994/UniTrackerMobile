@@ -176,6 +176,16 @@
     <string name="settings_sync_automatically_summary">Lokale Synchronisation jedes Mal automatisch durchführen, wenn der entsprechende Bildschirm geöffnet wird!</string>
     <string name="settings_sync_path_title">Pfad ändern</string>
     <string name="settings_sync_path_summary">Ändern Sie hier den Pfad für die lokale Synchronisation!</string>
+    <string name="settings_log">Log-Datei</string>
+    <string name="settings_log_summary">Ändern Sie hier die Einstellungen, welche die Log-Datei betreffen.</string>
+    <string name="settings_log_create_log_title">Log-Datei erstellen</string>
+    <string name="settings_log_create_log_summary">Wählen Sie hier, ob die App eine Log-Datei erstellen soll, oder nicht!</string>
+    <string name="settings_log_log_normal_title">Meldungen loggen</string>
+    <string name="settings_log_log_normal_summary">Wählen Sie aus, ob Sie auch normale Meldungen und nicht nur Fehlermeldungen loggen wollen !</string>
+    <string name="settings_log_export_title">Log-Datei exportieren</string>
+    <string name="settings_log_export_summary">Exportieren Sie die Log-Datei!</string>
+    <string name="settings_log_clear_title">Log-Datei leeren</string>
+    <string name="settings_log_clear_summary">Aktivieren Sie die Option, um die Log-Datei zu leeren!</string>
 
     <string name="export">Export</string>
     <string name="export_path">Pfad</string>
