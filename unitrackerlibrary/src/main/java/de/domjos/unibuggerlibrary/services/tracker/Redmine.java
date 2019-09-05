@@ -51,6 +51,8 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class Redmine extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public Redmine(Authentication authentication) {
         super(authentication);
@@ -176,7 +178,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
                 if (versionObject.has("due_date")) {
                     if (!versionObject.isNull("due_date")) {
-                        Date dt = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).parse(versionObject.getString("due_date"));
+                        Date dt = new SimpleDateFormat(Redmine.DATE_FORMAT, Locale.GERMAN).parse(versionObject.getString("due_date"));
                         version.setReleasedVersionAt(dt.getTime());
                     }
                 }
@@ -211,7 +213,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         if (version.getReleasedVersionAt() != 0) {
             Date date = new Date();
             date.setTime(version.getReleasedVersionAt());
-            versionObject.put("due_date", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(date));
+            versionObject.put("due_date", new SimpleDateFormat(Redmine.DATE_FORMAT, Locale.GERMAN).format(date));
         }
         JSONObject projectObject = new JSONObject();
         projectObject.put("id", project_id);
@@ -320,11 +322,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             if (jsonObject.has("description")) {
                 issue.setDescription(jsonObject.getString("description"));
             }
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"));
+            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_on"), Redmine.DATE_TIME_FORMAT));
+            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_on"), Redmine.DATE_TIME_FORMAT));
             if (jsonObject.has("due_date")) {
                 if (!jsonObject.isNull("due_date")) {
-                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("due_date"), "yyyy-MM-dd"));
+                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("due_date"), Redmine.DATE_FORMAT));
                 }
             }
             if (jsonObject.has("status")) {
@@ -777,7 +779,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Profile<Long>> getProfiles() throws Exception {
+    public List<Profile<Long>> getProfiles() {
         return new LinkedList<>();
     }
 
@@ -848,8 +850,8 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 project.setWebsite(obj.getString("homepage"));
             }
             project.setPrivateProject(!obj.getBoolean("is_public"));
-            project.setCreatedAt(Converter.convertStringToDate(obj.getString("created_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").getTime());
-            project.setUpdatedAt(Converter.convertStringToDate(obj.getString("updated_on"), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").getTime());
+            project.setCreatedAt(Converter.convertStringToDate(obj.getString("created_on"), Redmine.DATE_TIME_FORMAT).getTime());
+            project.setUpdatedAt(Converter.convertStringToDate(obj.getString("updated_on"), Redmine.DATE_TIME_FORMAT).getTime());
         } catch (Exception ex) {
             Log.e("error", "error", ex);
         }
