@@ -166,7 +166,7 @@
     <string name="settings_internet_mobile_reload_summary">Error Automatically reload every x seconds! (-1 to disable automatic reload) when connected to mobile network!</string>
     <string name="settings_internet_mobile_block">Block the data exchange of the app in the mobile network</string>
     <string name="settings_internet_mobile_block_summary">Block the data exchange of the app when connected to mobile network!</string>
-    <string name="settings_security">security</string>
+    <string name="settings_security">Security</string>
     <string name="settings_security_summary">Change the security settings of the app here!</string>
     <string name="settings_security_enable">Enable encryption!</string>
     <string name="settings_security_enable_summary">Enable encryption of the database!</string>
@@ -218,7 +218,7 @@
     <string name="local_sync">Local Synchronisation</string>
     <string name="local_sync_sync">Synchronise</string>
 
-    <string name="statistics">statistics</string>
+    <string name="statistics">Statistics</string>
     <string name="statistics_bugs">Bugs</string>
     <string name="statistics_daily">Daily</string>
     <string name="statistics_monthly">Monthly</string>
