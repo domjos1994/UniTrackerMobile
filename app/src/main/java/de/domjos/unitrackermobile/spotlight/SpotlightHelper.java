@@ -39,10 +39,16 @@ import de.domjos.unitrackermobile.R;
 class SpotlightHelper {
     private ArrayList<Target> targets;
     private Activity activity;
+    private final int OVERLAY_X, OVERLAY_Y;
 
     SpotlightHelper(Activity activity) {
         this.targets = new ArrayList<>();
         this.activity = activity;
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        this.OVERLAY_X = displayMetrics.widthPixels / 20;
+        this.OVERLAY_Y = displayMetrics.heightPixels / 2;
     }
 
     void addTarget(View view, int title, int description, Runnable start, Runnable end) {
@@ -54,11 +60,6 @@ class SpotlightHelper {
         int x = location[0] + view.getWidth() / 2;
         int y = location[1] + view.getHeight() / 2;
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int overlayX = 0;
-        int overlayY = displayMetrics.heightPixels / 2;
-
         RoundedRectangle rectangle = new RoundedRectangle(height, width, view.getWidth() / 2f);
 
         SimpleTarget target = new SimpleTarget.Builder(this.activity)
@@ -66,7 +67,7 @@ class SpotlightHelper {
                 .setShape(rectangle)
                 .setTitle(this.activity.getString(title))
                 .setDescription(this.activity.getString(description))
-                .setOverlayPoint(overlayX, overlayY)
+                .setOverlayPoint(this.OVERLAY_X, this.OVERLAY_Y)
                 .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
                     @Override
                     public void onStarted(SimpleTarget target) {
@@ -90,17 +91,12 @@ class SpotlightHelper {
     void addTarget(int x, int y, int height, int width, int title, int description, Runnable start, Runnable end) {
         RoundedRectangle rectangle = new RoundedRectangle(height, width, width / 2f);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int overlayX = 0;
-        int overlayY = displayMetrics.heightPixels / 2;
-
         SimpleTarget target = new SimpleTarget.Builder(this.activity)
                 .setPoint(x, y)
                 .setShape(rectangle)
                 .setTitle(this.activity.getString(title))
                 .setDescription(this.activity.getString(description))
-                .setOverlayPoint(overlayX, overlayY)
+                .setOverlayPoint(this.OVERLAY_X, this.OVERLAY_Y)
                 .setOnSpotlightStartedListener(new OnTargetStateChangedListener<SimpleTarget>() {
                     @Override
                     public void onStarted(SimpleTarget target) {

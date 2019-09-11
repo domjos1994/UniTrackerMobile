@@ -357,7 +357,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         case MantisBT:
                             position = 5;
                             statusArray = "issues_general_status_mantisbt_values";
-                            issue.setResolution(ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_values"), "erledigt");
+                            List<String> items = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_values");
+                            int id = ArrayHelper.getIdOfEnum(MainActivity.this, 5, "issues_general_resolution_values");
+                            issue.setResolution(id, items.get(5));
                             break;
                         case YouTrack:
                             statusArray = "issues_general_status_youtrack_values";
