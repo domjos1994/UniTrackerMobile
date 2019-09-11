@@ -640,11 +640,15 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                                 if (fieldsObject.has(jsonObject.getString("id"))) {
                                     if (!fieldsObject.isNull(jsonObject.getString("id"))) {
                                         JSONObject customFieldObject = fieldsObject.getJSONObject(jsonObject.getString("id"));
-                                        JSONArray customFieldValues = customFieldObject.getJSONArray("allowedValues");
-                                        for (int x = 0; x <= customFieldValues.length() - 1; x++) {
-                                            JSONObject fieldValue = customFieldValues.getJSONObject(x);
-                                            possibleValues.append(fieldValue.getString("value"));
-                                            possibleValues.append("|");
+                                        if(customFieldObject.has("allowedValues")) {
+                                            if(!customFieldObject.isNull("allowedValues")) {
+                                                JSONArray customFieldValues = customFieldObject.getJSONArray("allowedValues");
+                                                for (int x = 0; x <= customFieldValues.length() - 1; x++) {
+                                                    JSONObject fieldValue = customFieldValues.getJSONObject(x);
+                                                    possibleValues.append(fieldValue.getString("value"));
+                                                    possibleValues.append("|");
+                                                }
+                                            }
                                         }
                                     }
                                 }
