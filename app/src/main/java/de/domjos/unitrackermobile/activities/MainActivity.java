@@ -331,7 +331,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
-            this.firstLogIn = this.settings.isFirstLogin();
+            this.firstLogIn = this.settings.isFirstLogin(false);
 
             Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {

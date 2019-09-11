@@ -114,10 +114,12 @@ public class Settings {
         this.preferences.edit().putString(Settings.FILTER, filter.name()).apply();
     }
 
-    public boolean isFirstLogin() {
+    public boolean isFirstLogin(boolean write) {
         boolean login = this.preferences.getBoolean("firstLogin", false);
-        if (!login) {
-            this.preferences.edit().putBoolean("firstLogin", true).apply();
+        if(write) {
+            if (!login) {
+                this.preferences.edit().putBoolean("firstLogin", true).apply();
+            }
         }
         return login;
     }

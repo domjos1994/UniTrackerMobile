@@ -235,6 +235,7 @@ public class Helper {
                             if (password1.getText().toString().length() >= 4) {
                                 password1.setTextColor(Color.GREEN);
                                 password2.setTextColor(Color.GREEN);
+                                MainActivity.GLOBALS.getSettings(activity).isFirstLogin(true);
 
                                 new Thread(() -> activity.runOnUiThread(() -> {
                                     try {
