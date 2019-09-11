@@ -255,13 +255,20 @@ public final class SettingsActivity extends PreferenceActivity {
 
             swtPassword.setOnPreferenceChangeListener(((preference, newValue) -> {
                 try {
-                    if(!Boolean.parseBoolean(newValue.toString())) {
-                        MainActivity.GLOBALS.getSqLiteGeneral().changePassword("");
-                        MainActivity.GLOBALS.setPassword("");
-                        triggerRebirth(getActivity());
-                    } else {
-                        MainActivity.GLOBALS.getSqLiteGeneral().changePassword(MainActivity.GLOBALS.getPassword());
-                        Helper.showPasswordDialog(getActivity(), true, true, () -> triggerRebirth(getActivity()));
+                    if(this.getActivity()!=null) {
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this.getActivity()).edit();
+                        if(!Boolean.parseBoolean(newValue.toString())) {
+                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword("");
+                            MainActivity.GLOBALS.setPassword("");
+                            editor.putBoolean("swtSecurityEnable", false);
+                            editor.apply();
+                            triggerRebirth(getActivity());
+                        } else {
+                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(MainActivity.GLOBALS.getPassword());
+                            editor.putBoolean("swtSecurityEnable", true);
+                            editor.apply();
+                            Helper.showPasswordDialog(getActivity(), true, true, () -> triggerRebirth(getActivity()));
+                        }
                     }
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, getActivity());

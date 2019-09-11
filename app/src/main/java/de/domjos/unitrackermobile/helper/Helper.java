@@ -259,9 +259,6 @@ public class Helper {
                             password2.setError(activity.getString(R.string.messages_passwords_dont_fit));
                         }
                     } else {
-                        if(changePassword) {
-                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getText().toString());
-                        }
                         MainActivity.GLOBALS.setPassword(password1.getText().toString());
                         MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
                         if(Helper.checkDatabase()) {
