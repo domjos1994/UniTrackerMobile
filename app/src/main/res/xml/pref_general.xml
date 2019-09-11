@@ -50,4 +50,10 @@
         android:defaultValue="false"
         android:title="@string/settings_general_list_scroll_title"
         android:summary="@string/settings_general_list_scroll_summary" />
+
+    <SwitchPreference
+        android:key="swtShowTutorialAgain"
+        android:defaultValue="false"
+        android:title="@string/settings_general_tutorial_title"
+        android:summary="@string/settings_general_tutorial_summary" />
 </PreferenceScreen>

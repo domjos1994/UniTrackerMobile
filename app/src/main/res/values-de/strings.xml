@@ -148,6 +148,8 @@
     <string name="settings_general_time_format_default">HH:mm:ss</string>
     <string name="settings_general_list_scroll_title">Listen-Element scrollen</string>
     <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
+    <string name="settings_general_tutorial_title">Tutorial erneut anzeigen!</string>
+    <string name="settings_general_tutorial_summary">Wollen Sie das Tutorial erneut anzeigen lassen?</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Ändern Sie hier die Bug-Tracker spezifischen Einstellungen!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>

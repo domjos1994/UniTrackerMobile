@@ -142,22 +142,24 @@
     <string name="settings_general_notifications">Notifications</string>
     <string name="settings_general_notifications_summary">Show Notifications</string>
     <string name="settings_general_numberOfItems">Number of displayed errors</string>
-    <string name="settings_general_numberOfItems_summary">"übergreifend  Aussprache lernen  Change the number of displayed errors here! (-1 for all errors)  "</string>
+    <string name="settings_general_numberOfItems_summary">Change the number of displayed errors here! (-1 for all errors)</string>
     <string name="settings_general_date_format">Date Format</string>
-    <string name="settings_general_date_format_summary">Englisch übergreifend  Aussprache lernen  Enter the date format here!</string>
+    <string name="settings_general_date_format_summary">Enter the date format here!</string>
     <string name="settings_general_date_format_default">yyyy-MM-dd</string>
     <string name="settings_general_time_format">Time-Format</string>
     <string name="settings_general_time_format_summary">Enter the time format here!</string>
     <string name="settings_general_time_format_default">HH:mm:ss</string>
     <string name="settings_general_list_scroll_title">Scroll list item</string>
-    <string name="settings_general_list_scroll_summary">übergreifend  Aussprache lernen  Do you want to scroll a list item that is too long for the width of the screen?</string>
+    <string name="settings_general_list_scroll_summary">Do you want to scroll a list item that is too long for the width of the screen?</string>
+    <string name="settings_general_tutorial_title">Show tutorial again</string>
+    <string name="settings_general_tutorial_summary">Would you like to show tutorial again?</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Change the bug tracker specific settings here!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>
-    <string name="settings_bug_tracker_mantis_sub">"übergreifend  Aussprache lernen  Bugs from sub-projects!  "</string>
+    <string name="settings_bug_tracker_mantis_sub">Bugs from sub-projects!</string>
     <string name="settings_bug_tracker_mantis_sub_summary">Show bugs from sub-projects!</string>
     <string name="settings_internet">Internet</string>
-    <string name="settings_internet_summary">übergreifend  Aussprache lernen  Change here the settings, which concerns the synchronization with removed data!</string>
+    <string name="settings_internet_summary">Change here the settings, which concerns the synchronization with removed data!</string>
     <string name="settings_internet_wlan_reload">"Automatically reload errors in the WLAN  "</string>
     <string name="settings_internet_wlan_reload_summary">Error Automatically reload every x seconds! (-1 to disable automatic reload) when connected to Wlan!</string>
     <string name="settings_internet_mobile_reload">Reload errors in the mobile network automatically</string>
@@ -270,7 +272,7 @@
 
     <string name="validator_empty" formatted="false">Field \'%s\' is a required field!</string>
     <string name="validator_duplicated" formatted="false">Value \'%s\' of the field \'%s\' is already in use!</string>
-    <string name="validator_matches" formatted="false">übergreifend  Aussprache lernen  Field \'%s\' contains invalid characters!</string>
+    <string name="validator_matches" formatted="false">Field \'%s\' contains invalid characters!</string>
     <string name="validator_noDate" formatted="false">Field \'%s\' does not contain a valid date! (yyyy-MM-dd)</string>
     <string name="validator_no_success">"Fields are not valid!  "</string>
 

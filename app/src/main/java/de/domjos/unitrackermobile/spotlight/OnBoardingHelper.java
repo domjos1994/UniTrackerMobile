@@ -36,6 +36,7 @@ import com.google.android.material.navigation.NavigationView;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.AccountActivity;
+import de.domjos.unitrackermobile.activities.MainActivity;
 
 public class OnBoardingHelper {
     private static final String ON_BOARDING = "onBoarding";
@@ -43,7 +44,8 @@ public class OnBoardingHelper {
     private static boolean secondSteps;
 
     public static void startTutorial(boolean firstLogIn, Activity activity, Toolbar toolbar, DrawerLayout drawerLayout, NavigationView navigationView, ImageView ivMainCover) {
-        if (!firstLogIn && !OnBoardingHelper.secondSteps) {
+        if (!firstLogIn && !OnBoardingHelper.secondSteps || MainActivity.GLOBALS.getSettings(activity).isShowTutorial()) {
+
             SpotlightHelper helper = new SpotlightHelper(activity);
             helper.addTargetToHamburger(toolbar, R.string.messages_tutorial_new_account_hamburger, () -> drawerLayout.openDrawer(navigationView));
             helper.show();

@@ -195,6 +195,16 @@ public class Settings {
         return this.userPreferences.getBoolean("swtBugTrackerSub", false);
     }
 
+    public boolean isShowTutorial() {
+        boolean show = this.userPreferences.getBoolean("swtShowTutorialAgain", false);
+        if(show) {
+            SharedPreferences.Editor editor = this.userPreferences.edit();
+            editor.putBoolean("swtShowTutorialAgain", false);
+            editor.apply();
+        }
+        return show;
+    }
+
     public String getLocalSyncPath() {
         String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
         if (path != null) {
