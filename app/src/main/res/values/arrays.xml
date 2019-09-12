@@ -201,6 +201,27 @@
         <item>Other</item>
     </array>
 
+    <array name="issues_general_severity_jira_values_0">
+        <item>10006</item>
+        <item>Bug</item>
+    </array>
+    <array name="issues_general_severity_jira_values_1">
+        <item>10002</item>
+        <item>Improvement</item>
+    </array>
+    <array name="issues_general_severity_jira_values_2">
+        <item>10003</item>
+        <item>Task</item>
+    </array>
+    <array name="issues_general_severity_jira_values_3">
+        <item>10005</item>
+        <item>New Feature</item>
+    </array>
+    <array name="issues_general_severity_jira_values_4">
+        <item>10000</item>
+        <item>Epic</item>
+    </array>
+
 
     <array name="issues_general_priority_mantisbt_values_0">
         <item>10</item>

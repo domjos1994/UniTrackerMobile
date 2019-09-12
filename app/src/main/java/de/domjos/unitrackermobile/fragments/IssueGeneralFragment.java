@@ -479,8 +479,10 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
                 this.priorityValueArray = "issues_general_priority_jira_values";
                 this.statusValueArray = "issues_general_status_jira_values";
+                this.severityValueArray = "issues_general_severity_jira_values";
                 break;
             case PivotalTracker:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);

@@ -54,7 +54,7 @@ public final class FieldTask extends AbstractTask<Object, Void, List<CustomField
                     if (this.delete) {
                         super.bugService.deleteCustomField(super.returnTemp(customField), this.project_id);
                     } else {
-                        result.addAll(super.bugService.getCustomFields(this.project_id));
+                        result.addAll(super.bugService.getCustomFields(super.returnTemp(this.project_id)));
                     }
                 }
             }

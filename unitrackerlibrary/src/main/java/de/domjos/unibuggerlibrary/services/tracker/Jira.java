@@ -49,7 +49,8 @@ import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.utils.Converter;
 
 public final class Jira extends JSONEngine implements IBugService<Long> {
-    private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
     private Authentication authentication;
     private Map<Long, User<Long>> map;
 
@@ -163,7 +164,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 version.setReleasedVersion(jsonObject.getBoolean("released"));
                 version.setDeprecatedVersion(jsonObject.getBoolean("archived"));
                 if (jsonObject.has("releaseDate")) {
-                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("releaseDate"), "yyyy-MM-dd").getTime());
+                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("releaseDate"), Jira.DATE_FORMAT).getTime());
                 }
                 versions.add(version);
             }
@@ -182,7 +183,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         if (version.getReleasedVersionAt() != 0) {
             Date dt = new Date();
             dt.setTime(version.getReleasedVersionAt());
-            jsonObject.put("releaseDate", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(dt));
+            jsonObject.put("releaseDate", new SimpleDateFormat(Jira.DATE_FORMAT, Locale.GERMAN).format(dt));
         }
 
         if (version.getId() != null) {
@@ -264,6 +265,12 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                     issue.setDescription(fieldsObject.getString("description"));
                 }
             }
+            if(fieldsObject.has("issuetype")) {
+                if(!fieldsObject.isNull("issuetype")) {
+                    JSONObject typeObject = fieldsObject.getJSONObject("issuetype");
+                    issue.setSeverity(typeObject.getInt("id"), typeObject.getString("name"));
+                }
+            }
             if (fieldsObject.has("priority")) {
                 if (!fieldsObject.isNull("priority")) {
                     JSONObject priorityObject = fieldsObject.getJSONObject("priority");
@@ -272,7 +279,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             }
             if (fieldsObject.has("duedate")) {
                 if (!fieldsObject.isNull("duedate")) {
-                    issue.setDueDate(Converter.convertStringToDate(fieldsObject.getString("duedate"), "yyyy-MM-dd"));
+                    issue.setDueDate(Converter.convertStringToDate(fieldsObject.getString("duedate"), Jira.DATE_FORMAT));
                 }
             }
             if (fieldsObject.has("status")) {
@@ -316,7 +323,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                     JSONArray jsonArray = fieldsObject.getJSONArray("fixVersions");
                     for (int i = 0; i <= jsonArray.length() - 1; i++) {
                         JSONObject versionObject = jsonArray.getJSONObject(i);
-                        issue.setVersion(this.getVersions("", versionObject.getLong("id")).get(0).getTitle());
+                        issue.setFixedInVersion(this.getVersions("", versionObject.getLong("id")).get(0).getTitle());
                     }
                 }
             }
@@ -334,8 +341,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            issue.setSubmitDate(Converter.convertStringToDate(fieldsObject.getString("created"), Jira.DATE_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(fieldsObject.getString("updated"), Jira.DATE_FORMAT));
+            issue.setSubmitDate(Converter.convertStringToDate(fieldsObject.getString("created"), Jira.DATE_TIME_FORMAT));
+            issue.setLastUpdated(Converter.convertStringToDate(fieldsObject.getString("updated"), Jira.DATE_TIME_FORMAT));
             issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
             issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
         }
@@ -348,19 +355,19 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         JSONObject fieldsObject = new JSONObject();
 
         JSONObject projectObject = new JSONObject();
-        projectObject.put("id", project_id);
+        projectObject.put("id", String.valueOf(project_id));
         fieldsObject.put("project", projectObject);
 
         fieldsObject.put("summary", issue.getTitle());
         fieldsObject.put("description", issue.getDescription());
         if (issue.getDueDate() != null) {
-            fieldsObject.put("duedate", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(issue.getDueDate()));
+            fieldsObject.put("duedate", new SimpleDateFormat(Jira.DATE_FORMAT, Locale.GERMAN).format(issue.getDueDate()));
         }
 
         if (issue.getHandler() != null) {
             JSONObject userObject = new JSONObject();
             userObject.put("id", issue.getHandler().getId());
-            userObject.put("name", issue.getHandler().getRealName());
+            userObject.put("name", issue.getHandler().getTitle());
             fieldsObject.put("assignee", userObject);
         }
 
@@ -368,6 +375,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         priorityObject.put("id", String.valueOf(issue.getPriority().getKey()));
         priorityObject.put("name", issue.getPriority().getValue());
         fieldsObject.put("priority", priorityObject);
+
+        JSONObject typeObject = new JSONObject();
+        typeObject.put("id", String.valueOf(issue.getSeverity().getKey()));
+        typeObject.put("name", issue.getSeverity().getValue());
+        fieldsObject.put("issuetype", typeObject);
 
         if (!issue.getTags().trim().isEmpty()) {
             JSONArray tagsArray = new JSONArray();
@@ -383,12 +395,15 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             for (Version<Long> version : versions) {
                 if (version.getTitle().equals(issue.getVersion().trim())) {
                     JSONObject versionObject = new JSONObject();
-                    versionObject.put("id", version.getId());
+                    versionObject.put("id", String.valueOf(version.getId()));
                     versionArray.put(versionObject);
                     break;
                 }
             }
-            fieldsObject.put("versions", versionArray);
+
+            if(issue.getId()==null && issue.getSeverity().getKey()==10006) {
+                fieldsObject.put("versions", versionArray);
+            }
         }
 
         if (!issue.getFixedInVersion().isEmpty()) {
@@ -396,12 +411,12 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             for (Version<Long> version : versions) {
                 if (version.getTitle().equals(issue.getFixedInVersion().trim())) {
                     JSONObject versionObject = new JSONObject();
-                    versionObject.put("id", version.getId());
+                    versionObject.put("id", String.valueOf(version.getId()));
                     versionArray.put(versionObject);
                     break;
                 }
             }
-            fieldsObject.put("fixversions", versionArray);
+            fieldsObject.put("fixVersions", versionArray);
         }
 
         for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
@@ -707,7 +722,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 JSONObject historyObject = jsonArray.getJSONObject(i);
                 JSONObject userObject = historyObject.getJSONObject("author");
                 history.setUser(userObject.getString("name"));
-                history.setTime(Converter.convertStringToDate(historyObject.getString("created"), Jira.DATE_FORMAT).getTime());
+                history.setTime(Converter.convertStringToDate(historyObject.getString("created"), Jira.DATE_TIME_FORMAT).getTime());
                 JSONObject fieldObject = historyObject.getJSONArray("items").getJSONObject(0);
                 history.setField(fieldObject.getString("field"));
                 if (fieldObject.isNull("fromString")) {
