@@ -121,7 +121,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     @Override
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("key", project.getAlias());
+        jsonObject.put("key", project.getAlias().toUpperCase());
         jsonObject.put("name", project.getTitle());
         jsonObject.put("description", project.getDescription());
         jsonObject.put("url", project.getWebsite());
@@ -575,6 +575,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 JSONObject jsonObject = jsonArray.getJSONObject((int) i);
                 User<Long> user = new User<>();
                 user.setId(i);
+                user.getHints().put("key", jsonObject.getString("key"));
                 user.setTitle(jsonObject.getString("name"));
                 user.setRealName(jsonObject.getString("displayName"));
                 user.setEmail(jsonObject.getString("emailAddress"));
@@ -623,7 +624,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         }
         User<Long> user = this.map.get(id);
         if (user != null) {
-            this.deleteRequest("/rest/api/2/user?username=" + user.getRealName());
+            this.deleteRequest("/rest/api/2/user?key=" + user.getHints().get("key"));
         }
     }
 
