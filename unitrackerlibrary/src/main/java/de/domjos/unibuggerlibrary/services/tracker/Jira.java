@@ -293,9 +293,9 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 if (!fieldsObject.isNull("assignee")) {
                     JSONObject handlerObject = fieldsObject.getJSONObject("assignee");
                     User<Long> user = new User<>();
-                    user.setTitle(handlerObject.getString("displayName"));
+                    user.setRealName(handlerObject.getString("displayName"));
                     user.setEmail(handlerObject.getString("emailAddress"));
-                    user.setRealName(handlerObject.getString("name"));
+                    user.setTitle(handlerObject.getString("name"));
                     issue.setHandler(user);
                 }
             }
@@ -455,6 +455,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 issue.setId(result.getLong("id"));
             }
 
+            this.doTransition("status", issue.getStatus().getKey(), issue.getId());
+
             List<Note<Long>> oldNotes = this.getNotes(Long.parseLong(String.valueOf(issue.getId())), project_id);
             for (Note<Long> oldNote : oldNotes) {
                 boolean exists = false;
@@ -486,6 +488,28 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 attachment.setId(null);
                 this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
+        }
+    }
+
+    private void doTransition(String field, int id, Object issueId) throws Exception {
+        int transitionId = 0;
+        this.executeRequest("/rest/api/2/issue/" + issueId + "/transitions");
+        JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+        JSONArray jsonArray = jsonObject.getJSONArray("transitions");
+        for(int i = 0; i<= jsonArray.length()-1; i++) {
+            JSONObject sub = jsonArray.getJSONObject(i);
+            JSONObject toObject = sub.getJSONObject("to");
+            if(toObject.getString("id").equals(String.valueOf(id)) && toObject.getString("self").toLowerCase().contains(field)) {
+                transitionId = Integer.parseInt(sub.getString("id"));
+            }
+        }
+
+        if(transitionId!=0) {
+            JSONObject transitionObject = new JSONObject();
+            transitionObject.put("id", String.valueOf(transitionId));
+            jsonObject.put("transition", transitionObject);
+
+            this.executeRequest("/rest/api/2/issue/" + issueId + "/transitions?expand=transitions.fields", jsonObject.toString(), "POST");
         }
     }
 
@@ -541,7 +565,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     @Override
     public List<Attachment<Long>> getAttachments(Long issue_id, Long project_id) throws Exception {
         List<Attachment<Long>> attachments = new LinkedList<>();
-        int status = this.executeRequest("/rest/api/2/issue/" + project_id);
+        int status = this.executeRequest("/rest/api/2/issue/" + issue_id);
         if (status == 200 || status == 201) {
             JSONObject fieldsObject = new JSONObject(this.getCurrentMessage()).getJSONObject("fields");
             JSONArray attachmentObjects = fieldsObject.getJSONArray("attachment");
