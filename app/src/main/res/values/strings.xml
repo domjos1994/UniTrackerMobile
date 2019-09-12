@@ -126,6 +126,7 @@
     <string name="issues_descriptions_website">Website</string>
     <string name="issues_descriptions_steps">Steps to reproduce</string>
     <string name="issues_descriptions_additional">Additional Information</string>
+    <string name="issues_descriptions_environment">Environment</string>
     <string name="issues_notes">Notes</string>
     <string name="issues_attachments">Attachments</string>
 

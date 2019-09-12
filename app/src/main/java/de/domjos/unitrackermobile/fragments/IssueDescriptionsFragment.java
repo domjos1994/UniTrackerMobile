@@ -126,18 +126,20 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         this.rowIssueDescriptionsAdditional.setVisibility(View.GONE);
         this.rowIssueDescriptionsSteps.setVisibility(View.GONE);
+        this.txtIssueDescriptionsAdditional.setHint(R.string.issues_descriptions_additional);
 
         switch (authentication.getTracker()) {
             case MantisBT:
+            case Local:
                 this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
                 this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
                 break;
             case Bugzilla:
                 this.txtIssueDescriptionsDescription.setText(this.getString(R.string.issues_descriptions_website));
                 break;
-            case Local:
+            case Jira:
                 this.rowIssueDescriptionsAdditional.setVisibility(View.VISIBLE);
-                this.rowIssueDescriptionsSteps.setVisibility(View.VISIBLE);
+                this.txtIssueDescriptionsAdditional.setHint(R.string.issues_descriptions_environment);
                 break;
         }
     }

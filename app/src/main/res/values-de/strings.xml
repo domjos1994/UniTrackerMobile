@@ -123,6 +123,7 @@
     <string name="issues_descriptions_website">Website</string>
     <string name="issues_descriptions_steps">Schritte zur Reproduktion</string>
     <string name="issues_descriptions_additional">Zusätzliche Informationen</string>
+    <string name="issues_descriptions_environment">Umgebung</string>
     <string name="issues_notes">Notizen</string>
     <string name="issues_attachments">Anhänge</string>
 

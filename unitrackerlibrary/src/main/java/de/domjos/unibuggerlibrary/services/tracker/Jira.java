@@ -41,6 +41,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.JiraPermissions;
@@ -328,6 +329,12 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
+            if(fieldsObject.has("environment")) {
+                if(!fieldsObject.isNull("environment")) {
+                    issue.setAdditionalInformation(fieldsObject.getString("environment"));
+                }
+            }
+
             List<CustomField<Long>> customFields = this.getCustomFields(project_id);
             for (CustomField<Long> customField : customFields) {
                 if (fieldsObject.has(customField.getHints().get("id"))) {
@@ -369,6 +376,14 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             userObject.put("id", issue.getHandler().getId());
             userObject.put("name", issue.getHandler().getTitle());
             fieldsObject.put("assignee", userObject);
+        }
+
+        if(issue.getAdditionalInformation()!=null) {
+            if(!issue.getAdditionalInformation().isEmpty()) {
+                if(issue.getId()==null && issue.getSeverity().getKey()==10006) {
+                    fieldsObject.put("environment", issue.getAdditionalInformation());
+                }
+            }
         }
 
         JSONObject priorityObject = new JSONObject();
@@ -455,8 +470,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            for (Note<Long> note : issue.getNotes()) {
-                this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
+            for (DescriptionObject descriptionObject : issue.getNotes()) {
+                if(descriptionObject instanceof Note) {
+                    Note<Long> note = (Note<Long>) descriptionObject;
+                    this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                }
             }
 
             List<Attachment<Long>> oldAttachments = this.getAttachments(Long.parseLong(String.valueOf(issue.getId())), project_id);
