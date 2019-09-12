@@ -26,4 +26,7 @@
     <files-path
         name="content"
         path="." />
+    <cache-path
+        name="cache_path"
+        path="." />
 </paths>

@@ -43,6 +43,7 @@ import de.domjos.unitrackermobile.activities.MainActivity;
 public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> {
     private ArrayList<ListObject> data;
     private View.OnClickListener mClickListener;
+    private View.OnLongClickListener mLongClickListener;
     private RecyclerView recyclerView;
     private int menuId = -1, noEntryItem = -1;
     private Activity activity;
@@ -103,6 +104,10 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
         mClickListener = callback;
     }
 
+    void setLongClickListener(View.OnLongClickListener callback) {
+        this.mLongClickListener = callback;
+    }
+
     void onSwipeListener(SwipeToDeleteCallback callback) {
         new ItemTouchHelper(callback).attachToRecyclerView(this.recyclerView);
     }
@@ -121,10 +126,29 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
                 mClickListener.onClick(view);
             }
         });
+        holder.itemView.setOnLongClickListener(view -> {
+            if(this.mLongClickListener !=null) {
+                this.mLongClickListener.onLongClick(view);
+            }
+            return  true;
+        });
     }
 
     public ListObject getItem(int position) {
         return data.get(position);
+    }
+
+    public int getItemPosition(ListObject listObject) {
+        try {
+            int position  = 0;
+            for(ListObject obj : data) {
+                if(obj.getDescriptionObject().getTitle().equals(listObject.getDescriptionObject().getTitle())) {
+                    return position;
+                }
+                position++;
+            }
+        } catch (Exception ignored) {}
+        return -1;
     }
 
     @Override

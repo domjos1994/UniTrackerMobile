@@ -18,11 +18,13 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
+import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -484,9 +486,12 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 this.deleteAttachment(oldAttachment.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
 
-            for (Attachment<Long> attachment : issue.getAttachments()) {
-                attachment.setId(null);
-                this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+            for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                if(descriptionObject instanceof Attachment) {
+                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    attachment.setId(null);
+                    this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                }
             }
         }
     }
@@ -572,8 +577,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             for (int i = 0; i <= attachmentObjects.length() - 1; i++) {
                 JSONObject jsonObject = attachmentObjects.getJSONObject(i);
                 Attachment<Long> attachment = new Attachment<>();
+                attachment.setId(jsonObject.getLong("id"));
                 attachment.setFilename(jsonObject.getString("filename"));
-                attachment.setContent(Converter.convertStringToByteArray(jsonObject.getString("content")));
+                String url = jsonObject.getString("content");
+                attachment.setContent(Converter.downloadFile(new URL(url)));
+                attachment.setContentType(jsonObject.getString("mimeType"));
                 attachments.add(attachment);
             }
         }
@@ -585,7 +593,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
+    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+        this.deleteRequest("/rest/api/2/attachment/" + id);
     }
 
     @Override

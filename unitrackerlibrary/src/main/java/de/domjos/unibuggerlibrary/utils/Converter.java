@@ -33,9 +33,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,6 +47,23 @@ import java.util.Locale;
 public class Converter {
     public final static String DATE_FORMAT = "yyyy-MM-dd";
     public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+    public static byte[] downloadFile(URL url) throws Exception  {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        URLConnection conn = url.openConnection();
+        conn.setRequestProperty("User-Agent", "Firefox");
+
+        try (InputStream inputStream = conn.getInputStream()) {
+            int n = 0;
+            byte[] buffer = new byte[1024];
+            while (-1 != (n = inputStream.read(buffer))) {
+                output.write(buffer, 0, n);
+            }
+        }
+        byte[] img = output.toByteArray();
+        ByteBuffer imageBytes = ByteBuffer.wrap(img);
+        return imageBytes.array();
+    }
 
     public static String convertStreamToString(InputStream stream) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(stream));

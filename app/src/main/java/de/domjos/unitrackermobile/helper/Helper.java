@@ -26,6 +26,7 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -358,7 +359,8 @@ public class Helper {
                 attachment.getFilename().toLowerCase().endsWith("bmp") ||
                 attachment.getFilename().toLowerCase().endsWith("gif")) {
 
-            iv.setImageBitmap(BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length));
+            Bitmap bitmap = BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length);
+            iv.setImageBitmap(bitmap);
         } else {
             iv.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_file_download_black_24dp));
         }

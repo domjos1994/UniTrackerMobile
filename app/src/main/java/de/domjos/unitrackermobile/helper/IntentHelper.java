@@ -25,8 +25,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.UUID;
+
+import de.domjos.unitrackermobile.provider.FileProvider;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -48,5 +53,27 @@ public class IntentHelper {
             }
         }
         return null;
+    }
+
+    public static void saveAndOpenFile(byte[] array, Activity activity) throws Exception {
+        Uri uri = FileProvider.getUriForFile(activity, "de.domjos.unitrackermobile.provider.FileProvider", IntentHelper.saveFile(array, activity));
+        String mimeType = activity.getContentResolver().getType(uri);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, mimeType);
+        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        activity.startActivity(intent);
+    }
+
+    private static File saveFile(byte[] bytes, Activity activity) throws Exception {
+        File tmpFile = File.createTempFile(
+            String.valueOf(UUID.randomUUID().getLeastSignificantBits()),
+            String.valueOf(UUID.randomUUID().getMostSignificantBits()),
+            activity.getCacheDir()
+        );
+
+        FileOutputStream fileOutputStream = new FileOutputStream(tmpFile);
+        fileOutputStream.write(bytes);
+        fileOutputStream.close();
+        return tmpFile;
     }
 }

@@ -44,6 +44,7 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
+import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
 
 import static android.app.Activity.RESULT_OK;
@@ -82,12 +83,36 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.lvIssueAttachments.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
             public void onClick(ListObject listObject) {
-                if (listObject != null) {
-                    if (getContext() != null) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(((Attachment) listObject.getDescriptionObject()).getDownloadUrl()));
-                        startActivity(browserIntent);
+                try {
+                    if (listObject != null) {
+                        if (getContext() != null) {
+                            if(listObject.getDescriptionObject() instanceof Attachment) {
+                                Attachment attachment = (Attachment) listObject.getDescriptionObject();
+                                IntentHelper.saveAndOpenFile(attachment.getContent(), getActivity());
+                            }
+                        }
                     }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, getActivity());
                 }
+            }
+        });
+
+        this.lvIssueAttachments.longClick(new SwipeRefreshDeleteList.LongClickListener() {
+            @Override
+            public void onClick(ListObject listObject) {
+
+                   if(getActivity()!=null) {
+                       new Thread(()->{
+                           try {
+                               Helper.getCurrentBugService(getContext()).deleteAttachment(listObject.getDescriptionObject().getId(), null, null);
+                               getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
+                           } catch (Exception ex) {
+                               getActivity().runOnUiThread(()->MessageHelper.printException(ex, getActivity()));
+                           }
+                       }).start();
+                   }
+
             }
         });
 
