@@ -37,6 +37,7 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     private ReloadListener reloadListener;
     private DeleteListener deleteListener;
     private ClickListener clickListener;
+    private LinearLayoutManager manager;
 
     public SwipeRefreshDeleteList(@NonNull Context context) {
         super(context);
@@ -65,7 +66,8 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     private void initAdapter() {
         this.adapter = new RecyclerAdapter(this.recyclerView, (Activity) this.context);
         this.recyclerView.setAdapter(this.adapter);
-        this.recyclerView.setLayoutManager(new LinearLayoutManager(this.context));
+        this.manager = new LinearLayoutManager(this.context);
+        this.recyclerView.setLayoutManager(this.manager);
         this.adapter.notifyDataSetChanged();
 
         this.adapter.onSwipeListener(new SwipeToDeleteCallback(this.context) {
@@ -81,9 +83,10 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
         });
 
         this.adapter.setClickListener(v -> {
-            int position = recyclerView.indexOfChild(v);
+            int position = this.recyclerView.indexOfChild(v);
+            int firstPosition = this.manager.findFirstVisibleItemPosition();
             if (clickListener != null) {
-                clickListener.onClick(adapter.getItem(position));
+                clickListener.onClick(this.adapter.getItem(firstPosition + position));
             }
         });
 

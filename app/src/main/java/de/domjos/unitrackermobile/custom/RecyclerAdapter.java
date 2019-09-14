@@ -62,6 +62,7 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
             mSubTitle = itemView.findViewById(R.id.lblSubTitle);
             mSubTitle.setSelected(scroll);
             ivIcon = itemView.findViewById(R.id.ivIcon);
+
             itemView.setOnCreateContextMenuListener(this);
         }
 
@@ -82,10 +83,12 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
     }
 
     public ListObject getObject() {
-        if (!this.currentTitle.isEmpty()) {
-            for (ListObject listObject : data) {
-                if (listObject.getDescriptionObject().getTitle().equals(this.currentTitle)) {
-                    return listObject;
+        if(this.currentTitle!=null) {
+            if (!this.currentTitle.isEmpty()) {
+                for (ListObject listObject : data) {
+                    if (listObject.getDescriptionObject().getTitle().equals(this.currentTitle)) {
+                        return listObject;
+                    }
                 }
             }
         }
@@ -113,14 +116,20 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull RecycleViewHolder holder, int position) {
-        holder.mTitle.setText(data.get(position).getDescriptionObject().getTitle());
-        holder.mSubTitle.setText(data.get(position).getDescriptionObject().getDescription());
-        holder.ivIcon.setImageDrawable(data.get(position).getIcon());
-        holder.itemView.setOnClickListener(view -> {
-            if (mClickListener != null) {
-                mClickListener.onClick(view);
+        if(data!=null) {
+            if(data.get(position)!=null) {
+                if(data.get(position).getDescriptionObject()!=null) {
+                    holder.mTitle.setText(data.get(position).getDescriptionObject().getTitle());
+                    holder.mSubTitle.setText(data.get(position).getDescriptionObject().getDescription());
+                    holder.ivIcon.setImageDrawable(data.get(position).getIcon());
+                    holder.itemView.setOnClickListener(view -> {
+                        if (mClickListener != null) {
+                            mClickListener.onClick(view);
+                        }
+                    });
+                }
             }
-        });
+        }
     }
 
     public ListObject getItem(int position) {

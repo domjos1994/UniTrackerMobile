@@ -770,7 +770,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             fieldDefaultObject.put("isPublic", true);
             fieldDefaultObject.put("canBeEmpty", customField.isNullable());
             fieldDefaultObject.put("$type", "CustomFieldDefaults");
-            fieldDefaultObject.put("EmptyFieldText", customField.getDefaultValue());
+            fieldDefaultObject.put("emptyFieldText", customField.getDefaultValue());
             customFieldObject.put("fieldDefaults", fieldDefaultObject);
 
             customFieldObject.put("isDisplayedInIssueList", true);
