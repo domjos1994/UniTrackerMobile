@@ -557,21 +557,20 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         List<User<String>> users = new LinkedList<>();
         Project<String> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/api/admin/customFieldSettings/bundles/user?fields=name,aggregatedUsers(ringId)");
+            int status = this.executeRequest("/hub/api/rest/users?fields=id,name,login,email");
             if (status == 200 || status == 201) {
-                JSONArray usersArray = new JSONArray(this.getCurrentMessage());
+                JSONObject usersObject = new JSONObject(this.getCurrentMessage());
+                JSONArray usersArray = usersObject.getJSONArray("users");
                 for (int i = 0; i <= usersArray.length() - 1; i++) {
                     JSONObject jsonObject = usersArray.getJSONObject(i);
-                    String name = jsonObject.getString("name");
-                    if (name.contains(project.getTitle())) {
-                        JSONArray jsonArray = jsonObject.getJSONArray("aggregatedUsers");
-                        for (int j = 0; j <= jsonArray.length() - 1; j++) {
-                            JSONObject userObject = jsonArray.getJSONObject(j);
-                            if (userObject.has("ringId")) {
-                                users.add(this.getUser(userObject.getString("ringId"), project_id));
-                            }
-                        }
+                    User<String> user = new User<>();
+                    user.setId(jsonObject.getString("id"));
+                    user.setTitle(jsonObject.getString("login"));
+                    user.setRealName(jsonObject.getString("name"));
+                    if (jsonObject.has("email")) {
+                        user.setEmail(jsonObject.getString("email"));
                     }
+                    users.add(user);
                 }
             }
         }
