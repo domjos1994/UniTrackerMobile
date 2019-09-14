@@ -554,8 +554,6 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
         if (!issue.getTargetVersion().equals("")) {
             issueObject.addProperty("target_version", issue.getTargetVersion());
-        } else {
-            issueObject.addProperty("target_version", "null");
         }
 
         Project<Long> project = this.getProject(project_id);

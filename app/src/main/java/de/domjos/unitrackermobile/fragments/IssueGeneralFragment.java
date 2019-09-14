@@ -426,6 +426,11 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralResolution.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.txtIssueGeneralCategory.setOnFocusChangeListener((v, hasFocus) -> {
+                    if(hasFocus) {
+                        this.txtIssueGeneralCategory.showDropDown();
+                    }
+                });
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
