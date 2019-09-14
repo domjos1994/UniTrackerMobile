@@ -916,6 +916,10 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
             if(entry.getValue()!=null) {
                 if(!entry.getValue().equals("") || !entry.getValue().equals("null")) {
+                    if (entry.getValue().trim().equals(entry.getKey().getDefaultValue().trim())) {
+                        continue;
+                    }
+
                     JSONObject customFieldObject = new JSONObject();
                     JSONObject valueObject = new JSONObject();
 
@@ -952,12 +956,10 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                                         customFieldObject.put("value", valueObject);
                                     } else {
                                         customFieldObject.put("value", JSONObject.NULL);
-                                        continue;
                                     }
                                 }
                             } else {
                                 customFieldObject.put("value", JSONObject.NULL);
-                                continue;
                             }
                             break;
                         case TEXT:

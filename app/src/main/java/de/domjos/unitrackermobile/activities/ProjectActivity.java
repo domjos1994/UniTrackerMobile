@@ -135,7 +135,7 @@ public final class ProjectActivity extends AbstractActivity {
             final ProjectTask[] task = new ProjectTask[1];
             switch (menuItem.getItemId()) {
                 case R.id.navAdd:
-                    this.manageControls(true, false, false);
+                    this.manageControls(true, true, false);
                     break;
                 case R.id.navEdit:
                     this.manageControls(true, false, false);
@@ -232,6 +232,7 @@ public final class ProjectActivity extends AbstractActivity {
 
         switch (this.settings.getCurrentAuthentication().getTracker()) {
             case RedMine:
+            case Backlog:
                 this.projectValidator.addEmptyValidator(this.txtProjectAlias);
                 break;
             case YouTrack:
