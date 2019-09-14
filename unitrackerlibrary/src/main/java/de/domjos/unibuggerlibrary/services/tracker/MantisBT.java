@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -149,7 +150,14 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         if (object != null) {
             this.state = 200;
             if (project.getId() == null) {
-                return (Long) object;
+                if(object instanceof SoapPrimitive) {
+                    SoapPrimitive soapPrimitive = (SoapPrimitive) object;
+                    if(soapPrimitive.getValue() instanceof Integer) {
+                        return (long) soapPrimitive.getValue();
+                    }
+                } else if(object instanceof Long || object instanceof Integer) {
+                    return (long) object;
+                }
             } else {
                 return project.getId();
             }
