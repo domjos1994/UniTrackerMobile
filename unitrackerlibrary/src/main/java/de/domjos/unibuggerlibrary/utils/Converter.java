@@ -77,8 +77,13 @@ public class Converter {
     }
 
     public static Date convertStringToDate(String dt, String format) throws Exception {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.GERMAN);
-        return simpleDateFormat.parse(dt);
+        if(dt!=null) {
+            if(!dt.isEmpty()) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.GERMAN);
+                return simpleDateFormat.parse(dt);
+            }
+        }
+        return null;
     }
 
     public static Drawable convertStringToImage(String url) {

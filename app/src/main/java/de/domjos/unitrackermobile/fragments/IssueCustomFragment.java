@@ -105,7 +105,9 @@ public final class IssueCustomFragment extends AbstractFragment {
                         } else if (view instanceof CheckBox) {
                             issue.getCustomFields().put(key, String.valueOf(((CheckBox) view).isChecked()));
                         } else if (view instanceof Spinner) {
-                            issue.getCustomFields().put(key, ((Spinner) view).getSelectedItem().toString());
+                            if(((Spinner) view).getSelectedItem()!=null) {
+                                issue.getCustomFields().put(key, ((Spinner) view).getSelectedItem().toString());
+                            }
                         } else if (view instanceof TableRow) {
                             TableRow tableRow = (TableRow) view;
                             for (int i = 0; i <= tableRow.getChildCount() - 1; i++) {

@@ -61,6 +61,8 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String COMMENT_FIELDS = "id,text,created,updated";
     private final static String ATTACHMENT_FIELDS = "id,name,base64Content,url";
     private final static String USER_FIELDS = "id,login,fullName,email";
+    private final static String DATE_TIME_FIELD = "dd-MM-yyyy HH:mm:ss";
+
     private Authentication authentication;
 
     public YouTrack(Authentication authentication) {
@@ -344,7 +346,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                                                 if (customFieldObject.get("value") instanceof Long) {
                                                     Date date = new Date();
                                                     date.setTime(customFieldObject.getLong("value"));
-                                                    valueName = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.GERMAN).format(date);
+                                                    valueName = new SimpleDateFormat(YouTrack.DATE_TIME_FIELD, Locale.GERMAN).format(date);
                                                 } else if (customFieldObject.get("value") instanceof Integer) {
                                                     valueName = customFieldObject.getString("value");
                                                 } else if (customFieldObject.get("value") instanceof Float) {
@@ -705,7 +707,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                         JSONObject projectObject = instanceObject.getJSONObject("project");
                         if (projectObject.getString("id").equals(project_id)) {
                             customField.setId(instanceObject.getString("id"));
-                            customField.setDescription(instanceObject.getString("$type"));
+                            customField.setDescription(jsonObject.getString("$type"));
                         }
                     }
                 }
@@ -912,72 +914,87 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private JSONArray insertOrUpdateCustomFieldValues(Issue<String> issue, String project_id) throws Exception {
         JSONArray customFieldsArray = new JSONArray();
         for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
-            JSONObject customFieldObject = new JSONObject();
-            JSONObject valueObject = new JSONObject();
+            if(entry.getValue()!=null) {
+                if(!entry.getValue().equals("") || !entry.getValue().equals("null")) {
+                    JSONObject customFieldObject = new JSONObject();
+                    JSONObject valueObject = new JSONObject();
 
-            switch (entry.getKey().getType()) {
-                case LIST:
-                    boolean setField = false;
-                    for (String item : entry.getKey().getPossibleValues().split("\\|")) {
-                        if (item.split(":")[0].trim().equals(entry.getValue())) {
-                            valueObject.put("name", item.split(":")[1].trim());
-                            setField = true;
-                            break;
-                        }
-                    }
-                    if (!setField) {
-                        valueObject = null;
-                    }
+                    switch (entry.getKey().getType()) {
+                        case LIST:
+                            boolean setField = false;
+                            if(entry.getKey().getPossibleValues()!=null) {
+                                for (String item : entry.getKey().getPossibleValues().split("\\|")) {
+                                    if (item.split(":")[0].trim().equals(entry.getValue())) {
+                                        valueObject.put("name", item.split(":")[1].trim());
+                                        setField = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (!setField) {
+                                valueObject = null;
+                            }
 
-                    if (valueObject != null || entry.getKey().getDescription().contains("MultiVersion")) {
-                        if (entry.getKey().getDescription().contains("User")) {
-                            valueObject = this.convertUserToObject(valueObject, entry.getKey(), project_id);
-                        }
-                        if (entry.getKey().getDescription().contains("OwnedIssue")) {
-                            valueObject = this.convertOwnedFieldToObject(valueObject, entry.getKey(), project_id);
-                        }
+                            if (valueObject != null || entry.getKey().getDescription().contains("MultiVersion")) {
+                                if (entry.getKey().getDescription().contains("User")) {
+                                    valueObject = this.convertUserToObject(valueObject, entry.getKey(), project_id);
+                                }
+                                if (entry.getKey().getDescription().contains("OwnedIssue")) {
+                                    valueObject = this.convertOwnedFieldToObject(valueObject, entry.getKey(), project_id);
+                                }
 
-                        if (entry.getKey().getDescription().contains("MultiVersion")) {
-                            valueObject = new JSONObject();
-                            valueObject.put("name", "");
-                            customFieldObject.put("value", this.convertVersionToArray(valueObject, entry.getKey().getDefaultValue(), project_id));
-                        } else {
-                            if (valueObject != null) {
-                                customFieldObject.put("value", valueObject);
+                                if (entry.getKey().getDescription().contains("MultiVersion")) {
+                                    valueObject = new JSONObject();
+                                    valueObject.put("name", "");
+                                    customFieldObject.put("value", this.convertVersionToArray(valueObject, entry.getKey().getDefaultValue(), project_id));
+                                } else {
+                                    if (valueObject != null) {
+                                        customFieldObject.put("value", valueObject);
+                                    } else {
+                                        customFieldObject.put("value", JSONObject.NULL);
+                                        continue;
+                                    }
+                                }
                             } else {
                                 customFieldObject.put("value", JSONObject.NULL);
+                                continue;
                             }
-                        }
-                    } else {
-                        customFieldObject.put("value", JSONObject.NULL);
+                            break;
+                        case TEXT:
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("text", entry.getValue());
+                            customFieldObject.put("value", jsonObject);
+                            break;
+                        case DATE:
+                            if(entry.getValue()!=null) {
+                                if(!entry.getValue().equals("null")) {
+                                    Date dt = Converter.convertStringToDate(entry.getValue(), YouTrack.DATE_TIME_FIELD);
+                                    customFieldObject.put("value", dt.getTime());
+                                }
+                            }
+                            break;
+                        case NUMBER:
+                            try {
+                                int val = Integer.parseInt(entry.getValue());
+                                customFieldObject.put("value", val);
+                            } catch (Exception ex) {
+                                try {
+                                    float val = Float.parseFloat(entry.getValue());
+                                    customFieldObject.put("value", val);
+                                } catch (Exception ignored) {
+                                }
+                            }
                     }
-                    break;
-                case TEXT:
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("text", entry.getValue());
-                    customFieldObject.put("value", jsonObject);
-                    break;
-                case DATE:
-                    Date dt = Converter.convertStringToDate(entry.getValue(), "dd-MM-yyyy HH:mm:ss");
-                    customFieldObject.put("value", dt.getTime());
-                    break;
-                case NUMBER:
-                    try {
-                        int val = Integer.parseInt(entry.getValue());
-                        customFieldObject.put("value", val);
-                    } catch (Exception ex) {
-                        try {
-                            float val = Float.parseFloat(entry.getValue());
-                            customFieldObject.put("value", val);
-                        } catch (Exception ignored) {
-                        }
-                    }
-            }
 
-            customFieldObject.put("$type", entry.getKey().getDescription());
-            customFieldObject.put("name", entry.getKey().getTitle());
-            customFieldObject.put("id", entry.getKey().getId());
-            customFieldsArray.put(customFieldObject);
+                    CustomField customField = this.getCustomField(entry.getKey().getId(), project_id);
+                    if(customField!=null) {
+                        customFieldObject.put("$type", customField.getDescription());
+                    }
+                    customFieldObject.put("name", entry.getKey().getTitle());
+                    customFieldObject.put("id", entry.getKey().getId());
+                    customFieldsArray.put(customFieldObject);
+                }
+            }
         }
         return customFieldsArray;
     }
