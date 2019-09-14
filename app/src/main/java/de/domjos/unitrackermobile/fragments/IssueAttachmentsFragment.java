@@ -19,8 +19,10 @@
 package de.domjos.unitrackermobile.fragments;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -151,6 +153,31 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         return true;
     }
 
+    public String getFileName(Uri uri) {
+        if(getActivity()!=null) {
+            String result = null;
+            if (uri.getScheme().equals("content")) {
+                Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+                try {
+                    if (cursor != null && cursor.moveToFirst()) {
+                        result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    }
+                } finally {
+                    cursor.close();
+                }
+            }
+            if (result == null) {
+                result = uri.getPath();
+                int cut = result.lastIndexOf('/');
+                if (cut != -1) {
+                    result = result.substring(cut + 1);
+                }
+            }
+            return result;
+        }
+        return "";
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         try {
@@ -162,7 +189,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                         if (imageStream != null) {
                             Attachment attachment = new Attachment();
                             attachment.setDownloadUrl(imageUri.getPath());
-                            attachment.setFilename(imageUri.getPath());
+                            attachment.setFilename(this.getFileName(imageUri));
                             attachment.setContentType(data.getType());
                             attachment.setContent(Converter.convertStreamToByteArray(imageStream));
                             this.lvIssueAttachments.getAdapter().add(new ListObject(this.getActivity(), R.drawable.ic_file_upload_black_24dp, attachment));
@@ -176,7 +203,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                         if (this.getContext() != null) {
                             Attachment attachment = new Attachment();
                             attachment.setDownloadUrl(data.getData().getPath());
-                            attachment.setFilename(data.getData().getPath());
+                            attachment.setFilename(this.getFileName(data.getData()));
 
                             InputStream iStream = this.getContext().getContentResolver().openInputStream(data.getData());
                             if (iStream != null) {

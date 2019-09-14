@@ -673,8 +673,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
 
         if (!issue.getNotes().isEmpty()) {
-            for (Note<Long> note : issue.getNotes()) {
-                this.insertOrUpdateNote(note, id, project_id);
+            for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
+                if(descriptionObject instanceof Note) {
+                    Note<Long> note = (Note<Long>) descriptionObject;
+                    this.insertOrUpdateNote(note, id, project_id);
+                }
             }
         }
 

@@ -381,6 +381,7 @@ public class Helper {
                     if (files != null) {
                         String path = files[0];
                         File file = new File(path + File.separatorChar + attachment.getFilename());
+                        file.mkdirs();
                         if (file.createNewFile()) {
                             Helper.saveAttachment(file, attachment.getContent(), activity);
                         } else {
