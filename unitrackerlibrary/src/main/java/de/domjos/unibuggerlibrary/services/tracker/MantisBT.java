@@ -159,7 +159,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public void deleteProject(Long id) throws Exception {
-        SoapObject request = new SoapObject();
+        SoapObject request = new SoapObject(super.soapPath, "mc_project_delete");
         request.addProperty("project_id", id);
         this.executeAction(request, "mc_project_delete", true);
     }
