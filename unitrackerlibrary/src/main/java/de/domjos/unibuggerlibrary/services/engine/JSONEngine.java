@@ -67,6 +67,14 @@ public class JSONEngine {
         return this.state;
     }
 
+    protected void addHeader(String header) {
+        this.headers.add(header);
+    }
+
+    protected void removeHeader(String header) {
+        this.headers.remove(header);
+    }
+
     protected int executeRequest(String path) throws Exception {
         Call call = this.initAuthentication(path);
         Response response = call.execute();
@@ -115,11 +123,15 @@ public class JSONEngine {
     }
 
     protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String type) throws Exception {
+        return this.addMultiPart(path, jsonBody, contentType, data, "attachment", type);
+    }
+
+    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String filename, String type) throws Exception {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MediaType.get("multipart/form-data"));
         builder.addFormDataPart("metadata", jsonBody);
         RequestBody requestBody = RequestBody.create(MediaType.get(contentType), data);
-        builder.addFormDataPart("file", "attachment", requestBody);
+        builder.addFormDataPart("file", filename, requestBody);
 
         Call call = this.initAuthentication(path, builder.build(), type);
         Response response = call.execute();

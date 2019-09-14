@@ -337,14 +337,24 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            List<CustomField<Long>> customFields = this.getCustomFields(project_id);
-            for (CustomField<Long> customField : customFields) {
-                if (fieldsObject.has(customField.getHints().get("id"))) {
-                    if (!fieldsObject.isNull(customField.getHints().get("id"))) {
-                        try {
-                            JSONObject customFieldObject = fieldsObject.getJSONObject(customField.getHints().get("id"));
-                            issue.getCustomFields().put(customField, customFieldObject.getString("value"));
-                        } catch (Exception ignored) {
+            if(id!=null) {
+                status = this.executeRequest("/rest/api/2/issue/" + id + "/editmeta");
+                if(status == 200) {
+                    JSONObject customFieldsObject = new JSONObject(this.getCurrentMessage()).getJSONObject("fields");
+
+                    List<CustomField<Long>> customFields = this.getCustomFields(project_id);
+                    for (CustomField<Long> customField : customFields) {
+                        String field_id = customField.getHints().get("id");
+                        if (customFieldsObject.has(field_id)) {
+                            if (fieldsObject.has(field_id)) {
+                                if (!fieldsObject.isNull(field_id)) {
+                                    try {
+                                        JSONObject customFieldObject = fieldsObject.getJSONObject(customField.getHints().get("id"));
+                                        issue.getCustomFields().put(customField, customFieldObject.getString("value"));
+                                    } catch (Exception ignored) {
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -356,6 +366,25 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
         }
         return issue;
+    }
+
+    private List<CustomField<Long>> getEnabledCustomFields(Object id) throws Exception {
+        List<CustomField<Long>> customFields = new LinkedList<>();
+
+        if(id!=null) {
+            int status = this.executeRequest("/rest/api/2/issue/" + id + "/editmeta");
+            if (status == 200) {
+                JSONObject customFieldsObject = new JSONObject(this.getCurrentMessage()).getJSONObject("fields");
+
+                for (CustomField<Long> customField : customFields) {
+                    String field_id = customField.getHints().get("id");
+                    if (customFieldsObject.has(field_id)) {
+                        customFields.add(customField);
+                    }
+                }
+            }
+        }
+        return customFields;
     }
 
     @Override
@@ -436,10 +465,14 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             fieldsObject.put("fixVersions", versionArray);
         }
 
+        List<CustomField<Long>> customFields = this.getEnabledCustomFields(issue.getId());
         for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
-            JSONObject customFieldObject = new JSONObject();
-            customFieldObject.put("value", entry.getValue());
-            fieldsObject.put(entry.getKey().getHints().get("id"), customFieldObject);
+            for(CustomField<Long> enabledCustomField : customFields) {
+                if(enabledCustomField.getId().equals(entry.getKey().getId())) {
+                    fieldsObject.put(entry.getKey().getHints().get("id"), entry.getValue());
+                    break;
+                }
+            }
         }
 
         jsonObject.put("fields", fieldsObject);
@@ -589,7 +622,17 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) {
+    public void insertOrUpdateAttachment(Attachment<Long> attachment, Long issue_id, Long project_id) throws Exception {
+        super.addHeader("X-Atlassian-Token: no-check");
+        super.addMultiPart(
+            "/rest/api/2/issue/" + issue_id + "/attachments",
+            "",
+            attachment.getContentType(),
+            attachment.getContent(),
+            attachment.getFilename(),
+            "POST"
+        );
+        super.removeHeader("X-Atlassian-Token: no-check");
     }
 
     @Override
@@ -663,77 +706,63 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<CustomField<Long>> getCustomFields(Long project_id) throws Exception {
+        JSONArray fieldArray = null;
+        int tmpStatus = this.executeRequest("/rest/api/2/field");
+        if(tmpStatus==200) {
+            fieldArray = new JSONArray(this.getCurrentMessage());
+        }
+
         List<CustomField<Long>> customFields = new LinkedList<>();
-        int status = this.executeRequest("/rest/api/2/field");
+        int status = this.executeRequest("/rest/api/2/customFields");
         if (status == 200 || status == 201) {
-            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            JSONObject baseObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = baseObject.getJSONArray("values");
             for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                if (jsonObject.getBoolean("custom")) {
-                    CustomField<Long> customField = new CustomField<>();
-                    customField.getHints().put("id", jsonObject.getString("id"));
-                    customField.setTitle(jsonObject.getString("name"));
+                CustomField<Long> customField = new CustomField<>();
+                customField.setId(jsonObject.getLong("numericId"));
+                customField.getHints().put("id", jsonObject.getString("id"));
+                customField.setTitle(jsonObject.getString("name"));
+                customField.setDescription(jsonObject.getString("description"));
 
-                    JSONObject schemaObject = jsonObject.getJSONObject("schema");
-                    customField.setId(schemaObject.getLong("customId"));
-                    switch (schemaObject.getString("type")) {
-                        case "number":
-                            customField.setType(CustomField.Type.NUMBER);
-                            break;
-                        case "string":
-                            customField.setType(CustomField.Type.TEXT);
-                            break;
-                        case "array":
-                        case "option":
-                            customField.setType(CustomField.Type.LIST);
-                            break;
-                        case "datetime":
-                            customField.setType(CustomField.Type.DATE);
-                            break;
-                    }
+                if(fieldArray!=null) {
+                    boolean hasAvailableDataType = false;
+                    for(int j = 0; j <= fieldArray.length()-1; j++) {
+                        JSONObject fieldObject = fieldArray.getJSONObject(j);
 
-                    StringBuilder possibleValues = new StringBuilder();
-                    status = this.executeRequest("/rest/api/2/issue/createmeta?projectIds=" + project_id + "&expand=projects.issuetypes.fields");
-                    if (status == 200 || status == 201) {
-                        JSONObject customObject = new JSONObject(this.getCurrentMessage());
-                        JSONArray projectsArray = customObject.getJSONArray("projects");
-                        for (int j = 0; j <= projectsArray.length() - 1; j++) {
-                            JSONObject projectsObject = projectsArray.getJSONObject(j);
-                            JSONArray issueTypes = projectsObject.getJSONArray("issuetypes");
-                            for (int k = 0; k <= issueTypes.length() - 1; k++) {
-                                JSONObject issueObjects = issueTypes.getJSONObject(k);
-                                JSONObject fieldsObject = issueObjects.getJSONObject("fields");
-
-                                if (fieldsObject.has(jsonObject.getString("id"))) {
-                                    if (!fieldsObject.isNull(jsonObject.getString("id"))) {
-                                        JSONObject customFieldObject = fieldsObject.getJSONObject(jsonObject.getString("id"));
-                                        if(customFieldObject.has("allowedValues")) {
-                                            if(!customFieldObject.isNull("allowedValues")) {
-                                                JSONArray customFieldValues = customFieldObject.getJSONArray("allowedValues");
-                                                for (int x = 0; x <= customFieldValues.length() - 1; x++) {
-                                                    JSONObject fieldValue = customFieldValues.getJSONObject(x);
-                                                    possibleValues.append(fieldValue.getString("value"));
-                                                    possibleValues.append("|");
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                if (!possibleValues.toString().isEmpty()) {
+                        if(fieldObject.getString("id").equals(customField.getHints().get("id"))) {
+                            JSONObject schemaObject = fieldObject.getJSONObject("schema");
+                            switch (schemaObject.getString("type").toLowerCase()) {
+                                case "string":
+                                    customField.setType(CustomField.Type.TEXT);
+                                    hasAvailableDataType = true;
                                     break;
-                                }
+                                case "number":
+                                    customField.setType(CustomField.Type.NUMBER);
+                                    hasAvailableDataType = true;
+                                    break;
+                                case "datetime":
+                                case "date":
+                                    customField.setType(CustomField.Type.DATE);
+                                    hasAvailableDataType = true;
+                                    break;
+                                case "array":
+                                    customField.setType(CustomField.Type.MULTI_SELECT_LIST);
+                                    hasAvailableDataType = true;
+                                    break;
+                                default:
+                                    hasAvailableDataType = false;
+                                    break;
                             }
+                            break;
                         }
                     }
-                    if (!possibleValues.toString().isEmpty()) {
-                        customField.setPossibleValues(possibleValues.toString());
-                    } else {
-                        customField.setPossibleValues("");
+                    if(!hasAvailableDataType) {
+                        continue;
                     }
-                    customField.setDefaultValue("");
-
-                    customFields.add(customField);
                 }
+
+                customFields.add(customField);
             }
         }
 
