@@ -129,6 +129,7 @@
     <string name="issues_descriptions_environment">Environment</string>
     <string name="issues_notes">Notes</string>
     <string name="issues_attachments">Attachments</string>
+    <string name="issues_attachments_context_delete">Delete Attachment</string>
 
     <string name="issues_history">History</string>
     <string name="issues_history_oldValue">old</string>

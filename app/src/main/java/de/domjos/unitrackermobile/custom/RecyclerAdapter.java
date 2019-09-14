@@ -43,7 +43,6 @@ import de.domjos.unitrackermobile.activities.MainActivity;
 public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> {
     private ArrayList<ListObject> data;
     private View.OnClickListener mClickListener;
-    private View.OnLongClickListener mLongClickListener;
     private RecyclerView recyclerView;
     private int menuId = -1, noEntryItem = -1;
     private Activity activity;
@@ -104,10 +103,6 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
         mClickListener = callback;
     }
 
-    void setLongClickListener(View.OnLongClickListener callback) {
-        this.mLongClickListener = callback;
-    }
-
     void onSwipeListener(SwipeToDeleteCallback callback) {
         new ItemTouchHelper(callback).attachToRecyclerView(this.recyclerView);
     }
@@ -125,12 +120,6 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
             if (mClickListener != null) {
                 mClickListener.onClick(view);
             }
-        });
-        holder.itemView.setOnLongClickListener(view -> {
-            if(this.mLongClickListener !=null) {
-                this.mLongClickListener.onLongClick(view);
-            }
-            return  true;
         });
     }
 

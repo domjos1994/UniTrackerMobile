@@ -126,6 +126,7 @@
     <string name="issues_descriptions_environment">Umgebung</string>
     <string name="issues_notes">Notizen</string>
     <string name="issues_attachments">Anhänge</string>
+    <string name="issues_attachments_context_delete">Anhang löschen</string>
 
     <string name="issues_history">Verlauf</string>
     <string name="issues_history_oldValue">alt</string>

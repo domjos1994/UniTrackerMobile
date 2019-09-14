@@ -42,6 +42,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.MantisBTPermissions;
@@ -392,7 +393,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
                     if (soapObject.hasProperty("resolution")) {
                         SoapObject resolutionObject = (SoapObject) soapObject.getProperty("resolution");
-                        issue.setReproducibility(Integer.parseInt(resolutionObject.getPropertyAsString("id")), resolutionObject.getPropertyAsString("name"));
+                        issue.setResolution(Integer.parseInt(resolutionObject.getPropertyAsString("id")), resolutionObject.getPropertyAsString("name"));
                     }
 
                     if (soapObject.hasProperty("steps_to_reproduce")) {
@@ -682,8 +683,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
 
         if (!issue.getAttachments().isEmpty()) {
-            for (Attachment<Long> attachment : issue.getAttachments()) {
-                this.insertOrUpdateAttachment(attachment, id, project_id);
+            for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
+                if(descriptionObject instanceof Attachment) {
+                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    this.insertOrUpdateAttachment(attachment, id, project_id);
+                }
             }
         }
     }

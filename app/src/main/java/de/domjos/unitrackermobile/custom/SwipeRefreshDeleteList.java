@@ -37,7 +37,6 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     private ReloadListener reloadListener;
     private DeleteListener deleteListener;
     private ClickListener clickListener;
-    private LongClickListener longClickListener;
 
     public SwipeRefreshDeleteList(@NonNull Context context) {
         super(context);
@@ -88,14 +87,6 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
             }
         });
 
-        this.adapter.setLongClickListener(v -> {
-            int position = recyclerView.indexOfChild(v);
-            if (longClickListener != null) {
-                longClickListener.onClick(adapter.getItem(position));
-            }
-            return true;
-        });
-
         this.setOnRefreshListener(() -> {
             if (this.reloadListener != null) {
                 this.reloadListener.onReload();
@@ -116,10 +107,6 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
         this.clickListener = clickListener;
     }
 
-    public void longClick(LongClickListener longClickListener) {
-        this.longClickListener = longClickListener;
-    }
-
     public void setContextMenu(int menuId) {
         this.adapter.setContextMenu(menuId);
     }
@@ -133,10 +120,6 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     }
 
     public abstract static class ClickListener {
-        public abstract void onClick(ListObject listObject);
-    }
-
-    public abstract static class LongClickListener {
         public abstract void onClick(ListObject listObject);
     }
 }

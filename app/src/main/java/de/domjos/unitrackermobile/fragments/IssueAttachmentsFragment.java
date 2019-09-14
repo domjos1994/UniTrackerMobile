@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -74,6 +75,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.root = inflater.inflate(R.layout.issue_fragment_attachments, container, false);
 
         this.lvIssueAttachments = this.root.findViewById(R.id.lvIssueAttachments);
+        this.lvIssueAttachments.setContextMenu(R.menu.context_attachment);
         if (this.getActivity() != null) {
             this.bugService = Helper.getCurrentBugService(this.getActivity());
         }
@@ -95,24 +97,6 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, getActivity());
                 }
-            }
-        });
-
-        this.lvIssueAttachments.longClick(new SwipeRefreshDeleteList.LongClickListener() {
-            @Override
-            public void onClick(ListObject listObject) {
-
-                   if(getActivity()!=null) {
-                       new Thread(()->{
-                           try {
-                               Helper.getCurrentBugService(getContext()).deleteAttachment(listObject.getDescriptionObject().getId(), null, null);
-                               getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
-                           } catch (Exception ex) {
-                               getActivity().runOnUiThread(()->MessageHelper.printException(ex, getActivity()));
-                           }
-                       }).start();
-                   }
-
             }
         });
 
@@ -144,6 +128,27 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.initData();
         this.manageControls(this.editMode);
         return this.root;
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        try {
+            if(getActivity()!=null) {
+                ListObject listObject = this.lvIssueAttachments.getAdapter().getObject();
+                Object id = listObject.getDescriptionObject().getId();
+                new Thread(()->{
+                    try {
+                        bugService.deleteAttachment(id, null, null);
+                        getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
+                    } catch (Exception ex) {
+                        getActivity().runOnUiThread(()->MessageHelper.printException(ex, getActivity()));
+                    }
+                }).start();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, getActivity());
+        }
+        return true;
     }
 
     @Override
