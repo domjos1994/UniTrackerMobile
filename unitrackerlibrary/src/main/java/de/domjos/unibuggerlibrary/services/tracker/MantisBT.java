@@ -445,7 +445,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                                         note.setTitle(note.getDescription());
                                     }
                                     if (noteObject.hasProperty("view_state")) {
-                                        SoapObject viewObject = (SoapObject) soapObject.getProperty("view_state");
+                                        SoapObject viewObject = (SoapObject) noteObject.getProperty("view_state");
                                         note.setState(Integer.parseInt(viewObject.getPropertyAsString("id")), viewObject.getPropertyAsString("name"));
                                     }
                                     if (noteObject.hasProperty("date_submitted")) {
