@@ -498,7 +498,7 @@
 
     <array name="issues_general_status_pivotal_values_0">
         <item>0</item>
-        <item>Not started</item>
+        <item>Unstarted</item>
     </array>
     <array name="issues_general_status_pivotal_values_1">
         <item>1</item>

@@ -260,7 +260,10 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
         jsonObject.put("description", issue.getDescription());
         jsonObject.put("story_type", issue.getSeverity().getValue());
         jsonObject.put("current_state", issue.getStatus().getValue());
-        jsonObject.put("estimate", 2);
+
+        if (issue.getStatus().getKey() == 2) {
+            jsonObject.put("estimate", 2);
+        }
         JSONArray jsonArray = new JSONArray();
         for (String tag : issue.getTags().split(",")) {
             JSONObject tagObject = new JSONObject();

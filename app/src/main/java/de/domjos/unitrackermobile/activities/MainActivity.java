@@ -379,7 +379,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                             break;
                         case PivotalTracker:
                             statusArray = "issues_general_status_pivotal_values";
-                            position = 5;
+                            position = 2;
                             break;
                         case OpenProject:
                             statusArray = "issues_general_status_openproject_values";
