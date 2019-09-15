@@ -42,6 +42,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.RedminePermissions;
@@ -225,7 +226,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
         if (version.getId() == null) {
             object.put("version", versionObject);
-            this.executeRequest("/projects/" + project + "/versions.json", object.toString(), "POST");
+            this.executeRequest("/projects/" + project_id + "/versions.json", object.toString(), "POST");
         } else {
             versionObject.put("id", version.getId());
             object.put("version", versionObject);
@@ -265,7 +266,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             if (filter == IssueFilter.unresolved) {
                 filterQuery = "&status_id=open";
             } else {
-                filterQuery = "&status_id=closed";
+                filterQuery = "&status_id=closed,resolved";
             }
         }
 
@@ -362,7 +363,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             if (jsonObject.has("fixed_version")) {
                 if (!jsonObject.isNull("fixed_version")) {
                     JSONObject versionObject = jsonObject.getJSONObject("fixed_version");
-                    issue.setFixedInVersion(versionObject.getString("name"));
+                    issue.setTargetVersion(versionObject.getString("name"));
                 }
             }
             if (jsonObject.has("is_private")) {
@@ -399,6 +400,9 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                                         note.setTitle(notes);
                                     }
                                     note.setDescription(notes);
+                                    if (note.getTitle().trim().isEmpty()) {
+                                        continue;
+                                    }
                                     issue.getNotes().add(note);
                                 }
                             }
@@ -476,10 +480,13 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         if (!issue.getCategory().equals("")) {
             issueObject.put("category_id", this.getCategoryId(issue.getCategory(), project_id));
         }
-        if (!issue.getVersion().equals("")) {
+        if (issue.getDueDate() != null) {
+            issueObject.put("due_date", new SimpleDateFormat(Redmine.DATE_FORMAT, Locale.GERMAN).format(issue.getDueDate()));
+        }
+        if (!issue.getTargetVersion().equals("")) {
             List<Version<Long>> versions = this.getVersions("", project_id);
             for (Version<Long> version : versions) {
-                if (version.getTitle().equals(issue.getVersion())) {
+                if (version.getTitle().equals(issue.getTargetVersion())) {
                     issueObject.put("fixed_version_id", version.getId());
                 }
             }
@@ -519,48 +526,54 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
         if (issue.getId() != null) {
             if (!issue.getNotes().isEmpty()) {
-                for (Note<Long> note : issue.getNotes()) {
-                    if (note.getId() == null) {
-                        JSONObject jsonObject = new JSONObject();
-                        JSONObject issueNoteObject = new JSONObject();
-                        issueNoteObject.put("notes", note.getDescription());
-                        jsonObject.put("issue", issueNoteObject);
-                        this.executeRequest("/issues/" + issue.getId() + ".json", jsonObject.toString(), "PUT");
+                for (DescriptionObject descriptionObject : issue.getNotes()) {
+                    if (descriptionObject instanceof Note) {
+                        Note<Long> note = (Note<Long>) descriptionObject;
+                        if (note.getId() == null) {
+                            JSONObject jsonObject = new JSONObject();
+                            JSONObject issueNoteObject = new JSONObject();
+                            issueNoteObject.put("notes", note.getDescription());
+                            jsonObject.put("issue", issueNoteObject);
+                            this.executeRequest("/issues/" + issue.getId() + ".json", jsonObject.toString(), "PUT");
+                        }
                     }
                 }
             }
 
             if (!issue.getAttachments().isEmpty()) {
-                for (Attachment<Long> attachment : issue.getAttachments()) {
-                    if (attachment.getId() == null) {
-                        attachment.setFilename(attachment.getFilename().replace(":", "_").replace("/", "_"));
-                        status = this.executeRequest("/uploads.json?filename=" + attachment.getFilename(), attachment.getContent(), "POST");
-                        if (status == 200 || status == 201) {
-                            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-                            JSONObject uploadObject = jsonObject.getJSONObject("upload");
-                            String token = uploadObject.getString("token");
+                for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                    if (descriptionObject instanceof Attachment) {
+                        Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                        if (attachment.getId() == null) {
+                            attachment.setFilename(attachment.getFilename().replace(":", "_").replace("/", "_"));
+                            status = this.executeRequest("/uploads.json?filename=" + attachment.getFilename(), attachment.getContent(), "POST");
+                            if (status == 200 || status == 201) {
+                                JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                                JSONObject uploadObject = jsonObject.getJSONObject("upload");
+                                String token = uploadObject.getString("token");
 
-                            issueObject = new JSONObject();
-                            JSONObject jsonObj = new JSONObject();
-                            jsonObj.put("id", issue.getId());
-                            jsonObj.put("subject", issue.getTitle());
-                            issueObject.put("project_id", project_id);
-                            if (issue.getSeverity() != null) {
-                                issueObject.put("tracker_id", issue.getSeverity().getKey());
-                                issueObject.put("tracker", issue.getSeverity().getValue());
+                                issueObject = new JSONObject();
+                                JSONObject jsonObj = new JSONObject();
+                                jsonObj.put("id", issue.getId());
+                                jsonObj.put("subject", issue.getTitle());
+                                issueObject.put("project_id", project_id);
+                                if (issue.getSeverity() != null) {
+                                    issueObject.put("tracker_id", issue.getSeverity().getKey());
+                                    issueObject.put("tracker", issue.getSeverity().getValue());
+                                }
+                                if (issue.getStatus() != null) {
+                                    issueObject.put("status_id", issue.getStatus().getKey());
+                                }
+                                JSONArray jsonArray = new JSONArray();
+                                JSONObject uploadObj = new JSONObject();
+                                uploadObj.put("token", token);
+                                uploadObj.put("filename", attachment.getFilename());
+                                uploadObj.put("content_type", "");
+                                jsonArray.put(uploadObj);
+                                jsonObj.put("uploads", jsonArray);
+                                issueObject.put("issue", jsonObj);
+                                this.executeRequest("/issues/" + issue.getId() + ".json", issueObject.toString(), "PUT");
                             }
-                            if (issue.getStatus() != null) {
-                                issueObject.put("status_id", issue.getStatus().getKey());
-                            }
-                            JSONArray jsonArray = new JSONArray();
-                            JSONObject uploadObj = new JSONObject();
-                            uploadObj.put("token", token);
-                            uploadObj.put("filename", attachment.getFilename());
-                            uploadObj.put("content_type", "");
-                            jsonArray.put(uploadObj);
-                            jsonObj.put("uploads", jsonArray);
-                            issueObject.put("issue", jsonObj);
-                            this.executeRequest("/issues/" + issue.getId() + ".json", issueObject.toString(), "PUT");
                         }
                     }
                 }
@@ -834,6 +847,17 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 }
             }
         }
+
+        JSONObject categoryObject = new JSONObject();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("name", name);
+        categoryObject.put("issue_category", jsonObject);
+        status = this.executeRequest("/projects/" + pid + "/issue_categories.json", categoryObject.toString(), "POST");
+        if (status == 201) {
+            JSONObject jsonObject1 = new JSONObject(this.getCurrentMessage());
+            return jsonObject1.getJSONObject("issue_category").getLong("id");
+        }
+
         return 0L;
     }
 
@@ -850,8 +874,13 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 project.setWebsite(obj.getString("homepage"));
             }
             project.setPrivateProject(!obj.getBoolean("is_public"));
-            project.setCreatedAt(Converter.convertStringToDate(obj.getString("created_on"), Redmine.DATE_TIME_FORMAT).getTime());
-            project.setUpdatedAt(Converter.convertStringToDate(obj.getString("updated_on"), Redmine.DATE_TIME_FORMAT).getTime());
+
+            Date dt = Converter.convertStringToDate(obj.getString("created_on"), Redmine.DATE_TIME_FORMAT);
+
+            if (dt != null) {
+                project.setCreatedAt(dt.getTime());
+                project.setUpdatedAt(dt.getTime());
+            }
         } catch (Exception ex) {
             Log.e("error", "error", ex);
         }

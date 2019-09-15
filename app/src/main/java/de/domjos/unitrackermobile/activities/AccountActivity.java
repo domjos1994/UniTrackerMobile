@@ -155,6 +155,7 @@ public final class AccountActivity extends AbstractActivity {
                             txtAccountUserName.setText(user);
                             txtAccountUserName.setHint(txtAccountAPI.getHint());
                             txtAccountAPI.setVisibility(View.GONE);
+                            accountValidator.removeValidator(txtAccountAPI);
                             break;
                         default:
                             accountValidator.removeValidator(txtAccountAPI);

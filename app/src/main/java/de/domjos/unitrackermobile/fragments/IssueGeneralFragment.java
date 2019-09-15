@@ -460,7 +460,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralCategory.setVisibility(View.VISIBLE);
-                this.rowIssueGeneralFixedInVersion.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralTargetVersion.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
