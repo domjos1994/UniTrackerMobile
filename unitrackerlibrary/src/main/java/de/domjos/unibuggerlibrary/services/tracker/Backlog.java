@@ -39,6 +39,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.BacklogPermissions;
@@ -49,6 +50,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 public final class Backlog extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
     private final String authParams;
 
     public Backlog(Authentication authentication) {
@@ -150,7 +152,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 version.setReleasedVersion(false);
                 if (jsonObject.has("releaseDueDate")) {
                     if (!jsonObject.isNull("releaseDueDate")) {
-                        Date dt = Converter.convertStringToDate(jsonObject.getString("releaseDueDate"), "yyyy-MM-dd");
+                        Date dt = Converter.convertStringToDate(jsonObject.getString("releaseDueDate"), Backlog.DATE_FORMAT);
                         if (dt != null) {
                             version.setReleasedVersionAt(dt.getTime());
                             version.setReleasedVersion(dt.before(new Date()));
@@ -166,7 +168,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateVersion(Version<Long> version, Long project_id) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
+        SimpleDateFormat sdf = new SimpleDateFormat(Backlog.DATE_FORMAT, Locale.GERMAN);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name", version.getTitle());
@@ -276,7 +278,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
             if (!jsonObject.isNull("category")) {
                 if (jsonObject.getJSONArray("category").length() >= 1) {
                     JSONObject categoryObject = jsonObject.getJSONArray("category").getJSONObject(0);
-                    issue.setStatus(categoryObject.getInt("id"), categoryObject.getString("name"));
+                    issue.setCategory(categoryObject.getString("name"));
                 }
             }
 
@@ -320,8 +322,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
-
+        SimpleDateFormat sdf = new SimpleDateFormat(Backlog.DATE_FORMAT, Locale.GERMAN);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("summary", issue.getTitle());
@@ -329,7 +330,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
         if (issue.getDueDate() != null) {
             jsonObject.put("dueDate", sdf.format(issue.getDueDate()));
         }
-        jsonObject.put("issueTypeId", issue.getSeverity().getKey());
+        jsonObject.put("issueTypeId", this.getIdOfIssueType(project_id, issue.getSeverity().getValue()));
         jsonObject.put("priorityId", issue.getPriority().getKey());
 
         if (issue.getHandler() != null) {
@@ -338,18 +339,10 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
         if (!issue.getCategory().isEmpty()) {
             String category = issue.getCategory();
-            int categoryStatus = this.executeRequest("/api/v2/projects/" + project_id + "/categories");
-            if (categoryStatus == 200 || categoryStatus == 201) {
-                JSONArray categoryArray = new JSONArray(this.getCurrentMessage());
-                for (int i = 0; i <= categoryArray.length() - 1; i++) {
-                    if (category.equals(categoryArray.getJSONObject(i).getString("name"))) {
-                        JSONArray jsonArray = new JSONArray();
-                        jsonArray.put(categoryArray.getJSONObject(i).getLong("id"));
-                        jsonObject.put("categoryId", jsonArray);
-                        break;
-                    }
-                }
-            }
+            long id = this.getCategoryOrAdd(project_id, category);
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(id);
+            jsonObject.put("categoryId", jsonArray);
         }
 
         if (!issue.getVersion().isEmpty()) {
@@ -381,10 +374,17 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
         if (!issue.getAttachments().isEmpty()) {
             JSONArray jsonArray = new JSONArray();
-            for (Attachment<Long> attachment : issue.getAttachments()) {
-                jsonArray.put(this.uploadAttachment(attachment));
+            for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                if (descriptionObject instanceof Attachment) {
+                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    jsonArray.put(this.uploadAttachment(attachment));
+                }
             }
             jsonObject.put("attachmentId", jsonArray);
+        }
+
+        if (issue.getHandler() != null) {
+            jsonObject.put("assigneeId", issue.getHandler().getId());
         }
 
         int status;
@@ -765,5 +765,48 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
     @Override
     public List<String> getEnums(String title) {
         return null;
+    }
+
+
+    private Long getIdOfIssueType(Long project_id, String name) throws Exception {
+        int status = this.executeRequest("/api/v2/projects/" + project_id + "/issueTypes?" + this.authParams);
+        if (status == 200) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.getString("name").equals(name)) {
+                    return jsonObject.getLong("id");
+                }
+            }
+        }
+        return 0L;
+    }
+
+    private Long getCategoryOrAdd(Long project_id, String category) throws Exception {
+        long id = -1;
+
+        int status = this.executeRequest("/api/v2/projects/" + project_id + "/categories?" + this.authParams);
+        if (status == 200) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                if (jsonObject.getString("name").equals(category)) {
+                    id = jsonObject.getLong("id");
+                    break;
+                }
+            }
+        }
+
+        if (id == -1) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("name", category);
+            status = this.executeRequest("/api/v2/projects/" + project_id + "/categories?" + this.authParams, jsonObject.toString(), "POST");
+            if (status == 200) {
+                JSONObject object = new JSONObject(this.getCurrentMessage());
+                id = object.getLong("id");
+            }
+        }
+
+        return id;
     }
 }

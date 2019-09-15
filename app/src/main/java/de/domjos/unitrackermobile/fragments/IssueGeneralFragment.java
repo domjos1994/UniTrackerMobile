@@ -331,7 +331,20 @@ public final class IssueGeneralFragment extends AbstractFragment {
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getStatus().getKey().toString()), this.statusValueArray, spIssueGeneralStatus);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getResolution().getKey().toString()), this.resolutionValueArray, spIssueGeneralResolution);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getPriority().getKey().toString()), this.priorityValueArray, spIssueGeneralPriority);
-            this.spIssueGeneralHandler.setSelection(this.userAdapter.getPosition(this.issue.getHandler()));
+
+
+            if (this.issue.getHandler() != null) {
+                for (int i = 0; i <= this.userAdapter.getCount() - 1; i++) {
+                    User user = this.userAdapter.getItem(i);
+                    if (user != null) {
+                        if (user.getRealName().equals(this.issue.getHandler().getRealName())) {
+                            this.spIssueGeneralHandler.setSelection(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
             this.txtIssueGeneralVersion.setText(this.issue.getVersion());
             this.txtIssueGeneralTargetVersion.setText(this.issue.getTargetVersion());
             this.txtIssueGeneralFixedInVersion.setText(this.issue.getFixedInVersion());
