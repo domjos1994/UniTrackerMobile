@@ -42,6 +42,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.SQLitePermissions;
@@ -186,6 +187,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         Cursor cursor = db.rawQuery("SELECT * FROM versions WHERE project=?", new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
             Version<Long> version = new Version<>();
+            version.setId(this.getLong(cursor, "id"));
             version.setTitle(this.getString(cursor, "title"));
             version.setReleasedVersion(this.getBoolean(cursor, "releasedVersion"));
             version.setDeprecatedVersion(this.getBoolean(cursor, "deprecatedVersion"));
@@ -444,15 +446,27 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         }
         sqLiteStatement.close();
 
+        this.getWritableDatabase().execSQL("DELETE FROM notes WHERE issue=" + issue.getId());
         if (!issue.getNotes().isEmpty()) {
-            for (Note<Long> note : issue.getNotes()) {
-                this.insertOrUpdateNote(note, issue.getId(), project_id);
+            for (DescriptionObject descriptionObject : issue.getNotes()) {
+                if (descriptionObject instanceof Note) {
+                    long id = Long.parseLong(String.valueOf(issue.getId()));
+                    Note<Long> note = (Note<Long>) descriptionObject;
+                    note.setId(null);
+                    this.insertOrUpdateNote(note, id, project_id);
+                }
             }
         }
 
+        this.getWritableDatabase().execSQL("DELETE FROM attachments WHERE issue=" + issue.getId());
         if (!issue.getAttachments().isEmpty()) {
-            for (Attachment<Long> attachment : issue.getAttachments()) {
-                this.insertOrUpdateAttachment(attachment, issue.getId(), project_id);
+            for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                if (descriptionObject instanceof Attachment) {
+                    long id = Long.parseLong(String.valueOf(issue.getId()));
+                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    attachment.setId(null);
+                    this.insertOrUpdateAttachment(attachment, id, project_id);
+                }
             }
         }
 

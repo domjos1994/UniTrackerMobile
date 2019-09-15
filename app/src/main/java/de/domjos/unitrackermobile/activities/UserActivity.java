@@ -62,9 +62,11 @@ public final class UserActivity extends AbstractActivity {
             @Override
             public void onClick(ListObject listObject) {
                 if (listObject != null) {
-                    currentUser = (User) listObject.getDescriptionObject();
-                    objectToControls();
-                    manageControls(false, false, true);
+                    if (listObject.getDescriptionObject() instanceof User) {
+                        currentUser = (User) listObject.getDescriptionObject();
+                        objectToControls();
+                        manageControls(false, false, true);
+                    }
                 }
             }
         });
