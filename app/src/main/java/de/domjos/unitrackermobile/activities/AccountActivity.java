@@ -57,7 +57,7 @@ public final class AccountActivity extends AbstractActivity {
     private Spinner cmbAccountTracker;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
     private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
-            txtAccountAPI, txtAccountImageURL, txtAccountDescription;
+            txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
     private AutoCompleteTextView txtAccountTitle;
     private CheckBox chkAccountGuest;
     private ImageButton cmdAccountImageGallery;
@@ -110,6 +110,8 @@ public final class AccountActivity extends AbstractActivity {
                 }
                 txtAccountAPI.setVisibility(View.VISIBLE);
                 txtAccountUserName.setHint(R.string.accounts_user);
+                txtAccountExtended.setVisibility(View.GONE);
+                txtAccountExtended.setHint(R.string.accounts);
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {
@@ -122,8 +124,8 @@ public final class AccountActivity extends AbstractActivity {
                         case Github:
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
                             break;
-                        case YouTrack:
                         case Bugzilla:
+                        case YouTrack:
                             //case Tuleap:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
@@ -306,6 +308,7 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
         this.txtAccountAPI = this.findViewById(R.id.txtAccountAPI);
         this.txtAccountImageURL = this.findViewById(R.id.txtAccountImageURL);
+        this.txtAccountExtended = this.findViewById(R.id.txtAccountExtended);
         this.txtAccountDescription = this.findViewById(R.id.txtAccountDescription);
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 

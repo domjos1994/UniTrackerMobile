@@ -147,6 +147,18 @@
                 <TableRow>
 
                     <EditText
+                        android:id="@+id/txtAccountExtended"
+                        android:inputType="text"
+                        android:hint="@string/accounts"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
                         android:id="@+id/txtAccountDescription"
                         android:inputType="textMultiLine"
                         android:hint="@string/general_description"

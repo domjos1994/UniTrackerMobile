@@ -42,6 +42,7 @@
     <string name="accounts_pivotal_server" translatable="false">https://www.pivotaltracker.com</string>
     <string name="accounts_connection_successfully">Connection successfully!</string>
     <string name="accounts_connection_not_successfully">Connection not successfully!</string>
+    <string name="accounts_youtrack_hub">Path to hub</string>
 
     <string name="projects">Projects</string>
     <string name="projects_alias">Alias</string>

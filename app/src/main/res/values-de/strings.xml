@@ -39,6 +39,7 @@
     <string name="accounts_image_gallery">Galerie</string>
     <string name="accounts_connection_successfully">Verbindung erfolgreich!</string>
     <string name="accounts_connection_not_successfully">Verbindung nicht erfolgreich!</string>
+    <string name="accounts_youtrack_hub">Pfad zu hub</string>
 
     <string name="projects">Projekte</string>
     <string name="projects_alias">Alias</string>
