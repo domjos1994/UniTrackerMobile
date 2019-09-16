@@ -37,6 +37,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.OpenProjectPermissions;
@@ -276,7 +277,9 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 if (!linkObject.isNull("assignee")) {
                     String href = linkObject.getJSONObject("assignee").getString("href");
                     String user_id = href.substring(href.lastIndexOf("/") + 1);
-                    issue.setHandler(this.getUser(Long.parseLong(user_id), project_id));
+                    if(!user_id.equals("null")) {
+                        issue.setHandler(this.getUser(Long.parseLong(user_id), project_id));
+                    }
                 }
             }
 
@@ -357,9 +360,13 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
         linksObject.put("project", definingObject);
 
         if (issue.getHandler() != null) {
-            JSONObject handlerObject = new JSONObject();
-            handlerObject.put("href", "/api/v3/users/" + issue.getHandler().getId());
-            linksObject.put("assignee", handlerObject);
+            if(issue.getHandler().getId()!=null) {
+                if(issue.getHandler().getId()!=0L) {
+                    JSONObject handlerObject = new JSONObject();
+                    handlerObject.put("href", "/api/v3/users/" + issue.getHandler().getId());
+                    linksObject.put("assignee", handlerObject);
+                }
+            }
         }
 
         if (issue.getPriority().getKey() != 0) {
@@ -390,9 +397,15 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
 
         if (issue.getVersion() != null) {
             if (!issue.getVersion().isEmpty()) {
-                JSONObject versionObject = new JSONObject();
-                versionObject.put("title", issue.getVersion());
-                linksObject.put("version", versionObject);
+                List<Version<Long>> versions = this.getVersions("", project_id);
+                for(Version<Long> version : versions) {
+                    if(version.getTitle().equals(issue.getVersion())) {
+                        JSONObject versionObject = new JSONObject();
+                        versionObject.put("href", "/api/v3/versions/" + version.getId());
+                        linksObject.put("version", versionObject);
+                        break;
+                    }
+                }
             }
         }
         jsonObject.put("_links", linksObject);
@@ -425,8 +438,11 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             }
 
             if (!issue.getNotes().isEmpty()) {
-                for (Note<Long> note : issue.getNotes()) {
-                    this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                for (DescriptionObject descrObj : issue.getNotes()) {
+                    if(descrObj instanceof Note) {
+                        Note<Long> note = (Note<Long>) descrObj;
+                        this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                    }
                 }
             }
 
@@ -445,8 +461,11 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             }
 
             if (!issue.getAttachments().isEmpty()) {
-                for (Attachment<Long> attachment : issue.getAttachments()) {
-                    this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                for (DescriptionObject descrObj : issue.getAttachments()) {
+                    if(descrObj instanceof Attachment) {
+                        Attachment<Long> attachment = (Attachment<Long>) descrObj;
+                        this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                    }
                 }
             }
         }
