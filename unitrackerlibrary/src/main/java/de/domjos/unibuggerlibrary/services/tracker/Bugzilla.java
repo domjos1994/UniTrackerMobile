@@ -53,6 +53,8 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     private final String loginParams;
     private final Authentication authentication;
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public Bugzilla(Authentication authentication) {
         super(
@@ -140,7 +142,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     @Override
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         String url, method;
-        if (project.getId() == 0L) {
+        if (project.getId() == null) {
             url = "/rest/product?" + this.loginParams;
             method = "POST";
         } else {
@@ -259,8 +261,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 JSONObject bugObject = jsonArray.getJSONObject(i);
                 issue.setId(bugObject.getLong("id"));
                 issue.setTitle(bugObject.getString("summary"));
-                issue.setLastUpdated(Converter.convertStringToDate(bugObject.getString("last_change_time"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-                issue.setSubmitDate(Converter.convertStringToDate(bugObject.getString("creation_time"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                issue.setLastUpdated(Converter.convertStringToDate(bugObject.getString("last_change_time"), Bugzilla.DATE_TIME_FORMAT));
+                issue.setSubmitDate(Converter.convertStringToDate(bugObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
                 issue.setDescription(bugObject.getString("url"));
 
                 String priority = bugObject.getString("priority");
@@ -303,7 +305,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
                 if (bugObject.has("deadline")) {
                     if (!bugObject.isNull("deadline")) {
-                        issue.setDueDate(Converter.convertStringToDate(bugObject.getString("deadline"), "yyyy-MM-dd"));
+                        issue.setDueDate(Converter.convertStringToDate(bugObject.getString("deadline"), Bugzilla.DATE_FORMAT));
                     }
                 }
 
@@ -342,8 +344,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                             note.setTitle(text);
                         }
                         note.setDescription(text);
-                        note.setSubmitDate(Converter.convertStringToDate(commentObject.getString("creation_time"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-                        note.setLastUpdated(Converter.convertStringToDate(commentObject.getString("time"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                        note.setSubmitDate(Converter.convertStringToDate(commentObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
+                        note.setLastUpdated(Converter.convertStringToDate(commentObject.getString("time"), Bugzilla.DATE_TIME_FORMAT));
                         issue.getNotes().add(note);
                     }
                 }
@@ -396,7 +398,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         }
 
         if (issue.getDueDate() != null) {
-            bugObject.put("deadline", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(issue.getDueDate()));
+            bugObject.put("deadline", new SimpleDateFormat(Bugzilla.DATE_FORMAT, Locale.GERMAN).format(issue.getDueDate()));
         }
         if (!issue.getTags().trim().equals("")) {
             JSONArray jsonArray = new JSONArray();
@@ -686,7 +688,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                     for (int k = 0; k <= changeArray.length() - 1; k++) {
                         JSONObject changeObject = changeArray.getJSONObject(k);
                         History<Long> history = new History<>();
-                        Date when = Converter.convertStringToDate(historyObject.getString("when"), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                        Date when = Converter.convertStringToDate(historyObject.getString("when"), Bugzilla.DATE_TIME_FORMAT);
                         history.setTime(when.getTime());
                         history.setUser(historyObject.getString("who"));
                         history.setField(changeObject.getString("field_name"));
