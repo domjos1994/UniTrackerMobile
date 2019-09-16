@@ -147,7 +147,12 @@ public final class IssueActivity extends AbstractActivity {
         IFunctionImplemented iFunctionImplemented = this.bugService.getPermissions();
         boolean isVisible = this.navigationView.getMenu().getItem(1).isVisible();
         boolean canUpdate = iFunctionImplemented.updateIssues();
-        this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);
+        boolean canAdd = iFunctionImplemented.addIssues();
+        if (this.pid == null) {
+            this.navigationView.setVisibility(canAdd ? View.VISIBLE : View.GONE);
+        } else {
+            this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);
+        }
 
         this.navigationView.getMenu().getItem(1).setEnabled(!editMode);
         this.navigationView.getMenu().getItem(3).setEnabled(editMode || !isVisible);
