@@ -43,13 +43,14 @@ import de.domjos.unibuggerlibrary.permissions.OpenProjectPermissions;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
 import de.domjos.unibuggerlibrary.services.engine.JSONEngine;
 import de.domjos.unibuggerlibrary.utils.Converter;
+import okhttp3.Credentials;
 
 public final class OpenProject extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
     private final static String FORMAT = "yyyy-MM-dd'T'HH:mm:ss", OTHER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public OpenProject(Authentication authentication) {
-        super(authentication, "Content-Type: application/hal+json");
+        super(authentication, "Content-Type: application/hal+json", "Authorization: " + Credentials.basic("apikey", authentication.getPassword()));
         this.authentication = authentication;
     }
 

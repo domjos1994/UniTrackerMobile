@@ -254,10 +254,10 @@ public class JSONEngine {
                 .readTimeout(30, TimeUnit.SECONDS)
                 .authenticator((route, response) -> {
                     String credential;
-                    if (!authentication.getAPIKey().isEmpty()) {
+                    if (!authentication.getAPIKey().trim().isEmpty()) {
                         credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
                     } else {
-                        credential = Credentials.basic(authentication.getUserName(), authentication.getPassword());
+                        credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
                     }
                     return response.request().newBuilder().header("Authorization", credential).build();
                 })
@@ -272,6 +272,8 @@ public class JSONEngine {
                     String[] fields = entry.split(": ");
                     if (fields.length == 2) {
                         builder = builder.addHeader(fields[0], fields[1]);
+                    } else if (fields.length > 2) {
+                        builder = builder.addHeader(fields[0], entry.replace(fields[0] + ":", "").trim());
                     }
                 }
             }

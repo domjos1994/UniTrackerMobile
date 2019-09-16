@@ -422,6 +422,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
         } else {
             this.rowIssueGeneralProfile.setVisibility(View.GONE);
         }
+        this.resolutionValueArray = "issues_general_resolution_values";
 
         switch (authentication.getTracker()) {
             case MantisBT:
@@ -447,7 +448,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
-                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
             case YouTrack:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
@@ -538,7 +538,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_backlog_values";
                 this.statusValueArray = "issues_general_status_backlog_values";
                 this.severityValueArray = "issues_general_severity_backlog_values";
-                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
@@ -557,7 +556,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
-                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
         }
 
