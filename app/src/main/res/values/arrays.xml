@@ -471,15 +471,15 @@
     </array>
 
     <array name="issues_general_status_bugzilla_values_0">
-        <item>1</item>
+        <item>3</item>
         <item>CONFIRMED</item>
     </array>
     <array name="issues_general_status_bugzilla_values_1">
-        <item>2</item>
+        <item>4</item>
         <item>IN_PROGRESS</item>
     </array>
     <array name="issues_general_status_bugzilla_values_2">
-        <item>3</item>
+        <item>5</item>
         <item>RESOLVED</item>
     </array>
 
@@ -635,5 +635,30 @@
     <array name="issues_general_resolution_values_8">
         <item>90</item>
         <item>Won\'t be fixed!</item>
+    </array>
+
+    <array name="issues_general_resolution_bugzilla_values_0">
+        <item>1</item>
+        <item></item>
+    </array>
+    <array name="issues_general_resolution_bugzilla_values_1">
+        <item>2</item>
+        <item>FIXED</item>
+    </array>
+    <array name="issues_general_resolution_bugzilla_values_2">
+        <item>3</item>
+        <item>INVALID</item>
+    </array>
+    <array name="issues_general_resolution_bugzilla_values_3">
+        <item>4</item>
+        <item>WONTFIX</item>
+    </array>
+    <array name="issues_general_resolution_bugzilla_values_4">
+        <item>5</item>
+        <item>DUPLICATE</item>
+    </array>
+    <array name="issues_general_resolution_bugzilla_values_5">
+        <item>6</item>
+        <item>WORKSFORME</item>
     </array>
 </resources>

@@ -372,6 +372,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         case Bugzilla:
                             statusArray = "issues_general_status_bugzilla_values";
                             position = 2;
+                            List<String> resItems = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_bugzilla_values");
+                            int resId = ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_bugzilla_values");
+                            issue.setResolution(resId, resItems.get(1));
                             break;
                         case Jira:
                             statusArray = "issues_general_status_jira_values";

@@ -447,7 +447,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
-                this.resolutionValueArray = "issues_general_resolution_mantisbt_values";
+                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
             case YouTrack:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
@@ -476,12 +476,14 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralPriority.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralSeverity.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralResolution.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralVersion.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralTags.setVisibility(View.VISIBLE);
                 this.priorityValueArray = "issues_general_priority_bugzilla_values";
                 this.statusValueArray = "issues_general_status_bugzilla_values";
                 this.severityValueArray = "issues_general_severity_bugzilla_values";
+                this.resolutionValueArray = "issues_general_resolution_bugzilla_values";
                 break;
             case Github:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
@@ -536,7 +538,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_backlog_values";
                 this.statusValueArray = "issues_general_status_backlog_values";
                 this.severityValueArray = "issues_general_severity_backlog_values";
-                this.resolutionValueArray = "issues_general_resolution_backlog_values";
+                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
             case Local:
                 this.rowIssueGeneralDueDate.setVisibility(View.VISIBLE);
@@ -555,13 +557,13 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
                 this.statusValueArray = "issues_general_status_mantisbt_values";
                 this.severityValueArray = "issues_general_severity_mantisbt_values";
-                this.resolutionValueArray = "issues_general_resolution_mantisbt_values";
+                this.resolutionValueArray = "issues_general_resolution_values";
                 break;
         }
 
         this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));
         this.spIssueGeneralView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
-        this.spIssueGeneralResolution.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_resolution_values"));
+        this.spIssueGeneralResolution.setAdapter(Helper.setAdapter(this.getContext(), this.resolutionValueArray));
         this.spIssueGeneralStatus.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
         this.spIssueGeneralReproducibility.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_reproducibility_values"));
         this.spIssueGeneralSeverity.setAdapter(Helper.setAdapter(this.getContext(), this.severityValueArray));

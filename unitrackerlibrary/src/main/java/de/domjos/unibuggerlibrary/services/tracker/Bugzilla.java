@@ -43,6 +43,7 @@ import de.domjos.unibuggerlibrary.model.issues.Note;
 import de.domjos.unibuggerlibrary.model.issues.Profile;
 import de.domjos.unibuggerlibrary.model.issues.Tag;
 import de.domjos.unibuggerlibrary.model.issues.User;
+import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 import de.domjos.unibuggerlibrary.permissions.BugzillaPermissions;
@@ -269,13 +270,16 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 issue.setDescription(bugObject.getString("url"));
 
                 String priority = bugObject.getString("priority");
-                issue.setSeverity(this.getId("priority", priority), priority);
+                issue.setPriority(this.getId("priority", priority), priority);
 
                 String statusEnum = bugObject.getString("status");
-                issue.setStatus(this.getId("status", statusEnum), statusEnum);
+                issue.setStatus(this.getId("bug_status", statusEnum), statusEnum);
 
                 String severityEnum = bugObject.getString("severity");
-                issue.setSeverity(this.getId("severity", severityEnum), severityEnum);
+                issue.setSeverity(this.getId("bug_severity", severityEnum), severityEnum);
+
+                String resolutionEnum = bugObject.getString("resolution");
+                issue.setResolution(this.getId("resolution", resolutionEnum), resolutionEnum);
 
                 issue.setProfile(new Profile<>(bugObject.getString("platform"), bugObject.getString("op_sys"), ""));
 
@@ -313,7 +317,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 }
 
                 if (bugObject.has("keywords")) {
-                    if (bugObject.isNull("keywords")) {
+                    if (!bugObject.isNull("keywords")) {
                         JSONArray array = bugObject.getJSONArray("keywords");
                         StringBuilder builder = new StringBuilder();
                         for (int j = 0; j <= array.length() - 1; j++) {
@@ -376,7 +380,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         JSONObject bugObject = new JSONObject();
         bugObject.put("summary", issue.getTitle());
-        bugObject.put("url", issue.getDescription());
+        bugObject.put("description", issue.getDescription());
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
             bugObject.put("product", project.getTitle());
@@ -386,12 +390,21 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         bugObject.put("priority", issue.getPriority().getValue());
         bugObject.put("status", issue.getStatus().getValue());
         bugObject.put("severity", issue.getSeverity().getValue());
+        bugObject.put("resolution", issue.getResolution().getValue());
         if (issue.getProfile() == null) {
             bugObject.put("op_sys", "All");
             bugObject.put("platform", "All");
         } else {
-            bugObject.put("op_sys", issue.getProfile().getOs());
-            bugObject.put("platform", issue.getProfile().getPlatform());
+            if(issue.getProfile().getOs().trim().isEmpty()) {
+                bugObject.put("op_sys", "All");
+            } else {
+                bugObject.put("op_sys", issue.getProfile().getOs());
+            }
+            if(issue.getProfile().getPlatform().trim().isEmpty()) {
+                bugObject.put("platform", "All");
+            } else {
+                bugObject.put("platform", issue.getProfile().getPlatform());
+            }
         }
         for (Map.Entry<CustomField<Long>, String> entry : issue.getCustomFields().entrySet()) {
             bugObject.put(entry.getKey().getHints().get("name"), entry.getValue());
@@ -403,16 +416,16 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         if (issue.getDueDate() != null) {
             bugObject.put("deadline", new SimpleDateFormat(Bugzilla.DATE_FORMAT, Locale.GERMAN).format(issue.getDueDate()));
         }
-        if (!issue.getTags().trim().equals("")) {
-            JSONArray jsonArray = new JSONArray();
-            for (String tag : issue.getTags().split(",")) {
-                jsonArray.put(tag.trim());
-            }
-            bugObject.put("keywords", jsonArray);
-        }
+        bugObject.put("keywords", this.getTagObject(issue));
 
         int status;
         if (issue.getId() != null) {
+            JSONArray jsonArray = new JSONArray();
+            jsonArray.put(Long.parseLong(String.valueOf(issue.getId())));
+            bugObject.put("ids", jsonArray);
+            JSONObject commentObject = new JSONObject();
+            commentObject.put("body", "Updated by UniTrackerMobile!");
+            bugObject.put("comment", commentObject);
             status = this.executeRequest("/rest/bug/" + issue.getId() + "?" + this.loginParams, bugObject.toString(), "PUT");
         } else {
             status = this.executeRequest("/rest/bug?" + this.loginParams, bugObject.toString(), "POST");
@@ -446,8 +459,11 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
             }
 
             if (!issue.getAttachments().isEmpty()) {
-                for (Attachment<Long> attachment : issue.getAttachments()) {
-                    this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                for (DescriptionObject descriptionObject: issue.getAttachments()) {
+                    if(descriptionObject instanceof Attachment) {
+                        Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                        this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                    }
                 }
             }
         }
@@ -739,6 +755,27 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     @NonNull
     public String toString() {
         return this.getAuthentication().getTitle();
+    }
+
+    private JSONObject getTagObject(Issue<Long> issue) throws Exception {
+        List<String> newTagList = new LinkedList<>();
+        if(!issue.getTags().isEmpty()) {
+            if(issue.getTags().contains(",")) {
+                for(String tag : issue.getTags().split(",")) {
+                    newTagList.add(tag.trim());
+                }
+            } else {
+                newTagList.add(issue.getTags().trim());
+            }
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        JSONArray setArray = new JSONArray();
+        for(String tag : newTagList) {
+            setArray.put(tag);
+        }
+        jsonObject.put("set", setArray);
+        return jsonObject;
     }
 
     private Map<String, Integer> getEnumValues(String name) throws Exception {
