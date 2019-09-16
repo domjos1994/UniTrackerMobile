@@ -109,6 +109,7 @@ public final class AccountActivity extends AbstractActivity {
                     txtAccountServer.setText("");
                 }
                 txtAccountAPI.setVisibility(View.VISIBLE);
+                txtAccountUserName.setHint(R.string.accounts_user);
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {
@@ -122,6 +123,8 @@ public final class AccountActivity extends AbstractActivity {
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
                             break;
                         case YouTrack:
+                        case Bugzilla:
+                            //case Tuleap:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
@@ -136,20 +139,6 @@ public final class AccountActivity extends AbstractActivity {
                                 accountValidator.addEmptyValidator(txtAccountAPI);
                             }
                             break;
-                        case Bugzilla:
-                            if (chkAccountGuest.isChecked()) {
-                                accountValidator.removeValidator(txtAccountAPI);
-                            } else {
-                                accountValidator.addEmptyValidator(txtAccountAPI);
-                            }
-                            break;
-                        /*case Tuleap:
-                            if (chkAccountGuest.isChecked()) {
-                                accountValidator.removeValidator(txtAccountAPI);
-                            } else {
-                                accountValidator.addEmptyValidator(txtAccountAPI);
-                            }
-                            break;*/
                         case OpenProject:
                             String user = "apikey";
                             txtAccountUserName.setText(user);
