@@ -142,22 +142,25 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     @Override
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
         String url, method;
+
+        JSONObject jsonObject = new JSONObject();
         if (project.getId() == null) {
             url = "/rest/product?" + this.loginParams;
             method = "POST";
+            jsonObject.put("version", "unspecified");
         } else {
             url = "/rest/product/" + project.getId() + "?" + this.loginParams;
             method = "PUT";
         }
-        JSONObject jsonObject = new JSONObject();
+
         jsonObject.put("name", project.getTitle());
         jsonObject.put("description", project.getDescription());
         jsonObject.put("is_open", project.isEnabled());
         jsonObject.put("has_unconfirmed", false);
-        int status = this.executeRequest(url, jsonObject.toString(), method);
 
+        int status = this.executeRequest(url, jsonObject.toString(), method);
         if (status == 200 || status == 201) {
-            if (project.getId() == 0) {
+            if (project.getId() == null) {
                 JSONObject object = new JSONObject(this.getCurrentMessage());
                 return (long) object.getInt("id");
             } else {

@@ -92,27 +92,29 @@ public final class ProjectActivity extends AbstractActivity {
         this.lvProjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
-                try {
-                    final ProjectTask[] task = new ProjectTask[1];
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
-                    builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
-                    builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
-                        try {
-                            task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
-                            task[0].execute(listObject.getDescriptionObject().getId()).get();
-                            if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
-                                MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
-                            } else {
-                                reload();
-                                manageControls(false, false, false);
+                if(bugService.getPermissions().deleteProjects()) {
+                    try {
+                        final ProjectTask[] task = new ProjectTask[1];
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
+                        builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
+                        builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
+                            try {
+                                task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
+                                task[0].execute(listObject.getDescriptionObject().getId()).get();
+                                if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
+                                    MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
+                                } else {
+                                    reload();
+                                    manageControls(false, false, false);
+                                }
+                            } catch (Exception ex) {
+                                MessageHelper.printException(ex, getApplicationContext());
                             }
-                        } catch (Exception ex) {
-                            MessageHelper.printException(ex, getApplicationContext());
-                        }
-                    });
-                    builder.create().show();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, getApplicationContext());
+                        });
+                        builder.create().show();
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, getApplicationContext());
+                    }
                 }
             }
         });
@@ -234,6 +236,9 @@ public final class ProjectActivity extends AbstractActivity {
             case RedMine:
             case Backlog:
                 this.projectValidator.addEmptyValidator(this.txtProjectAlias);
+                break;
+            case Bugzilla:
+                this.projectValidator.addEmptyValidator(this.txtProjectDescription);
                 break;
             case YouTrack:
                 this.projectValidator.addValueEqualsRegex(this.txtProjectAlias, "^[a-zA-Z0-9_]{1,}$");
