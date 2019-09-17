@@ -43,6 +43,7 @@
     <string name="accounts_connection_successfully">Connection successfully!</string>
     <string name="accounts_connection_not_successfully">Connection not successfully!</string>
     <string name="accounts_youtrack_hub">Path to hub</string>
+    <string name="accounts_github_client_secret">Client ID and Secret(separated by |)</string>
 
     <string name="projects">Projects</string>
     <string name="projects_alias">Alias</string>
@@ -209,6 +210,7 @@
     <string name="administration_project">Choos Project!</string>
     <string name="administration_data">Choose Data</string>
     <string name="administration_withIssues">with Bugs</string>
+    <string name="administration_addToProject">add to Project</string>
     <string name="administration_copy">Copy</string>
     <string name="administration_move">Move</string>
     <string-array name="administration_data">

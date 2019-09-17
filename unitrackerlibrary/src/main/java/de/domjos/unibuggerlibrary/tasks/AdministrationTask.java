@@ -24,28 +24,20 @@ import java.util.List;
 
 import de.domjos.unibuggerlibrary.R;
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
+import de.domjos.unibuggerlibrary.model.Administration;
 import de.domjos.unibuggerlibrary.model.issues.Attachment;
 import de.domjos.unibuggerlibrary.model.issues.CustomField;
 import de.domjos.unibuggerlibrary.model.issues.Issue;
 import de.domjos.unibuggerlibrary.model.issues.Note;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.model.projects.Version;
 
-public final class AdministrationTask extends AbstractTask<IBugService, Void, Void> {
-    private final boolean move, withIssues;
-    private final Project project1, project2;
-    private final DescriptionObject dataItem;
-    private final int dataPosition;
+public final class AdministrationTask extends AbstractTask<Administration, Void, Void> {
+    private int icon;
 
-    public AdministrationTask(Activity activity, boolean showNotifications, boolean move, boolean withIssues, Project project1, Project project2, DescriptionObject dataItem, int dataPosition, int icon) {
+    public AdministrationTask(Activity activity, boolean showNotifications, int icon) {
         super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon);
-        this.move = move;
-        this.withIssues = withIssues;
-        this.project1 = project1;
-        this.project2 = project2;
-        this.dataItem = dataItem;
-        this.dataPosition = dataPosition;
+        this.icon = icon;
     }
 
     @Override
@@ -55,64 +47,63 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Void doInBackground(IBugService... iBugServices) {
+    protected Void doInBackground(Administration... administrations) {
         try {
-            IBugService bugService1 = iBugServices[0];
-            IBugService bugService2 = iBugServices[1];
+            Administration administration = administrations[0];
 
-            if (project2 != null && project1 != null) {
+            if (administration.getFromProject() != null && administration.getToProject() != null) {
                 Object id;
-                switch (dataPosition) {
-                    case 0:
-                        Project project = (Project) dataItem;
+                switch (administration.getDataType()) {
+                    case Project:
+                        Project project = (Project) administration.getDataItem();
                         if (project != null) {
                             id = project.getId();
-                            project.setId(null);
-                            project.setTitle(project.getTitle().replace("-", ""));
+                            Object objId = this.insertOrUpdateProject(project, administration);
 
-                            for (int i = 0; i <= project.getVersions().size() - 1; i++) {
-                                ((Version) project.getVersions().get(i)).setId(null);
-                            }
-                            Object objId = bugService2.insertOrUpdateProject(project);
-
-                            if (move) {
-                                bugService1.deleteProject(id);
-                            }
-
-                            if (this.withIssues) {
+                            if (administration.isWithBugs()) {
                                 Object newId = null;
 
-                                List<Project> projects = bugService2.getProjects();
+                                List<Project> projects = administration.getToBugService().getProjects();
                                 for (Project newProject : projects) {
                                     if (newProject.getId().equals(objId)) {
                                         newId = newProject.getId();
                                     }
                                 }
 
-                                List<Issue> issues = bugService1.getIssues(id);
+                                List<Issue> issues = administration.getFromBugService().getIssues(id);
                                 for (Issue issue : issues) {
-                                    issue = bugService1.getIssue(issue.getId(), id);
-                                    issue.setId(null);
-                                    for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
-                                        ((Attachment) issue.getAttachments().get(i)).setId(null);
-                                    }
-                                    for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
-                                        ((Note) issue.getNotes().get(i)).setId(null);
-                                    }
+                                    try {
+                                        issue = administration.getFromBugService().getIssue(issue.getId(), id);
+                                        issue.setId(null);
+                                        for (int i = 0; i <= issue.getAttachments().size() - 1; i++) {
+                                            ((Attachment) issue.getAttachments().get(i)).setId(null);
+                                        }
+                                        for (int i = 0; i <= issue.getNotes().size() - 1; i++) {
+                                            ((Note) issue.getNotes().get(i)).setId(null);
+                                        }
 
-                                    issue.getCustomFields().clear();
+                                        issue.getCustomFields().clear();
+                                        issue.setHandler(null);
+                                        issue.setVersion(this.insertOrUpdateVersion(issue.getVersion(), administration.getToProject(), administration.getToBugService()));
+                                        issue.setTargetVersion(this.insertOrUpdateVersion(issue.getTargetVersion(), administration.getToProject(), administration.getToBugService()));
+                                        issue.setFixedInVersion(this.insertOrUpdateVersion(issue.getFixedInVersion(), administration.getToProject(), administration.getToBugService()));
 
-                                    bugService2.insertOrUpdateIssue(issue, newId);
+                                        issue = administration.convertIssueToValidNewIssue(issue);
 
-                                    if (move) {
-                                        bugService1.deleteIssue(issue.getId(), id);
+                                        administration.getToBugService().insertOrUpdateIssue(issue, newId);
+
+                                        if (administration.getAdminType()== Administration.AdminType.move) {
+                                            administration.getFromBugService().deleteIssue(issue.getId(), id);
+                                        }
+                                    } catch (Exception ex) {
+                                        super.printException(ex);
                                     }
                                 }
                             }
                         }
                         break;
-                    case 1:
-                        Issue issue = (Issue) dataItem;
+                    case Bug:
+                        Issue issue = (Issue) administration.getDataItem();
                         if (issue != null) {
                             id = issue.getId();
                             issue.setId(null);
@@ -123,23 +114,25 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
                                 ((Note) issue.getNotes().get(i)).setId(null);
                             }
 
-                            bugService2.insertOrUpdateIssue(issue, project2.getId());
+                            issue = administration.convertIssueToValidNewIssue(issue);
 
-                            if (move) {
-                                bugService1.deleteIssue(id, project1.getId());
+                            administration.getToBugService().insertOrUpdateIssue(issue, administration.getToProject().getId());
+
+                            if (administration.getAdminType()== Administration.AdminType.move) {
+                                administration.getFromBugService().deleteIssue(id, administration.getFromProject().getId());
                             }
                         }
                         break;
-                    case 2:
-                        CustomField customField = (CustomField) dataItem;
+                    case CustomField:
+                        CustomField customField = (CustomField) administration.getDataItem();
                         if (customField != null) {
                             id = customField.getId();
                             customField.setId(null);
 
-                            bugService2.insertOrUpdateCustomField(customField, project2.getId());
+                            administration.getToBugService().insertOrUpdateCustomField(customField, administration.getToProject().getId());
 
-                            if (move) {
-                                bugService1.deleteCustomField(id, project1.getId());
+                            if (administration.getAdminType()== Administration.AdminType.move) {
+                                administration.getFromBugService().deleteCustomField(id, administration.getFromProject().getId());
                             }
                         }
                         break;
@@ -149,5 +142,55 @@ public final class AdministrationTask extends AbstractTask<IBugService, Void, Vo
             super.printException(ex);
         }
         return null;
+    }
+
+    private String insertOrUpdateVersion(String version, Object projectId, IBugService bugService) {
+        try {
+            if(bugService.getPermissions().addVersions()) {
+
+                Version oldVersion = new Version();
+                oldVersion.setTitle(version);
+                List<Version> versions = bugService.getVersions("", projectId);
+                for(Version tmp : versions) {
+                    if(tmp.getTitle().equals(version)) {
+                        oldVersion = tmp;
+                        break;
+                    }
+                }
+
+                bugService.insertOrUpdateVersion(oldVersion, projectId);
+
+                return version;
+            }
+        } catch (Exception ignored) {}
+        return "";
+    }
+
+    @SuppressWarnings("unchecked")
+    private Object insertOrUpdateProject(Project project, Administration administration) throws Exception {
+        Object id = project.getId();
+        project = administration.convertProjectToValidNewProject(project);
+        project.setTitle(project.getTitle().replace("-", ""));
+
+        Object newId = null;
+        if(administration.isAddToExistingProject()) {
+            List<Project> projects = administration.getToBugService().getProjects();
+            for(Project temp : projects) {
+                if(temp.getTitle().toLowerCase().equals(project.getTitle().toLowerCase())) {
+                    newId = temp.getId();
+                }
+            }
+        }
+        project.setId(newId);
+
+        for (int i = 0; i <= project.getVersions().size() - 1; i++) {
+            ((Version) project.getVersions().get(i)).setId(null);
+        }
+        Object objId = administration.getToBugService().insertOrUpdateProject(project);
+
+        if (administration.getAdminType() == Administration.AdminType.move) {
+            administration.getFromBugService().deleteProject(id);
+        }
+        return objId;
     }
 }

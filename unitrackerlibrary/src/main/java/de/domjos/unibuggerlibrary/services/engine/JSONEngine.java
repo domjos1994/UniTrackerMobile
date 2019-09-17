@@ -42,17 +42,20 @@ public class JSONEngine {
     private final List<String> headers;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final MediaType OctetStream = MediaType.get("application/octet-stream");
-    private final OkHttpClient client;
+    protected OkHttpClient client;
     private String currentMessage;
     private int state;
+    protected boolean noBasicLogin;
 
     public JSONEngine(Authentication authentication) {
+        this.noBasicLogin = false;
         this.authentication = authentication;
         this.headers = new LinkedList<>();
         this.client = this.getClient();
     }
 
     public JSONEngine(Authentication authentication, String... headers) {
+        this.noBasicLogin = false;
         this.authentication = authentication;
         this.headers = new LinkedList<>();
         this.headers.addAll(Arrays.asList(headers));
@@ -247,21 +250,25 @@ public class JSONEngine {
         return this.initAuthentication(path, "", "DELETE");
     }
 
-    private OkHttpClient getClient() {
-        return new OkHttpClient.Builder()
+    protected OkHttpClient getClient() {
+        OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(true)
                 .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .authenticator((route, response) -> {
-                    String credential;
-                    if (!authentication.getAPIKey().trim().isEmpty()) {
-                        credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
-                    } else {
-                        credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
-                    }
-                    return response.request().newBuilder().header("Authorization", credential).build();
-                })
-                .build();
+                .readTimeout(30, TimeUnit.SECONDS);
+
+        if(!this.noBasicLogin) {
+            builder.authenticator((route, response) -> {
+                String credential;
+                if (!authentication.getAPIKey().trim().isEmpty()) {
+                    credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
+                } else {
+                    credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
+                }
+                return response.request().newBuilder().header("Authorization", credential).build();
+            });
+        }
+
+        return builder.build();
     }
 
     private Request.Builder initRequestBuilder(String path) {

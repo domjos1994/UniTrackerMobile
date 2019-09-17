@@ -105,28 +105,21 @@ public final class AccountActivity extends AbstractActivity {
         this.cmbAccountTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (txtAccountServer.getText().toString().equals(Authentication.Tracker.Local.name())) {
-                    txtAccountServer.setText("");
-                }
-                txtAccountAPI.setVisibility(View.VISIBLE);
-                txtAccountUserName.setHint(R.string.accounts_user);
-                txtAccountExtended.setVisibility(View.GONE);
-                txtAccountExtended.setHint(R.string.accounts);
+                resetFieldsOnChange();
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {
                     switch (item) {
                         case Local:
-                            if (txtAccountServer.getText().toString().isEmpty()) {
-                                txtAccountServer.setText(Authentication.Tracker.Local.name());
-                            }
+                            txtAccountServer.setText(Authentication.Tracker.Local.name());
                             break;
                         case Github:
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
+                            txtAccountServer.setVisibility(View.GONE);
+                            txtAccountAPI.setHint(R.string.accounts_github_client_secret);
                             break;
                         case Bugzilla:
                         case YouTrack:
-                            //case Tuleap:
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
@@ -406,5 +399,23 @@ public final class AccountActivity extends AbstractActivity {
                 this.currentAccount.setCover(null);
             }
         }
+    }
+
+    private void resetFieldsOnChange() {
+        // reset server
+        this.txtAccountServer.setVisibility(View.VISIBLE);
+
+        // reset user
+        this.txtAccountUserName.setHint(R.string.accounts_user);
+        this.txtAccountUserName.setVisibility(View.VISIBLE);
+
+        // reset extended
+        this.txtAccountExtended.setHint(R.string.accounts);
+        this.txtAccountExtended.setVisibility(View.GONE);
+
+        // reset api
+        this.accountValidator.removeValidator(this.txtAccountAPI);
+        this.txtAccountAPI.setHint(R.string.accounts_api);
+        this.txtAccountAPI.setVisibility(View.VISIBLE);
     }
 }

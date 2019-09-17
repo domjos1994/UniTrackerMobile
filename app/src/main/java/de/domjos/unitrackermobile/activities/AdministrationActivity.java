@@ -28,10 +28,13 @@ import android.widget.CheckBox;
 import android.widget.Spinner;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.unibuggerlibrary.interfaces.IBugService;
 import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unibuggerlibrary.model.Administration;
 import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggerlibrary.model.projects.Project;
 import de.domjos.unibuggerlibrary.services.engine.Authentication;
@@ -42,6 +45,7 @@ import de.domjos.unibuggerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.settings.Settings;
 
@@ -52,14 +56,16 @@ public final class AdministrationActivity extends AbstractActivity {
     private ArrayAdapter<Project> projectAdapter1, projectAdapter2;
     private ArrayAdapter<DescriptionObject> dataItemAdapter1;
     private ArrayAdapter<String> dataAdapter1;
-    private CheckBox chkWithIssues;
+    private CheckBox chkWithIssues, chkAddToProject;
     private IBugService bugService1, bugService2;
 
     private Context ctx;
     private Settings settings;
+    private final Administration administration;
 
     public AdministrationActivity() {
         super(R.layout.administration_activity);
+        this.administration = new Administration();
     }
 
     @Override
@@ -253,8 +259,29 @@ public final class AdministrationActivity extends AbstractActivity {
             DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
             int dataPosition = this.spData1.getSelectedItemPosition();
 
-            AdministrationTask administrationTask = new AdministrationTask(act, notify, move, chkWithIssues.isChecked(), project1, project2, dataItem1, dataPosition, R.drawable.ic_settings_black_24dp);
-            administrationTask.execute(bugService1, bugService2).get();
+            this.administration.setAdminType(move ? Administration.AdminType.move : Administration.AdminType.copy);
+            switch (dataPosition) {
+                case 0:
+                    this.administration.setDataType(Administration.DataType.Project);
+                    break;
+                case 1:
+                    this.administration.setDataType(Administration.DataType.Bug);
+                    break;
+                default:
+                    this.administration.setDataType(Administration.DataType.CustomField);
+                    break;
+            }
+            this.administration.setWithBugs(this.chkWithIssues.isChecked());
+            this.administration.setAddToExistingProject(this.chkAddToProject.isChecked());
+            this.administration.setFromProject(project1);
+            this.administration.setToProject(project2);
+            this.administration.setFromBugService(this.bugService1);
+            this.administration.setToBugService(this.bugService2);
+            this.administration.setDataItem(dataItem1);
+            this.administration.setArray(this.getArrays(this.administration.getToBugService()));
+
+            AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.ic_settings_black_24dp);
+            administrationTask.execute(this.administration).get();
             this.reloadAuthentications();
 
             String message = String.format(
@@ -268,6 +295,67 @@ public final class AdministrationActivity extends AbstractActivity {
         }
     }
 
+
+    private Map<String, Map<String, Long>> getArrays(IBugService bugService) {
+        Map<String, Map<String, Long>> arrays = new LinkedHashMap<>();
+        List<String> types = Arrays.asList("view", "reproducibility", "severity", "priority", "status", "resolution");
+
+        String name = "";
+        String resName = "";
+        switch (bugService.getAuthentication().getTracker()) {
+            case Local:
+            case MantisBT:
+                name = "mantisbt";
+                break;
+            case YouTrack:
+                name = "youtrack";
+                break;
+            case RedMine:
+                name = "redmine";
+                break;
+            case Bugzilla:
+                name = "bugzilla";
+                resName = "_bugzilla";
+                break;
+            case Jira:
+                name = "jira";
+                break;
+            case OpenProject:
+                name = "openproject";
+                break;
+            case PivotalTracker:
+                name = "pivotal";
+                break;
+            case Backlog:
+                name = "backlog";
+                break;
+            case Github:
+                name = "github";
+                break;
+        }
+
+        for(String type : types) {
+            String key;
+            if(type.equals("view") || type.equals("reproducibility")) {
+                key = "issues_general_" + type + "_values";
+            } else if(type.equals("resolution")) {
+                key = "issues_general_resolution" + resName + "_values";
+            } else {
+                key = "issues_general_" + type + "_" + name + "_values";
+            }
+
+            List<String> values = ArrayHelper.getValues(this.getApplicationContext(), key);
+            if(!values.isEmpty()) {
+                Map<String, Long> entries = new LinkedHashMap<>();
+                for(int i = 0; i<=values.size()-1; i++) {
+                    entries.put(values.get(i), (long) ArrayHelper.getIdOfEnum(this.getApplicationContext(), i, key));
+                }
+                arrays.put(type, entries);
+            }
+
+        }
+        return arrays;
+    }
 
     private void reloadAuthentications() {
         List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
@@ -318,5 +406,6 @@ public final class AdministrationActivity extends AbstractActivity {
         this.dataItemAdapter1.notifyDataSetChanged();
 
         this.chkWithIssues = this.findViewById(R.id.chkWithIssues);
+        this.chkAddToProject = this.findViewById(R.id.chkAddToProject);
     }
 }

@@ -268,9 +268,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 issue.setSeverity(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, this.severityValueArray), this.spIssueGeneralSeverity.getSelectedItem().toString());
             }
             issue.setReproducibility(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, "issues_general_reproducibility_values"), this.spIssueGeneralReproducibility.getSelectedItem().toString());
-            issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.spIssueGeneralPriority.getSelectedItem().toString());
-            issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.spIssueGeneralStatus.getSelectedItem().toString());
-            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, this.resolutionValueArray), this.spIssueGeneralResolution.getSelectedItem().toString());
+            issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.getValuesFromSpinner(this.spIssueGeneralPriority));
+            issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.getValuesFromSpinner(this.spIssueGeneralStatus));
+            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, this.resolutionValueArray), this.getValuesFromSpinner(this.spIssueGeneralResolution));
             issue.setVersion(this.txtIssueGeneralVersion.getText().toString());
             issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
             issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
@@ -292,6 +292,13 @@ public final class IssueGeneralFragment extends AbstractFragment {
             }
         }
         return issue;
+    }
+
+    private String getValuesFromSpinner(Spinner spinner) {
+        if(spinner.getSelectedItem()!=null) {
+            return spinner.getSelectedItem().toString();
+        }
+        return "";
     }
 
     @Override

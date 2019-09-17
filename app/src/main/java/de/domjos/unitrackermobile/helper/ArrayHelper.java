@@ -35,10 +35,12 @@ public class ArrayHelper {
     @SuppressLint("ResourceType")
     public static List<String> getValues(Context context, String key) {
         List<String> values = new LinkedList<>();
-        List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
-        for (int i = 0; i <= typedArrays.size() - 1; i++) {
-            values.add(typedArrays.get(i).getString(1));
-        }
+        try {
+            List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
+            for (int i = 0; i <= typedArrays.size() - 1; i++) {
+                values.add(typedArrays.get(i).getString(1));
+            }
+        } catch (Exception ignored) {}
         return values;
     }
 

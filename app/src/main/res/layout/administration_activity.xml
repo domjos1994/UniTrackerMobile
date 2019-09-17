@@ -195,7 +195,9 @@
                 android:layout_width="0dp"
                 android:layout_margin="4dp" />
 
-            <TextView
+            <CheckBox
+                android:id="@+id/chkAddToProject"
+                android:text="@string/administration_addToProject"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_margin="4dp" />

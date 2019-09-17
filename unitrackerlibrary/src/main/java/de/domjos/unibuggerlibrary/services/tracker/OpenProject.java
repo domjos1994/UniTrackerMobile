@@ -48,7 +48,9 @@ import okhttp3.Credentials;
 
 public final class OpenProject extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
-    private final static String FORMAT = "yyyy-MM-dd'T'HH:mm:ss", OTHER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+    private final static String OTHER_DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private final static String DATE_FORMAT = "yyyy-MM-dd";
 
     public OpenProject(Authentication authentication) {
         super(authentication, "Content-Type: application/hal+json", "Authorization: " + Credentials.basic("apikey", authentication.getPassword()));
@@ -81,8 +83,8 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 project.setAlias(elementObject.getString("identifier"));
                 project.setTitle(elementObject.getString("name"));
                 project.setDescription(elementObject.getString("description"));
-                project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.FORMAT).getTime());
-                project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.FORMAT).getTime());
+                project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+                project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
                 projects.add(project);
             }
         }
@@ -99,8 +101,8 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             project.setAlias(elementObject.getString("identifier"));
             project.setTitle(elementObject.getString("name"));
             project.setDescription(elementObject.getString("description"));
-            project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.FORMAT).getTime());
-            project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.FORMAT).getTime());
+            project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+            project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
         }
         return project;
     }
@@ -134,7 +136,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 }
                 if (elementObject.has("startDate")) {
                     if (!elementObject.isNull("startDate")) {
-                        version.setReleasedVersionAt(Converter.convertStringToDate(elementObject.getString("startDate"), "yyyy-MM-dd").getTime());
+                        version.setReleasedVersionAt(Converter.convertStringToDate(elementObject.getString("startDate"), OpenProject.DATE_FORMAT).getTime());
                     }
                 }
                 if (elementObject.has("status")) {
@@ -172,7 +174,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
         if (version.getReleasedVersionAt() != 0) {
             Date dt = new Date();
             dt.setTime(version.getReleasedVersionAt());
-            jsonObject.put("startDate", new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN).format(dt));
+            jsonObject.put("startDate", new SimpleDateFormat(OpenProject.DATE_FORMAT, Locale.GERMAN).format(dt));
         }
         if (!version.isReleasedVersion() && !version.isDeprecatedVersion()) {
             jsonObject.put("status", "open");
@@ -266,11 +268,11 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             }
             if (jsonObject.has("dueDate")) {
                 if (!jsonObject.isNull("dueDate")) {
-                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("dueDate"), "yyyy-MM-dd"));
+                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("dueDate"), OpenProject.DATE_FORMAT));
                 }
             }
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("createdAt"), OpenProject.OTHER_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updatedAt"), OpenProject.OTHER_FORMAT));
+            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("createdAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
+            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updatedAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
 
             JSONObject linkObject = jsonObject.getJSONObject("_links");
             if (linkObject.has("assignee")) {
@@ -338,7 +340,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.GERMAN);
+        SimpleDateFormat sdf = new SimpleDateFormat(OpenProject.DATE_FORMAT, Locale.GERMAN);
 
         JSONObject jsonObject = new JSONObject();
         if (issue.getId() != null) {
@@ -696,7 +698,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                     JSONObject detailsObject = detailsArray.getJSONObject(j);
                     History<Long> history = new History<>();
                     history.setId(historyObject.getLong("id"));
-                    history.setTime(Converter.convertStringToDate(historyObject.getString("createdAt"), OTHER_FORMAT).getTime());
+                    history.setTime(Converter.convertStringToDate(historyObject.getString("createdAt"), OTHER_DATE_TIME_FORMAT).getTime());
 
                     JSONObject linksObject = historyObject.getJSONObject("_links");
                     JSONObject userObject = linksObject.getJSONObject("user");
