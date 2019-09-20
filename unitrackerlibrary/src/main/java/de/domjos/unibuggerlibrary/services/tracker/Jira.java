@@ -18,7 +18,6 @@
 
 package de.domjos.unibuggerlibrary.services.tracker;
 
-import android.graphics.drawable.Drawable;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -129,6 +128,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         jsonObject.put("url", project.getWebsite());
         jsonObject.put("lead", this.authentication.getUserName());
         jsonObject.put("projectTypeKey", "software");
+        jsonObject.put("projectTemplateKey", "com.pyxis.greenhopper.jira:basic-software-development-template");
 
         int status;
         if (project.getId() != null) {
@@ -218,9 +218,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Issue<Long>> getIssues(Long project_id, int page, int numberOfItems, IssueFilter filter) throws Exception {
-        String pagination = "";
+        String pagination;
         if (numberOfItems != -1) {
-            pagination = "&startAt=" + ((numberOfItems * page) - 1) + "&maxResults" + numberOfItems;
+            pagination = "&startAt=" + ((numberOfItems * page) - 1) + "&maxResults=" + numberOfItems;
+        } else {
+            pagination = "&maxResults=-1";
         }
 
         String query = "project=\"" + project_id + "\"";
@@ -317,7 +319,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                     JSONArray jsonArray = fieldsObject.getJSONArray("versions");
                     for (int i = 0; i <= jsonArray.length() - 1; i++) {
                         JSONObject versionObject = jsonArray.getJSONObject(i);
-                        issue.setVersion(this.getVersions("", versionObject.getLong("id")).get(0).getTitle());
+                        issue.setVersion(this.getVersion(project_id, versionObject.getLong("id")));
                     }
                 }
             }
@@ -326,7 +328,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                     JSONArray jsonArray = fieldsObject.getJSONArray("fixVersions");
                     for (int i = 0; i <= jsonArray.length() - 1; i++) {
                         JSONObject versionObject = jsonArray.getJSONObject(i);
-                        issue.setFixedInVersion(this.getVersions("", versionObject.getLong("id")).get(0).getTitle());
+                        issue.setFixedInVersion(this.getVersion(project_id, versionObject.getLong("id")));
                     }
                 }
             }
@@ -366,6 +368,16 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
         }
         return issue;
+    }
+
+    private String getVersion(Long projectId, Long versionId) throws Exception {
+        List<Version<Long>> versions = this.getVersions("", projectId);
+        for (Version<Long> version : versions) {
+            if (version.getId().equals(versionId)) {
+                return version.getTitle();
+            }
+        }
+        return "";
     }
 
     private List<CustomField<Long>> getEnabledCustomFields(Object id) throws Exception {

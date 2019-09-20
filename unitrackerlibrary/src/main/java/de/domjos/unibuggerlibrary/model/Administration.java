@@ -39,6 +39,7 @@ public class Administration {
     private Project fromProject;
     private Project toProject;
     private DescriptionObject dataItem;
+    private List<String> categories;
 
     private Map<String, Map<String, Long>> toArrays;
 
@@ -52,6 +53,7 @@ public class Administration {
         this.fromProject = null;
         this.toProject = null;
         this.dataItem = null;
+
 
         this.toArrays = new LinkedHashMap<>();
     }
@@ -104,8 +106,10 @@ public class Administration {
         return this.toBugService;
     }
 
-    public void setToBugService(IBugService toBugService) {
+    @SuppressWarnings("unchecked")
+    public void setToBugService(IBugService toBugService) throws Exception {
         this.toBugService = toBugService;
+        this.categories = this.toBugService.getCategories(this.toProject.getId());
     }
 
     public Project getFromProject() {
@@ -142,12 +146,16 @@ public class Administration {
             case YouTrack:
                 project.setAlias(project.getTitle());
                 break;
+            case MantisBT:
+                project.setEnabled(true);
         }
         return project;
     }
 
     @SuppressWarnings("DuplicateBranchesInSwitch")
     public Issue convertIssueToValidNewIssue(Issue issue) {
+        issue.setTags(issue.getTags().replace(" ", ""));
+
         switch (this.fromBugService.getAuthentication().getTracker()) {
             case MantisBT:
             case Local:
@@ -156,7 +164,21 @@ public class Administration {
                     case MantisBT:
                         return issue;
                     case YouTrack:
+                        this.connect(issue, "status", 10, 0);
+                        this.connect(issue, "status", 20, 1);
+                        this.connect(issue, "status", Arrays.asList(30L, 40L, 50L), 2);
+                        this.connect(issue, "status", Arrays.asList(80L, 90L), 7);
 
+                        this.connect(issue, "severity", 10, 8);
+                        this.connect(issue, "severity", Arrays.asList(20L, 30L, 40L), 6);
+                        this.connect(issue, "severity", Arrays.asList(50L, 60L), 7);
+                        this.connect(issue, "severity", Arrays.asList(70L, 80L), 12);
+
+                        this.connect(issue, "priority", Arrays.asList(10L, 20L), 4);
+                        this.connect(issue, "priority", 30, 3);
+                        this.connect(issue, "priority", 40, 2);
+                        this.connect(issue, "priority", 50, 1);
+                        this.connect(issue, "priority", 60, 0);
                         break;
                     case RedMine:
 
@@ -201,7 +223,27 @@ public class Administration {
                     case YouTrack:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 0, 10);
+                        this.connect(issue, "status", 1, 20);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L, 4L, 5L, 6L), 40);
+                        this.connect(issue, "status", Arrays.asList(7L, 8L, 9L, 10L, 11L), 80L);
 
+                        this.connect(issue, "severity", Arrays.asList(8L, 9L), 10);
+                        this.connect(issue, "severity", Arrays.asList(5L, 10L, 11L), 50);
+                        this.connect(issue, "severity", 6, 40);
+                        this.connect(issue, "severity", 7, 60);
+                        this.connect(issue, "severity", 12, 70);
+
+                        this.connect(issue, "priority", 4, 10);
+                        this.connect(issue, "priority", 3, 30);
+                        this.connect(issue, "priority", 2, 40);
+                        this.connect(issue, "priority", 1, 50);
+                        this.connect(issue, "priority", 0, 60);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case RedMine:
 
@@ -307,6 +349,11 @@ public class Administration {
                         this.connect(issue, "priority", 3, 30);
                         this.connect(issue, "priority", 2, 40);
                         this.connect(issue, "priority", 1, 60);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
@@ -460,6 +507,18 @@ public class Administration {
         return issue;
     }
 
+    private String getValue(String key, long id) {
+        Map<String, Long> mp = this.toArrays.get(key);
+        if (mp != null) {
+            for (Map.Entry<String, Long> entry : mp.entrySet()) {
+                if (entry.getValue().equals(id)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return "";
+    }
+
     private void connect(Issue issue, String key, List<Long> oldIds, long newId) {
         for(Long oldId : oldIds) {
             Map<String, Long> newEntries = this.toArrays.get(key);
@@ -513,6 +572,28 @@ public class Administration {
             }
         }
         return "";
+    }
+
+    private void getDefaultCategory(Issue issue) {
+        try {
+            List<String> categories = this.categories;
+            if (issue.getCategory() != null) {
+                if (issue.getCategory().isEmpty()) {
+                    if (categories != null) {
+                        if (!categories.isEmpty()) {
+                            issue.setCategory(categories.get(0));
+                        }
+                    }
+                }
+            } else {
+                if (categories != null) {
+                    if (!categories.isEmpty()) {
+                        issue.setCategory(categories.get(0));
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+        }
     }
 
     public enum AdminType {

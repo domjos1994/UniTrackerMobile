@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ListView;
 import android.widget.Spinner;
 
 import java.util.Arrays;
@@ -58,6 +59,8 @@ public final class AdministrationActivity extends AbstractActivity {
     private ArrayAdapter<String> dataAdapter1;
     private CheckBox chkWithIssues, chkAddToProject;
     private IBugService bugService1, bugService2;
+
+    private ArrayAdapter<String> logAdapter;
 
     private Context ctx;
     private Settings settings;
@@ -281,7 +284,11 @@ public final class AdministrationActivity extends AbstractActivity {
             this.administration.setArray(this.getArrays(this.administration.getToBugService()));
 
             AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.ic_settings_black_24dp);
-            administrationTask.execute(this.administration).get();
+            String logs = administrationTask.execute(this.administration).get();
+            this.logAdapter.clear();
+            for (String logItem : logs.split("\n")) {
+                this.logAdapter.add(logItem);
+            }
             this.reloadAuthentications();
 
             String message = String.format(
@@ -407,5 +414,10 @@ public final class AdministrationActivity extends AbstractActivity {
 
         this.chkWithIssues = this.findViewById(R.id.chkWithIssues);
         this.chkAddToProject = this.findViewById(R.id.chkAddToProject);
+
+        ListView lvLogs = this.findViewById(R.id.lvLogs);
+        this.logAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
+        lvLogs.setAdapter(this.logAdapter);
+        this.logAdapter.notifyDataSetChanged();
     }
 }

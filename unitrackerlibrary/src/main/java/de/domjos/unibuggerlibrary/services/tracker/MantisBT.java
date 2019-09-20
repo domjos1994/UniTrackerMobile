@@ -53,6 +53,7 @@ import de.domjos.unibuggerlibrary.utils.Converter;
 import static org.ksoap2.serialization.MarshalHashtable.NAMESPACE;
 
 public final class MantisBT extends SoapEngine implements IBugService<Long> {
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String currentMessage;
     private Authentication authentication;
     private int state;
@@ -151,14 +152,13 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         if (object != null) {
             this.state = 200;
             if (project.getId() == null) {
-                if(object instanceof SoapPrimitive) {
+                try {
                     SoapPrimitive soapPrimitive = (SoapPrimitive) object;
-                    if(soapPrimitive.getValue() instanceof Integer) {
-                        return (long) soapPrimitive.getValue();
-                    }
-                } else if(object instanceof Long || object instanceof Integer) {
-                    return (long) object;
+                    return Long.parseLong(String.valueOf(soapPrimitive.getValue()));
+                } catch (Exception ignored) {
                 }
+
+                return (long) object;
             } else {
                 return project.getId();
             }
@@ -199,7 +199,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         if (version.getReleasedVersionAt() != 0) {
             Date dt = new Date();
             dt.setTime(version.getReleasedVersionAt());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
+            SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
             projectData.addProperty("date_order", sdf.format(dt));
         } else {
             projectData.addProperty("date_order", null);
@@ -252,7 +252,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
+            SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
             for (int i = 0; i <= vector.size() - 1; i++) {
                 if (vector.get(i) instanceof SoapObject) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
@@ -344,7 +344,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     if (soapObject.hasProperty("version")) {
                         issue.setVersion(soapObject.getPropertyAsString("version"));
                     }
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
+                    SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
                     if (soapObject.hasProperty("date_submitted")) {
                         issue.setSubmitDate(sdf.parse(soapObject.getPropertyAsString("date_submitted")));
                     }
@@ -542,7 +542,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         issueObject.addProperty("description", issue.getDescription());
         issueObject.addProperty("steps_to_reproduce", issue.getStepsToReproduce());
         issueObject.addProperty("additional_information", issue.getAdditionalInformation());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.GERMAN);
+        SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
         if (issue.getDueDate() != null) {
             issueObject.addProperty("due_date", sdf.format(issue.getDueDate()));
         }
@@ -1088,7 +1088,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 }
                 version.setDeprecatedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("obsolete")));
                 version.setReleasedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("released")));
-                version.setReleasedVersionAt(Converter.convertStringToDate(soapObject.getPropertyAsString("date_order"), "yyyy-MM-dd'T'HH:mm:ss").getTime());
+                version.setReleasedVersionAt(Converter.convertStringToDate(soapObject.getPropertyAsString("date_order"), MantisBT.DATE_TIME_FORMAT).getTime());
                 versions.add(version);
             }
         }
