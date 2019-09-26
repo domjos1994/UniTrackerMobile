@@ -59,6 +59,7 @@ public final class AdministrationTask extends AbstractTask<Administration, Void,
                         if (project != null) {
                             id = project.getId();
                             Object objId = this.insertOrUpdateProject(project, administration);
+                            administration.loadCategories(objId);
 
                             if (administration.isWithBugs()) {
                                 if (objId != null) {

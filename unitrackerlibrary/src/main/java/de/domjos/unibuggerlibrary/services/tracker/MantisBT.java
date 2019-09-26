@@ -934,7 +934,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     public List<String> getCategories(Long project_id) throws Exception {
         List<String> categories = new LinkedList<>();
         SoapObject request = new SoapObject(super.soapPath, "mc_project_get_categories");
-        request.addProperty("project_id", project_id);
+        request.addProperty("project_id", project_id == null ? 0 : project_id);
         Object object = this.executeAction(request, "mc_project_get_categories", true);
         object = this.getResult(object);
 

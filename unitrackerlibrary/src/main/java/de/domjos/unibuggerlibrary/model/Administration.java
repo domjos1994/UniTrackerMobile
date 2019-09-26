@@ -55,6 +55,7 @@ public class Administration {
         this.dataItem = null;
 
 
+
         this.toArrays = new LinkedHashMap<>();
     }
 
@@ -106,10 +107,13 @@ public class Administration {
         return this.toBugService;
     }
 
-    @SuppressWarnings("unchecked")
-    public void setToBugService(IBugService toBugService) throws Exception {
+    public void setToBugService(IBugService toBugService) {
         this.toBugService = toBugService;
-        this.categories = this.toBugService.getCategories(this.toProject.getId());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void loadCategories(Object projectId) throws Exception {
+        this.categories = this.toBugService.getCategories(projectId);
     }
 
     public Project getFromProject() {
@@ -148,6 +152,7 @@ public class Administration {
                 break;
             case MantisBT:
                 project.setEnabled(true);
+                break;
         }
         return project;
     }
@@ -162,6 +167,16 @@ public class Administration {
                 switch (this.toBugService.getAuthentication().getTracker()) {
                     case Local:
                     case MantisBT:
+                        boolean hasCategory = false;
+                        for (String category : this.categories) {
+                            if (issue.getCategory().toLowerCase().equals(category.toLowerCase())) {
+                                hasCategory = true;
+                                break;
+                            }
+                        }
+                        if (!hasCategory) {
+                            issue.setCategory(categories.isEmpty() ? "" : categories.get(0));
+                        }
                         return issue;
                     case YouTrack:
                         this.connect(issue, "status", 10, 0);
@@ -181,10 +196,44 @@ public class Administration {
                         this.connect(issue, "priority", 60, 0);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 10, 1);
+                        this.connect(issue, "status", Arrays.asList(20L, 30L, 40L, 50L), 2);
+                        this.connect(issue, "status", 80, 3);
+                        this.connect(issue, "status", 90, 5);
 
+                        this.connect(issue, "severity", 10, 2);
+                        this.connect(issue, "severity", Arrays.asList(20L, 30L, 40L), 3);
+                        this.connect(issue, "severity", Arrays.asList(50L, 60L, 70L, 80L), 1);
+
+                        this.connect(issue, "priority", Arrays.asList(10L, 20L), 1);
+                        this.connect(issue, "priority", 30, 2);
+                        this.connect(issue, "priority", 40, 3);
+                        this.connect(issue, "priority", 50, 4);
+                        this.connect(issue, "priority", 60, 5);
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", Arrays.asList(10L, 20L, 30L, 40L), 3);
+                        this.connect(issue, "status", 50, 4);
+                        this.connect(issue, "status", Arrays.asList(80L, 90L), 5);
 
+                        this.connect(issue, "severity", 10, 7);
+                        this.connect(issue, "severity", Arrays.asList(40L, 30L, 20L), 6);
+                        this.connect(issue, "severity", 50, 5);
+                        this.connect(issue, "severity", 60, 3);
+                        this.connect(issue, "severity", 70, 2);
+                        this.connect(issue, "severity", 80, 1);
+
+                        this.connect(issue, "priority", 10, 6);
+                        this.connect(issue, "priority", 20, 5);
+                        this.connect(issue, "priority", 30, 3);
+                        this.connect(issue, "priority", 40, 2);
+                        this.connect(issue, "priority", 60, 1);
+
+                        this.connect(issue, "resolution", Arrays.asList(10L, 20L, 30L), 1);
+                        this.connect(issue, "resolution", Arrays.asList(40L, 50L), 6);
+                        this.connect(issue, "resolution", 60, 5);
+                        this.connect(issue, "resolution", Arrays.asList(70L, 80L, 90L), 4);
+                        this.connect(issue, "resolution", 10, 1);
                         break;
                     case Jira:
                         this.connect(issue, "status", Arrays.asList(10L, 20L, 30L), 3);
@@ -200,20 +249,49 @@ public class Administration {
                         this.connect(issue, "priority", 30, 3);
                         this.connect(issue, "priority", 40, 2);
                         this.connect(issue, "priority", Arrays.asList(50L, 60L), 1);
-
-
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 10, 1);
+                        this.connect(issue, "status", 20, 2);
+                        this.connect(issue, "status", 30, 3);
+                        this.connect(issue, "status", 40, 4);
+                        this.connect(issue, "status", 50, 7);
+                        this.connect(issue, "status", 80, 11);
+                        this.connect(issue, "status", 90, 13);
 
+                        this.connect(issue, "severity", 10L, 4);
+                        this.connect(issue, "severity", Arrays.asList(20L, 30L, 40L, 50L, 60L, 70L, 80L), 7);
+
+                        this.connect(issue, "priority", Arrays.asList(10L, 20L), 7);
+                        this.connect(issue, "priority", 30, 8);
+                        this.connect(issue, "priority", 40, 9);
+                        this.connect(issue, "priority", Arrays.asList(50L, 60L), 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", Arrays.asList(10L, 20L), 0);
+                        this.connect(issue, "status", Arrays.asList(30L, 40L, 50L), 1);
+                        this.connect(issue, "status", Arrays.asList(80L, 90L), 2);
 
+                        this.connect(issue, "severity", Arrays.asList(20L, 30L, 40L, 50L), 0);
+                        this.connect(issue, "severity", 10, 1);
+                        this.connect(issue, "severity", Arrays.asList(60L, 70L, 80L), 2);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", Arrays.asList(10L, 20L, 30L, 40L), 1);
+                        this.connect(issue, "status", 50, 2);
+                        this.connect(issue, "status", 80, 3);
+                        this.connect(issue, "status", 90, 4);
 
+                        this.connect(issue, "severity", 10, 90201);
+                        this.connect(issue, "severity", Arrays.asList(40L, 50L, 60L), 90200);
+                        this.connect(issue, "severity", Arrays.asList(30L, 20L), 90202);
+                        this.connect(issue, "severity", Arrays.asList(70L, 80L), 90203);
+
+                        this.connect(issue, "priority", Arrays.asList(40L, 50L, 60L), 2);
+                        this.connect(issue, "priority", 30, 3);
+                        this.connect(issue, "priority", Arrays.asList(10L, 20L), 4);
                         break;
                 }
                 break;
@@ -246,9 +324,32 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 1);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L, 4L), 2);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L), 3);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L), 4);
+                        this.connect(issue, "status", 7, 5);
+                        this.connect(issue, "status", Arrays.asList(10L, 11L), 6);
 
+                        this.connect(issue, "severity", Arrays.asList(5L, 6L, 7L, 12L), 1);
+                        this.connect(issue, "severity", 8, 2);
+                        this.connect(issue, "severity", Arrays.asList(9L, 10L, 11L), 3);
+
+                        this.connect(issue, "priority", 4, 1);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 1, 4);
+                        this.connect(issue, "priority", 0, 5);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 3);
+                        this.connect(issue, "status", 2, 4);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L), 5);
+
 
                         break;
                     case Jira:
@@ -274,10 +375,47 @@ public class Administration {
                     case RedMine:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 1, 10);
+                        this.connect(issue, "status", Arrays.asList(2L, 4L), 50);
+                        this.connect(issue, "status", 3, 80);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L), 90);
 
+                        this.connect(issue, "severity", 1, 50);
+                        this.connect(issue, "severity", 2, 10);
+                        this.connect(issue, "severity", 3, 40);
+
+                        this.connect(issue, "priority", 1, 20);
+                        this.connect(issue, "priority", 2, 30);
+                        this.connect(issue, "priority", 3, 40);
+                        this.connect(issue, "priority", 4, 50);
+                        this.connect(issue, "priority", 5, 60);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 1);
+                        this.connect(issue, "status", 2, 2);
+                        this.connect(issue, "status", Arrays.asList(3L, 5L), 7);
+                        this.connect(issue, "status", 4, 3);
+                        this.connect(issue, "status", 5, 5);
+                        this.connect(issue, "status", 6, 11);
 
+                        this.connect(issue, "severity", 1, 5);
+                        this.connect(issue, "severity", 2, 8);
+                        this.connect(issue, "severity", 3, 10);
+
+                        this.connect(issue, "priority", 1, 4);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", 4, 1);
+                        this.connect(issue, "priority", 5, 0);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
                         break;
                     case Bugzilla:
 
@@ -305,7 +443,33 @@ public class Administration {
                     case Bugzilla:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 3, 30);
+                        this.connect(issue, "status", 4, 50);
+                        this.connect(issue, "status", 5, 80);
 
+                        this.connect(issue, "severity", 7, 10);
+                        this.connect(issue, "severity", 6, 20);
+                        this.connect(issue, "severity", 5, 50);
+                        this.connect(issue, "severity", 3, 60);
+                        this.connect(issue, "severity", 2, 2);
+                        this.connect(issue, "severity", 80, 1);
+
+                        this.connect(issue, "priority", 6, 10);
+                        this.connect(issue, "priority", 5, 20);
+                        this.connect(issue, "priority", 3, 30);
+                        this.connect(issue, "priority", 2, 70);
+                        this.connect(issue, "priority", 1, 80);
+
+                        this.connect(issue, "resolution", 1, 10);
+                        this.connect(issue, "resolution", 2, 20);
+                        this.connect(issue, "resolution", 3, 40);
+                        this.connect(issue, "resolution", 4, 90);
+                        this.connect(issue, "resolution", 5, 60);
+                        this.connect(issue, "resolution", 6, 70);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
@@ -384,7 +548,26 @@ public class Administration {
                     case OpenProject:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 1, 10);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L, 4L), 20);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L, 7L), 30);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L), 40);
+                        this.connect(issue, "status", Arrays.asList(10L, 11L), 50);
+                        this.connect(issue, "status", 12, 80);
+                        this.connect(issue, "status", Arrays.asList(13L, 14L, 15L), 90);
 
+                        this.connect(issue, "severity", 4, 10);
+                        this.connect(issue, "severity", 7, 50);
+
+                        this.connect(issue, "priority", 7, 20);
+                        this.connect(issue, "priority", 8, 30);
+                        this.connect(issue, "priority", 9, 40);
+                        this.connect(issue, "priority", 10, 60);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
@@ -415,7 +598,19 @@ public class Administration {
                     case OpenProject:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 0, 10);
+                        this.connect(issue, "status", 1, 30);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L, 4L), 80);
 
+                        this.connect(issue, "severity", 0, 20);
+                        this.connect(issue, "severity", 1, 10);
+                        this.connect(issue, "severity", 2, 2);
+
+                        issue.setPriority(10, this.getValue("priority", 10));
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
@@ -446,7 +641,13 @@ public class Administration {
                     case Github:
                         return issue;
                     case MantisBT:
-
+                        issue.setStatus(10, this.getValue("state", 10));
+                        issue.setPriority(10, this.getValue("priority", 10));
+                        issue.setSeverity(10, this.getValue("severity", 10));
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
@@ -477,7 +678,24 @@ public class Administration {
                     case Backlog:
                         return issue;
                     case MantisBT:
+                        this.connect(issue, "status", 1, 20);
+                        this.connect(issue, "status", 2, 50);
+                        this.connect(issue, "status", 3, 80);
+                        this.connect(issue, "status", 4, 90);
 
+                        this.connect(issue, "severity", 90201, 40);
+                        this.connect(issue, "severity", 90200, 50);
+                        this.connect(issue, "severity", 90202, 20);
+                        this.connect(issue, "severity", 90203, 30);
+
+                        this.connect(issue, "priority", 2, 40);
+                        this.connect(issue, "priority", 3, 30);
+                        this.connect(issue, "priority", 4, 20);
+
+                        issue.setState(10, this.getValue("view", 10));
+                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
+                        issue.setResolution(10, this.getValue("resolution", 10));
+                        this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
 
