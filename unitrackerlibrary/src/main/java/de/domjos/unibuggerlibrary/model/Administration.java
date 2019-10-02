@@ -40,7 +40,7 @@ public class Administration {
     private Project toProject;
     private DescriptionObject dataItem;
     private List<String> categories;
-
+    private boolean status, severity, priority, resolution;
     private Map<String, Map<String, Long>> toArrays;
 
     public Administration() {
@@ -157,8 +157,12 @@ public class Administration {
         return project;
     }
 
-    @SuppressWarnings("DuplicateBranchesInSwitch")
     public Issue convertIssueToValidNewIssue(Issue issue) {
+        this.status = false;
+        this.resolution = false;
+        this.severity = false;
+        this.priority = false;
+
         issue.setTags(issue.getTags().replace(" ", ""));
 
         switch (this.fromBugService.getAuthentication().getTracker()) {
@@ -340,32 +344,78 @@ public class Administration {
                         this.connect(issue, "priority", 2, 3);
                         this.connect(issue, "priority", 1, 4);
                         this.connect(issue, "priority", 0, 5);
-
-                        issue.setState(10, this.getValue("view", 10));
-                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
-                        issue.setResolution(10, this.getValue("resolution", 10));
                         break;
                     case Bugzilla:
                         this.connect(issue, "status", Arrays.asList(0L, 1L), 3);
                         this.connect(issue, "status", 2, 4);
                         this.connect(issue, "status", Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L), 5);
 
+                        this.connect(issue, "severity", 12, 1);
+                        this.connect(issue, "severity", Arrays.asList(11L, 10L), 5);
+                        this.connect(issue, "severity", Arrays.asList(9L, 8L, 7L, 6L, 5L), 6);
 
+                        this.connect(issue, "priority", Arrays.asList(0L, 1L), 1);
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 4, 4);
                         break;
                     case Jira:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L, 2L, 3L, 9L), 3);
+                        this.connect(issue, "status", Arrays.asList(4L, 5L, 8L), 10000);
+                        this.connect(issue, "status", Arrays.asList(6L, 7L, 9L, 10L, 11L), 10002);
 
+                        this.connect(issue, "severity", Arrays.asList(5L, 7L), 10006);
+                        this.connect(issue, "severity", 6, 10002);
+                        this.connect(issue, "severity", Arrays.asList(9L, 10L, 11L), 10003);
+                        this.connect(issue, "severity", 8, 10005);
+                        this.connect(issue, "severity", 12, 10000);
+
+                        this.connect(issue, "priority", Arrays.asList(0L, 1L), 10);
+                        this.connect(issue, "priority", 2, 9);
+                        this.connect(issue, "priority", 3, 8);
+                        this.connect(issue, "priority", 4, 7);
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 0, 1);
+                        this.connect(issue, "status", Arrays.asList(1L, 4L), 6);
+                        this.connect(issue, "status", Arrays.asList(2L, 9L), 7);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L, 7L, 8L, 10L, 11L), 13);
+                        this.connect(issue, "status", 3, 5);
 
+                        this.connect(issue, "severity", 8, 4);
+                        this.connect(issue, "severity", Arrays.asList(5L, 6L, 7L, 9L, 10L, 11L, 12L), 7);
+
+                        this.connect(issue, "priority", 4, 7);
+                        this.connect(issue, "priority", 3, 8);
+                        this.connect(issue, "priority", 2, 9);
+                        this.connect(issue, "priority", Arrays.asList(1L, 0L), 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L, 4L), 0);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L), 1);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L, 7L, 8L), 2);
+                        this.connect(issue, "status", Arrays.asList(9L, 10L, 11L), 4);
 
+                        this.connect(issue, "severity", Arrays.asList(5L, 6L, 7L, 9L, 10L, 11L), 0L);
+                        this.connect(issue, "severity", 8L, 1L);
+                        this.connect(issue, "severity", 12L, 2L);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L, 4L), 1);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L), 2);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L, 8L, 9L, 10L, 11L), 3);
+                        this.connect(issue, "status", 7, 4);
 
+                        this.connect(issue, "severity", 9, 90201);
+                        this.connect(issue, "severity", Arrays.asList(5L, 6L, 7L, 10L, 11L, 12L), 90200);
+                        this.connect(issue, "severity", 8, 90202);
+                        this.connect(issue, "severity", 9L, 90203);
+
+                        this.connect(issue, "priority", Arrays.asList(0L, 1L, 2L), 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 4, 4);
                         break;
                 }
                 break;
@@ -412,28 +462,76 @@ public class Administration {
                         this.connect(issue, "priority", 3, 2);
                         this.connect(issue, "priority", 4, 1);
                         this.connect(issue, "priority", 5, 0);
-
-                        issue.setState(10, this.getValue("view", 10));
-                        issue.setReproducibility(100, this.getValue("reproducibility", 100));
-                        issue.setResolution(10, this.getValue("resolution", 10));
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", 1, 3);
+                        this.connect(issue, "status", Arrays.asList(2L, 4L), 4);
+                        this.connect(issue, "status", Arrays.asList(3L, 5L, 6L), 5);
 
+                        this.connect(issue, "severity", 1, 1);
+                        this.connect(issue, "severity", 2, 7);
+                        this.connect(issue, "severity", 3, 4);
+
+                        this.connect(issue, "priority", 1, 4);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 1);
                         break;
                     case Jira:
+                        this.connect(issue, "status", 1, 10000);
+                        this.connect(issue, "status", Arrays.asList(2L, 4L), 3);
+                        this.connect(issue, "status", Arrays.asList(3L, 5L, 6L), 10002);
 
+                        this.connect(issue, "severity", 1, 1);
+                        this.connect(issue, "severity", 2, 10005);
+                        this.connect(issue, "severity", 3, 10002);
+
+                        this.connect(issue, "priority", 1, 4);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 1);
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", 2, 7);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 13);
+                        this.connect(issue, "status", 4, 2);
+                        this.connect(issue, "status", 6, 15);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 3L), 7);
+                        this.connect(issue, "severity", 2, 4);
+
+                        this.connect(issue, "priority", 1, 7);
+                        this.connect(issue, "priority", 2, 8);
+                        this.connect(issue, "priority", 3, 9);
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", 1, 0);
+                        this.connect(issue, "status", 2, 1);
+                        this.connect(issue, "status", 3, 2);
+                        this.connect(issue, "status", 5, 4);
+                        this.connect(issue, "status", 6, 5);
 
+                        this.connect(issue, "severity", 1, 0);
+                        this.connect(issue, "severity", 2, 1);
+                        this.connect(issue, "severity", 3, 2);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", 2, 2);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 3);
+                        this.connect(issue, "status", Arrays.asList(5L, 6L), 4);
 
+                        this.connect(issue, "severity", 1, 90201);
+                        this.connect(issue, "severity", 2, 90202);
+                        this.connect(issue, "severity", 3, 90203);
+
+                        this.connect(issue, "priority", Arrays.asList(1L, 2L), 4);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", Arrays.asList(3L, 4L, 5L), 2);
                         break;
                 }
                 break;
@@ -472,25 +570,84 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", 3, 0);
+                        this.connect(issue, "status", 4, 2);
+                        this.connect(issue, "status", 5, 7);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 2L, 3L, 4L), 12);
+                        this.connect(issue, "severity", 5, 7);
+                        this.connect(issue, "severity", 6, 6);
+                        this.connect(issue, "severity", 7, 10);
+
+                        this.connect(issue, "priority", 1, 1);
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L, 6L), 4);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 3, 1);
+                        this.connect(issue, "status", 4, 2);
+                        this.connect(issue, "status", 5, 3);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 2L, 3L, 4L, 5L), 1);
+                        this.connect(issue, "severity", 7, 2);
+                        this.connect(issue, "severity", 6, 3);
+
+                        this.connect(issue, "priority", Arrays.asList(5L, 4L), 1);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 1, 4);
                         break;
                     case Jira:
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 3);
+                        this.connect(issue, "status", 5, 10002);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 2L, 3L), 10000);
+                        this.connect(issue, "severity", 7, 10005);
+                        this.connect(issue, "severity", Arrays.asList(4L, 5L, 6L), 10002);
+
+                        this.connect(issue, "priority", Arrays.asList(5L, 6L), 5);
+                        this.connect(issue, "priority", 4, 4);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 1, 1);
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 3, 4);
+                        this.connect(issue, "status", 4, 7);
+                        this.connect(issue, "status", 5, 13);
 
+                        this.connect(issue, "severity", 7, 4);
+                        this.connect(issue, "severity", Arrays.asList(2L, 3L, 4L, 5L, 6L), 7);
+
+                        this.connect(issue, "priority", Arrays.asList(5L, 6L, 4L), 7);
+                        this.connect(issue, "priority", 3, 8);
+                        this.connect(issue, "priority", 2, 9);
+                        this.connect(issue, "priority", 1, 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", 3, 0);
+                        this.connect(issue, "status", 4, 1);
+                        this.connect(issue, "status", 5, 2);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 2L, 3L), 2);
+                        this.connect(issue, "severity", Arrays.asList(4L, 5L, 6L), 0);
+                        this.connect(issue, "severity", 7, 1);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", 3, 1);
+                        this.connect(issue, "status", 4, 2);
+                        this.connect(issue, "status", 5, 3);
 
+                        this.connect(issue, "severity", Arrays.asList(1L, 2L, 3L, 4L, 5L), 90200);
+                        this.connect(issue, "severity", 6, 90203);
+                        this.connect(issue, "severity", 7, 90201);
+
+                        this.connect(issue, "priority", Arrays.asList(5L, 6L, 4L), 4);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", Arrays.asList(2L, 1L), 2);
                         break;
                 }
                 break;
@@ -520,25 +677,82 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", 3, 1);
+                        this.connect(issue, "status", 10000, 5);
+                        this.connect(issue, "status", 10002, 7);
 
+                        this.connect(issue, "severity", 10006, 5);
+                        this.connect(issue, "severity", 10002, 6);
+                        this.connect(issue, "severity", 10003, 10);
+                        this.connect(issue, "severity", 10005, 8);
+                        this.connect(issue, "severity", 10000, 12);
+
+                        this.connect(issue, "priority", 10, 1);
+                        this.connect(issue, "priority", 9, 2);
+                        this.connect(issue, "priority", 8, 3);
+                        this.connect(issue, "priority", 7, 4);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 10000, 1);
+                        this.connect(issue, "status", 3, 2);
+                        this.connect(issue, "status", 10002, 3);
 
+                        this.connect(issue, "severity", 1, 1);
+                        this.connect(issue, "severity", 10005, 2);
+                        this.connect(issue, "severity", 10002, 3);
+
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 1);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", 2, 3);
+                        this.connect(issue, "priority", 1, 4);
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", 10000, 3);
+                        this.connect(issue, "status", 3, 4);
+                        this.connect(issue, "status", 10002, 5);
 
+                        this.connect(issue, "severity", Arrays.asList(10006L, 10002L, 10003L, 10005L, 10000L), 1);
+
+                        this.connect(issue, "priority", 5, 5);
+                        this.connect(issue, "priority", 4, 4);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 1, 1);
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 10000, 6);
+                        this.connect(issue, "status", 3, 7);
+                        this.connect(issue, "status", 10002, 12);
 
+                        this.connect(issue, "severity", 10005L, 4);
+                        this.connect(issue, "severity", Arrays.asList(10006L, 10002L, 10003L, 10000L), 7);
+
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 7);
+                        this.connect(issue, "priority", 3, 8);
+                        this.connect(issue, "priority", 2, 9);
+                        this.connect(issue, "priority", 1, 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", 10000, 3);
+                        this.connect(issue, "status", 3, 1);
+                        this.connect(issue, "status", 10002, 2);
 
+                        this.connect(issue, "severity", 10005L, 1);
+                        this.connect(issue, "severity", Arrays.asList(10006L, 10002L, 10003L, 10000L), 0);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", 10000, 1);
+                        this.connect(issue, "status", 3, 2);
+                        this.connect(issue, "status", 10002, 3);
 
+                        this.connect(issue, "severity", 10005L, 90202);
+                        this.connect(issue, "severity", Arrays.asList(10006L, 10002L, 10003L, 10000L), 90200);
+
+                        this.connect(issue, "priority", Arrays.asList(4L, 5L), 4);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", Arrays.asList(1L, 2L), 2);
                         break;
                 }
                 break;
@@ -570,32 +784,88 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", Arrays.asList(1L, 2L, 3L, 4L, 5L), 0);
+                        this.connect(issue, "status", 6, 1);
+                        this.connect(issue, "status", Arrays.asList(7L, 8L, 9L, 10L, 11L, 12L), 2);
+                        this.connect(issue, "status", Arrays.asList(13L, 14L, 15L), 5);
+                        this.connect(issue, "status", 5, 3);
 
+                        this.connect(issue, "severity", 4, 8);
+                        this.connect(issue, "severity", 7, 5);
+
+                        this.connect(issue, "priority", 7, 4);
+                        this.connect(issue, "priority", 8, 3);
+                        this.connect(issue, "priority", 9, 2);
+                        this.connect(issue, "priority", 10, 1);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L), 2);
+                        this.connect(issue, "status", Arrays.asList(13L, 14L), 3);
+                        this.connect(issue, "status", 2, 5);
+                        this.connect(issue, "status", 15, 6);
 
+                        this.connect(issue, "severity", 4, 2);
+                        this.connect(issue, "severity", 7, 1);
+
+                        this.connect(issue, "priority", 7, 1);
+                        this.connect(issue, "priority", 8, 2);
+                        this.connect(issue, "priority", 9, 3);
+                        this.connect(issue, "priority", 10, 4);
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L), 3);
+                        this.connect(issue, "status", 7L, 4);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), 5);
 
+                        this.connect(issue, "severity", Arrays.asList(4L, 7L), 1);
+
+                        this.connect(issue, "priority", 7, 4);
+                        this.connect(issue, "priority", 8, 3);
+                        this.connect(issue, "priority", 9, 2);
+                        this.connect(issue, "priority", 10, 1);
                         break;
                     case Jira:
+                        this.connect(issue, "status", Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L), 10000);
+                        this.connect(issue, "status", 7L, 3);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), 10002);
 
+                        this.connect(issue, "severity", 4, 10005);
+                        this.connect(issue, "severity", 7, 10006);
+
+                        this.connect(issue, "priority", 7, 4);
+                        this.connect(issue, "priority", 8, 3);
+                        this.connect(issue, "priority", 9, 9);
+                        this.connect(issue, "priority", 10, 10);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L), 0);
+                        this.connect(issue, "status", 7L, 1);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), 2);
 
+                        this.connect(issue, "severity", 4, 1);
+                        this.connect(issue, "severity", 7, 0);
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L), 1);
+                        this.connect(issue, "status", 7L, 2);
+                        this.connect(issue, "status", Arrays.asList(8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L), 3);
 
+                        this.connect(issue, "severity", 4, 90202);
+                        this.connect(issue, "severity", 7, 90200);
+
+                        this.connect(issue, "priority", 7, 4);
+                        this.connect(issue, "priority", 8, 3);
+                        this.connect(issue, "priority", Arrays.asList(9L, 10L), 2);
                         break;
                 }
                 break;
             case PivotalTracker:
                 switch (this.toBugService.getAuthentication().getTracker()) {
                     case Local:
-                    case OpenProject:
+                    case PivotalTracker:
                         return issue;
                     case MantisBT:
                         this.connect(issue, "status", 0, 10);
@@ -613,25 +883,71 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", 0, 0);
+                        this.connect(issue, "status", 1, 2);
+                        this.connect(issue, "status", 2, 5);
+                        this.connect(issue, "status", 4, 10);
 
+                        this.connect(issue, "severity", 0, 5);
+                        this.connect(issue, "severity", 1, 10);
+                        this.connect(issue, "severity", 2, 12);
+
+                        issue.setPriority(4, this.getValue("priority", 4));
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 0, 1);
+                        this.connect(issue, "status", 1, 2);
+                        this.connect(issue, "status", Arrays.asList(3L, 5L), 5);
+                        this.connect(issue, "status", 4, 6);
 
+                        this.connect(issue, "severity", 0, 1);
+                        this.connect(issue, "severity", 1, 2);
+                        this.connect(issue, "severity", 2, 3);
+
+                        issue.setPriority(2, this.getValue("priority", 2));
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", 0, 3);
+                        this.connect(issue, "status", 1, 4);
+                        this.connect(issue, "status", Arrays.asList(2L, 3L, 4L, 5L), 5);
 
+                        this.connect(issue, "severity", Arrays.asList(0L, 1L, 2L), 1);
+
+                        issue.setPriority(3, this.getValue("priority", 3));
                         break;
                     case Jira:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 3);
+                        this.connect(issue, "status", 2, 10000);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L, 5L), 10002);
 
+                        this.connect(issue, "severity", 0, 10006);
+                        this.connect(issue, "severity", 1, 10005);
+                        this.connect(issue, "severity", 2, 10000);
+
+                        issue.setPriority(3, this.getValue("priority", 3));
                         break;
-                    case PivotalTracker:
+                    case OpenProject:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 1);
+                        this.connect(issue, "status", 2, 7);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L, 5L), 13);
 
+                        this.connect(issue, "severity", 1, 4);
+                        this.connect(issue, "severity", Arrays.asList(0L, 2L), 7);
+
+                        issue.setPriority(8, this.getValue("priority", 8));
                         break;
                     case Github:
-
                         break;
                     case Backlog:
+                        this.connect(issue, "status", Arrays.asList(0L, 1L), 1);
+                        this.connect(issue, "status", 2, 3);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L, 5L), 4);
 
+                        this.connect(issue, "severity", 0, 90200);
+                        this.connect(issue, "severity", 1, 90202);
+                        this.connect(issue, "severity", 2, 90203);
+
+                        issue.setPriority(3, this.getValue("priority", 3));
                         break;
                 }
                 break;
@@ -650,25 +966,35 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
-
+                        issue.setStatus(1, this.getValue("state", 1));
+                        issue.setPriority(4, this.getValue("priority", 4));
+                        issue.setSeverity(5, this.getValue("severity", 5));
                         break;
                     case RedMine:
-
+                        issue.setStatus(1, this.getValue("state", 1));
+                        issue.setPriority(2, this.getValue("priority", 2));
+                        issue.setSeverity(1, this.getValue("severity", 1));
                         break;
                     case Bugzilla:
-
+                        issue.setStatus(4, this.getValue("state", 4));
+                        issue.setSeverity(4, this.getValue("severity", 4));
+                        issue.setPriority(3, this.getValue("priority", 3));
                         break;
                     case Jira:
-
+                        issue.setStatus(3, this.getValue("state", 3));
+                        issue.setSeverity(10006, this.getValue("severity", 10006));
                         break;
                     case OpenProject:
-
+                        issue.setStatus(4, this.getValue("state", 4));
+                        issue.setSeverity(7, this.getValue("severity", 7));
                         break;
                     case PivotalTracker:
-
+                        issue.setStatus(1, this.getValue("state", 1));
+                        issue.setSeverity(0, this.getValue("severity", 0));
                         break;
                     case Backlog:
-
+                        issue.setStatus(1, this.getValue("state", 1));
+                        issue.setSeverity(90200, this.getValue("severity", 90200));
                         break;
                 }
                 break;
@@ -698,25 +1024,78 @@ public class Administration {
                         this.getDefaultCategory(issue);
                         break;
                     case YouTrack:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", 2, 2);
+                        this.connect(issue, "status", 3, 5);
+                        this.connect(issue, "status", 4, 7);
 
+                        this.connect(issue, "severity", 90201, 9);
+                        this.connect(issue, "severity", 90200, 5);
+                        this.connect(issue, "severity", 90202, 8);
+                        this.connect(issue, "severity", 90203, 9L);
+
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 4, 4);
                         break;
                     case RedMine:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", 2, 2);
+                        this.connect(issue, "status", 3, 3);
+                        this.connect(issue, "status", 4, 5);
 
+                        this.connect(issue, "severity", Arrays.asList(90200L, 90201L), 1);
+                        this.connect(issue, "severity", 90202, 2);
+                        this.connect(issue, "severity", 90203, 3L);
+
+                        this.connect(issue, "priority", 4, 1);
+                        this.connect(issue, "priority", 3, 2);
+                        this.connect(issue, "priority", 2, 3);
                         break;
                     case Bugzilla:
+                        this.connect(issue, "status", 1, 3);
+                        this.connect(issue, "status", 2, 4);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 5);
 
+                        this.connect(issue, "severity", Arrays.asList(90200L, 90201L, 90202L, 90203L), 1);
+
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 4, 2);
                         break;
                     case Jira:
+                        this.connect(issue, "status", 1, 10000);
+                        this.connect(issue, "status", 2, 3);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 10002);
 
+                        this.connect(issue, "severity", Arrays.asList(90200L, 90201L), 10003);
+                        this.connect(issue, "severity", Arrays.asList(90202L, 90203L), 10005);
+
+                        this.connect(issue, "priority", 2, 2);
+                        this.connect(issue, "priority", 3, 3);
+                        this.connect(issue, "priority", 4, 42);
                         break;
                     case OpenProject:
+                        this.connect(issue, "status", 1, 1);
+                        this.connect(issue, "status", 2, 7);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 13);
 
+                        this.connect(issue, "severity", Arrays.asList(90200L, 90201L), 7);
+                        this.connect(issue, "severity", Arrays.asList(90202L, 90203L), 4);
+
+                        this.connect(issue, "priority", 2, 9);
+                        this.connect(issue, "priority", 3, 8);
+                        this.connect(issue, "priority", 4, 7);
                         break;
                     case PivotalTracker:
+                        this.connect(issue, "status", 1, 0);
+                        this.connect(issue, "status", 2, 1);
+                        this.connect(issue, "status", Arrays.asList(3L, 4L), 3);
 
+                        this.connect(issue, "severity", Arrays.asList(90200L, 90201L), 0);
+                        this.connect(issue, "severity", Arrays.asList(90202L, 90203L), 1);
                         break;
                     case Github:
-
                         break;
                 }
                 break;
@@ -753,23 +1132,35 @@ public class Administration {
                         }
                         break;
                     case "severity":
-                        if(issue.getSeverity().getKey().toString().equals(String.valueOf(oldId))) {
-                            issue.setSeverity((int) newId, this.getString(newEntries, newId));
+                        if (!this.severity) {
+                            if (issue.getSeverity().getKey().toString().equals(String.valueOf(oldId))) {
+                                issue.setSeverity((int) newId, this.getString(newEntries, newId));
+                                this.severity = true;
+                            }
                         }
                         break;
                     case "priority":
-                        if(issue.getPriority().getKey().toString().equals(String.valueOf(oldId))) {
-                            issue.setPriority((int) newId, this.getString(newEntries, newId));
+                        if (!this.priority) {
+                            if (issue.getPriority().getKey().toString().equals(String.valueOf(oldId))) {
+                                issue.setPriority((int) newId, this.getString(newEntries, newId));
+                                this.priority = true;
+                            }
                         }
                         break;
                     case "status":
-                        if(issue.getStatus().getKey().toString().equals(String.valueOf(oldId))) {
-                            issue.setStatus((int) newId, this.getString(newEntries, newId));
+                        if (!this.status) {
+                            if (issue.getStatus().getKey().toString().equals(String.valueOf(oldId))) {
+                                issue.setStatus((int) newId, this.getString(newEntries, newId));
+                                this.status = true;
+                            }
                         }
                         break;
                     case "resolution":
-                        if(issue.getResolution().getKey().toString().equals(String.valueOf(oldId))) {
-                            issue.setResolution((int) newId, this.getString(newEntries, newId));
+                        if (!this.resolution) {
+                            if (issue.getResolution().getKey().toString().equals(String.valueOf(oldId))) {
+                                issue.setResolution((int) newId, this.getString(newEntries, newId));
+                                this.resolution = true;
+                            }
                         }
                         break;
                 }
