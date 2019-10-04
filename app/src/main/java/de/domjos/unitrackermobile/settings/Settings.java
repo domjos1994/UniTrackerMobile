@@ -21,7 +21,8 @@ package de.domjos.unitrackermobile.settings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+import androidx.preference.PreferenceManager;
 
 import java.util.List;
 
@@ -76,12 +77,10 @@ public class Settings {
     public Project getCurrentProject(Activity activity, IBugService bugService) {
         try {
             String title = this.preferences.getString(Settings.PROJECT, "");
-            if (title != null) {
-                if (!title.isEmpty()) {
-                    List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.ic_apps_black_24dp).execute(title).get();
-                    if (projects.size() >= 1) {
-                        return projects.get(0);
-                    }
+            if (!title.isEmpty()) {
+                List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.ic_apps_black_24dp).execute(title).get();
+                if (projects.size() >= 1) {
+                    return projects.get(0);
                 }
             }
 
@@ -102,10 +101,8 @@ public class Settings {
 
     public IBugService.IssueFilter getCurrentFilter() {
         String filter = this.preferences.getString(Settings.FILTER, "");
-        if (filter != null) {
-            if (!filter.isEmpty()) {
-                return IBugService.IssueFilter.valueOf(filter);
-            }
+        if (!filter.isEmpty()) {
+            return IBugService.IssueFilter.valueOf(filter);
         }
         return IBugService.IssueFilter.all;
     }
@@ -134,17 +131,13 @@ public class Settings {
 
     public int getNumberOfItems() {
         String strNumber = this.userPreferences.getString("txtNumberOfItems", "-1");
-        if (strNumber != null) {
-            try {
-                int number = Integer.parseInt(strNumber);
-                if (number < -1) {
-                    return -1;
-                }
-                return number;
-            } catch (Exception ex) {
+        try {
+            int number = Integer.parseInt(strNumber);
+            if (number < -1) {
                 return -1;
             }
-        } else {
+            return number;
+        } catch (Exception ex) {
             return -1;
         }
     }
@@ -156,17 +149,13 @@ public class Settings {
         } else {
             strNumber = this.userPreferences.getString("txtMobileReload", "-1");
         }
-        if (strNumber != null) {
-            try {
-                int number = Integer.parseInt(strNumber);
-                if (number < -1) {
-                    return -1;
-                }
-                return number;
-            } catch (Exception ex) {
+        try {
+            int number = Integer.parseInt(strNumber);
+            if (number < -1) {
                 return -1;
             }
-        } else {
+            return number;
+        } catch (Exception ex) {
             return -1;
         }
     }
@@ -207,11 +196,7 @@ public class Settings {
 
     public String getLocalSyncPath() {
         String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
-        if (path != null) {
-            if (path.equals("")) {
-                return this.context.getFilesDir().getAbsolutePath();
-            }
-        } else {
+        if (path.equals("")) {
             return this.context.getFilesDir().getAbsolutePath();
         }
         path = path.replace(":", "");

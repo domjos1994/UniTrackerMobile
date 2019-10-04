@@ -16,25 +16,30 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unitrackermobile.activities;
+package de.domjos.unitrackermobile.fragments;
+
+import android.os.Bundle;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.preference.PreferenceFragmentCompat;
 
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.fragments.SettingsFragment;
 
-public final class SettingsActivity extends AbstractActivity {
+public class SettingsBugTrackerFragment extends PreferenceFragmentCompat {
 
-    public SettingsActivity() {
-        super(R.layout.settings_activity);
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        super.setPreferencesFromResource(R.xml.pref_bug_tracker, rootKey);
     }
 
     @Override
-    protected void initControls() {
-        this.getSupportFragmentManager().beginTransaction().replace(R.id.llSettings, new SettingsFragment()).commit();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
-    protected void initActions() {
-
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        return super.onOptionsItemSelected(item);
     }
 }

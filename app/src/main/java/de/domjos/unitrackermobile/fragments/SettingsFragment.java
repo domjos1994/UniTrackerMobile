@@ -16,25 +16,18 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unitrackermobile.activities;
+package de.domjos.unitrackermobile.fragments;
+
+import android.os.Bundle;
+
+import androidx.preference.PreferenceFragmentCompat;
 
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.fragments.SettingsFragment;
 
-public final class SettingsActivity extends AbstractActivity {
-
-    public SettingsActivity() {
-        super(R.layout.settings_activity);
-    }
-
+public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
-    protected void initControls() {
-        this.getSupportFragmentManager().beginTransaction().replace(R.id.llSettings, new SettingsFragment()).commit();
-    }
-
-    @Override
-    protected void initActions() {
-
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.pref_main, rootKey);
     }
 }
+
