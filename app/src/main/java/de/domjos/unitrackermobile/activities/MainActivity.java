@@ -39,6 +39,9 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
@@ -91,6 +94,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Toolbar toolbar;
     private int page;
 
+    private InterstitialAd interstitialAd;
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
     private static final int RELOAD_ISSUES = 101;
@@ -333,6 +337,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
             this.firstLogIn = this.settings.isFirstLogin(false);
 
+            MobileAds.initialize(this, initializationStatus -> {
+            });
+            this.interstitialAd = new InterstitialAd(this);
+            // ToDo replace by ca-app-pub-4983888966373182/5163399444
+            this.interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+            this.interstitialAd.loadAd(new AdRequest.Builder().build());
+
             Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
@@ -439,6 +450,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
 
             OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
+            this.interstitialAd.show();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
         }
@@ -601,6 +613,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
             this.reloadAccounts();
             this.reloadProjects();

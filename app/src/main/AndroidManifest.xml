@@ -35,7 +35,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
+        android:name="androidx.multidex.MultiDexApplication"
         tools:targetApi="m">
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-4983888966373182~7705161676" />
+
         <activity
             android:name=".activities.StatisticsActivity"
             android:label="@string/statistics"
