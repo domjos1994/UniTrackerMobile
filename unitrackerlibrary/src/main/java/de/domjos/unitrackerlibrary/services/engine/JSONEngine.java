@@ -292,6 +292,10 @@ public class JSONEngine {
                 }
             }
         }
-        return builder.addHeader("Accept", "application/json").url(this.authentication.getServer() + path);
+        if(path.trim().startsWith("http")) {
+            return builder.addHeader("Accept", "application/json").url(path);
+        } else {
+            return builder.addHeader("Accept", "application/json").url(this.authentication.getServer() + path);
+        }
     }
 }

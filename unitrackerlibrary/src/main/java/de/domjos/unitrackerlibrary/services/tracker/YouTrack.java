@@ -63,11 +63,20 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String USER_FIELDS = "id,login,fullName,email";
     private final static String DATE_TIME_FIELD = "dd-MM-yyyy HH:mm:ss";
 
+    private long maximum = 0;
     private Authentication authentication;
+    private final String hubPart;
 
     public YouTrack(Authentication authentication) {
         super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
         this.authentication = authentication;
+
+        String hub = this.authentication.getHints().get("hub");
+        if(hub!=null) {
+            this.hubPart = hub.isEmpty() ? "/hub/" : hub.trim();
+        } else {
+            this.hubPart = "/hub/";
+        }
     }
 
     @Override
@@ -234,6 +243,11 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             rootObject.put("values", array);
             this.executeRequest("/api/admin/customFieldSettings/bundles/version/" + entry.getKey(), rootObject.toString(), "POST");
         }
+    }
+
+    @Override
+    public long getMaximumNumberOfIssues(String project_id) {
+        return 0;
     }
 
     @Override
@@ -561,7 +575,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         List<User<String>> users = new LinkedList<>();
         Project<String> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/hub/api/rest/users?fields=id,name,login,email");
+            int status = this.executeRequest(this.hubPart + "api/rest/users?fields=id,name,login,email");
             if (status == 200 || status == 201) {
                 JSONObject usersObject = new JSONObject(this.getCurrentMessage());
                 JSONArray usersArray = usersObject.getJSONArray("users");
@@ -583,7 +597,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public User<String> getUser(String id, String project_id) throws Exception {
-        int status = this.executeRequest("/hub/api/rest/users/" + id + "?fields=id,name,login,email");
+        int status = this.executeRequest(this.hubPart + "api/rest/users/" + id + "?fields=id,name,login,email");
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             User<String> user = new User<>();
@@ -593,7 +607,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
             if (jsonObject.has("email")) {
                 user.setEmail(jsonObject.getString("email"));
             }
-            this.executeRequest("/hub/api/rest/users/" + id + "/applicationPasswords?fields=id,name,password");
+            this.executeRequest(this.hubPart + "api/rest/users/" + id + "/applicationPasswords?fields=id,name,password");
 
             return user;
         }
@@ -618,9 +632,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
         int status;
         if (user.getId() == null) {
-            status = this.executeRequest("/hub/api/rest/users?fields=id", jsonObject.toString(), "POST");
+            status = this.executeRequest(this.hubPart + "api/rest/users?fields=id", jsonObject.toString(), "POST");
         } else {
-            status = this.executeRequest("/hub/api/rest/users/" + user.getId() + "?fields=id", jsonObject.toString(), "POST");
+            status = this.executeRequest(this.hubPart + "api/rest/users/" + user.getId() + "?fields=id", jsonObject.toString(), "POST");
         }
         if (status == 200 || status == 201) {
             if (user.getId() == null) {
@@ -632,7 +646,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 object.put("password", user.getPassword());
                 jsonObject.put("id", user.getId());
                 object.put("user", jsonObject);
-                this.executeRequest("/hub/api/rest/users/" + user.getId() + "/applicationPasswords", object.toString(), "POST");
+                this.executeRequest(this.hubPart + "api/rest/users/" + user.getId() + "/applicationPasswords", object.toString(), "POST");
             }
 
         }
@@ -640,7 +654,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public void deleteUser(String id, String project_id) throws Exception {
-        this.deleteRequest("/hub/api/rest/users/" + id);
+        this.deleteRequest(this.hubPart + "api/rest/users/" + id);
     }
 
     @Override

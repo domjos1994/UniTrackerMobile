@@ -121,6 +121,8 @@ public final class AccountActivity extends AbstractActivity {
                             break;
                         case Bugzilla:
                         case YouTrack:
+                            txtAccountExtended.setVisibility(View.VISIBLE);
+                            txtAccountExtended.setHint(R.string.accounts_youtrack_hub);
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
@@ -357,6 +359,7 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery.setEnabled(editMode);
         this.cmbAccountTracker.setEnabled(editMode);
         this.chkAccountGuest.setEnabled(editMode);
+        this.txtAccountExtended.setEnabled(editMode);
 
         if (reset) {
             this.currentAccount = new Authentication();
@@ -386,6 +389,10 @@ public final class AccountActivity extends AbstractActivity {
             } else {
                 this.cmdAccountImageGallery.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
             }
+
+            if(this.currentAccount.getTracker() == Authentication.Tracker.YouTrack) {
+                this.txtAccountExtended.setText(this.currentAccount.getHints().get("hub"));
+            }
         }
     }
 
@@ -403,6 +410,12 @@ public final class AccountActivity extends AbstractActivity {
                 this.currentAccount.setCover(Converter.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
             } else {
                 this.currentAccount.setCover(null);
+            }
+            if(this.currentAccount.getTracker()== Authentication.Tracker.YouTrack) {
+                String hub = this.txtAccountExtended.getText().toString();
+                if(!hub.trim().isEmpty()) {
+                    this.currentAccount.getHints().put("hub", hub.trim());
+                }
             }
         }
     }
@@ -424,5 +437,14 @@ public final class AccountActivity extends AbstractActivity {
         this.accountValidator.removeValidator(this.txtAccountAPI);
         this.txtAccountAPI.setHint(R.string.accounts_api);
         this.txtAccountAPI.setVisibility(View.VISIBLE);
+
+        if(this.currentAccount!=null) {
+            String sever = this.currentAccount.getServer();
+            if(sever!=null) {
+               if(!sever.trim().isEmpty()) {
+                   this.txtAccountServer.setText(sever.trim());
+               }
+            }
+        }
     }
 }

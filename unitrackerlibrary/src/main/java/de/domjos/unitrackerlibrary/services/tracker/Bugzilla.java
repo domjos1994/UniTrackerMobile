@@ -195,6 +195,11 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public long getMaximumNumberOfIssues(Long project_id) {
+        return 0;
+    }
+
+    @Override
     public List<Issue<Long>> getIssues(Long project_id) throws Exception {
         return this.getIssues(project_id, 1, -1, IssueFilter.all);
     }

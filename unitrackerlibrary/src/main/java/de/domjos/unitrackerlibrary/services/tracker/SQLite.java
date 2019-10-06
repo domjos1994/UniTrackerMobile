@@ -231,6 +231,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
+    public long getMaximumNumberOfIssues(Long project_id) {
+        return 0;
+    }
+
+    @Override
     public List<Issue<Long>> getIssues(Long project_id) {
         return this.getIssues(project_id, 1, -1, IssueFilter.all);
     }

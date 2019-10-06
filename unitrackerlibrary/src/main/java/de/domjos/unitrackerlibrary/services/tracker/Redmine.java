@@ -242,6 +242,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
+    public long getMaximumNumberOfIssues(Long project_id) {
+        return 0;
+    }
+
+    @Override
     public List<Issue<Long>> getIssues(Long pid) throws Exception {
         return this.getIssues(pid, 1, -1, IssueFilter.all);
     }

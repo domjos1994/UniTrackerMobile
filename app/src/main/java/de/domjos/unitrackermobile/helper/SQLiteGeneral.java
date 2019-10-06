@@ -25,10 +25,11 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import de.domjos.unitrackerlibrary.model.Filter;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.utils.Crypto;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
@@ -125,6 +126,10 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     authentications.add(authentication);
                 }
                 cursor.close();
+
+                for(int i = 0; i<=authentications.size()-1; i++) {
+                    authentications.get(i).setHints(this.getHints(authentications.get(i).getId()));
+                }
             } else {
                 return null;
             }
@@ -166,45 +171,45 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     stmt.bindString(8, Authentication.Tracker.Local.name());
                 }
                 stmt.bindLong(9, authentication.isGuest() ? 1 : 0);
-                stmt.execute();
+
+                if(authentication.getId() == null) {
+                    authentication.setId(stmt.executeInsert());
+                } else {
+                    stmt.execute();
+                }
+                this.setHints(authentication);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.context);
         }
     }
 
-    public List<Filter> getFilters() {
-        List<Filter> filters = new LinkedList<>();
-        Cursor cursor = this.getReadableDatabase().rawQuery("SELECT * FROM filters", new String[]{});
-        while (cursor.moveToNext()) {
-            Filter filter = new Filter();
-            filter.setId(cursor.getLong(cursor.getColumnIndex("ID")));
-            filter.setTitle(cursor.getString(cursor.getColumnIndex("title")));
-            filter.setView(cursor.getString(cursor.getColumnIndex("view")));
-            filter.setStatus(cursor.getString(cursor.getColumnIndex("status")));
-            filter.setVersion(cursor.getString(cursor.getColumnIndex("version")));
-            filter.setDescription(cursor.getString(cursor.getColumnIndex("description")));
-            filters.add(filter);
+    private Map<String, String> getHints(long id) {
+        Map<String, String> hints = new LinkedHashMap<>();
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor = db.rawQuery("SELECT * FROM hints WHERE account=" + id, new String[]{});
+            while (cursor.moveToNext()) {
+                hints.put(this.getString(cursor, "hint_key"), this.getString(cursor, "hint_value"));
+            }
+            cursor.close();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.context);
         }
-        cursor.close();
-        return filters;
+        return hints;
     }
 
-    public void insertOrUpdateFilter(Filter filter) {
-        SQLiteStatement sqLiteStatement;
-        if (filter.getId() != null) {
-            sqLiteStatement = this.getWritableDatabase().compileStatement("UPDATE filters SET title=?, `view`=?, status=?, version=?, description=? WHERE id=?");
-            sqLiteStatement.bindLong(6, filter.getId());
-        } else {
-            sqLiteStatement = this.getWritableDatabase().compileStatement("INSERT INTO filters(title, `view`, status, version, description) VALUES(?,?,?,?,?)");
+    private void setHints(Authentication authentication) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM hints WHERE account=" + authentication.getId());
+        for(Map.Entry<String, String> entry : authentication.getHints().entrySet()) {
+            SQLiteStatement preparedStatement = db.compileStatement("INSERT INTO hints(hint_key, hint_value, account) VALUES(?, ?, ?)");
+            preparedStatement.bindString(1, entry.getKey());
+            preparedStatement.bindString(2, entry.getValue());
+            preparedStatement.bindLong(3, authentication.getId());
+            preparedStatement.executeInsert();
+            preparedStatement.close();
         }
-        sqLiteStatement.bindString(1, filter.getTitle());
-        sqLiteStatement.bindString(2, filter.getView());
-        sqLiteStatement.bindString(3, filter.getStatus());
-        sqLiteStatement.bindString(4, filter.getVersion());
-        sqLiteStatement.bindString(5, filter.getDescription());
-        sqLiteStatement.execute();
-        sqLiteStatement.close();
     }
 
     boolean duplicated(String table, String column, String value, String where) {

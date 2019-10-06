@@ -109,6 +109,7 @@ public interface IBugService<T> {
      */
     void deleteVersion(T id, T project_id) throws Exception;
 
+    long getMaximumNumberOfIssues(T project_id);
 
     /**
      * Returns a List of Issues

@@ -34,7 +34,7 @@ public class DescriptionObject<T> extends LocalObject<T> {
         super();
         this.title = "";
         this.description = "";
-        this.hints = new LinkedHashMap<>();
+        this.setHints(new LinkedHashMap<>());
     }
 
     public String getTitle() {
@@ -61,5 +61,9 @@ public class DescriptionObject<T> extends LocalObject<T> {
 
     public Map<String, String> getHints() {
         return this.hints;
+    }
+
+    public void setHints(Map<String, String> hints) {
+        this.hints = hints;
     }
 }

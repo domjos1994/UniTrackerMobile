@@ -220,6 +220,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         this.executeAction(request, "mc_project_version_delete", true);
     }
 
+    @Override
+    public long getMaximumNumberOfIssues(Long project_id) {
+        return 0;
+    }
 
 
     @Override
