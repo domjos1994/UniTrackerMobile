@@ -264,6 +264,7 @@ public final class AccountActivity extends AbstractActivity {
                                             MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
                                             this.manageControls(false, true, false);
                                             this.reload();
+                                            OnBoardingHelper.tutorialStep3(AccountActivity.this);
                                         });
                                     } else {
                                         AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this));
@@ -279,7 +280,6 @@ public final class AccountActivity extends AbstractActivity {
                                         }
                                     }
                                 }
-                                runOnUiThread(() -> OnBoardingHelper.tutorialStep3(AccountActivity.this));
                             }).start();
                         } else {
                             MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
