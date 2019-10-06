@@ -80,15 +80,20 @@ public class JSONEngine {
     }
 
     protected int executeRequest(String path) throws Exception {
-        Call call = this.initAuthentication(path);
-        Response response = call.execute();
-        this.state = response.code();
+        try {
+            Call call = this.initAuthentication(path);
+            Response response = call.execute();
+            this.state = response.code();
 
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            }
+            return this.state;
+        } catch (OutOfMemoryError error) {
+            this.currentMessage = "OutOfMemoryError";
+            return 404;
         }
-        return this.state;
     }
 
     protected int executeRequest(String path, String body, String type) throws Exception {
