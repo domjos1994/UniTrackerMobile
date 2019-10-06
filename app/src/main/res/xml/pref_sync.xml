@@ -8,7 +8,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -17,18 +17,17 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <SwitchPreference
         android:key="swtSyncAutomatically"
         android:defaultValue="false"
         android:title="@string/settings_sync_automatically_title"
         android:summary="@string/settings_sync_automatically_summary" />
 
-    <com.github.angads25.filepicker.view.FilePickerPreference
+    <!--<com.github.angads25.filepicker.view.FilePickerPreference
         android:key="swtSyncPath"
         android:title="@string/settings_sync_path_title"
         android:summary="@string/settings_sync_path_summary"
         app:selection_type="dir_select"
-        app:selection_mode="single_mode" />
+        app:selection_mode="single_mode" />-->
 </PreferenceScreen>

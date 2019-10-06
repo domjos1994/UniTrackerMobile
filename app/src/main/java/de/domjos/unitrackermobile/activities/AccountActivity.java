@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -25,6 +25,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -39,11 +40,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.ListObject;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.utils.Converter;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
@@ -221,6 +222,7 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         try {
             Bitmap bitmap = IntentHelper.getImageFromGallery(requestCode, resultCode, data, this.getApplicationContext());
             this.cmdAccountImageGallery.setImageBitmap(bitmap);
@@ -267,10 +269,14 @@ public final class AccountActivity extends AbstractActivity {
                                         AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), AccountActivity.this));
                                     }
                                 } catch (Exception ex) {
-                                    if (ex.getMessage().contains("PHP SOAP")) {
-                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), AccountActivity.this));
-                                    } else {
-                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+                                    Log.v("Exception", ex.toString());
+                                    String msg = ex.getMessage();
+                                    if(msg!=null) {
+                                        if (msg.contains("PHP SOAP")) {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), AccountActivity.this));
+                                        } else {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, AccountActivity.this));
+                                        }
                                     }
                                 }
                                 runOnUiThread(() -> OnBoardingHelper.tutorialStep3(AccountActivity.this));

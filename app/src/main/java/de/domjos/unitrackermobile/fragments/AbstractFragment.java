@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -20,7 +20,7 @@ package de.domjos.unitrackermobile.fragments;
 
 import androidx.fragment.app.Fragment;
 
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackermobile.helper.Validator;
 
 public abstract class AbstractFragment extends Fragment {

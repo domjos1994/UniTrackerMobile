@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -25,14 +25,15 @@ import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.fragments.AbstractFragment;
 import de.domjos.unitrackermobile.fragments.IssueAttachmentsFragment;
@@ -54,7 +55,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     private int count;
 
     public PagerAdapter(Context context, FragmentManager fm) {
-        super(fm);
+        super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         this.context = context;
         this.general = new IssueGeneralFragment();
         this.notes = new IssueNotesFragment();
@@ -80,6 +81,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
+    @NonNull
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
@@ -111,7 +113,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 return this.history;
             }
         }
-        return null;
+        return new Fragment();
     }
 
     public void setPid(String pid) {

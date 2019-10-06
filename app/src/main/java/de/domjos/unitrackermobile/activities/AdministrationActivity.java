@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -33,17 +33,17 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.model.Administration;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.AdministrationTask;
-import de.domjos.unibuggerlibrary.tasks.FieldTask;
-import de.domjos.unibuggerlibrary.tasks.IssueTask;
-import de.domjos.unibuggerlibrary.tasks.ProjectTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unitrackerlibrary.model.Administration;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.AdministrationTask;
+import de.domjos.unitrackerlibrary.tasks.FieldTask;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.tasks.ProjectTask;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.helper.ArrayHelper;

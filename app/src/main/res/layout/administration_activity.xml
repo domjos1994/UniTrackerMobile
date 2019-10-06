@@ -7,7 +7,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -219,20 +219,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="10"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@android:color/background_light"
+        style="?android:attr/buttonBarStyle">
 
         <Button
             android:id="@+id/cmdCopy"
             android:text="@string/administration_copy"
             android:layout_weight="5"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"/>
 
         <Button
             android:id="@+id/cmdMove"
             android:text="@string/administration_move"
             android:layout_weight="5"
             android:layout_width="0dp"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>
 </RelativeLayout>

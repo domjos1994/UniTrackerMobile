@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -22,14 +22,14 @@ import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.model.ListObject;
-import de.domjos.unibuggerlibrary.model.issues.User;
-import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.UserTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.model.issues.User;
+import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.UserTask;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;

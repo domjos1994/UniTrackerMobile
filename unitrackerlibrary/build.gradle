@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -17,16 +17,19 @@
  */
 
 apply plugin: 'com.android.library'
+int compVersion = "$propCompVersion".toInteger()
+int minVersion = "$propMinVersion".toInteger()
+int version = "$propVersion".toInteger()
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion compVersion
 
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion minVersion
+        targetSdkVersion compVersion
+        versionCode version
+        versionName propVersionCode
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -40,8 +43,8 @@ android {
     }
 
     compileOptions {
-        targetCompatibility = "8"
-        sourceCompatibility = "8"
+        targetCompatibility = propJavaVersion
+        sourceCompatibility = propJavaVersion
     }
 
     packagingOptions {
@@ -52,12 +55,17 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
-    implementation 'com.caverock:androidsvg:1.4'
-    implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.4'
-    implementation 'com.itextpdf:itextg:5.5.10'
+    implementation "androidx.preference:preference:$propAndroidVersion"
+    implementation "androidx.core:core:$propAndroidVersion"
+    implementation "androidx.appcompat:appcompat:$propAndroidVersion"
 
-    // test-libraries
-    testImplementation 'junit:junit:4.12'
+    // libraries to call the webservices of the bug-trackers
+    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+    implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.4'
+
+    // library to get svg images
+    implementation 'com.caverock:androidsvg:1.4'
+
+    // library to create pdf-files
+    implementation 'com.itextpdf:itextg:5.5.10'
 }

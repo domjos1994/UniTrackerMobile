@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -28,10 +28,10 @@ import net.sqlcipher.database.SQLiteStatement;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.model.Filter;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.utils.Crypto;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.model.Filter;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.utils.Crypto;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
@@ -40,7 +40,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     private String password;
     private Crypto crypto;
 
-    public SQLiteGeneral(Context context, String password) throws Exception {
+    SQLiteGeneral(Context context, String password) throws Exception {
         super(context, "general.db", null, Helper.getVersionCode(context));
         this.context = context;
         this.password = password;

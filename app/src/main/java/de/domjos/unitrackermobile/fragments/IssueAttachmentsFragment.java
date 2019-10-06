@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -35,16 +35,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.ListObject;
-import de.domjos.unibuggerlibrary.model.issues.Attachment;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.utils.Converter;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.model.issues.Attachment;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
@@ -133,7 +131,8 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
+    @SuppressWarnings("unchecked")
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
         try {
             if(getActivity()!=null) {
                 ListObject listObject = this.lvIssueAttachments.getAdapter().getObject();
@@ -153,27 +152,32 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         return true;
     }
 
-    public String getFileName(Uri uri) {
+    private String getFileName(Uri uri) {
         if(getActivity()!=null) {
-            String result = null;
-            if (uri.getScheme().equals("content")) {
-                Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
-                try {
-                    if (cursor != null && cursor.moveToFirst()) {
-                        result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+            String scheme = uri.getScheme();
+            if(scheme!=null) {
+                String result = null;
+                if (scheme.equals("content")) {
+                    try (Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null)) {
+                        if (cursor != null && cursor.moveToFirst()) {
+                            result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                        }
                     }
-                } finally {
-                    cursor.close();
                 }
-            }
-            if (result == null) {
-                result = uri.getPath();
-                int cut = result.lastIndexOf('/');
-                if (cut != -1) {
-                    result = result.substring(cut + 1);
+                if (result == null) {
+                    result = uri.getPath();
+                    int cut = 0;
+                    if (result != null) {
+                        cut = result.lastIndexOf('/');
+                    }
+                    if (cut != -1) {
+                        if (result != null) {
+                            result = result.substring(cut + 1);
+                        }
+                    }
                 }
+                return result;
             }
-            return result;
         }
         return "";
     }
@@ -230,7 +234,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         int bufferSize = 1024;
         byte[] buffer = new byte[bufferSize];
 
-        int len = 0;
+        int len;
         while ((len = inputStream.read(buffer)) != -1) {
             byteBuffer.write(buffer, 0, len);
         }
@@ -243,6 +247,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
 
@@ -292,21 +297,9 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        Validator validator = new Validator(this.getContext());
-        if (this.root != null) {
-
-        }
-        return validator;
+        return new Validator(this.getContext());
     }
 
     @Override
-    public void updateUITrackerSpecific() {
-        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-
-        switch (authentication.getTracker()) {
-            case MantisBT:
-
-                break;
-        }
-    }
+    public void updateUITrackerSpecific() {}
 }

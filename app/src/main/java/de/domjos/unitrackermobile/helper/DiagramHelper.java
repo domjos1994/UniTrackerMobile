@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -38,9 +38,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.projects.Project;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class DiagramHelper {
     private Map<Authentication, Map<Project, List<Issue>>> data;
@@ -110,6 +110,7 @@ public class DiagramHelper {
         lineChart.invalidate();
     }
 
+    @SuppressWarnings("MagicConstant")
     private void createBarData(BarChart barChart) {
         Random generator = new Random();
         BarData barData = new BarData();
@@ -186,6 +187,7 @@ public class DiagramHelper {
         barChart.setData(barData);
     }
 
+    @SuppressWarnings("MagicConstant")
     private void createLineData(LineChart lineChart) {
         Random generator = new Random();
         LineData lineData = new LineData();

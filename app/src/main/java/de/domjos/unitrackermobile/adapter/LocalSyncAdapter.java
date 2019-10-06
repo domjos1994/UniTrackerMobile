@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -34,7 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.unibuggerlibrary.tasks.LocalSyncTask;
+import de.domjos.unitrackerlibrary.tasks.LocalSyncTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.provider.FileProvider;
@@ -148,32 +148,40 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
         this.content = new LinkedList<>();
         File tmp = new File(this.path);
         if (tmp.exists()) {
-            for (File content : tmp.listFiles()) {
-                if (content.getName().toLowerCase().contains(this.search.trim().toLowerCase())) {
-                    if (content.isDirectory()) {
-                        List<String> children = new LinkedList<>();
-
-                        for (File child : content.listFiles()) {
-                            if (child.isFile()) {
-                                if (child.getAbsolutePath().endsWith(".pdf")) {
-                                    children.add(child.getName());
-                                    break;
-                                }
-                            }
-                        }
-
-                        for (File child : content.listFiles()) {
-                            if (child.isDirectory()) {
-                                if (child.getAbsolutePath().contains("attachments")) {
-                                    for (File attachment : child.listFiles()) {
-                                        children.add(attachment.getName());
+            File[] files = tmp.listFiles();
+            if(files!=null) {
+                for (File content : files) {
+                    if (content.getName().toLowerCase().contains(this.search.trim().toLowerCase())) {
+                        if (content.isDirectory()) {
+                            List<String> children = new LinkedList<>();
+                            File[] contents = content.listFiles();
+                            if(contents!=null) {
+                                for (File child : contents) {
+                                    if (child.isFile()) {
+                                        if (child.getAbsolutePath().endsWith(".pdf")) {
+                                            children.add(child.getName());
+                                            break;
+                                        }
                                     }
-                                    break;
+                                }
+
+                                for (File child : contents) {
+                                    if (child.isDirectory()) {
+                                        if (child.getAbsolutePath().contains("attachments")) {
+                                            File[] childs = child.listFiles();
+                                            if(childs!=null) {
+                                                for (File attachment : childs) {
+                                                    children.add(attachment.getName());
+                                                }
+                                            }
+                                            break;
+                                        }
+                                    }
                                 }
                             }
-                        }
 
-                        this.content.add(new AbstractMap.SimpleEntry<>(content.getName(), children));
+                            this.content.add(new AbstractMap.SimpleEntry<>(content.getName(), children));
+                        }
                     }
                 }
             }

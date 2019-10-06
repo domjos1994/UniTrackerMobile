@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -28,11 +28,11 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.tasks.IssueTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.PagerAdapter;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
@@ -56,6 +56,7 @@ public final class IssueActivity extends AbstractActivity {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void initControls() {
         try {
             this.settings = MainActivity.GLOBALS.getSettings(getApplicationContext());

@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -22,16 +22,16 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.res.Resources;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.InputStream;
 import java.util.Properties;
 
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class Helper {
 
-    public static Context getContext() {
+    static Context getContext() {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
 
@@ -40,7 +40,7 @@ public class Helper {
         return new Authentication(properties.getProperty(bt + "_server"), properties.getProperty(bt + "_api"), properties.getProperty(bt + "_user"), properties.getProperty(bt + "_pwd"));
     }
 
-    public static Properties readPropertiesFromRaw(int rawID, Context context) throws Exception {
+    private static Properties readPropertiesFromRaw(int rawID, Context context) throws Exception {
         Properties properties = new Properties();
         Resources res = context.getResources();
         InputStream in_s = res.openRawResource(rawID);

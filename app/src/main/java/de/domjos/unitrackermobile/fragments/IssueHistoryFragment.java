@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -31,11 +31,11 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.History;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.issues.History;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.helper.DateConverter;
@@ -77,6 +77,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void initData() {
         if (this.issue != null) {
             if (this.getActivity() != null) {
@@ -87,7 +88,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
                             List objects;
                             try {
                                 Object projectId = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
-                                long project_id = 0l;
+                                long project_id = 0;
                                 if (projectId != null) {
                                     project_id = Long.parseLong(String.valueOf(projectId));
                                 }

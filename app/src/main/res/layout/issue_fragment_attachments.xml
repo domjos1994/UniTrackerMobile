@@ -7,7 +7,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -35,12 +35,14 @@
         android:orientation="horizontal">
         <ImageButton
             android:id="@+id/cmdIssueAttachmentAdd"
+            android:contentDescription="@string/issues_attachments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
             app:srcCompat="@drawable/ic_file_upload_black_24dp" />
         <ImageButton
             android:id="@+id/cmdIssueAttachmentPhoto"
+            android:contentDescription="@string/issues_attachments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"

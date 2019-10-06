@@ -7,7 +7,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -40,6 +40,7 @@
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesAdd"
+                android:contentDescription="@string/sys_add"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -47,6 +48,7 @@
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesEdit"
+                android:contentDescription="@string/sys_edit"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -54,6 +56,7 @@
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesDelete"
+                android:contentDescription="@string/sys_delete"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -61,6 +64,7 @@
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesCancel"
+                android:contentDescription="@string/sys_cancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
@@ -68,6 +72,7 @@
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesSave"
+                android:contentDescription="@string/sys_save"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"

@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -37,18 +37,18 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.issues.Profile;
-import de.domjos.unibuggerlibrary.model.issues.Tag;
-import de.domjos.unibuggerlibrary.model.issues.User;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.model.projects.Version;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.tasks.LoaderTask;
-import de.domjos.unibuggerlibrary.tasks.UserTask;
-import de.domjos.unibuggerlibrary.tasks.VersionTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.issues.Profile;
+import de.domjos.unitrackerlibrary.model.issues.Tag;
+import de.domjos.unitrackerlibrary.model.issues.User;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.model.projects.Version;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.LoaderTask;
+import de.domjos.unitrackerlibrary.tasks.UserTask;
+import de.domjos.unitrackerlibrary.tasks.VersionTask;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
@@ -257,6 +257,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
 

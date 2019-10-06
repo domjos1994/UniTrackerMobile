@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -41,10 +41,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.unibuggerlibrary.model.issues.CustomField;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggerlibrary.tasks.FieldTask;
+import de.domjos.unitrackerlibrary.model.issues.CustomField;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.custom.CommaTokenizer;
@@ -57,7 +57,6 @@ public final class IssueCustomFragment extends AbstractFragment {
     private boolean editMode;
     private TableLayout tblCustomFields;
     private List<View> views;
-    private Object pid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -83,6 +82,7 @@ public final class IssueCustomFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
 
@@ -136,14 +136,15 @@ public final class IssueCustomFragment extends AbstractFragment {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void initData() {
-        this.pid = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
+        Object pid = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
 
         if (this.issue != null) {
             if (this.getActivity() != null) {
                 if (this.issue.getCustomFields().isEmpty()) {
                     try {
-                        FieldTask fieldTask = new FieldTask(getActivity(), Helper.getCurrentBugService(getContext()), this.pid, false, false, R.drawable.ic_text_fields_black_24dp);
+                        FieldTask fieldTask = new FieldTask(getActivity(), Helper.getCurrentBugService(getContext()), pid, false, false, R.drawable.ic_text_fields_black_24dp);
                         List<CustomField> customFields = fieldTask.execute(0).get();
                         for (CustomField customField : customFields) {
                             this.issue.getCustomFields().put(customField, "");
@@ -203,6 +204,7 @@ public final class IssueCustomFragment extends AbstractFragment {
 
                     switch (customField.getType()) {
                         case TEXT:
+                        case MULTI_SELECT_LIST:
                             editText.setInputType(InputType.TYPE_CLASS_TEXT);
                             this.views.add(editText);
                             tableRow.addView(editText);
@@ -323,11 +325,6 @@ public final class IssueCustomFragment extends AbstractFragment {
                             this.views.add(spinner);
                             tableRow.addView(textView);
                             tableRow.addView(spinner);
-                            break;
-                        case MULTI_SELECT_LIST:
-                            editText.setInputType(InputType.TYPE_CLASS_TEXT);
-                            this.views.add(editText);
-                            tableRow.addView(editText);
                             break;
                     }
 

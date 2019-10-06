@@ -8,7 +8,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -168,7 +168,9 @@
                 android:textStyle="bold"
                 android:textSize="14sp"
                 android:hint="@string/export_path"
-                android:layout_margin="4dp" />
+                android:layout_margin="4dp"
+                android:autofillHints="@string/export_path"
+                tools:targetApi="o"/>
 
             <Spinner
                 android:id="@+id/spExportPath"
@@ -182,6 +184,7 @@
         <TableRow>
             <ImageButton
                 android:id="@+id/cmdExportPath"
+                android:contentDescription="@string/export"
                 app:srcCompat="@drawable/ic_search_black_24dp"
                 android:layout_weight="10"
                 android:layout_width="0dp"/>

@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -58,28 +58,29 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.domjos.unibuggerlibrary.interfaces.IBugService;
-import de.domjos.unibuggerlibrary.model.issues.Attachment;
-import de.domjos.unibuggerlibrary.model.issues.Issue;
-import de.domjos.unibuggerlibrary.model.issues.Note;
-import de.domjos.unibuggerlibrary.services.engine.Authentication;
-import de.domjos.unibuggerlibrary.services.tracker.Backlog;
-import de.domjos.unibuggerlibrary.services.tracker.Bugzilla;
-import de.domjos.unibuggerlibrary.services.tracker.Github;
-import de.domjos.unibuggerlibrary.services.tracker.Jira;
-import de.domjos.unibuggerlibrary.services.tracker.MantisBT;
-import de.domjos.unibuggerlibrary.services.tracker.OpenProject;
-import de.domjos.unibuggerlibrary.services.tracker.PivotalTracker;
-import de.domjos.unibuggerlibrary.services.tracker.Redmine;
-import de.domjos.unibuggerlibrary.services.tracker.SQLite;
-import de.domjos.unibuggerlibrary.services.tracker.YouTrack;
-import de.domjos.unibuggerlibrary.tasks.IssueTask;
-import de.domjos.unibuggerlibrary.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.issues.Attachment;
+import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.issues.Note;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.tracker.Backlog;
+import de.domjos.unitrackerlibrary.services.tracker.Bugzilla;
+import de.domjos.unitrackerlibrary.services.tracker.Github;
+import de.domjos.unitrackerlibrary.services.tracker.Jira;
+import de.domjos.unitrackerlibrary.services.tracker.MantisBT;
+import de.domjos.unitrackerlibrary.services.tracker.OpenProject;
+import de.domjos.unitrackerlibrary.services.tracker.PivotalTracker;
+import de.domjos.unitrackerlibrary.services.tracker.Redmine;
+import de.domjos.unitrackerlibrary.services.tracker.SQLite;
+import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 
 public class Helper {
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     static String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
         InputStream in_s = res.openRawResource(rawID);
@@ -164,18 +165,26 @@ public class Helper {
 
     public static boolean isNetworkAvailable(Activity activity) {
         ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        if (MainActivity.GLOBALS.getSettings(activity).isBlockMobile()) {
-            return false;
-        } else {
-            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        if(connectivityManager!=null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if (MainActivity.GLOBALS.getSettings(activity).isBlockMobile()) {
+                return false;
+            } else {
+                return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+            }
         }
+        return false;
     }
 
     public static boolean isInWLan(Context context) {
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+        if(connectivityManager!=null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            if(activeNetworkInfo!=null) {
+                return activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+            }
+        }
+        return false;
     }
 
     public static void isStoragePermissionGranted(Activity activity) {
@@ -281,6 +290,7 @@ public class Helper {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
         try {
             Dialog resolveDialog = new Dialog(activity);
@@ -351,6 +361,7 @@ public class Helper {
         }
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment attachment) {
         if (attachment.getContentType().toLowerCase().contains("image") ||
                 attachment.getFilename().toLowerCase().endsWith("png") ||

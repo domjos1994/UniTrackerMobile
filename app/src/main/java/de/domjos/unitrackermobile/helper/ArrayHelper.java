@@ -7,7 +7,7 @@
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * UniBuggerMobile is distributed in the hope that it will be useful,
+ * UniTrackerMobile is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -77,9 +77,13 @@ public class ArrayHelper {
             int counter = 0;
 
             do {
-                field = res.getField(key + "_" + counter);
-                array.add(context.getResources().obtainTypedArray(field.getInt(null)));
-                counter++;
+                try {
+                    field = res.getField(key + "_" + counter);
+                    array.add(context.getResources().obtainTypedArray(field.getInt(null)));
+                    counter++;
+                } catch (Exception ex) {
+                    return array;
+                }
             } while (true);
         } catch (Exception e) {
             return array;

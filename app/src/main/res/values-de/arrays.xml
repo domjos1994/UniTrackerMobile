@@ -7,7 +7,7 @@
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ UniBuggerMobile is distributed in the hope that it will be useful,
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
@@ -638,7 +638,7 @@
 
     <array name="issues_general_resolution_bugzilla_values_0">
         <item>1</item>
-        <item></item>
+        <item/>
     </array>
     <array name="issues_general_resolution_bugzilla_values_1">
         <item>2</item>
