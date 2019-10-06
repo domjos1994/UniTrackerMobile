@@ -410,6 +410,7 @@ public final class AccountActivity extends AbstractActivity {
     private void resetFieldsOnChange() {
         // reset server
         this.txtAccountServer.setVisibility(View.VISIBLE);
+        this.txtAccountServer.setText("");
 
         // reset user
         this.txtAccountUserName.setHint(R.string.accounts_user);
