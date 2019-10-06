@@ -516,16 +516,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void reload(String search) {
         try {
+            this.settings = new Settings(getApplicationContext());
             if (!MainActivity.GLOBALS.getPassword().isEmpty()) {
                 this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
-                if (this.settings.getNumberOfItems() == -1) {
-                    this.page = 1;
-                    this.pagination.setVisibility(View.INVISIBLE);
-                    this.pagination.getLayoutParams().height = 0;
-                } else {
-                    this.pagination.setVisibility(View.VISIBLE);
-                    this.pagination.getLayoutParams().height = LinearLayoutCompat.LayoutParams.WRAP_CONTENT;
-                }
+                this.changePagination();
                 this.lvMainIssues.getAdapter().clear();
                 boolean isLocal = true;
                 if (this.bugService != null) {
@@ -634,7 +628,22 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reloadFilters();
         }
 
+        if(resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_SETTINGS) {
+            this.changePagination();
+        }
+
         OnBoardingHelper.tutorialStep4(resultCode, requestCode, MainActivity.this, this.spMainAccounts, this::reloadAccounts);
+    }
+
+    private void changePagination() {
+        if (this.settings.getNumberOfItems() == -1) {
+            this.page = 1;
+            this.pagination.setVisibility(View.INVISIBLE);
+            this.pagination.getLayoutParams().height = 0;
+        } else {
+            this.pagination.setVisibility(View.VISIBLE);
+            this.pagination.getLayoutParams().height = LinearLayoutCompat.LayoutParams.WRAP_CONTENT;
+        }
     }
 
     @Override

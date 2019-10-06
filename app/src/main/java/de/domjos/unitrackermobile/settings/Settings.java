@@ -45,7 +45,7 @@ public class Settings {
     private SharedPreferences preferences;
     private SharedPreferences userPreferences;
 
-    Settings(Context context) {
+    public Settings(Context context) {
         this.preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
         this.userPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         this.context = context;
