@@ -22,6 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -81,8 +82,8 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                     project.setDescription(projectsObject.getString("description"));
                 }
                 project.setEnabled(projectsObject.getBoolean("public"));
-                project.setCreatedAt(Converter.convertStringToDate(projectsObject.getString("created_at"), PivotalTracker.DATE_FORMAT).getTime());
-                project.setUpdatedAt(Converter.convertStringToDate(projectsObject.getString("updated_at"), PivotalTracker.DATE_FORMAT).getTime());
+                project.setCreatedAt(this.getDate("created_at", projectsObject));
+                project.setUpdatedAt(this.getDate("updated_at", projectsObject));
                 projects.add(project);
             }
         }
@@ -101,10 +102,18 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                 project.setDescription(projectsObject.getString("description"));
             }
             project.setEnabled(projectsObject.getBoolean("public"));
-            project.setCreatedAt(Converter.convertStringToDate(projectsObject.getString("created_at"), PivotalTracker.DATE_FORMAT).getTime());
-            project.setUpdatedAt(Converter.convertStringToDate(projectsObject.getString("updated_at"), PivotalTracker.DATE_FORMAT).getTime());
+            project.setCreatedAt(this.getDate("created_at", projectsObject));
+            project.setUpdatedAt(this.getDate("updated_at", projectsObject));
         }
         return project;
+    }
+
+    private long getDate(String key, JSONObject object) throws Exception {
+        Date dt = Converter.convertStringToDate(object.getString(key), PivotalTracker.DATE_FORMAT);
+        if(dt!=null) {
+            return dt.getTime();
+        }
+        return 0;
     }
 
     @Override

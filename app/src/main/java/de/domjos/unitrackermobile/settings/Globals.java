@@ -20,17 +20,18 @@ package de.domjos.unitrackermobile.settings;
 
 import android.content.Context;
 
+import de.domjos.unitrackermobile.helper.AdHelper;
 import de.domjos.unitrackermobile.helper.SQLiteGeneral;
 
 public class Globals {
     private SQLiteGeneral sqLiteGeneral;
     private String password;
-    private String logFile;
+    private AdHelper adHelper;
 
     public Globals() {
         this.sqLiteGeneral = null;
         this.password = "";
-        this.logFile = "";
+        this.adHelper = null;
     }
 
     public SQLiteGeneral getSqLiteGeneral() {
@@ -53,11 +54,11 @@ public class Globals {
         this.password = password;
     }
 
-    public String getLogFile() {
-        return this.logFile;
+    public void setAdHelper(AdHelper adHelper) {
+        this.adHelper = adHelper;
     }
 
-    public void setLogFile(String logFile) {
-        this.logFile = logFile;
+    public AdHelper getAdHelper() {
+        return this.adHelper;
     }
 }
