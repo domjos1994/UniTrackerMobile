@@ -63,7 +63,6 @@ import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
 import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
-import de.domjos.unitrackermobile.helper.AdHelper;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.settings.Globals;
@@ -333,7 +332,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
-            MainActivity.GLOBALS.setAdHelper(new AdHelper(this.settings, this));
             this.firstLogIn = this.settings.isFirstLogin(false);
 
             Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess);

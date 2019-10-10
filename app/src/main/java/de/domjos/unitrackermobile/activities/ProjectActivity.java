@@ -78,7 +78,6 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        MainActivity.GLOBALS.getAdHelper().show();
 
         this.lvProjects.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override

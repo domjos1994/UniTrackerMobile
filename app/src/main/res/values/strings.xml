@@ -157,8 +157,6 @@
     <string name="settings_general_list_scroll_summary">Do you want to scroll a list item that is too long for the width of the screen?</string>
     <string name="settings_general_tutorial_title">Show tutorial again</string>
     <string name="settings_general_tutorial_summary">Would you like to show tutorial again?</string>
-    <string name="settings_general_ads_enabled_title">Disable Ads</string>
-    <string name="settings_general_ads_enabled_summary">Disable the ads</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Change the bug tracker specific settings here!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>

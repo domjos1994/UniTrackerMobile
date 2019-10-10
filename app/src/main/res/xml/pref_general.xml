@@ -31,12 +31,6 @@
         android:title="@string/settings_general_numberOfItems"
         android:summary="@string/settings_general_numberOfItems_summary" />
 
-    <SwitchPreference
-        android:key="swtDisableAds"
-        android:defaultValue="false"
-        android:title="@string/settings_general_ads_enabled_title"
-        android:summary="@string/settings_general_ads_enabled_summary" />
-
     <EditTextPreference
         android:key="txtFormatDate"
         android:inputType="text"

@@ -154,8 +154,6 @@
     <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
     <string name="settings_general_tutorial_title">Tutorial erneut anzeigen!</string>
     <string name="settings_general_tutorial_summary">Wollen Sie das Tutorial erneut anzeigen lassen?</string>
-    <string name="settings_general_ads_enabled_title">Deaktiviere die Werbung</string>
-    <string name="settings_general_ads_enabled_summary">Die Werbung deaktivieren</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Ändern Sie hier die Bug-Tracker spezifischen Einstellungen!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>

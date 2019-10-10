@@ -133,10 +133,6 @@ public class Settings {
         return this.userPreferences.getBoolean("swtNotifications", false);
     }
 
-    public boolean showAds() {
-        return this.userPreferences.getBoolean("swtDisableAds", false);
-    }
-
     public boolean isEncryptionEnabled() {
         return this.userPreferences.getBoolean("swtSecurityEnable", true);
     }
