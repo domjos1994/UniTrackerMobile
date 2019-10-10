@@ -121,6 +121,14 @@ public class Settings {
         return login;
     }
 
+    public String getWhatsNewVersion() {
+        return this.preferences.getString("whats_new_version", "");
+    }
+
+    public void setWhatsNewVersion() {
+        this.preferences.edit().putString("whats_new_version", Helper.getVersion(this.context)).apply();
+    }
+
     public boolean showNotifications() {
         return this.userPreferences.getBoolean("swtNotifications", false);
     }

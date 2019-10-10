@@ -32,6 +32,7 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,6 +78,7 @@ import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.settings.Settings;
 
 public class Helper {
 
@@ -359,6 +361,49 @@ public class Helper {
         } catch (Exception ex) {
             MessageHelper.printException(ex, activity);
         }
+    }
+
+    public static void showWhatsNewDialog(Activity activity) {
+        try {
+            Dialog whatsNewDialog = new Dialog(activity);
+            whatsNewDialog.setContentView(R.layout.whats_new_dialog);
+            TextView lblTitle = whatsNewDialog.findViewById(R.id.lblWhatsNewTitle);
+            TextView lblContent = whatsNewDialog.findViewById(R.id.lblWhatsNewContent);
+            String version = Helper.getVersion(activity);
+
+            lblTitle.setText(version);
+            lblContent.setText(Html.fromHtml(Helper.getStringResourceByName(activity, "whats_new_" + version)));
+
+            Settings settings = MainActivity.GLOBALS.getSettings(activity);
+
+            if(!settings.getWhatsNewVersion().isEmpty()) {
+                if(!settings.getWhatsNewVersion().equals(version)) {
+                    whatsNewDialog.show();
+                    settings.setWhatsNewVersion();
+                }
+            } else {
+                whatsNewDialog.show();
+                settings.setWhatsNewVersion();
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, activity);
+        }
+    }
+
+    private static String getStringResourceByName(Activity activity, String aString) {
+        String packageName = activity.getPackageName();
+        int resId = activity.getResources().getIdentifier(aString, "string", packageName);
+        return activity.getString(resId);
+    }
+
+    public static String getVersion(Context context) {
+        try {
+            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return pInfo.versionName;
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, context);
+        }
+        return "";
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")

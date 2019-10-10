@@ -442,6 +442,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }, 0, (this.settings.getReload() * 1000));
             }
 
+            if(this.firstLogIn) {
+                Helper.showWhatsNewDialog(this);
+            }
             OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);
