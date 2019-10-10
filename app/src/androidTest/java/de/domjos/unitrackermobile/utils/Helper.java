@@ -34,22 +34,4 @@ public class Helper {
     static Context getContext() {
         return InstrumentationRegistry.getInstrumentation().getTargetContext();
     }
-
-    public static Authentication getAuthFromRes(int rawID, String bt) throws Exception {
-        Properties properties = Helper.readPropertiesFromRaw(rawID, Helper.getContext());
-        return new Authentication(properties.getProperty(bt + "_server"), properties.getProperty(bt + "_api"), properties.getProperty(bt + "_user"), properties.getProperty(bt + "_pwd"));
-    }
-
-    private static Properties readPropertiesFromRaw(int rawID, Context context) throws Exception {
-        Properties properties = new Properties();
-        Resources res = context.getResources();
-        InputStream in_s = res.openRawResource(rawID);
-        properties.load(in_s);
-        return properties;
-    }
-
-    public static int getVersionCode(Context context) throws Exception {
-        PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        return info.versionCode;
-    }
 }

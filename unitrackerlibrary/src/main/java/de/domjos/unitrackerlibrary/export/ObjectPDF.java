@@ -18,10 +18,13 @@
 
 package de.domjos.unitrackerlibrary.export;
 
+import android.graphics.drawable.Drawable;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
@@ -47,12 +50,13 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
+import de.domjos.unitrackerlibrary.utils.Converter;
 
 final class ObjectPDF {
     private static final String H1 = "H1", H2 = "H2", H3 = "H3", BODY = "Body";
 
 
-    static void saveObjectToPDF(List lst, String path) throws Exception {
+    static void saveObjectToPDF(List lst, String path, Drawable drawable) throws Exception {
         Map<String, Font> fonts  = new LinkedHashMap<>();
         fonts.put(H1, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC, BaseColor.BLACK));
         fonts.put(H2, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.BLACK));
@@ -60,6 +64,9 @@ final class ObjectPDF {
         fonts.put(BODY, new Font(Font.FontFamily.HELVETICA, 14, Font.NORMAL, BaseColor.BLACK));
 
         Document pdfDocument = new Document();
+        if(drawable!=null) {
+            ObjectPDF.addBackground(drawable, pdfDocument);
+        }
         PdfWriter writer = PdfWriter.getInstance(pdfDocument, new FileOutputStream(path));
         writer.setBoxSize("art", new Rectangle(55, 25, 550, 788));
         writer.setPageEvent(new Footer(lst.size()));
@@ -70,6 +77,12 @@ final class ObjectPDF {
             ObjectPDF.saveElementToPDF(object, pdfDocument, fonts);
         }
         pdfDocument.close();
+    }
+
+    private static void addBackground(Drawable drawable, Document document) throws Exception {
+        Image image = Image.getInstance(Converter.convertDrawableToByteArray(drawable));
+        image.setAbsolutePosition(0, 0);
+        document.add(image);
     }
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {

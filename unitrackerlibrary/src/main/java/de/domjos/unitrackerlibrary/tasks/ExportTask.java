@@ -19,6 +19,7 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +34,18 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     private String path;
     private TrackerXML.Type type;
     private Object project_id;
+    private Drawable drawable;
 
     public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon) {
+        this(activity, bugService, type, project_id, path, showNotifications, icon, null);
+    }
+
+    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, Drawable drawable) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
         this.path = path;
         this.type = type;
         this.project_id = project_id;
+        this.drawable = drawable;
     }
 
     @Override
@@ -65,7 +72,7 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
                     buggerCSV.doExport();
                     break;
                 case "pdf":
-                    TrackerPDF buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, objectList, this.path);
+                    TrackerPDF buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, objectList, this.path, this.drawable);
                     buggerPDF.doExport();
                     break;
             }
