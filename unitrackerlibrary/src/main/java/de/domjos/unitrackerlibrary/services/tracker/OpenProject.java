@@ -202,7 +202,25 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}}]";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                filterQuery = "filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}},{\"status_id\":{\"operator\":\"=\",\"values\":[\"12\",\"13\",\"14\"]}}]";
+            } else {
+                filterQuery = "filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}},{\"status_id\":{\"operator\":\"!\",\"values\":[\"12\",\"13\",\"14\"]}}]";
+            }
+        }
+
+        int status = this.executeRequest("/api/v3/projects/" + project_id + "/work_packages?" + filterQuery);
+        if (status == 200 || status == 201) {
+            return new JSONObject(this.getCurrentMessage()).getLong("total");
+        }
+
         return 0;
     }
 

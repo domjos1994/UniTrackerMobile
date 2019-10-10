@@ -246,7 +246,28 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                filterQuery = "?state=closed";
+            } else {
+                filterQuery = "?state=open";
+            }
+        }
+
+        Project<Long> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues" + filterQuery);
+            if (status == 200 || status == 201) {
+                return new JSONArray(this.getCurrentMessage()).length();
+            }
+        }
+
         return 0;
     }
 

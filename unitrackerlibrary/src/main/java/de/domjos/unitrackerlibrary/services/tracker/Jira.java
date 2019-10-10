@@ -205,7 +205,25 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String query = "project=\"" + project_id + "\"";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                query = "(" + query + "%20AND%20status=10002)";
+            } else {
+                query = "(" + query + "%20AND%20(status=3%20OR%20status=10000))";
+            }
+        }
+
+        int status = this.executeRequest("/rest/api/2/search?jql=" + query);
+        if (status == 200 || status == 201) {
+            return new JSONObject(this.getCurrentMessage()).getLong("total");
+        }
+
         return 0;
     }
 

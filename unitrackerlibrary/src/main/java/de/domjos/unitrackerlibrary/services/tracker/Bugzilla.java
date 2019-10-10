@@ -195,7 +195,25 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            filterQuery = "&is_open=" + (filter == IssueFilter.unresolved);
+        }
+
+        Project<Long> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/rest/bug?product=" + project.getTitle().replace(" ", "%20") + filterQuery + "&" + this.loginParams);
+            if (status == 200 || status == 201) {
+                JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+                return jsonObject.getJSONArray("bugs").length();
+            }
+        }
+
         return 0;
     }
 

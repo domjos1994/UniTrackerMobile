@@ -194,7 +194,25 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String query = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                query = "&statusId[]=3&statusId[]=4";
+            } else {
+                query = "&statusId[]=1&statusId[]=2";
+            }
+        }
+
+        int status = this.executeRequest("/api/v2/issues/count?" + this.authParams + query + "&projectId[]=" + project_id);
+        if (status == 200 || status == 201) {
+            return new JSONObject(this.getCurrentMessage()).getLong("count");
+        }
+
         return 0;
     }
 
