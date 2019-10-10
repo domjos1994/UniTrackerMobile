@@ -557,9 +557,15 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
             int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
             if(max==maximum) {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+                if(max!=-1) {
+                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+                }
             } else {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
+                if(max!=-1) {
+                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
+                } else {
+                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(maximum)));
+                }
             }
             this.lvMainIssues.getAdapter().notifyDataSetChanged();
         } catch (Exception ex) {
