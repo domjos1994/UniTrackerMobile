@@ -63,7 +63,6 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String USER_FIELDS = "id,login,fullName,email";
     private final static String DATE_TIME_FIELD = "dd-MM-yyyy HH:mm:ss";
 
-    private long maximum = 0;
     private Authentication authentication;
     private final String hubPart;
 
@@ -246,7 +245,28 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(String project_id) {
+    public long getMaximumNumberOfIssues(String project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                filterQuery = "%20State:%20Resolved";
+            } else {
+                filterQuery = "%20State:%20Unresolved";
+            }
+        }
+
+        Project<String> project = this.getProject(project_id);
+        if (project != null) {
+            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + filterQuery);
+            if (status == 200 || status == 201) {
+                return new JSONArray(this.getCurrentMessage()).length();
+            }
+        }
+
         return 0;
     }
 

@@ -109,7 +109,13 @@ public interface IBugService<T> {
      */
     void deleteVersion(T id, T project_id) throws Exception;
 
-    long getMaximumNumberOfIssues(T project_id);
+    /**
+     * Returns the number of bugs in the project
+     * @param project_id the ID of the Project
+     * @param filter the IssueFilter
+     * @return the number of bugs in the project
+     */
+    long getMaximumNumberOfIssues(T project_id, IssueFilter filter) throws Exception;
 
     /**
      * Returns a List of Issues

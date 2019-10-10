@@ -170,7 +170,25 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String state = "?filter=-type:release&";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                state = "?filter=(state:delivered%20OR%20state:finished%20OR%20state:rejected)%20AND%20-type:release&";
+            } else {
+                state = "?filter=(state:accepted%20OR%20state:started%20OR%20state:planned%20OR%20state:unstarted%20OR%20state:unscheduled)%20AND%20-type:release&";
+            }
+        }
+
+        int status = this.executeRequest("/services/v5/projects/" + project_id + "/stories" + state);
+        if (status == 200 || status == 201) {
+            return new JSONArray(this.getCurrentMessage()).length();
+        }
+
         return 0;
     }
 

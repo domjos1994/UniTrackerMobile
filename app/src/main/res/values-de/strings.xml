@@ -295,6 +295,7 @@
     <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
     <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
     <string name="messages_issues">%s - %s</string>
+    <string name="messages_issues_with_max">%s - %s von %s</string>
 
     <string name="messages_no_item">Kein Eintrag vorhanden!</string>
 </resources>

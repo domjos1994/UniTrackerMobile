@@ -507,6 +507,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void reload(String search) {
         try {
             this.settings = new Settings(getApplicationContext());
+            long maximum = 0;
             if (!MainActivity.GLOBALS.getPassword().isEmpty()) {
                 this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
                 this.changePagination();
@@ -543,6 +544,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                         this.lvMainIssues.getAdapter().add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, tmp));
                                     }
                                 }
+                                maximum = listIssueTask.getMaximum();
                             }
                         }
                     }
@@ -551,7 +553,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
             int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
-            this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+            if(max==maximum) {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+            } else {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
+            }
             this.lvMainIssues.getAdapter().notifyDataSetChanged();
         } catch (Exception ex) {
             MessageHelper.printException(ex, MainActivity.this);

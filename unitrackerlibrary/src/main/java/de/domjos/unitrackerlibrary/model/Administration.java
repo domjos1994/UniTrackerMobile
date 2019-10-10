@@ -153,6 +153,9 @@ public class Administration {
             case MantisBT:
                 project.setEnabled(true);
                 break;
+            case RedMine:
+                project.setAlias(project.getTitle().replace(" ", "-").toLowerCase());
+                break;
         }
         return project;
     }

@@ -33,6 +33,7 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     private Object project_id;
     private int numberOfItems, page;
     private String filter;
+    private long maximum;
 
     public IssueTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean oneDetailed, boolean showNotifications, int icon) {
         this(activity, bugService, project_id, 1, -1, "", delete, oneDetailed, showNotifications, icon);
@@ -46,6 +47,7 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
         this.numberOfItems = numberOfItems;
         this.page = page;
         this.filter = filter;
+        this.maximum = 0;
     }
 
 
@@ -53,6 +55,10 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
     @Override
     protected void before() {
 
+    }
+
+    public long getMaximum() {
+        return this.maximum;
     }
 
     @Override
@@ -66,16 +72,26 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
                         if (issue instanceof Issue) {
                             super.bugService.insertOrUpdateIssue((Issue) issue, super.returnTemp(this.project_id));
                         } else {
-                            if (this.delete) {
-                                super.bugService.deleteIssue(super.returnTemp(issue), super.returnTemp(this.project_id));
-                            } else {
-                                if (this.oneDetailed) {
-                                    result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
+                            if(issue instanceof Boolean) {
+                                if (this.filter.isEmpty()) {
+                                    this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), null);
                                 } else {
-                                    if (this.filter.isEmpty()) {
-                                        result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
+                                    this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), IBugService.IssueFilter.valueOf(this.filter));
+                                }
+                            } else {
+                                if (this.delete) {
+                                    super.bugService.deleteIssue(super.returnTemp(issue), super.returnTemp(this.project_id));
+                                } else {
+                                    if (this.oneDetailed) {
+                                        result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
                                     } else {
-                                        result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems, IBugService.IssueFilter.valueOf(this.filter)));
+                                        if (this.filter.isEmpty()) {
+                                            result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
+                                            this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), null);
+                                        } else {
+                                            result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems, IBugService.IssueFilter.valueOf(this.filter)));
+                                            this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), IBugService.IssueFilter.valueOf(this.filter));
+                                        }
                                     }
                                 }
                             }

@@ -221,7 +221,17 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
+        request.addProperty("project_id", Integer.parseInt(String.valueOf(project_id)));
+        request.addProperty("page_number", 1);
+        request.addProperty("per_page", -1);
+        Object object = this.executeAction(request, "mc_project_get_issue_headers", true);
+        object = this.getResult(object);
+        if (object instanceof Vector) {
+            Vector vector = (Vector) object;
+            return vector.size();
+        }
         return 0;
     }
 

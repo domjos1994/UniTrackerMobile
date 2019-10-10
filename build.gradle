@@ -66,10 +66,33 @@ task customZip(type: Zip) {
     include 'gradle.properties'
     exclude 'unitrackerlibrary/build'
     exclude 'app/build'
-    archiveName rootProject.name + '.zip'
-    destinationDir(file(rootProject.rootDir))
+    archiveFileName = rootProject.name + '.zip'
+    destinationDirectory = file(rootProject.rootDir)
 }
 
-task copyFiles(type: Copy) {
+task archiveReleases(type: Copy) {
+    def appPath = projectDir.toString() + "/app"
+    def releasePath = appPath + "/release"
+    def apkDebugPath = appPath + "/build/outputs/apk/debug"
+    def aabDebugPath = appPath + "/build/outputs/bundle/debug"
 
+    from apkDebugPath
+    from aabDebugPath
+    from releasePath
+
+    // generate path
+    def release
+    def type
+    if(propVersionCode.contains(".beta")) {
+        release = propVersionCode.split("\\.beta")[0].trim()
+        type = "beta/"
+    } else if(propVersionCode.contains(".alpha")) {
+        release = propVersionCode.split("\\.alpha")[0].trim()
+        type = "alpha/"
+    } else {
+        release = propVersionCode
+        type = ""
+    }
+
+    into "${projectDir}/data/releases/Version ${release}/${type}"
 }

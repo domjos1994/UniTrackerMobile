@@ -242,7 +242,25 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id) {
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.unresolved) {
+                filterQuery = "&status_id=open";
+            } else {
+                filterQuery = "&status_id=closed,resolved";
+            }
+        }
+
+        int status = this.executeRequest("/issues.json?project_id=" + project_id + filterQuery + "&limit=1");
+        if (status == 200 || status == 201) {
+            return new JSONObject(this.getCurrentMessage()).getLong("total_count");
+        }
+
         return 0;
     }
 

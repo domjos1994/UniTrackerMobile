@@ -231,8 +231,29 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public long getMaximumNumberOfIssues(Long project_id) {
-        return 0;
+    public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) {
+        if(filter==null) {
+            filter = IssueFilter.all;
+        }
+
+        String filterQuery = "";
+        if (filter != IssueFilter.all) {
+            if (filter == IssueFilter.resolved) {
+                filterQuery = " AND status_id>=80";
+            } else {
+                filterQuery = " AND status_id<80";
+            }
+        }
+
+        int number = 0;
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT count(id) FROM issues WHERE project=?" + filterQuery, new String[]{String.valueOf(project_id)});
+        while (cursor.moveToNext()) {
+            number = cursor.getInt(0);
+        }
+        cursor.close();
+
+        return number;
     }
 
     @Override
