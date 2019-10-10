@@ -701,6 +701,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 break;
             case R.id.navAdministration:
                 intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
+                reload = MainActivity.RELOAD_PROJECTS;
                 break;
             case R.id.navLocalSync:
                 intent = new Intent(this.getApplicationContext(), LocalSyncActivity.class);
