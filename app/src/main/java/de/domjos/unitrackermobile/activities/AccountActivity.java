@@ -38,6 +38,7 @@ import android.widget.Spinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -296,7 +297,15 @@ public final class AccountActivity extends AbstractActivity {
 
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
         this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
-        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, Authentication.Tracker.values());
+
+        // disable github
+        List<Authentication.Tracker> trackers = new LinkedList<>();
+        for(Authentication.Tracker tracker : Authentication.Tracker.values()) {
+            if(tracker!= Authentication.Tracker.Github) {
+                trackers.add(tracker);
+            }
+        }
+        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, trackers);
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
 
