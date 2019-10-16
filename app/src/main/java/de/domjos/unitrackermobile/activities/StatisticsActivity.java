@@ -180,7 +180,7 @@ public final class StatisticsActivity extends AbstractActivity {
         this.pnlControls = this.findViewById(R.id.pnlControls);
 
         this.spStatisticsBugTracker = this.findViewById(R.id.spStatisticsBugTracker);
-        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.spStatisticsBugTracker.setAdapter(bugTrackerAdapter);
         this.bugTrackerAdapter.notifyDataSetChanged();
         this.bugTrackerAdapter.add(new Authentication());

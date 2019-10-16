@@ -159,7 +159,7 @@ public class Helper {
 
     public static ArrayAdapter<String> setAdapter(Context context, String key) {
         if (context != null) {
-            int spItem = android.R.layout.simple_spinner_item;
+            int spItem = R.layout.spinner_item;
             return new ArrayAdapter<>(context, spItem, ArrayHelper.getValues(context, key));
         }
         return null;

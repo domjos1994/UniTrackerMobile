@@ -134,7 +134,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
         try {
             if (this.getContext() != null && this.getActivity() != null) {
-                this.userAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item);
+                this.userAdapter = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item);
                 this.spIssueGeneralHandler.setAdapter(this.userAdapter);
                 this.userAdapter.notifyDataSetChanged();
 

@@ -205,7 +205,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.chkProjectEnabled = this.findViewById(R.id.chkProjectEnabled);
         this.chkProjectPrivate = this.findViewById(R.id.chkProjectPrivate);
         this.spProjectsState = this.findViewById(R.id.spProjectsState);
-        this.stateAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item, this.getResources().getStringArray(R.array.project_state_mantis_label));
+        this.stateAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, this.getResources().getStringArray(R.array.project_state_mantis_label));
         this.spProjectsState.setAdapter(this.stateAdapter);
         this.stateAdapter.notifyDataSetChanged();
 

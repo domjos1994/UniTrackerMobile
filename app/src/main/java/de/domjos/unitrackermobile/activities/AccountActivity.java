@@ -296,7 +296,7 @@ public final class AccountActivity extends AbstractActivity {
 
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
         this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
-        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item, Authentication.Tracker.values());
+        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, Authentication.Tracker.values());
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
 

@@ -375,7 +375,7 @@ public final class AdministrationActivity extends AbstractActivity {
     }
     @Override
     protected void initControls() {
-        int spinner = android.R.layout.simple_spinner_item;
+        int spinner = R.layout.spinner_item;
         this.ctx = this.getApplicationContext();
         this.settings = MainActivity.GLOBALS.getSettings(this.ctx);
         this.cmdCopy = this.findViewById(R.id.cmdCopy);

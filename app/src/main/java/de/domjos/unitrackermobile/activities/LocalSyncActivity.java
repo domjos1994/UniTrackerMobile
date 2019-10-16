@@ -114,7 +114,7 @@ public final class LocalSyncActivity extends AbstractActivity {
 
         this.activity = LocalSyncActivity.this;
         this.settings = MainActivity.GLOBALS.getSettings(this.activity);
-        int item = android.R.layout.simple_spinner_item;
+        int item = R.layout.spinner_item;
 
         this.spLocalSyncBugTracker = this.findViewById(R.id.spLocalSyncBugTracker);
         this.bugTrackerArrayAdapter = new ArrayAdapter<>(this.activity, item, MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));

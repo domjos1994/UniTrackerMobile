@@ -285,7 +285,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                             Spinner spinner = new Spinner(this.getActivity());
                             layoutParams.weight = 7;
                             spinner.setLayoutParams(layoutParams);
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_spinner_item);
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.spinner_item);
                             if (customField.isNullable()) {
                                 if (customField.getDefaultValue() != null) {
                                     arrayAdapter.add(customField.getDefaultValue());

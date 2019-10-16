@@ -164,7 +164,7 @@ public final class FieldActivity extends AbstractActivity {
         this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
         this.txtFieldPossibleValues = this.findViewById(R.id.txtFieldPossibleValues);
         this.cmbFieldType = this.findViewById(R.id.cmbFieldType);
-        this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, android.R.layout.simple_spinner_item);
+        this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, R.layout.spinner_item);
         this.cmbFieldType.setAdapter(this.fieldTypeAdapter);
         this.fieldTypeAdapter.notifyDataSetChanged();
         this.chkFieldNullable = this.findViewById(R.id.chkFieldNullable);

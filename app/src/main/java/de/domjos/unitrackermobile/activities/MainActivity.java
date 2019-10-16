@@ -308,12 +308,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.cmdIssuesAdd = this.findViewById(R.id.cmdIssueAdd);
             this.spMainAccounts = this.navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
-            this.accountList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.accountList = new ArrayAdapter<>(this.getApplicationContext(),R.layout.spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
             this.accountList.notifyDataSetChanged();
 
             this.spMainProjects = this.findViewById(R.id.spMainProjects);
-            this.projectList = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.projectList = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
             this.spMainProjects.setAdapter(this.projectList);
             this.projectList.notifyDataSetChanged();
 
@@ -321,7 +321,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues.setContextMenu(R.menu.context_main);
 
             this.spMainFilters = this.findViewById(R.id.spMainFilters);
-            this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+            this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
             this.spMainFilters.setAdapter(this.filterAdapter);
             this.filterAdapter.notifyDataSetChanged();
 

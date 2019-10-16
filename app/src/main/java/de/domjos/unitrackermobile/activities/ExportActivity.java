@@ -155,17 +155,17 @@ public final class ExportActivity extends AbstractActivity {
         this.txtExportPath = this.findViewById(R.id.txtExportPath);
 
         this.spBugTracker = this.findViewById(R.id.spBugTracker);
-        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.spBugTracker.setAdapter(this.bugTrackerAdapter);
         this.bugTrackerAdapter.notifyDataSetChanged();
 
         this.spProjects = this.findViewById(R.id.spProjects);
-        this.projectAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        this.projectAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.spProjects.setAdapter(this.projectAdapter);
         this.projectAdapter.notifyDataSetChanged();
 
         this.spData = this.findViewById(R.id.spData);
-        this.dataAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_spinner_item);
+        this.dataAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.spData.setAdapter(this.dataAdapter);
         this.dataAdapter.notifyDataSetChanged();
 
