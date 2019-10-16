@@ -25,7 +25,7 @@ android {
     compileSdkVersion compVersion
 
     defaultConfig {
-        applicationId "de.domjos.unitrackermobile"
+        applicationId "de.domjos.unibuggermobile"
         minSdkVersion minVersion
         targetSdkVersion compVersion
         versionCode version
