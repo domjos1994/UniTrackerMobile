@@ -141,6 +141,8 @@ public final class ExportActivity extends AbstractActivity {
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, ExportActivity.this);
+            } catch (OutOfMemoryError error) {
+                MessageHelper.printMessage(error.getMessage(), ExportActivity.this);
             }
         });
     }
