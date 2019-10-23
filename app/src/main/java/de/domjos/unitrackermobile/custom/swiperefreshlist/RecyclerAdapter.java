@@ -16,7 +16,7 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unitrackermobile.custom;
+package de.domjos.unitrackermobile.custom.swiperefreshlist;
 
 import android.app.Activity;
 import android.view.ContextMenu;

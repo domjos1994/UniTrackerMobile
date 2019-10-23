@@ -16,7 +16,7 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unitrackermobile.custom;
+package de.domjos.unitrackermobile.custom.swiperefreshlist;
 
 import android.app.Activity;
 import android.content.Context;
@@ -31,10 +31,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import com.google.android.material.snackbar.Snackbar;
 
 import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackermobile.R;
+import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.helper.Helper;
+import de.domjos.unitrackermobile.settings.Settings;
 
 public class SwipeRefreshDeleteList extends LinearLayout {
     private Context context;
@@ -81,14 +86,15 @@ public class SwipeRefreshDeleteList extends LinearLayout {
 
         this.linearLayout = new LinearLayout(this.context);
         this.linearLayout.setOrientation(HORIZONTAL);
-        LinearLayout.LayoutParams layoutParamsForControls = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 50);
+        LinearLayout.LayoutParams layoutParamsForControls = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 80);
         this.linearLayout.setLayoutParams(layoutParamsForControls);
         this.linearLayout.setVisibility(GONE);
 
-        ImageButton imageButton = new ImageButton(this.context);
-        imageButton.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_delete_black_24dp));
-        imageButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        imageButton.setOnClickListener((event) -> {
+        ImageButton cmdDelete = new ImageButton(this.context);
+        cmdDelete.setImageDrawable(VectorDrawableCompat.create(context.getResources(), R.drawable.ic_delete_black_24dp, null));
+        cmdDelete.setBackground(null);
+        cmdDelete.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        cmdDelete.setOnClickListener((event) -> {
             ReloadListener tmp = this.reloadListener;
             this.reloadListener = null;
             for(int i = 0; i<=this.adapter.getItemCount()-1; i++) {
@@ -104,7 +110,24 @@ public class SwipeRefreshDeleteList extends LinearLayout {
                 this.reloadListener.onReload();
             }
         });
-        this.linearLayout.addView(imageButton);
+        this.linearLayout.addView(cmdDelete);
+
+        ImageButton cmdTags = new ImageButton(this.context);
+        cmdTags.setImageDrawable(VectorDrawableCompat.create(context.getResources(), R.drawable.ic_style_black_24dp, null));
+        cmdTags.setBackground(null);
+        cmdTags.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        cmdTags.setOnClickListener(event -> {
+            Settings settings = MainActivity.GLOBALS.getSettings(context);
+            String tags = Helper.showTagDialog(((Activity)context), Helper.getCurrentBugService(context), settings.showNotifications(), settings.getCurrentProjectId());
+
+            for(int i = 0; i<=this.adapter.getItemCount()-1; i++) {
+                ListObject obj = this.adapter.getItem(i);
+                if(obj.isSelected()) {
+
+                }
+            }
+        });
+        this.linearLayout.addView(cmdTags);
 
         this.addView(this.linearLayout);
 

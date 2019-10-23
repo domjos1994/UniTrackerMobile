@@ -26,7 +26,7 @@
     tools:context=".activities.SearchActivity"
     android:background="@drawable/background">
 
-    <de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList
+    <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
         android:id="@+id/lvSearchResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"

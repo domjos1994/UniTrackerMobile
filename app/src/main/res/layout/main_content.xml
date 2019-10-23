@@ -100,7 +100,7 @@
             android:background="@color/colorPrimaryDark" />
 
 
-        <de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList
+        <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
             android:id="@+id/lvMainIssues"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

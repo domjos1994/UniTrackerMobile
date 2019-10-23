@@ -39,7 +39,7 @@ import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;

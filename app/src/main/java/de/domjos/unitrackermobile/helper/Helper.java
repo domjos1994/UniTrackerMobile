@@ -19,10 +19,12 @@
 package de.domjos.unitrackermobile.helper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -32,19 +34,18 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.widget.*;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -63,6 +64,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
+import de.domjos.unitrackerlibrary.model.issues.Tag;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.Backlog;
 import de.domjos.unitrackerlibrary.services.tracker.Bugzilla;
@@ -75,9 +77,11 @@ import de.domjos.unitrackerlibrary.services.tracker.Redmine;
 import de.domjos.unitrackerlibrary.services.tracker.SQLite;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.custom.CommaTokenizer;
 import de.domjos.unitrackermobile.settings.Settings;
 
 public class Helper {
@@ -202,6 +206,49 @@ public class Helper {
         } else { //permission is automatically granted on sdk<23 upon installation
             Log.v("dd", "Permission is granted");
         }
+    }
+
+    public static String showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid) {
+        String str_result = "";
+        try {
+            @SuppressLint("HandlerLeak")
+            final Handler handler = new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message mesg) {
+                    throw new RuntimeException();
+                }
+            };
+
+            AlertDialog.Builder tagDialogBuilder = new AlertDialog.Builder(activity);
+            MultiAutoCompleteTextView txtTags = new MultiAutoCompleteTextView(activity);
+            txtTags.setLayoutParams(new ViewGroup.LayoutParams(200, ViewGroup.LayoutParams.WRAP_CONTENT));
+            ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
+            txtTags.setAdapter(tagAdapter);
+            txtTags.setTokenizer(new CommaTokenizer());
+            tagAdapter.notifyDataSetChanged();
+
+            LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
+            Object result = loaderTask.execute(pid).get();
+            if (result instanceof List) {
+                List lst = (List) result;
+                for (Object item : lst) {
+                    if (item instanceof Tag) {
+                        tagAdapter.add(((Tag) item).getTitle());
+                    }
+                }
+            }
+            tagDialogBuilder.setView(txtTags);
+            tagDialogBuilder.setNegativeButton(R.string.sys_cancel, (dialog, which) -> dialog.cancel());
+            tagDialogBuilder.setPositiveButton(R.string.sys_save, ((dialog, which) -> handler.sendMessage(handler.obtainMessage())));
+            tagDialogBuilder.create().show();
+
+            try{ Looper.loop(); }
+            catch(RuntimeException ignored){}
+            str_result = txtTags.getText().toString();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, activity);
+        }
+        return str_result;
     }
 
     public static void showPasswordDialog(Activity activity, boolean firstLogin, boolean changePassword, Runnable successRunnable) {

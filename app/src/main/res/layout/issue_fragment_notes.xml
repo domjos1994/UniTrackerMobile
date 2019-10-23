@@ -29,7 +29,7 @@
 
         <TableRow>
 
-            <de.domjos.unitrackermobile.custom.SwipeRefreshDeleteList
+            <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
                 android:id="@+id/lvIssuesNote"
                 android:layout_width="0dp"
                 android:layout_weight="10"
