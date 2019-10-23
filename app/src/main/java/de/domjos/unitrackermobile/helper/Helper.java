@@ -391,9 +391,13 @@ public class Helper {
     }
 
     private static String getStringResourceByName(Activity activity, String aString) {
-        String packageName = activity.getPackageName();
-        int resId = activity.getResources().getIdentifier(aString, "string", packageName);
-        return activity.getString(resId);
+        try {
+            String packageName = activity.getPackageName();
+            int resId = activity.getResources().getIdentifier(aString, "string", packageName);
+            return activity.getString(resId);
+        } catch (Exception ex) {
+            return "";
+        }
     }
 
     public static String getVersion(Context context) {

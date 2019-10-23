@@ -95,12 +95,11 @@ public final class AccountActivity extends AbstractActivity {
             }
         });
 
-        this.lvAccounts.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvAccounts.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getDescriptionObject().getId());
                 manageControls(false, true, false);
-                reload();
             }
         });
 
@@ -178,7 +177,7 @@ public final class AccountActivity extends AbstractActivity {
                         }
                     } catch (Exception ignored) {
                     }
-                }).run();
+                }).start();
             }
         });
 
@@ -377,6 +376,7 @@ public final class AccountActivity extends AbstractActivity {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void objectToControls() {
         if (this.currentAccount != null) {
             this.txtAccountTitle.setText(this.currentAccount.getTitle());

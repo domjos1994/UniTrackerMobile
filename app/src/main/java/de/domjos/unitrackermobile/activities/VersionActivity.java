@@ -71,7 +71,7 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvVersions.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvVersions.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 try {

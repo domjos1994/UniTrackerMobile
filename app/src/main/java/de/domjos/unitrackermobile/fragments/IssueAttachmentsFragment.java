@@ -100,7 +100,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             }
         });
 
-        this.lvIssueAttachments.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvIssueAttachments.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {

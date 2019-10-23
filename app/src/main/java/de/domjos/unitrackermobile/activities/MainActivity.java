@@ -189,7 +189,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.lvMainIssues.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvMainIssues.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 try {
@@ -197,7 +197,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         if (listObject.getDescriptionObject() != null) {
                             Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
                             new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute((listObject.getDescriptionObject()).getId()).get();
-                            reload();
                         }
                     }
                 } catch (Exception ex) {

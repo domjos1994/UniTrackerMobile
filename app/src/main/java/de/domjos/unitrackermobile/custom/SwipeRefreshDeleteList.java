@@ -21,6 +21,9 @@ package de.domjos.unitrackermobile.custom;
 import android.app.Activity;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TableLayout;
 
 import androidx.annotation.NonNull;
@@ -28,9 +31,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import de.domjos.unitrackerlibrary.model.ListObject;
+import com.google.android.material.snackbar.Snackbar;
 
-public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
+import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackermobile.R;
+
+public class SwipeRefreshDeleteList extends LinearLayout {
     private Context context;
     private RecyclerView recyclerView;
     private RecyclerAdapter adapter;
@@ -38,6 +44,9 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     private DeleteListener deleteListener;
     private ClickListener clickListener;
     private LinearLayoutManager manager;
+    private Snackbar snackbar;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private LinearLayout linearLayout;
 
     public SwipeRefreshDeleteList(@NonNull Context context) {
         super(context);
@@ -58,13 +67,52 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
     }
 
     private void initDefault() {
+        this.setOrientation(VERTICAL);
+
+        this.swipeRefreshLayout = new SwipeRefreshLayout(this.context);
+        LinearLayout.LayoutParams layoutParamsForRefreshLayout =  new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        layoutParamsForRefreshLayout.weight = 10;
+        this.swipeRefreshLayout.setLayoutParams(layoutParamsForRefreshLayout);
+
         this.recyclerView = new RecyclerView(this.context);
         this.recyclerView.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        this.addView(this.recyclerView);
+        this.swipeRefreshLayout.addView(this.recyclerView);
+        this.addView(this.swipeRefreshLayout);
+
+        this.linearLayout = new LinearLayout(this.context);
+        this.linearLayout.setOrientation(HORIZONTAL);
+        LinearLayout.LayoutParams layoutParamsForControls = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 50);
+        this.linearLayout.setLayoutParams(layoutParamsForControls);
+        this.linearLayout.setVisibility(GONE);
+
+        ImageButton imageButton = new ImageButton(this.context);
+        imageButton.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_delete_black_24dp));
+        imageButton.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        imageButton.setOnClickListener((event) -> {
+            ReloadListener tmp = this.reloadListener;
+            this.reloadListener = null;
+            for(int i = 0; i<=this.adapter.getItemCount()-1; i++) {
+                ListObject obj = this.adapter.getItem(i);
+                if(obj.isSelected()) {
+                    if(this.deleteListener!=null) {
+                        this.deleteListener.onDelete(obj);
+                    }
+                }
+            }
+            this.reloadListener = tmp;
+            if(this.reloadListener!=null) {
+                this.reloadListener.onReload();
+            }
+        });
+        this.linearLayout.addView(imageButton);
+
+        this.addView(this.linearLayout);
+
+        this.snackbar = Snackbar.make(((Activity)context).findViewById(android.R.id.content), R.string.sys_item_deleted, Snackbar.LENGTH_SHORT);
     }
 
     private void initAdapter() {
-        this.adapter = new RecyclerAdapter(this.recyclerView, (Activity) this.context);
+        this.adapter = new RecyclerAdapter(this.recyclerView, (Activity) this.context, this.linearLayout);
         this.recyclerView.setAdapter(this.adapter);
         this.manager = new LinearLayoutManager(this.context);
         this.recyclerView.setLayoutManager(this.manager);
@@ -73,12 +121,33 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
         this.adapter.onSwipeListener(new SwipeToDeleteCallback(this.context) {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                if (deleteListener != null) {
-                    deleteListener.onDelete(adapter.getItem(viewHolder.getAdapterPosition()));
-                }
+                final boolean[] rollBack = {false};
+                ListObject listObject = getAdapter().getItem(viewHolder.getAdapterPosition());
                 if (viewHolder.getAdapterPosition() != -1) {
                     getAdapter().deleteItem(viewHolder.getAdapterPosition());
                 }
+                snackbar.setAction(R.string.sys_undone, v -> {
+                    getAdapter().add(listObject);
+                    rollBack[0] = true;
+                });
+                Snackbar.Callback callback = new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        if(!rollBack[0]) {
+                            if (deleteListener != null) {
+                                deleteListener.onDelete(listObject);
+                            }
+                            if (reloadListener != null) {
+                                reloadListener.onReload();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onShown(Snackbar snackbar){}
+                };
+                snackbar.addCallback(callback);
+                snackbar.show();
             }
         });
 
@@ -90,19 +159,20 @@ public class SwipeRefreshDeleteList extends SwipeRefreshLayout {
             }
         });
 
-        this.setOnRefreshListener(() -> {
+        this.swipeRefreshLayout.setOnRefreshListener(() -> {
             if (this.reloadListener != null) {
                 this.reloadListener.onReload();
             }
-            this.setRefreshing(false);
+            this.swipeRefreshLayout.setRefreshing(false);
         });
     }
 
     public void reload(ReloadListener reloadListener) {
         this.reloadListener = reloadListener;
+        this.adapter.reload(this.reloadListener);
     }
 
-    public void deleteItem(DeleteListener deleteListener) {
+    public void delete(DeleteListener deleteListener) {
         this.deleteListener = deleteListener;
     }
 

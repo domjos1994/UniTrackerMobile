@@ -90,7 +90,7 @@ public final class ProjectActivity extends AbstractActivity {
             }
         });
 
-        this.lvProjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvProjects.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 if(bugService.getPermissions().deleteProjects()) {
@@ -105,7 +105,6 @@ public final class ProjectActivity extends AbstractActivity {
                                 if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
                                     MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
                                 } else {
-                                    reload();
                                     manageControls(false, false, false);
                                 }
                             } catch (Exception ex) {

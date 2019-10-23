@@ -78,13 +78,12 @@ public final class UserActivity extends AbstractActivity {
             }
         });
 
-        this.lvUsers.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvUsers.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 if(bugService.getPermissions().deleteUsers()) {
                     try {
                         new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
-                        reload();
                         manageControls(false, true, false);
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, UserActivity.this);

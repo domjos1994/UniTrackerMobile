@@ -33,6 +33,7 @@ public class ListObject {
     private Drawable drawable;
     private Context context;
     private DescriptionObject descriptionObject;
+    private boolean selected;
 
     public ListObject(Context context, int resID, DescriptionObject descriptionObject) {
         super();
@@ -74,5 +75,13 @@ public class ListObject {
 
     public DescriptionObject getDescriptionObject() {
         return this.descriptionObject;
+    }
+
+    public boolean isSelected() {
+        return this.selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }

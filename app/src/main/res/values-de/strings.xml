@@ -266,6 +266,9 @@
     <string name="sys_delete">Löschen</string>
     <string name="sys_cancel">Abbrechen</string>
     <string name="sys_save">Speichern</string>
+    <string name="sys_item_deleted">Eintrag wird gelöscht!</string>
+    <string name="sys_undone">Rückgängig</string>
+    <string name="sys_multiple">Mehrere Einträge auswählen</string>
 
     <string name="general_title">Titel</string>
     <string name="general_enabled">Aktiviert</string>

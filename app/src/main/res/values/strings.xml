@@ -269,6 +269,9 @@
     <string name="sys_delete">Delete</string>
     <string name="sys_cancel">Cancel</string>
     <string name="sys_save">Save</string>
+    <string name="sys_item_deleted">Entry will be deleted!</string>
+    <string name="sys_undone">Undone</string>
+    <string name="sys_multiple">Select multiple Items</string>
 
     <string name="general_title">Title</string>
     <string name="general_enabled">Enabled</string>

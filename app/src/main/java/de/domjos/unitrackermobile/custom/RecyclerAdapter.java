@@ -24,7 +24,9 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -47,9 +49,13 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
     private int menuId = -1, noEntryItem = -1;
     private Activity activity;
     private String currentTitle;
+    private boolean showCheckBoxes;
+    private SwipeRefreshDeleteList.ReloadListener reloadListener;
+    private LinearLayout controls;
 
     class RecycleViewHolder extends ViewHolder implements View.OnCreateContextMenuListener {
         private TextView mTitle, mSubTitle;
+        private CheckBox chkSelector;
         private ImageView ivIcon;
 
         RecycleViewHolder(View itemView) {
@@ -62,24 +68,58 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
             mSubTitle = itemView.findViewById(R.id.lblSubTitle);
             mSubTitle.setSelected(scroll);
             ivIcon = itemView.findViewById(R.id.ivIcon);
+            chkSelector = itemView.findViewById(R.id.chkSelector);
+            chkSelector.setChecked(false);
 
             itemView.setOnCreateContextMenuListener(this);
+
+            if(menuId==-1) {
+                itemView.setOnLongClickListener(view -> {
+                    showCheckBoxes = !showCheckBoxes;
+                    controls.setVisibility(showCheckBoxes ? View.VISIBLE : View.GONE);
+                    if(reloadListener!=null) {
+                        reloadListener.onReload();
+                        for(int i = 0; i<=data.size()-1; i++) {
+                            data.get(i).setSelected(false);
+                            chkSelector.setChecked(false);
+                        }
+                    }
+                    return true;
+                });
+            }
         }
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             if (menuId != -1) {
                 currentTitle = mTitle.getText().toString();
+                menu.add(R.string.sys_multiple).setOnMenuItemClickListener(menuItem -> {
+                    showCheckBoxes = !showCheckBoxes;
+                    controls.setVisibility(showCheckBoxes ? View.VISIBLE : View.GONE);
+                    if(reloadListener!=null) {
+                        reloadListener.onReload();
+                        for(int i = 0; i<=data.size()-1; i++) {
+                            data.get(i).setSelected(false);
+                            chkSelector.setChecked(false);
+                        }
+                    }
+                    return true;
+                });
                 MenuInflater inflater = activity.getMenuInflater();
                 inflater.inflate(menuId, menu);
             }
         }
     }
 
-    RecyclerAdapter(RecyclerView recyclerView, Activity activity) {
+    RecyclerAdapter(RecyclerView recyclerView, Activity activity, LinearLayout controls) {
         this.data = new ArrayList<>();
         this.recyclerView = recyclerView;
         this.activity = activity;
+        this.controls = controls;
+    }
+
+    void reload(SwipeRefreshDeleteList.ReloadListener reloadListener) {
+        this.reloadListener = reloadListener;
     }
 
     public ListObject getObject() {
@@ -127,6 +167,9 @@ public class RecyclerAdapter extends Adapter<RecyclerAdapter.RecycleViewHolder> 
                             mClickListener.onClick(view);
                         }
                     });
+                    holder.chkSelector.setChecked(false);
+                    holder.chkSelector.setVisibility(this.showCheckBoxes ? View.VISIBLE : View.GONE);
+                    holder.chkSelector.setOnCheckedChangeListener((compoundButton, b) -> data.get(position).setSelected(b));
                 }
             }
         }

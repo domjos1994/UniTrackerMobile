@@ -77,12 +77,11 @@ public final class FieldActivity extends AbstractActivity {
             }
         });
 
-        this.lvFields.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvFields.delete(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
             public void onDelete(ListObject listObject) {
                 try {
                     new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
-                    reload();
                     manageControls(false, true, false);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, FieldActivity.this);
