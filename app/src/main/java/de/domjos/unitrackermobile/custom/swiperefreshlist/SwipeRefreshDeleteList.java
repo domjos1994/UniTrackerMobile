@@ -34,6 +34,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackermobile.R;
@@ -52,6 +57,7 @@ public class SwipeRefreshDeleteList extends LinearLayout {
     private Snackbar snackbar;
     private SwipeRefreshLayout swipeRefreshLayout;
     private LinearLayout linearLayout;
+    private Map<Integer, ButtonClickListener> menuItems;
 
     public SwipeRefreshDeleteList(@NonNull Context context) {
         super(context);
@@ -72,6 +78,7 @@ public class SwipeRefreshDeleteList extends LinearLayout {
     }
 
     private void initDefault() {
+        this.menuItems = new LinkedHashMap<>();
         this.setOrientation(VERTICAL);
 
         this.swipeRefreshLayout = new SwipeRefreshLayout(this.context);
@@ -111,23 +118,6 @@ public class SwipeRefreshDeleteList extends LinearLayout {
             }
         });
         this.linearLayout.addView(cmdDelete);
-
-        ImageButton cmdTags = new ImageButton(this.context);
-        cmdTags.setImageDrawable(VectorDrawableCompat.create(context.getResources(), R.drawable.ic_style_black_24dp, null));
-        cmdTags.setBackground(null);
-        cmdTags.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        cmdTags.setOnClickListener(event -> {
-            Settings settings = MainActivity.GLOBALS.getSettings(context);
-            String tags = Helper.showTagDialog(((Activity)context), Helper.getCurrentBugService(context), settings.showNotifications(), settings.getCurrentProjectId());
-
-            for(int i = 0; i<=this.adapter.getItemCount()-1; i++) {
-                ListObject obj = this.adapter.getItem(i);
-                if(obj.isSelected()) {
-
-                }
-            }
-        });
-        this.linearLayout.addView(cmdTags);
 
         this.addView(this.linearLayout);
 
@@ -203,6 +193,26 @@ public class SwipeRefreshDeleteList extends LinearLayout {
         this.clickListener = clickListener;
     }
 
+    public void addButtonClick(int drawableId, ButtonClickListener buttonClickListener) {
+        ImageButton cmdTags = new ImageButton(this.context);
+        cmdTags.setImageDrawable(VectorDrawableCompat.create(context.getResources(), drawableId, null));
+        cmdTags.setBackground(null);
+        cmdTags.setLayoutParams(new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        cmdTags.setOnClickListener(event -> {
+            List<ListObject> listObjects = new LinkedList<>();
+            for(int i = 0; i<=this.adapter.getItemCount()-1; i++) {
+                ListObject obj = this.adapter.getItem(i);
+                if(obj.isSelected()) {
+                    listObjects.add(obj);
+                }
+            }
+            if(buttonClickListener!=null) {
+                buttonClickListener.onClick(listObjects);
+            }
+        });
+        this.linearLayout.addView(cmdTags);
+    }
+
     public void setContextMenu(int menuId) {
         this.adapter.setContextMenu(menuId);
     }
@@ -217,5 +227,9 @@ public class SwipeRefreshDeleteList extends LinearLayout {
 
     public abstract static class ClickListener {
         public abstract void onClick(ListObject listObject);
+    }
+
+    public abstract static class ButtonClickListener {
+        public abstract void onClick(List<ListObject> objectList);
     }
 }

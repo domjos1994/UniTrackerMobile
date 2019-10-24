@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackermobile.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.view.Menu;
@@ -318,6 +319,33 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.lvMainIssues.setContextMenu(R.menu.context_main);
+            this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, new SwipeRefreshDeleteList.ButtonClickListener() {
+                @Override
+                public void onClick(List<ListObject> objectList) {
+                    try {
+                        Activity act = MainActivity.this;
+                        boolean show = settings.showNotifications();
+                        Object pid = settings.getCurrentProjectId();
+
+                        String tags = Helper.showTagDialog(act, bugService, show, pid);
+
+                        for(ListObject listObject : objectList) {
+                            IssueTask issueTask = new IssueTask(act, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
+                            List<Issue> issues = issueTask.execute(listObject.getDescriptionObject().getId()).get();
+
+                            if(issues!=null) {
+                                if(!issues.isEmpty()) {
+                                    issues.get(0).setTags(tags);
+                                    issueTask = new IssueTask(act, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                                    issueTask.execute(issues.get(0)).get();
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, MainActivity.this);
+                    }
+                }
+            });
 
             this.spMainFilters = this.findViewById(R.id.spMainFilters);
             this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
