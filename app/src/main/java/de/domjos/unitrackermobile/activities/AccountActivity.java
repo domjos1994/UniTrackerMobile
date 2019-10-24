@@ -25,6 +25,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -79,6 +80,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
             public void onClick(ListObject listObject) {
+                txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
                 if (listObject != null) {
                     currentAccount = (Authentication) listObject.getDescriptionObject();
                     accountValidator.addDuplicatedEntry(txtAccountTitle, "accounts", "title", currentAccount.getId());
@@ -219,6 +221,15 @@ public final class AccountActivity extends AbstractActivity {
                     }
                 }
             }
+        });
+
+        this.txtAccountPassword.setOnLongClickListener(view -> {
+            if(this.txtAccountPassword.getTransformationMethod()!=null) {
+                this.txtAccountPassword.setTransformationMethod(null);
+            } else {
+                this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
+            }
+            return false;
         });
     }
 
@@ -370,13 +381,13 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountExtended.setEnabled(editMode);
 
         if (reset) {
+            this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
             this.currentAccount = new Authentication();
             this.chkAccountGuest.setChecked(false);
             this.objectToControls();
         }
     }
 
-    @SuppressWarnings("deprecation")
     private void objectToControls() {
         if (this.currentAccount != null) {
             this.txtAccountTitle.setText(this.currentAccount.getTitle());
