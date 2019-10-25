@@ -31,6 +31,7 @@
     <string name="accounts_change">Account ändern</string>
     <string name="accounts_tracker">Tracker</string>
     <string name="accounts_guest">Gast</string>
+    <string name="accounts_auth">Authentifizierung</string>
     <string name="accounts_server">Servername</string>
     <string name="accounts_user">Benutzername</string>
     <string name="accounts_pwd">Passwort</string>
@@ -231,6 +232,8 @@
     <string name="statistics_line_description">Bugs im Verlauf der Zeit</string>
     <string name="statistics_export">Exportiere Diagramme</string>
     <string name="statistics_export_succes">Export erfolgreich!</string>
+
+    <string name="calendar">Kalender</string>
 
     <string name="filter">Filter</string>
     <string-array name="filter_view">

@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-
+import de.domjos.unitrackerlibrary.services.authentication.AccessTokenProvider;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import okhttp3.Call;
 import okhttp3.Credentials;
@@ -42,23 +42,28 @@ public class JSONEngine {
     private final List<String> headers;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final MediaType OctetStream = MediaType.get("application/octet-stream");
-    protected OkHttpClient client;
+    private OkHttpClient client;
     private String currentMessage;
     private int state;
-    protected boolean noBasicLogin;
+    private AccessTokenProvider accessTokenProvider;
 
     public JSONEngine(Authentication authentication) {
-        this.noBasicLogin = false;
         this.authentication = authentication;
         this.headers = new LinkedList<>();
         this.client = this.getClient();
     }
 
     public JSONEngine(Authentication authentication, String... headers) {
-        this.noBasicLogin = false;
         this.authentication = authentication;
         this.headers = new LinkedList<>();
         this.headers.addAll(Arrays.asList(headers));
+        this.client = this.getClient();
+    }
+
+    public JSONEngine(Authentication authentication, AccessTokenProvider accessTokenProvider) {
+        this.authentication = authentication;
+        this.headers = new LinkedList<>();
+        this.accessTokenProvider = accessTokenProvider;
         this.client = this.getClient();
     }
 
@@ -70,6 +75,7 @@ public class JSONEngine {
         return this.state;
     }
 
+    @SuppressWarnings("SameParameterValue")
     protected void addHeader(String header) {
         this.headers.add(header);
     }
@@ -96,7 +102,7 @@ public class JSONEngine {
         }
     }
 
-    protected int executeRequest(String path, String body, String type) throws Exception {
+    public int executeRequest(String path, String body, String type) throws Exception {
         Call call = this.initAuthentication(path, body, type);
         Response response = call.execute();
         this.state = response.code();
@@ -257,22 +263,42 @@ public class JSONEngine {
         return this.initAuthentication(path, "", "DELETE");
     }
 
-    protected OkHttpClient getClient() {
+    private OkHttpClient getClient() {
+        return this.getClient(false);
+    }
+
+    private OkHttpClient getClient(boolean basic) {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(true)
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS);
 
-        if(!this.noBasicLogin) {
+        if(basic) {
             builder.authenticator((route, response) -> {
-                String credential;
-                if (!authentication.getAPIKey().trim().isEmpty()) {
-                    credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
-                } else {
-                    credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
-                }
+                String credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
                 return response.request().newBuilder().header("Authorization", credential).build();
             });
+        } else {
+            if(this.authentication.getAuthentication() != Authentication.Auth.OAUTH) {
+                builder.authenticator((route, response) -> {
+                    String credential;
+                    if (this.authentication.getAuthentication() == Authentication.Auth.Basic) {
+                        credential = Credentials.basic(authentication.getUserName(), authentication.getPassword().trim());
+                    } else {
+                        credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
+                    }
+                    return response.request().newBuilder().header("Authorization", credential).build();
+                });
+            } else {
+                if(this.accessTokenProvider!=null) {
+                    builder.authenticator((route, response) -> {
+                        String token = this.accessTokenProvider.token();
+                        return response.request().newBuilder().header("Authorization", this.accessTokenProvider.authType() + " " + token).build();
+                    });
+                } else {
+                    return this.getClient(true);
+                }
+            }
         }
 
         return builder.build();

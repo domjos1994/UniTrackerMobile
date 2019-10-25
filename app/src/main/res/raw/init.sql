@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS accounts(
     description TEXT DEFAULT '',
     cover BLOB DEFAULT NULL,
     tracker VARCHAR(50) NOT NULL,
-    guest TINYINT DEFAULT 0
+    guest TINYINT DEFAULT 0,
+    authentication VARCHAR(50) NOT NULL DEFAULT 'Basic'
 );
 
 CREATE TABLE IF NOT EXISTS hints(

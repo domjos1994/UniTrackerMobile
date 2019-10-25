@@ -28,6 +28,7 @@ public class Authentication extends DescriptionObject<Long> {
     private byte[] cover;
     private Tracker tracker;
     private boolean guest;
+    private Auth authentication;
 
     public Authentication() {
         this("", "", "", "");
@@ -104,6 +105,14 @@ public class Authentication extends DescriptionObject<Long> {
         this.guest = guest;
     }
 
+    public Auth getAuthentication() {
+        return this.authentication;
+    }
+
+    public void setAuthentication(Auth authentication) {
+        this.authentication = authentication;
+    }
+
     public enum Tracker {
         Local,
         YouTrack,
@@ -116,5 +125,11 @@ public class Authentication extends DescriptionObject<Long> {
         OpenProject,
         Backlog,
         //Tuleap
+    }
+
+    public enum Auth {
+        Basic,
+        API_KEY,
+        OAUTH
     }
 }

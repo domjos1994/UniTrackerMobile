@@ -32,6 +32,7 @@
     <string name="accounts_change">Change Account</string>
     <string name="accounts_tracker">Tracker</string>
     <string name="accounts_guest">Guest</string>
+    <string name="accounts_auth">Authentication</string>
     <string name="accounts_server">Servername</string>
     <string name="accounts_user">Username</string>
     <string name="accounts_pwd">Password</string>
@@ -234,6 +235,8 @@
     <string name="statistics_line_description">Bugs in history</string>
     <string name="statistics_export">Export Diagrams</string>
     <string name="statistics_export_succes">Export successfully!</string>
+
+    <string name="calendar">Calendar</string>
 
     <string name="filter">Filter</string>
     <string-array name="filter_view">

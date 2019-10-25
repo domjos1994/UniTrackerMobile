@@ -25,6 +25,8 @@ import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
 import net.sqlcipher.database.SQLiteStatement;
 
+import java.lang.reflect.Field;
+import java.sql.Types;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,6 +74,8 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         this.initDatabase(db);
         this.updateDatabase(db);
+
+        this.addColumnIfNotExists(db, "accounts", "authentication", Types.VARCHAR, 50, Authentication.Auth.Basic.name(), true);
     }
 
     private SQLiteDatabase getReadableDatabase() {
@@ -123,6 +127,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
                     authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
                     authentication.setGuest(cursor.getLong(cursor.getColumnIndex("guest")) == 1);
+                    authentication.setAuthentication(Authentication.Auth.valueOf(this.getString(cursor, "authentication")));
                     authentications.add(authentication);
                 }
                 cursor.close();
@@ -149,10 +154,10 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 SQLiteDatabase db = this.getWritableDatabase();
                 SQLiteStatement stmt;
                 if (authentication.getId() != null) {
-                    stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=?, guest=? WHERE ID=?");
-                    stmt.bindLong(10, authentication.getId());
+                    stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=?, guest=?, authentication=? WHERE ID=?");
+                    stmt.bindLong(11, authentication.getId());
                 } else {
-                    stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker, guest) VALUES(?,?,?,?,?,?,?,?,?)");
+                    stmt = db.compileStatement("INSERT INTO accounts(title, serverName, apiKey, userName, password, description, cover, tracker, guest, authentication) VALUES(?,?,?,?,?,?,?,?,?,?)");
                 }
                 stmt.bindString(1, authentication.getTitle());
                 stmt.bindString(3, authentication.getAPIKey());
@@ -171,6 +176,11 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     stmt.bindString(8, Authentication.Tracker.Local.name());
                 }
                 stmt.bindLong(9, authentication.isGuest() ? 1 : 0);
+                if(authentication.getAuthentication() != null) {
+                    stmt.bindString(10, authentication.getAuthentication().name());
+                } else {
+                    stmt.bindString(10, Authentication.Auth.Basic.name());
+                }
 
                 if(authentication.getId() == null) {
                     authentication.setId(stmt.executeInsert());
@@ -266,5 +276,59 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         } catch (Exception ex) {
             MessageHelper.printException(ex, this.context);
         }
+    }
+
+    private void addColumnIfNotExists(SQLiteDatabase db, String table, String column, int type, int length, String defaultValue, boolean notNull) {
+        try {
+            if(this.columnNotExists(db, table, column)) {
+                Map<Integer, String> types = this.getAllJdbcTypeNames();
+                String typeString = types.get(type);
+                if(typeString!=null) {
+                    if(typeString.toLowerCase().equals("varchar")) {
+                        typeString += "(" + length + ")";
+                    }
+                } else {
+                    return;
+                }
+                if(defaultValue != null) {
+                    if(!defaultValue.equals("")) {
+                        typeString += " DEFAULT " + defaultValue;
+                    } else {
+                        typeString += " DEFAULT ''";
+                    }
+                }
+                if(notNull) {
+                    typeString += " NOT NULL";
+                }
+
+                db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", table, column, typeString));
+            }
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, this.context);
+        }
+    }
+
+    private Map<Integer, String> getAllJdbcTypeNames() throws  Exception {
+
+        Map<Integer, String> result = new LinkedHashMap<>();
+
+        for (Field field : Types.class.getFields()) {
+            result.put(field.getInt(null), field.getName());
+        }
+
+        return result;
+    }
+
+    private boolean columnNotExists(SQLiteDatabase db, String table, String column) {
+        boolean exists = false;
+        Cursor cursor = db.rawQuery("PRAGMA table_info(" + table + ")", null);
+        while (cursor.moveToNext()) {
+            if(cursor.getString(1).equals(column)) {
+                exists = true;
+                break;
+            }
+        }
+        cursor.close();
+        return !exists;
     }
 }

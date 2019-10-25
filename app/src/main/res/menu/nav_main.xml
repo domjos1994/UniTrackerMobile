@@ -60,6 +60,10 @@
                 android:icon="@drawable/ic_search_black_24dp"
                 android:title="@string/search" />
             <item
+                android:id="@+id/navCalendar"
+                android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+                android:title="@string/calendar"/>
+            <item
                 android:id="@+id/navExport"
                 android:icon="@drawable/ic_import_export_black_24dp"
                 android:title="@string/export" />

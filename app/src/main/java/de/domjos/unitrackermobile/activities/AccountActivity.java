@@ -39,11 +39,11 @@ import android.widget.Spinner;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
@@ -57,8 +57,9 @@ import de.domjos.unitrackermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvAccounts;
-    private Spinner cmbAccountTracker;
+    private Spinner cmbAccountTracker, cmbAccountAuthentication;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
+    private ArrayAdapter<Authentication.Auth> authAdapter;
     private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
     private AutoCompleteTextView txtAccountTitle;
@@ -112,6 +113,7 @@ public final class AccountActivity extends AbstractActivity {
 
                 Authentication.Tracker item = trackerAdapter.getItem(position);
                 if (item != null) {
+                    fillAuthByTracker(item);
                     switch (item) {
                         case Local:
                             txtAccountServer.setText(Authentication.Tracker.Local.name());
@@ -270,6 +272,12 @@ public final class AccountActivity extends AbstractActivity {
 
                             new Thread(() -> {
                                 try {
+                                    if(!chkAccountGuest.isChecked()) {
+                                        if(currentAccount.getAuthentication() == Authentication.Auth.OAUTH) {
+                                            GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
+                                            currentAccount.setAPIKey(githubTokenProvider.refreshToken());
+                                        }
+                                    }
                                     IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
                                     if (chkAccountGuest.isChecked() || bugService.testConnection()) {
                                         AccountActivity.this.runOnUiThread(() -> {
@@ -306,18 +314,16 @@ public final class AccountActivity extends AbstractActivity {
         });
 
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
-        this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
 
-        // disable github
-        List<Authentication.Tracker> trackers = new LinkedList<>();
-        for(Authentication.Tracker tracker : Authentication.Tracker.values()) {
-            if(tracker!= Authentication.Tracker.Github) {
-                trackers.add(tracker);
-            }
-        }
-        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, trackers);
+        this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
+        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, Authentication.Tracker.values());
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
+
+        this.cmbAccountAuthentication = this.findViewById(R.id.cmbAccountAuthentication);
+        this.authAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.cmbAccountAuthentication.setAdapter(this.authAdapter);
+        this.authAdapter.notifyDataSetChanged();
 
         this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
@@ -335,6 +341,25 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
 
         OnBoardingHelper.tutorialStep2(AccountActivity.this, () -> this.manageControls(true, true, false), this.findViewById(R.id.tblControls));
+    }
+
+    private void fillAuthByTracker(Authentication.Tracker tracker) {
+        this.authAdapter.clear();
+        this.authAdapter.addAll(Authentication.Auth.values());
+        switch (tracker) {
+            case MantisBT:
+                this.authAdapter.remove(Authentication.Auth.OAUTH);
+                this.authAdapter.remove(Authentication.Auth.API_KEY);
+                break;
+            case YouTrack:
+                this.authAdapter.remove(Authentication.Auth.OAUTH);
+                this.authAdapter.remove(Authentication.Auth.Basic);
+                break;
+            case Github:
+                this.authAdapter.remove(Authentication.Auth.Basic);
+                this.authAdapter.remove(Authentication.Auth.API_KEY);
+                break;
+        }
     }
 
     @Override
@@ -377,6 +402,7 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountDescription.setEnabled(editMode);
         this.cmdAccountImageGallery.setEnabled(editMode);
         this.cmbAccountTracker.setEnabled(editMode);
+        this.cmbAccountAuthentication.setEnabled(editMode);
         this.chkAccountGuest.setEnabled(editMode);
         this.txtAccountExtended.setEnabled(editMode);
 
@@ -403,6 +429,11 @@ public final class AccountActivity extends AbstractActivity {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(Authentication.Tracker.Local));
                 this.txtAccountServer.setText(Authentication.Tracker.Local.name());
             }
+            if (this.currentAccount.getAuthentication() !=null) {
+                this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(this.currentAccount.getAuthentication()));
+            } else {
+                this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(Authentication.Auth.Basic));
+            }
             if (this.currentAccount.getCover() != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(this.currentAccount.getCover(), 0, this.currentAccount.getCover().length);
                 this.cmdAccountImageGallery.setImageBitmap(bitmap);
@@ -426,6 +457,7 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setDescription(this.txtAccountDescription.getText().toString());
             this.currentAccount.setTracker(this.trackerAdapter.getItem(this.cmbAccountTracker.getSelectedItemPosition()));
             this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
+            this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
             if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
                 this.currentAccount.setCover(Converter.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
             } else {

@@ -40,60 +40,27 @@ import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.GithubPermissions;
+import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
 import de.domjos.unitrackerlibrary.utils.Converter;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
-    private String oAuthParams, client_id, client_secret;
 
     public Github(Authentication authentication) {
-        super(authentication);
+        super(authentication, new GithubTokenProvider(authentication));
         this.authentication = authentication;
-
-        this.oAuthParams = "";
-        if(this.authentication.getAPIKey()!=null) {
-            if(!this.authentication.getAPIKey().trim().isEmpty()) {
-                if(this.authentication.getAPIKey().contains("|")) {
-                    String[] client = this.authentication.getAPIKey().split("\\|");
-                    this.client_id = client[0];
-                    this.client_secret = client[1];
-                    this.oAuthParams = "?client_id=" + client[0].trim() + "&client_secret=" + client[1].trim();
-                }
-            }
-        }
     }
 
     @Override
     public boolean testConnection() throws Exception {
-        String token = this.authorize();
-        if(!token.isEmpty()) {
-            super.addHeader("Authorization: token " + token);
-            super.noBasicLogin = true;
-            super.client = super.getClient();
-        } else {
-            super.noBasicLogin = false;
-            super.client = super.getClient();
-        }
-
-        int status = this.executeRequest("/user" + this.oAuthParams);
+        int status = this.executeRequest("/user");
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             return jsonObject.has("plan");
         }
         return false;
-    }
-
-    private String authorize() throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("client_secret", this.client_secret);
-        int status = this.executeRequest("/authorizations/clients/" + this.client_id, jsonObject.toString(), "PUT");
-        if(status == 200 || status == 201) {
-            JSONObject response = new JSONObject(this.getCurrentMessage());
-            return response.getString("hashed_token");
-        }
-        return "";
     }
 
     @Override
