@@ -87,7 +87,7 @@ import de.domjos.unitrackermobile.settings.Settings;
 public class Helper {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    static String readStringFromRaw(int rawID, Context context) throws Exception {
+    public static String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
         InputStream in_s = res.openRawResource(rawID);
 

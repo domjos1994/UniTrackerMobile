@@ -3,16 +3,16 @@
 	<xsl:template match="/">
 	  <html>
 		  <body>
-			<h2>Projects</h2>
+			<h2>Issues</h2>
 			<table border="1">
 				<tr bgcolor="#9acd32">
 				  <th>Title</th>
-				  <th>Enabled</th>
+				  <th>Description</th>
 				</tr>
-				<xsl:for-each select="Projects/Project">
+				<xsl:for-each select="Issues/Issue">
 					<tr>
 					  <td><xsl:value-of select="@title"/></td>
-					  <td><xsl:value-of select="@enabled"/></td>
+					  <td><xsl:value-of select="@description"/></td>
 					</tr>
 				</xsl:for-each>
 		  </table>

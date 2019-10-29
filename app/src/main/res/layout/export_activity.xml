@@ -216,9 +216,9 @@
                 android:layout_width="0dp"
                 android:textStyle="bold"
                 android:textSize="14sp"
-                android:hint="@string/export_extended_pdf_xslt"
+                android:hint="@string/export_extended_xml_xslt"
                 android:layout_margin="4dp"
-                android:autofillHints="@string/export_extended_pdf_xslt"
+                android:autofillHints="@string/export_extended_xml_xslt"
                 tools:targetApi="o"/>
 
             <ImageButton
@@ -230,6 +230,14 @@
                 android:background="@null"
                 android:layout_gravity="center"
                 android:foregroundGravity="center"/>
+        </TableRow>
+        <TableRow
+            android:tag="xml">
+            <CheckBox
+                android:id="@+id/chkCopyExampleData"
+                android:text="@string/export_extended_xml_xslt_example"
+                android:layout_width="0dp"
+                android:layout_weight="10"/>
         </TableRow>
     </TableLayout>
 

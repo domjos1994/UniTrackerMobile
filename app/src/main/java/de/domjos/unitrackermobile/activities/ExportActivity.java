@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TableLayout;
@@ -36,8 +37,12 @@ import androidx.annotation.NonNull;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.github.mikephil.charting.utils.FileUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,7 +69,7 @@ public final class ExportActivity extends AbstractActivity {
     private ImageButton cmdExportPath, cmdXSLTPath;
     private TextView txtExportPath, txtXSLTPath;
     private Spinner spBugTracker, spProjects, spData, spExportPath;
-    private CheckBox chkShowBackground, chkShowIcon;
+    private CheckBox chkShowBackground, chkShowIcon, chkCopyExampleData;
     private ArrayAdapter<String> dataAdapter;
     private ArrayAdapter<IBugService> bugTrackerAdapter;
     private ArrayAdapter<Project> projectAdapter;
@@ -132,6 +137,16 @@ public final class ExportActivity extends AbstractActivity {
                 }
             });
             this.dialog.show();
+        });
+
+        this.chkCopyExampleData.setOnCheckedChangeListener((compoundButton, b) -> {
+            if(b) {
+                String download = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
+                this.copyExampleContent(R.raw.example_projects, "example_projects.xslt", download);
+                this.copyExampleContent(R.raw.example_issues, "example_issues.xslt", download);
+                this.copyExampleContent(R.raw.example_custom_fields, "example_custom_fields.xslt", download);
+                MessageHelper.printMessage(this.getString(R.string.export_extended_xml_xslt_example_success), ExportActivity.this);
+            }
         });
 
         this.cmdXSLTPath.setOnClickListener(v->{
@@ -206,6 +221,17 @@ public final class ExportActivity extends AbstractActivity {
         });
     }
 
+    private void copyExampleContent(int resource, String name, String path) {
+        try {
+            String content = Helper.readStringFromRaw(resource, ExportActivity.this);
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(path + File.separatorChar + name));
+            outputStreamWriter.write(content);
+            outputStreamWriter.close();
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, ExportActivity.this);
+        }
+    }
+
     @Override
     protected void initControls() {
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
@@ -237,6 +263,7 @@ public final class ExportActivity extends AbstractActivity {
 
         this.txtXSLTPath = this.findViewById(R.id.txtXSLTPath);
         this.cmdXSLTPath = this.findViewById(R.id.cmdXSLTPath);
+        this.chkCopyExampleData = this.findViewById(R.id.chkCopyExampleData);
 
         this.loadData();
         Helper.isStoragePermissionGranted(ExportActivity.this);
