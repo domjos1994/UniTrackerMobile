@@ -32,6 +32,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
@@ -71,6 +72,36 @@ final class ObjectPDF {
             ObjectPDF.saveElementToPDF(object, pdfDocument, fonts);
         }
         pdfDocument.close();
+    }
+
+    static void createChangeLog(List<Issue> issues, String path, byte[] array, byte[] icon, Version version) throws Exception {
+        Map<String, Font> fonts  = new LinkedHashMap<>();
+        fonts.put(H1, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC, BaseColor.BLACK));
+        fonts.put(H2, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.BLACK));
+        fonts.put(H3, new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLACK));
+        fonts.put(BODY, new Font(Font.FontFamily.HELVETICA, 14, Font.NORMAL, BaseColor.BLACK));
+
+        Document pdfDocument = new Document();
+        PdfWriter writer = PdfWriter.getInstance(pdfDocument, new FileOutputStream(path + File.separatorChar + "changelog_" + version.getId() + ".pdf"));
+        writer.setBoxSize("art", new Rectangle(55, 25, 550, 788));
+        writer.setPageEvent(new PDFPageEvent(1, array, icon));
+        pdfDocument.open();
+        ObjectPDF.saveChangeLogToPDF(issues, pdfDocument, fonts, version);
+        pdfDocument.close();
+    }
+
+
+    private static void saveChangeLogToPDF(List<Issue> issues, Document pdfDocument, Map<String, Font> fonts, Version version) throws Exception {
+        pdfDocument.add(ObjectPDF.addTitle("Changelog of " + version.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
+        pdfDocument.add(ObjectPDF.addEmptyLine(3));
+
+        List<List<Map.Entry<String, BaseColor>>> bugTable = new LinkedList<>();
+        for(Issue issue : issues) {
+            if(issue.getFixedInVersion().trim().equals(version.getTitle().trim())) {
+                ObjectPDF.addRowToTable(String.valueOf(issue.getId()), issue.getTitle(), false, bugTable);
+            }
+        }
+        pdfDocument.add(ObjectPDF.addTable(null, null, bugTable));
     }
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {
@@ -244,7 +275,11 @@ final class ObjectPDF {
                 table.addCell(cell);
             }
         } else {
-            table = new PdfPTable(cells.get(0).size());
+            if(cells.size()!=0) {
+                table = new PdfPTable(cells.get(0).size());
+            } else {
+                table = new PdfPTable(1);
+            }
         }
 
         for(List<Map.Entry<String, BaseColor>> row : cells) {

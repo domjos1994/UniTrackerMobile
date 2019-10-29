@@ -222,11 +222,15 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
-        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
-        request.addProperty("project_id", Integer.parseInt(String.valueOf(project_id)));
+        SoapObject request = new SoapObject(super.soapPath, "mc_filter_search_issue_headers");
         request.addProperty("page_number", 1);
         request.addProperty("per_page", -1);
-        Object object = this.executeAction(request, "mc_project_get_issue_headers", true);
+        SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
+        Vector<Integer> projects = new Vector<>();
+        projects.add(Integer.parseInt(String.valueOf(project_id)));
+        filterObject.addProperty("project_id", projects);
+        request.addProperty("filter", filterObject);
+        Object object = this.executeAction(request, "mc_filter_search_issue_headers", true);
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
@@ -255,14 +259,18 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems, IssueFilter filter) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
 
-        SoapObject request = new SoapObject(super.soapPath, "mc_project_get_issue_headers");
-        request.addProperty("project_id", Integer.parseInt(String.valueOf(pid)));
+        SoapObject request = new SoapObject(super.soapPath, "mc_filter_search_issue_headers");
         request.addProperty("page_number", page);
         request.addProperty("per_page", numberOfItems);
+        SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
+        Vector<Integer> projects = new Vector<>();
+        projects.add(Integer.parseInt(String.valueOf(pid)));
+        filterObject.addProperty("project_id", projects);
+        request.addProperty("filter", filterObject);
 
         List<String> enumView = this.getEnums("view_states");
         List<String> enumStatus = this.getEnums("status");
-        Object object = this.executeAction(request, "mc_project_get_issue_headers", true);
+        Object object = this.executeAction(request, "mc_filter_search_issue_headers", true);
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;

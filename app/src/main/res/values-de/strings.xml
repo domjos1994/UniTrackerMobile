@@ -79,6 +79,9 @@
         <item>@string/versions_unReleased</item>
         <item>@string/versions_released</item>
     </string-array>
+    <string name="versions_menu_changelog">Changelog-PDF generieren</string>
+    <string name="versions_menu_changelog_no_selected">Keine Version ausgewählt!</string>
+    <string name="versions_menu_changelog_created">Changelog wurde erfolgreich im Download-Ordner erstellt</string>
 
     <string name="users">Benutzer</string>
     <string name="users_login">Login-Name</string>

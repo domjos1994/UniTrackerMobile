@@ -27,6 +27,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.model.projects.Version;
 
 public final class TrackerPDF<T> extends AbstractTracker<T> {
     private byte[] array, icon;
@@ -41,6 +42,11 @@ public final class TrackerPDF<T> extends AbstractTracker<T> {
         super(bugService, type, pid, ids, path);
         this.array = array;
         this.icon = icon;
+    }
+
+    public void createChangeLog(Version version) throws Exception {
+        List<Issue> issues = (List<Issue>) ids;
+        ObjectPDF.createChangeLog(issues, path, array, icon, version);
     }
 
     @Override
