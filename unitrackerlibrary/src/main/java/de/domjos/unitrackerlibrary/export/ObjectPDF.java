@@ -74,31 +74,26 @@ final class ObjectPDF {
     }
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
         if(object instanceof Project) {
             Project project = (Project) object;
             pdfDocument.add(ObjectPDF.addTitle(project.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("ID").append("\t\t: ").append(project.getId()).append("\n");
-            builder.append("Alias").append("\t\t: ").append(project.getAlias()).append("\n");
-            builder.append("Status").append("\t\t: ").append(project.getStatus()).append("\n");
-            builder.append("Enabled").append("\t\t: ").append(project.isEnabled()).append("\n");
-            builder.append("Website").append("\t\t: ").append(project.getWebsite()).append("\n");
-
-            Date dt = new Date();
-            dt.setTime(project.getCreatedAt());
-            builder.append("Creation").append("\t\t: ").append(sdf.format(dt)).append("\n");
-            dt.setTime(project.getUpdatedAt());
-            builder.append("Update").append("\t\t: ").append(sdf.format(dt)).append("\n");
-            pdfDocument.add(ObjectPDF.addParagraph("Data", builder.toString(), fonts.get(H2), fonts.get(BODY)));
-            pdfDocument.add(ObjectPDF.addEmptyLine(2));
-
-            pdfDocument.add(ObjectPDF.addParagraph("Description", project.getDescription(), fonts.get(H3), fonts.get(BODY)));
+            List<List<Map.Entry<String, BaseColor>>> bugTable = new LinkedList<>();
+            ObjectPDF.addRowToTable("ID", project.getId(), false, bugTable);
+            ObjectPDF.addRowToTable("Alias", project.getAlias(), false, bugTable);
+            ObjectPDF.addRowToTable("Status", project.getStatus(), false, bugTable);
+            ObjectPDF.addRowToTable("Enabled", project.isEnabled(), false, bugTable);
+            ObjectPDF.addRowToTable("Website", project.getWebsite(), false, bugTable);
+            ObjectPDF.addRowToTable("Creation", project.getCreatedAt(), true, bugTable);
+            ObjectPDF.addRowToTable("Update", project.getUpdatedAt(), true, bugTable);
+            ObjectPDF.addRowToTable("Description", project.getDescription(), true, bugTable);
+            pdfDocument.add(ObjectPDF.addTable(null, null, bugTable));
             pdfDocument.add(ObjectPDF.addEmptyLine(2));
 
             if(!project.getVersions().isEmpty()) {
+                pdfDocument.add(ObjectPDF.addTitle("Versions", fonts.get(H2), Paragraph.ALIGN_LEFT));
+                pdfDocument.add(ObjectPDF.addEmptyLine(1));
                 List<String> header = Arrays.asList("Title", "Description", "Released", "Obsolete");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : project.getVersions()) {
@@ -110,43 +105,40 @@ final class ObjectPDF {
                     mp.add(new AbstractMap.SimpleEntry<>(String.valueOf(version.isDeprecatedVersion()), BaseColor.LIGHT_GRAY));
                     cells.add(mp);
                 }
-                ObjectPDF.addTable(header, null, cells);
+                pdfDocument.add(ObjectPDF.addTable(header, null, cells));
             }
         } else if(object instanceof Issue) {
             Issue issue = (Issue) object;
             pdfDocument.add(ObjectPDF.addTitle(issue.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("ID").append("\t\t: ").append(issue.getId()).append("\n");
-            builder.append("Category").append("\t\t: ").append(issue.getCategory()).append("\n");
-            builder.append("View").append("\t\t: ").append(issue.getState().getValue().toString()).append("\n");
-            builder.append("Status").append("\t\t: ").append(issue.getStatus().getValue().toString()).append("\n");
-            builder.append("Priority").append("\t\t: ").append(issue.getPriority().getValue().toString()).append("\n");
-            builder.append("Severity").append("\t\t: ").append(issue.getSeverity().getValue().toString()).append("\n");
-            builder.append("Tags").append("\t\t: ").append(issue.getTags()).append("\n");
-            builder.append("Version").append("\t\t: ").append(issue.getVersion()).append("\n");
-            builder.append("Target Version").append("\t\t: ").append(issue.getTargetVersion()).append("\n");
-            builder.append("Fixed In Version").append("\t\t: ").append(issue.getFixedInVersion()).append("\n");
+            List<List<Map.Entry<String, BaseColor>>> bugTable = new LinkedList<>();
+            ObjectPDF.addRowToTable("ID", issue.getId(), false, bugTable);
+            ObjectPDF.addRowToTable("Category", issue.getCategory(), false, bugTable);
+            ObjectPDF.addRowToTable("View", issue.getState().getValue(), false, bugTable);
+            ObjectPDF.addRowToTable("Status", issue.getStatus().getValue(), false, bugTable);
+            ObjectPDF.addRowToTable("Priority", issue.getPriority().getValue(), false, bugTable);
+            ObjectPDF.addRowToTable("Severity", issue.getSeverity().getValue(), false, bugTable);
+            ObjectPDF.addRowToTable("Tags", issue.getTags(), false, bugTable);
+            ObjectPDF.addRowToTable("Version", issue.getVersion(), false, bugTable);
+            ObjectPDF.addRowToTable("Target Version", issue.getTargetVersion(), false, bugTable);
+            ObjectPDF.addRowToTable("Fixed in Version", issue.getFixedInVersion(), false, bugTable);
             if(issue.getHandler()!=null) {
-                builder.append("Handler").append("\t\t: ").append(issue.getHandler().getTitle()).append("\n");
+                ObjectPDF.addRowToTable("Handler", issue.getHandler().getTitle(), false, bugTable);
             }
-            if(issue.getDueDate()!=null) {
-                builder.append("Due Date").append("\t\t: ").append(sdf.format(issue.getDueDate())).append("\n");
-            }
-            builder.append("Creation").append("\t\t: ").append(sdf.format(issue.getSubmitDate())).append("\n");
-            builder.append("Update").append("\t\t: ").append(sdf.format(issue.getLastUpdated())).append("\n");
-            pdfDocument.add(ObjectPDF.addParagraph("Data", builder.toString(), fonts.get(H2), fonts.get(BODY)));
-            pdfDocument.add(ObjectPDF.addEmptyLine(2));
-
-            pdfDocument.add(ObjectPDF.addParagraph("Description", issue.getDescription(), fonts.get(H3), fonts.get(BODY)));
-            pdfDocument.add(ObjectPDF.addEmptyLine(1));
-            pdfDocument.add(ObjectPDF.addParagraph("Steps to Reproduce", issue.getStepsToReproduce(), fonts.get(H3), fonts.get(BODY)));
-            pdfDocument.add(ObjectPDF.addEmptyLine(1));
-            pdfDocument.add(ObjectPDF.addParagraph("Additional Information", issue.getAdditionalInformation(), fonts.get(H3), fonts.get(BODY)));
+            ObjectPDF.addRowToTable("Due Date", issue.getDueDate(), true, bugTable);
+            ObjectPDF.addRowToTable("Creation", issue.getSubmitDate(), true, bugTable);
+            ObjectPDF.addRowToTable("Update", issue.getLastUpdated(), true, bugTable);
+            ObjectPDF.addRowToTable("Description", issue.getDescription(), false, bugTable);
+            ObjectPDF.addRowToTable("Steps to Reproduce", issue.getStepsToReproduce(), false, bugTable);
+            ObjectPDF.addRowToTable("Additional Information", issue.getAdditionalInformation(), false, bugTable);
+            pdfDocument.add(ObjectPDF.addTable(null, null, bugTable));
             pdfDocument.add(ObjectPDF.addEmptyLine(2));
 
             if(!issue.getNotes().isEmpty()) {
+                pdfDocument.add(ObjectPDF.addTitle("Notes", fonts.get(H2), Paragraph.ALIGN_LEFT));
+                pdfDocument.add(ObjectPDF.addEmptyLine(1));
+
                 List<String> headers = Arrays.asList("Title", "Description");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : issue.getNotes()) {
@@ -161,6 +153,9 @@ final class ObjectPDF {
             }
 
             if(!issue.getCustomFields().isEmpty()) {
+                pdfDocument.add(ObjectPDF.addTitle("Customfields", fonts.get(H2), Paragraph.ALIGN_LEFT));
+                pdfDocument.add(ObjectPDF.addEmptyLine(1));
+
                 List<String> headers = Arrays.asList("Title", "Type", "Value");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : issue.getCustomFields().entrySet()) {
@@ -180,16 +175,44 @@ final class ObjectPDF {
             pdfDocument.add(ObjectPDF.addTitle(customField.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
-            String builder = "ID" + "\t\t: " + customField.getId() + "\n" +
-                    "Type" + "\t\t: " + customField.getType().name() + "\n" +
-                    "Default" + "\t\t: " + customField.getDefaultValue() + "\n" +
-                    "Min" + "\t\t: " + customField.getMinLength() + "\n" +
-                    "Max" + "\t\t: " + customField.getMaxLength() + "\n" +
-                    "Possible Values" + "\t\t: " + customField.getPossibleValues();
-            pdfDocument.add(ObjectPDF.addParagraph("Data", builder, fonts.get(H2), fonts.get(BODY)));
+            List<List<Map.Entry<String, BaseColor>>> bugTable = new LinkedList<>();
+            ObjectPDF.addRowToTable("ID", customField.getId(), false, bugTable);
+            ObjectPDF.addRowToTable("Type", customField.getType().name(), false, bugTable);
+            ObjectPDF.addRowToTable("Default", customField.getDefaultValue(), false, bugTable);
+            ObjectPDF.addRowToTable("Min", customField.getMinLength(), false, bugTable);
+            ObjectPDF.addRowToTable("Max", customField.getMaxLength(), false, bugTable);
+            ObjectPDF.addRowToTable("Possible Values", customField.getPossibleValues(), false, bugTable);
+            pdfDocument.add(ObjectPDF.addTable(null, null, bugTable));
         }
     }
 
+    private static void addRowToTable(String label, Object value, boolean isDate, List<List<Map.Entry<String, BaseColor>>> bugTable) {
+        if(isDate) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
+            if(value instanceof Long) {
+                Long item = (Long) value;
+                if(item != 0) {
+                    Date dt = new Date();
+                    dt.setTime(item);
+                    bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(sdf.format(dt), BaseColor.LIGHT_GRAY)));
+                }
+            } else if(value instanceof Date) {
+                Date dt = (Date) value;
+                bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(sdf.format(dt), BaseColor.LIGHT_GRAY)));
+            }
+        } else {
+            if(value instanceof Integer || value instanceof Long || value instanceof Boolean) {
+                bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(String.valueOf(value), BaseColor.LIGHT_GRAY)));
+            } else if(value instanceof String) {
+                String item = (String) value;
+                if(!item.trim().isEmpty()) {
+                    bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(item, BaseColor.LIGHT_GRAY)));
+                }
+            }
+        }
+    }
+
+    @SuppressWarnings("unused")
     private static Paragraph addParagraph(String title, String content, Font titleFont, Font bodyFont) {
         Paragraph paragraph = new Paragraph();
         paragraph.add(ObjectPDF.addTitle(title, titleFont, Paragraph.ALIGN_LEFT));
@@ -207,16 +230,21 @@ final class ObjectPDF {
     }
 
     private static PdfPTable addTable(List<String> headers, float[] headerWidth, List<List<Map.Entry<String, BaseColor>>> cells) throws Exception {
-        PdfPTable table = new PdfPTable(headers.size());
-        if(headerWidth!=null) {
-            table.setWidths(headerWidth);
-        }
+        PdfPTable table;
+        if(headers != null) {
+            table = new PdfPTable(headers.size());
+            if(headerWidth!=null) {
+                table.setWidths(headerWidth);
+            }
 
-        for(String header : headers) {
-            PdfPCell cell = new PdfPCell(new Phrase(header, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC)));
-            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
-            table.addCell(cell);
+            for(String header : headers) {
+                PdfPCell cell = new PdfPCell(new Phrase(header, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC)));
+                cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+                table.addCell(cell);
+            }
+        } else {
+            table = new PdfPTable(cells.get(0).size());
         }
 
         for(List<Map.Entry<String, BaseColor>> row : cells) {

@@ -49,7 +49,9 @@ public final class TrackerPDF<T> extends AbstractTracker<T> {
             case Projects:
                 List<Project> projects = new LinkedList<>();
                 for (T id : this.ids) {
-                    projects.add(this.bugService.getProject(id));
+                    Project<T> project = this.bugService.getProject(id);
+                    project.setVersions(this.bugService.getVersions("versions", id));
+                    projects.add(project);
                 }
                 ObjectPDF.saveObjectToPDF(projects, this.path, this.array, this.icon);
                 break;
