@@ -31,7 +31,9 @@ import java.util.List;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.PagerAdapter;
@@ -100,6 +102,40 @@ public final class IssueActivity extends AbstractActivity {
                         if (this.pagerAdapter.validate()) {
                             this.issue = (Issue) this.pagerAdapter.getObject();
                             this.issue.setId(this.id.equals("") ? null : this.id);
+                            VersionTask versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.ic_bug_report_black_24dp);
+                            List<Version> versions = versionTask.execute(0).get();
+                            boolean exists1 = false, exists2 = false, exists3 = false;
+                            for(Version version : versions) {
+                                if(version.getTitle().trim().equals(issue.getVersion())) {
+                                    exists1 = true;
+                                }
+                                if(version.getTitle().trim().equals(issue.getFixedInVersion())) {
+                                    exists2 = true;
+                                }
+                                if(version.getTitle().trim().equals(issue.getTargetVersion())) {
+                                    exists3 = true;
+                                }
+                            }
+
+                            if(!exists1) {
+                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.ic_bug_report_black_24dp);
+                                Version current = new Version();
+                                current.setTitle(issue.getVersion());
+                                versionTask.execute(current).get();
+                            }
+                            if(!exists2) {
+                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.ic_bug_report_black_24dp);
+                                Version current = new Version();
+                                current.setTitle(issue.getFixedInVersion());
+                                versionTask.execute(current).get();
+                            }
+                            if(!exists3) {
+                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.ic_bug_report_black_24dp);
+                                Version current = new Version();
+                                current.setTitle(issue.getTargetVersion());
+                                versionTask.execute(current).get();
+                            }
+
                             new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
