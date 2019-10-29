@@ -18,16 +18,9 @@
 
 package de.domjos.unitrackerlibrary.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
-
-import com.caverock.androidsvg.SVG;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -38,7 +31,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -117,26 +109,6 @@ public class Converter {
         }
         stream.close();
         return buffer.toByteArray();
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static byte[] convertSVGToByteArray(Context context, String url) {
-        byte[] imageAsBytes = Converter.convertStringToByteArray(url);
-        String svgAsString = new String(imageAsBytes != null ? imageAsBytes : new byte[0], StandardCharsets.UTF_8);
-
-        try {
-            SVG svg = SVG.getFromString(svgAsString);
-            float svgWidth = (svg.getDocumentWidth() != -1) ? svg.getDocumentWidth() : 500f;
-            float svgHeight = (svg.getDocumentHeight() != -1) ? svg.getDocumentHeight() : 500f;
-            Bitmap newBM = Bitmap.createBitmap((int) Math.ceil(svgWidth), (int) Math.ceil(svgHeight), Bitmap.Config.ARGB_8888);
-            Canvas bmcanvas = new Canvas(newBM);
-            bmcanvas.drawRGB(255, 255, 255);
-            svg.renderToCanvas(bmcanvas);
-
-            return Converter.convertDrawableToByteArray(new BitmapDrawable(context.getResources(), newBM));
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     public static void convertByteArrayToFile(byte[] content, File file) throws Exception {

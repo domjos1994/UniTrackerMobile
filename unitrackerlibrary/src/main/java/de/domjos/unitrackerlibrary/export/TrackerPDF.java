@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackerlibrary.export;
 
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import java.util.LinkedList;
@@ -30,16 +29,18 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 
 public final class TrackerPDF<T> extends AbstractTracker<T> {
-    private Drawable drawable;
+    private byte[] array, icon;
 
     public TrackerPDF(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
         super(bugService, type, pid, ids, path);
-        this.drawable = null;
+        this.array = null;
+        this.icon = null;
     }
 
-    public TrackerPDF(IBugService<T> bugService, Type type, T pid, List<T> ids, String path, Drawable drawable) {
+    public TrackerPDF(IBugService<T> bugService, Type type, T pid, List<T> ids, String path, byte[] array, byte[] icon) {
         super(bugService, type, pid, ids, path);
-        this.drawable = drawable;
+        this.array = array;
+        this.icon = icon;
     }
 
     @Override
@@ -50,21 +51,21 @@ public final class TrackerPDF<T> extends AbstractTracker<T> {
                 for (T id : this.ids) {
                     projects.add(this.bugService.getProject(id));
                 }
-                ObjectPDF.saveObjectToPDF(projects, this.path, this.drawable);
+                ObjectPDF.saveObjectToPDF(projects, this.path, this.array, this.icon);
                 break;
             case Issues:
                 List<Issue> issues = new LinkedList<>();
                 for (T id : this.ids) {
                     issues.add(this.bugService.getIssue(id, this.pid));
                 }
-                ObjectPDF.saveObjectToPDF(issues, this.path, this.drawable);
+                ObjectPDF.saveObjectToPDF(issues, this.path, this.array, this.icon);
                 break;
             case CustomFields:
                 List<CustomField> customFields = new LinkedList<>();
                 for (T id : this.ids) {
                     customFields.add(this.bugService.getCustomField(id, this.pid));
                 }
-                ObjectPDF.saveObjectToPDF(customFields, this.path, this.drawable);
+                ObjectPDF.saveObjectToPDF(customFields, this.path, this.array, this.icon);
                 break;
             default:
                 return;

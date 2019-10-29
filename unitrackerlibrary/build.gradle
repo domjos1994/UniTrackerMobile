@@ -63,9 +63,6 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.2.1'
     implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.4'
 
-    // library to get svg images
-    implementation 'com.caverock:androidsvg:1.4'
-
     // library to create pdf-files
     implementation 'com.itextpdf:itextg:5.5.10'
 }

@@ -288,11 +288,7 @@ public final class ProjectActivity extends AbstractActivity {
                                     try {
                                         listObject.setIcon(Converter.convertStringToByteArray(project.getIconUrl()));
                                         if (listObject.getIcon() != null) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                                listObject.setIcon(Converter.convertSVGToByteArray(getApplicationContext(), project.getIconUrl()));
-                                            } else {
-                                                listObject.setIcon(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
-                                            }
+                                            listObject.setIcon(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
                                         }
                                     } catch (Exception ex) {
                                         runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));

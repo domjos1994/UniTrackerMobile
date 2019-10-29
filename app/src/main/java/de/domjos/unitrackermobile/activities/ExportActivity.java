@@ -19,6 +19,7 @@
 package de.domjos.unitrackermobile.activities;
 
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,7 +30,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
@@ -50,6 +50,7 @@ import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
+import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.custom.AbstractActivity;
@@ -114,7 +115,12 @@ public final class ExportActivity extends AbstractActivity {
                 String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
-                    ExportTask exportTask = new ExportTask(ExportActivity.this, bugService, type, project.getId(), file, notify, R.drawable.ic_import_export_black_24dp, VectorDrawableCompat.create(this.getResources(), R.drawable.background, null));
+                    Drawable drawable = this.getResources().getDrawable(R.drawable.background);
+                    ExportTask exportTask = new ExportTask(
+                            ExportActivity.this, bugService, type, project.getId(), file, notify,
+                            R.drawable.ic_import_export_black_24dp,
+                            Converter.convertDrawableToByteArray(drawable),
+                            Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web)));
                     List<Object> objects = new LinkedList<>();
                     switch (type) {
                         case Projects:
