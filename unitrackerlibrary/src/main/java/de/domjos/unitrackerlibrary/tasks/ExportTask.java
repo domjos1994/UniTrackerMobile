@@ -30,18 +30,19 @@ import de.domjos.unitrackerlibrary.export.TrackerXML;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 
 public final class ExportTask extends AbstractTask<Object, Void, Void> {
-    private String path;
+    private String path, xslt;
     private TrackerXML.Type type;
     private Object project_id;
     private byte[] array, icon;
 
-    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon) {
+    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, String xslt) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
         this.path = path;
         this.type = type;
         this.project_id = project_id;
         this.array = array;
         this.icon = appIcon;
+        this.xslt = xslt;
     }
 
     @Override
@@ -59,7 +60,7 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
 
             switch (extension.trim().toLowerCase()) {
                 case "xml":
-                    TrackerXML buggerXML = new TrackerXML(super.bugService, this.type, this.project_id, objectList, this.path);
+                    TrackerXML buggerXML = new TrackerXML(super.bugService, this.type, this.project_id, objectList, this.path, this.xslt);
                     buggerXML.doExport();
                     break;
                 case "txt":

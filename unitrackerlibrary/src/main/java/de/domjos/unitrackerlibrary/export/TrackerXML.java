@@ -29,9 +29,11 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 
 public final class TrackerXML<T> extends AbstractTracker<T> {
+    private String xslt;
 
-    public TrackerXML(IBugService<T> bugService, Type type, T pid, List<T> ids, String path) {
+    public TrackerXML(IBugService<T> bugService, Type type, T pid, List<T> ids, String path, String xslt) {
         super(bugService, type, pid, ids, path);
+        this.xslt = xslt;
     }
 
     @Override
@@ -42,21 +44,21 @@ public final class TrackerXML<T> extends AbstractTracker<T> {
                 for (T id : this.ids) {
                     projects.add(this.bugService.getProject(id));
                 }
-                ObjectXML.saveObjectListToXML("Projects", projects, this.path);
+                ObjectXML.saveObjectListToXML("Projects", projects, this.path, this.xslt);
                 break;
             case Issues:
                 List<Issue> issues = new LinkedList<>();
                 for (T id : this.ids) {
                     issues.add(this.bugService.getIssue(id, this.pid));
                 }
-                ObjectXML.saveObjectListToXML("Issues", issues, this.path);
+                ObjectXML.saveObjectListToXML("Issues", issues, this.path, this.xslt);
                 break;
             case CustomFields:
                 List<CustomField> customFields = new LinkedList<>();
                 for (T id : this.ids) {
                     customFields.add(this.bugService.getCustomField(id, this.pid));
                 }
-                ObjectXML.saveObjectListToXML("CustomFields", customFields, this.path);
+                ObjectXML.saveObjectListToXML("CustomFields", customFields, this.path, this.xslt);
                 break;
             default:
                 return;

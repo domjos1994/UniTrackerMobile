@@ -203,6 +203,7 @@
     <string name="export_success">Export erfolgreich!</string>
     <string name="export_extended_pdf_background">Hintergrund anzeigen</string>
     <string name="export_extended_pdf_icon">Icon anzeigen</string>
+    <string name="export_extended_pdf_xslt">XSLT-Datei</string>
 
     <string name="administration">Administration</string>
     <string name="administration_menu">Übergreifend</string>

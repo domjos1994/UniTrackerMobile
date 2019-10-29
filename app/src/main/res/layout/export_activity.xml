@@ -207,6 +207,30 @@
                 android:layout_width="0dp"
                 android:layout_weight="5"/>
         </TableRow>
+        <TableRow
+            android:tag="xml">
+            <TextView
+                android:id="@+id/txtXSLTPath"
+                android:inputType="none"
+                android:layout_weight="7"
+                android:layout_width="0dp"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:hint="@string/export_extended_pdf_xslt"
+                android:layout_margin="4dp"
+                android:autofillHints="@string/export_extended_pdf_xslt"
+                tools:targetApi="o"/>
+
+            <ImageButton
+                android:id="@+id/cmdXSLTPath"
+                android:contentDescription="@string/export"
+                app:srcCompat="@drawable/ic_search_black_24dp"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:background="@null"
+                android:layout_gravity="center"
+                android:foregroundGravity="center"/>
+        </TableRow>
     </TableLayout>
 
     <Button

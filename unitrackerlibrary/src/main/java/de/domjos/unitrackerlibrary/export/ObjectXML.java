@@ -21,6 +21,7 @@ package de.domjos.unitrackerlibrary.export;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -31,13 +32,15 @@ import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 final class ObjectXML {
-    static void saveObjectListToXML(String root, List lst, String path) throws Exception {
+    static void saveObjectListToXML(String root, List lst, String path, String xsltPath) throws Exception {
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document document = dBuilder.newDocument();
@@ -47,8 +50,25 @@ final class ObjectXML {
         }
         document.appendChild(element);
 
+        ObjectXML.transformXMLByXSLT(new File(xsltPath), document, path);
+    }
+
+    private static void transformXMLByXSLT(File file, Document document, String path) throws Exception {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
+
+        Source xslt = null;
+        if(file != null) {
+            if(file.exists()) {
+                xslt = new StreamSource(file);
+            }
+        }
+
+        Transformer transformer;
+        if(xslt!=null) {
+            transformer = transformerFactory.newTransformer(xslt);
+        } else {
+            transformer = transformerFactory.newTransformer();
+        }
         DOMSource source = new DOMSource(document);
         StreamResult result = new StreamResult(path);
         transformer.transform(source, result);

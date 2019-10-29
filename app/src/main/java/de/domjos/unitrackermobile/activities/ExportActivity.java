@@ -61,8 +61,8 @@ import de.domjos.unitrackermobile.settings.Settings;
 
 public final class ExportActivity extends AbstractActivity {
     private Button cmdExport;
-    private ImageButton cmdExportPath;
-    private TextView txtExportPath;
+    private ImageButton cmdExportPath, cmdXSLTPath;
+    private TextView txtExportPath, txtXSLTPath;
     private Spinner spBugTracker, spProjects, spData, spExportPath;
     private CheckBox chkShowBackground, chkShowIcon;
     private ArrayAdapter<String> dataAdapter;
@@ -88,6 +88,7 @@ public final class ExportActivity extends AbstractActivity {
                     if(tableRow.getTag()!=null) {
                         if(tableRow.getTag() instanceof String) {
                             tableRow.setVisibility(View.GONE);
+                            txtXSLTPath.setText("");
                             if(tableRow.getTag().toString().equals(item)) {
                                 tableRow.setVisibility(View.VISIBLE);
                             }
@@ -121,6 +122,7 @@ public final class ExportActivity extends AbstractActivity {
         });
 
         this.cmdExportPath.setOnClickListener(v ->{
+            this.initDialog(true);
             this.dialog.setDialogSelectionListener(files -> {
                 if(files!=null) {
                     if(files.length >= 1) {
@@ -129,6 +131,19 @@ public final class ExportActivity extends AbstractActivity {
                     }
                 }
             });
+            this.dialog.show();
+        });
+
+        this.cmdXSLTPath.setOnClickListener(v->{
+            this.initDialog(false);
+            this.dialog.setDialogSelectionListener(files -> {
+                if(files!=null) {
+                    if(files.length >= 1) {
+                        this.txtXSLTPath.setText(files[0]);
+                    }
+                }
+            });
+            this.dialog.setOnCancelListener(dialogInterface -> this.txtXSLTPath.setText(""));
             this.dialog.show();
         });
 
@@ -151,9 +166,14 @@ public final class ExportActivity extends AbstractActivity {
                     }
 
 
+                    String xslt = "";
+                    if(this.txtXSLTPath.getText() != null) {
+                        xslt = this.txtXSLTPath.getText().toString();
+                    }
+
                     ExportTask exportTask = new ExportTask(
                             ExportActivity.this, bugService, type, project.getId(), file, notify,
-                            R.drawable.ic_import_export_black_24dp, background, icon);
+                            R.drawable.ic_import_export_black_24dp, background, icon, xslt);
                     List<Object> objects = new LinkedList<>();
                     switch (type) {
                         case Projects:
@@ -215,6 +235,9 @@ public final class ExportActivity extends AbstractActivity {
         this.chkShowBackground = this.findViewById(R.id.chkShowBackground);
         this.chkShowIcon = this.findViewById(R.id.chkShowIcon);
 
+        this.txtXSLTPath = this.findViewById(R.id.txtXSLTPath);
+        this.cmdXSLTPath = this.findViewById(R.id.cmdXSLTPath);
+
         this.loadData();
         Helper.isStoragePermissionGranted(ExportActivity.this);
     }
@@ -246,22 +269,26 @@ public final class ExportActivity extends AbstractActivity {
         }
         File file = new File(dir.getAbsolutePath() + File.separatorChar + this.createFileName());
         this.txtExportPath.setText(file.toString());
-
-        this.initDialog();
     }
 
     private String createFileName() {
         return "export_" + new Date().getTime();
     }
 
-    private void initDialog() {
+    private void initDialog(boolean dir) {
         DialogProperties dialogProperties = new DialogProperties();
         dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
         dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
         dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
         dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
-        dialogProperties.extensions = null;
+        if(dir) {
+            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
+            dialogProperties.extensions = null;
+        } else {
+            dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
+            dialogProperties.extensions = new String[]{"xslt"};
+        }
+
 
         this.dialog = new FilePickerDialog(ExportActivity.this, dialogProperties);
         this.dialog.setCancelable(true);
