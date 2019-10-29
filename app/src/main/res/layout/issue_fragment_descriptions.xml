@@ -28,7 +28,7 @@
 
         <TableRow>
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/txtIssueDescriptionsDescription"
                 android:hint="@string/general_description"
                 android:inputType="textMultiLine"
@@ -39,7 +39,7 @@
 
         <TableRow android:id="@+id/rowDescriptionsSteps">
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/txtIssueDescriptionsSteps"
                 android:hint="@string/issues_descriptions_steps"
                 android:inputType="textMultiLine"
@@ -50,7 +50,7 @@
 
         <TableRow android:id="@+id/rowDescriptionsAdditional">
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/txtIssueDescriptionsAdditional"
                 android:hint="@string/issues_descriptions_additional"
                 android:inputType="textMultiLine"

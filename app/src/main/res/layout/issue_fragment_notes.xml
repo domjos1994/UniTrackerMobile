@@ -81,7 +81,7 @@
 
         <TableRow>
 
-            <EditText
+            <MultiAutoCompleteTextView
                 android:id="@+id/txtIssueNotesContent"
                 android:hint="@string/general_description"
                 android:inputType="textMultiLine"

@@ -18,27 +18,39 @@
 
 package de.domjos.unitrackermobile.fragments;
 
+import android.accounts.Account;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.adapter.SuggestionAdapter;
+import de.domjos.unitrackermobile.custom.SpecialTokenizer;
+import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public final class IssueDescriptionsFragment extends AbstractFragment {
-    private EditText txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
+    private MultiAutoCompleteTextView txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
     private TableRow rowIssueDescriptionsSteps, rowIssueDescriptionsAdditional;
 
     private View root;
@@ -61,11 +73,59 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         this.txtIssueDescriptionsSteps = this.root.findViewById(R.id.txtIssueDescriptionsSteps);
         this.txtIssueDescriptionsAdditional = this.root.findViewById(R.id.txtIssueDescriptionsAdditional);
 
+        if(this.getContext()!=null) {
+            List<User> users = new LinkedList<>();
+            List<Issue> issues = new LinkedList<>();
+            try {
+                IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
+                boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
+
+                UserTask userTask = new UserTask(this.getActivity(), bugService, pid, false, show, R.drawable.ic_person_black_24dp);
+                users = userTask.execute(0).get();
+
+                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                issues = issueTask.execute(0).get();
+            } catch (Exception ignored) {}
+
+            SuggestionAdapter descriptionAdapter = fillAdapter(users, issues, this.getActivity());
+            this.txtIssueDescriptionsDescription.setAdapter(descriptionAdapter);
+            this.txtIssueDescriptionsDescription.setTokenizer(new SpecialTokenizer());
+            descriptionAdapter.notifyDataSetChanged();
+
+            SuggestionAdapter stepsAdapter = fillAdapter(users, issues, this.getActivity());
+            this.txtIssueDescriptionsDescription.setAdapter(stepsAdapter);
+            this.txtIssueDescriptionsDescription.setTokenizer(new SpecialTokenizer());
+            stepsAdapter.notifyDataSetChanged();
+
+            SuggestionAdapter additionalAdapter = fillAdapter(users, issues, this.getActivity());
+            this.txtIssueDescriptionsDescription.setAdapter(additionalAdapter);
+            this.txtIssueDescriptionsDescription.setTokenizer(new SpecialTokenizer());
+            additionalAdapter.notifyDataSetChanged();
+        }
+
         this.updateUITrackerSpecific();
         this.initData();
         this.manageControls(this.editMode);
         this.initValidator();
         return this.root;
+    }
+
+    static SuggestionAdapter fillAdapter(List<User> users, List<Issue> issues, Activity activity) {
+        List<DescriptionObject> descriptionObjects = new LinkedList<>();
+        for(User user : users) {
+            DescriptionObject descriptionObject = new DescriptionObject();
+            descriptionObject.setTitle("@" + user.getTitle());
+            descriptionObject.setDescription(user.getRealName());
+            descriptionObjects.add(descriptionObject);
+        }
+        for(Issue issue : issues) {
+            DescriptionObject descriptionObject = new DescriptionObject();
+            descriptionObject.setTitle("#" + issue.getId());
+            descriptionObject.setDescription(issue.getTitle());
+            descriptionObjects.add(descriptionObject);
+        }
+        return new SuggestionAdapter(activity, descriptionObjects);
     }
 
     @Override

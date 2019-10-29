@@ -24,19 +24,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
+import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.IssueTask;
+import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
+import de.domjos.unitrackermobile.adapter.SuggestionAdapter;
+import de.domjos.unitrackermobile.custom.SpecialTokenizer;
 import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.DateConverter;
@@ -49,7 +58,7 @@ import de.domjos.unitrackermobile.helper.Validator;
 public final class IssueNotesFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssueNotes;
     private ImageButton cmdIssueNotesAdd, cmdIssueNotesEdit, cmdIssueNotesDelete, cmdIssueNotesCancel, cmdIssueNotesSave;
-    private EditText txtIssueNotesText;
+    private MultiAutoCompleteTextView txtIssueNotesText;
     private TextView txtIssueNotesSubmitDate, txtIssueNotesLastUpdated;
     private Spinner spIssueNotesView;
     private IBugService bugService;
@@ -83,6 +92,26 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.txtIssueNotesLastUpdated = this.root.findViewById(R.id.txtIssueNotesLastUpdated);
         this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
 
+        if(this.getContext()!=null) {
+            List<User> users = new LinkedList<>();
+            List<Issue> issues = new LinkedList<>();
+            try {
+                IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
+                boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
+
+                UserTask userTask = new UserTask(this.getActivity(), bugService, pid, false, show, R.drawable.ic_person_black_24dp);
+                users = userTask.execute(0).get();
+
+                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                issues = issueTask.execute(0).get();
+            } catch (Exception ignored) {}
+
+            SuggestionAdapter descriptionAdapter = IssueDescriptionsFragment.fillAdapter(users, issues, this.getActivity());
+            this.txtIssueNotesText.setAdapter(descriptionAdapter);
+            this.txtIssueNotesText.setTokenizer(new SpecialTokenizer());
+            descriptionAdapter.notifyDataSetChanged();
+        }
 
         this.lvIssueNotes.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
