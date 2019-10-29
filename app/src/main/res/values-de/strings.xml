@@ -201,6 +201,8 @@
     </string-array>
     <string name="export_path_choose">Datei wählen</string>
     <string name="export_success">Export erfolgreich!</string>
+    <string name="export_extended_pdf_background">Hintergrund anzeigen</string>
+    <string name="export_extended_pdf_icon">Icon anzeigen</string>
 
     <string name="administration">Administration</string>
     <string name="administration_menu">Übergreifend</string>

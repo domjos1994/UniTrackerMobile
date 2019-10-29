@@ -255,8 +255,12 @@ final class ObjectPDF {
 
 
             try {
-                this.addBackground(this.background, writer, document);
-                this.addIcon(this.icon, writer);
+                if(this.background != null) {
+                    this.addBackground(this.background, writer, document);
+                }
+                if(this.icon != null) {
+                    this.addIcon(this.icon, writer);
+                }
             } catch (Exception ignored) {}
         }
 

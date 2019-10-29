@@ -19,15 +19,17 @@
 package de.domjos.unitrackermobile.activities;
 
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -60,13 +62,15 @@ import de.domjos.unitrackermobile.settings.Settings;
 public final class ExportActivity extends AbstractActivity {
     private Button cmdExport;
     private ImageButton cmdExportPath;
-    private EditText txtExportPath;
+    private TextView txtExportPath;
     private Spinner spBugTracker, spProjects, spData, spExportPath;
+    private CheckBox chkShowBackground, chkShowIcon;
     private ArrayAdapter<String> dataAdapter;
     private ArrayAdapter<IBugService> bugTrackerAdapter;
     private ArrayAdapter<Project> projectAdapter;
     private Settings settings;
     private FilePickerDialog dialog;
+    private TableLayout tblControls;
 
     public ExportActivity() {
         super(R.layout.export_activity);
@@ -74,6 +78,28 @@ public final class ExportActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+        this.spExportPath.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String item = spExportPath.getSelectedItem().toString().trim().toLowerCase();
+
+                for(int j = 0; j<=tblControls.getChildCount()-1; j++) {
+                    TableRow tableRow = (TableRow) tblControls.getChildAt(j);
+                    if(tableRow.getTag()!=null) {
+                        if(tableRow.getTag() instanceof String) {
+                            tableRow.setVisibility(View.GONE);
+                            if(tableRow.getTag().toString().equals(item)) {
+                                tableRow.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
+
         this.spBugTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -115,12 +141,19 @@ public final class ExportActivity extends AbstractActivity {
                 String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
-                    Drawable drawable = this.getResources().getDrawable(R.drawable.background);
+                    byte[] background = null, icon = null;
+
+                    if(this.chkShowBackground.isChecked()) {
+                        background = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.background));
+                    }
+                    if(this.chkShowIcon.isChecked()) {
+                        icon = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                    }
+
+
                     ExportTask exportTask = new ExportTask(
                             ExportActivity.this, bugService, type, project.getId(), file, notify,
-                            R.drawable.ic_import_export_black_24dp,
-                            Converter.convertDrawableToByteArray(drawable),
-                            Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web)));
+                            R.drawable.ic_import_export_black_24dp, background, icon);
                     List<Object> objects = new LinkedList<>();
                     switch (type) {
                         case Projects:
@@ -157,6 +190,8 @@ public final class ExportActivity extends AbstractActivity {
     protected void initControls() {
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
+        this.tblControls = this.findViewById(R.id.tblControls);
+
         this.cmdExport = this.findViewById(R.id.cmdExport);
         this.cmdExportPath = this.findViewById(R.id.cmdExportPath);
         this.spExportPath = this.findViewById(R.id.spExportPath);
@@ -176,6 +211,9 @@ public final class ExportActivity extends AbstractActivity {
         this.dataAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.spData.setAdapter(this.dataAdapter);
         this.dataAdapter.notifyDataSetChanged();
+
+        this.chkShowBackground = this.findViewById(R.id.chkShowBackground);
+        this.chkShowIcon = this.findViewById(R.id.chkShowIcon);
 
         this.loadData();
         Helper.isStoragePermissionGranted(ExportActivity.this);
