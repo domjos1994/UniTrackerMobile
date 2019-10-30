@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import de.domjos.unitrackerlibrary.services.authentication.AccessTokenProvider;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import okhttp3.Call;
+import okhttp3.ConnectionPool;
 import okhttp3.Credentials;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -85,7 +86,7 @@ public class JSONEngine {
         this.headers.remove(header);
     }
 
-    protected int executeRequest(String path) throws Exception {
+    public int executeRequest(String path) throws Exception {
         try {
             Call call = this.initAuthentication(path);
             Response response = call.execute();
@@ -271,7 +272,8 @@ public class JSONEngine {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .followRedirects(true)
                 .connectTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS);
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectionPool(new ConnectionPool(100, 5, TimeUnit.MINUTES));
 
         if(basic) {
             builder.authenticator((route, response) -> {
@@ -291,10 +293,7 @@ public class JSONEngine {
                 });
             } else {
                 if(this.accessTokenProvider!=null) {
-                    builder.authenticator((route, response) -> {
-                        String token = this.accessTokenProvider.token();
-                        return response.request().newBuilder().header("Authorization", this.accessTokenProvider.authType() + " " + token).build();
-                    });
+                    builder.authenticator((route, response) -> response.request().newBuilder().header("Authorization", this.accessTokenProvider.authorization()).build());
                 } else {
                     return this.getClient(true);
                 }

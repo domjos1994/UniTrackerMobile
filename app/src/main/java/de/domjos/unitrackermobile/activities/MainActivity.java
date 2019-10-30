@@ -21,6 +21,8 @@ package de.domjos.unitrackermobile.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -308,7 +310,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.cmdIssuesAdd = this.findViewById(R.id.cmdIssueAdd);
             this.spMainAccounts = this.navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
-            this.accountList = new ArrayAdapter<>(this.getApplicationContext(),R.layout.spinner_item);
+            this.accountList = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
             this.spMainAccounts.setAdapter(this.accountList);
             this.accountList.notifyDataSetChanged();
 
@@ -768,16 +770,15 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
             if (authentication.getServer().equals("")) {
-                ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+                ivMainCover.setImageDrawable(this.getDrawable());
                 lblAccountTitle.setText(R.string.accounts_noAccount);
                 lblMainCommand.setText(R.string.accounts_add);
             } else {
                 if (authentication.getCover() != null) {
                     ivMainCover.setImageBitmap(BitmapFactory.decodeByteArray(authentication.getCover(), 0, authentication.getCover().length));
                 } else {
-                    ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+                    ivMainCover.setImageDrawable(this.getDrawable());
                 }
-
 
                 final StringBuilder tracker = new StringBuilder();
                 tracker.append(authentication.getTitle());
@@ -797,9 +798,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 lblMainCommand.setText(R.string.accounts_change);
             }
         } else {
-            ivMainCover.setImageDrawable(getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+            ivMainCover.setImageDrawable(this.getDrawable());
             lblAccountTitle.setText(R.string.accounts_noAccount);
             lblMainCommand.setText(R.string.accounts_add);
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private Drawable getDrawable() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return getDrawable(R.drawable.ic_account_circle_black_24dp);
+        } else {
+            return getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
         }
     }
 

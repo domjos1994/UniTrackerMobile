@@ -47,10 +47,18 @@ import de.domjos.unitrackerlibrary.utils.Converter;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
+    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    private String username;
 
     public Github(Authentication authentication) {
         super(authentication, new GithubTokenProvider(authentication));
         this.authentication = authentication;
+
+        if(this.authentication.getHints().containsKey("userName")) {
+            this.username = this.authentication.getHints().get("userName");
+        } else {
+            this.username = this.authentication.getUserName();
+        }
     }
 
     @Override
@@ -58,6 +66,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         int status = this.executeRequest("/user");
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            this.authentication.getHints().put("userName", jsonObject.getString("login"));
             return jsonObject.has("plan");
         }
         return false;
@@ -71,7 +80,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     @Override
     public List<Project<Long>> getProjects() throws Exception {
         List<Project<Long>> projects = new LinkedList<>();
-        int status = this.executeRequest("/users/" + this.authentication.getUserName() + "/repos");
+        int status = this.executeRequest("/users/" + this.username + "/repos");
 
         if (status == 200 || status == 201) {
             JSONArray versionArray = new JSONArray(this.getCurrentMessage());
@@ -87,13 +96,13 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 project.setEnabled(!jsonObject.getBoolean("disabled"));
 
                 if (jsonObject.has("created_at")) {
-                    Date dt = Converter.convertStringToDate(jsonObject.getString("created_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    Date dt = Converter.convertStringToDate(jsonObject.getString("created_at"), Github.DATE_TIME_FORMAT);
                     if (dt != null) {
                         project.setCreatedAt(dt.getTime());
                     }
                 }
                 if (jsonObject.has("updated_at")) {
-                    Date dt = Converter.convertStringToDate(jsonObject.getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    Date dt = Converter.convertStringToDate(jsonObject.getString("updated_at"), Github.DATE_TIME_FORMAT);
                     if (dt != null) {
                         project.setUpdatedAt(dt.getTime());
                     }
@@ -134,7 +143,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
             method = "POST";
         } else {
             url = "/repos/" + project.getTitle();
-            method = "POST";
+            method = "PATCH";
         }
 
         int status = this.executeRequest(url, jsonObject.toString(), method);
@@ -159,7 +168,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         List<Version<Long>> versions = new LinkedList<>();
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases");
+            int status = this.executeRequest("/repos/" + this.username + "/" + project.getAlias() + "/releases");
 
             if (status == 200 || status == 201) {
                 JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
@@ -168,7 +177,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                     Version<Long> version = new Version<>();
                     version.setTitle(jsonObject.getString("name"));
                     version.setDescription(jsonObject.getString("body"));
-                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("published_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'").getTime());
+                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("published_at"), Github.DATE_TIME_FORMAT).getTime());
                     version.setId(jsonObject.getLong("id"));
                     version.setReleasedVersion(jsonObject.getBoolean("prerelease"));
                     versions.add(version);
@@ -193,10 +202,10 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
             if (version.getId() == null) {
-                url = "/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases";
+                url = "/repos/" + this.username + "/" + project.getAlias() + "/releases";
                 method = "POST";
             } else {
-                url = "/repos/" + this.authentication.getUserName() + "/" + project.getAlias() + "/releases/" + version.getId();
+                url = "/repos/" + this.username + "/" + project.getAlias() + "/releases/" + version.getId();
                 method = "PATCH";
             }
 
@@ -208,7 +217,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     public void deleteVersion(Long id, Long project_id) throws Exception {
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
-            this.deleteRequest("/repos/" + this.authentication.getUserName() + "/" + project.getTitle() + "/releases/" + id);
+            this.deleteRequest("/repos/" + this.username + "/" + project.getTitle() + "/releases/" + id);
         }
     }
 
@@ -295,8 +304,8 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 issue.setId(issueObject.getLong("number"));
                 issue.setTitle(issueObject.getString("title"));
                 issue.setDescription(issueObject.getString("body"));
-                issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
-                issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+                issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), Github.DATE_TIME_FORMAT));
+                issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), Github.DATE_TIME_FORMAT));
                 issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
             }
         }
@@ -311,7 +320,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
             jsonObject.put("title", issue.getTitle());
             jsonObject.put("body", issue.getDescription());
             JSONArray jsonArray = new JSONArray();
-            jsonArray.put(this.authentication.getUserName());
+            jsonArray.put(this.username);
             jsonObject.put("assignees", jsonArray);
             this.executeRequest("/repos/" + project.getTitle() + "/issues", jsonObject.toString(), "POST");
         }

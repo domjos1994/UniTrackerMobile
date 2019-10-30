@@ -40,12 +40,12 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateProjects() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteProjects() {
-        return false;
+        return true;
     }
 
     @Override

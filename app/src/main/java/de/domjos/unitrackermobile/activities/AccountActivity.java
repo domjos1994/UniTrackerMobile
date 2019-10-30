@@ -273,7 +273,7 @@ public final class AccountActivity extends AbstractActivity {
                             new Thread(() -> {
                                 try {
                                     if(!chkAccountGuest.isChecked()) {
-                                        if(currentAccount.getAuthentication() == Authentication.Auth.OAUTH) {
+                                        if(currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
                                             GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
                                             currentAccount.setAPIKey(githubTokenProvider.refreshToken());
                                         }
