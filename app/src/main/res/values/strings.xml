@@ -166,6 +166,8 @@
     <string name="settings_bug_tracker_mantis">MantisBT</string>
     <string name="settings_bug_tracker_mantis_sub">Bugs from sub-projects!</string>
     <string name="settings_bug_tracker_mantis_sub_summary">Show bugs from sub-projects!</string>
+    <string name="settings_bug_tracker_mantis_filter">Filter benutzen?</string>
+    <string name="settings_bug_tracker_mantis_filter_summary">Filter benutzen oder alle Bugs anzeigen?</string>
     <string name="settings_internet">Internet</string>
     <string name="settings_internet_summary">Change here the settings, which concerns the synchronization with removed data!</string>
     <string name="settings_internet_wlan_reload">"Automatically reload errors in the WLAN  "</string>

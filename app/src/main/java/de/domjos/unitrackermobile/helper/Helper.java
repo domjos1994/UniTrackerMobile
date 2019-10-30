@@ -24,7 +24,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -45,7 +44,6 @@ import android.view.ViewGroup;
 import android.widget.*;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -119,7 +117,12 @@ public class Helper {
             if (authentication != null) {
                 switch (authentication.getTracker()) {
                     case MantisBT:
-                        bugService = new MantisBT(authentication, MainActivity.GLOBALS.getSettings(context).isShowBugsOfSubProjects());
+                        Settings settings = MainActivity.GLOBALS.getSettings(context);
+                        bugService = new MantisBT(
+                            authentication,
+                            settings.isShowMantisBugsOfSubProjects(),
+                            settings.isShowMantisFilter()
+                        );
                         break;
                     case Bugzilla:
                         bugService = new Bugzilla(authentication);

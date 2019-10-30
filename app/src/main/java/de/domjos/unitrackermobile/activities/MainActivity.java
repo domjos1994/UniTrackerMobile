@@ -659,6 +659,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
 
         if(resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_SETTINGS) {
+            this.bugService = Helper.getCurrentBugService(MainActivity.this);
+            this.reload();
             this.changePagination();
         }
 

@@ -188,8 +188,12 @@ public class Settings {
         return this.userPreferences.getBoolean("swtSyncAutomatically", false);
     }
 
-    public boolean isShowBugsOfSubProjects() {
-        return this.userPreferences.getBoolean("swtBugTrackerSub", false);
+    public boolean isShowMantisBugsOfSubProjects() {
+        return this.userPreferences.getBoolean("swtBugTrackerMantisSub", false);
+    }
+
+    public boolean isShowMantisFilter() {
+        return this.userPreferences.getBoolean("swtBugTrackerMantisFilter", false);
     }
 
     public boolean isShowTutorial() {

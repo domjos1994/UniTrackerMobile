@@ -19,8 +19,12 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/settings_bug_tracker_mantis">
         <SwitchPreference
-            android:key="swtBugTrackerSub"
+            android:key="swtBugTrackerMantisSub"
             android:title="@string/settings_bug_tracker_mantis_sub"
             android:summary="@string/settings_bug_tracker_mantis_sub_summary" />
+        <SwitchPreference
+            android:key="swtBugTrackerMantisFilter"
+            android:title="@string/settings_bug_tracker_mantis_filter"
+            android:summary="@string/settings_bug_tracker_mantis_filter_summary" />
     </PreferenceCategory>
 </PreferenceScreen>

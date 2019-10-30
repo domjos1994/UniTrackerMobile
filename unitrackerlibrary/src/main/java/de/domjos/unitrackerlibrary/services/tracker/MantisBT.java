@@ -55,16 +55,24 @@ import static org.ksoap2.serialization.MarshalHashtable.NAMESPACE;
 public final class MantisBT extends SoapEngine implements IBugService<Long> {
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String currentMessage;
+    private final String LIST_ISSUE_ACTION;
     private Authentication authentication;
     private int state;
-    private boolean showSub;
+    private boolean showSub, showFilter;
 
-    public MantisBT(Authentication authentication, boolean showSub) {
+    public MantisBT(Authentication authentication, boolean showSub, boolean showFilter) {
         super(authentication, "/api/soap/mantisconnect.php");
         this.authentication = authentication;
         this.currentMessage = "";
         this.state = 0;
         this.showSub = showSub;
+        this.showFilter = showFilter;
+
+        if(this.showFilter) {
+            this.LIST_ISSUE_ACTION = "mc_project_get_issue_headers";
+        } else {
+            this.LIST_ISSUE_ACTION = "mc_filter_search_issue_headers";
+        }
     }
 
     @Override
@@ -222,15 +230,19 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public long getMaximumNumberOfIssues(Long project_id, IssueFilter filter) throws Exception {
-        SoapObject request = new SoapObject(super.soapPath, "mc_filter_search_issue_headers");
+        SoapObject request = new SoapObject(super.soapPath, this.LIST_ISSUE_ACTION);
+        if(this.showFilter) {
+            request.addProperty("project_id", project_id);
+        } else {
+            SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
+            Vector<Integer> projects = new Vector<>();
+            projects.add(Integer.parseInt(String.valueOf(project_id)));
+            filterObject.addProperty("project_id", projects);
+            request.addProperty("filter", filterObject);
+        }
         request.addProperty("page_number", 1);
         request.addProperty("per_page", -1);
-        SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
-        Vector<Integer> projects = new Vector<>();
-        projects.add(Integer.parseInt(String.valueOf(project_id)));
-        filterObject.addProperty("project_id", projects);
-        request.addProperty("filter", filterObject);
-        Object object = this.executeAction(request, "mc_filter_search_issue_headers", true);
+        Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
@@ -258,19 +270,22 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     @Override
     public List<Issue<Long>> getIssues(Long pid, int page, int numberOfItems, IssueFilter filter) throws Exception {
         List<Issue<Long>> issues = new LinkedList<>();
-
-        SoapObject request = new SoapObject(super.soapPath, "mc_filter_search_issue_headers");
+        SoapObject request = new SoapObject(super.soapPath, this.LIST_ISSUE_ACTION);
+        if(this.showFilter) {
+            request.addProperty("project_id", pid);
+        } else {
+            SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
+            Vector<Integer> projects = new Vector<>();
+            projects.add(Integer.parseInt(String.valueOf(pid)));
+            filterObject.addProperty("project_id", projects);
+            request.addProperty("filter", filterObject);
+        }
         request.addProperty("page_number", page);
         request.addProperty("per_page", numberOfItems);
-        SoapObject filterObject = new SoapObject(NAMESPACE, "FilterSearchData");
-        Vector<Integer> projects = new Vector<>();
-        projects.add(Integer.parseInt(String.valueOf(pid)));
-        filterObject.addProperty("project_id", projects);
-        request.addProperty("filter", filterObject);
 
         List<String> enumView = this.getEnums("view_states");
         List<String> enumStatus = this.getEnums("status");
-        Object object = this.executeAction(request, "mc_filter_search_issue_headers", true);
+        Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) object;
@@ -882,14 +897,17 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_tag_get_all", true);
         object = this.getResult(object);
         SoapObject soapObject = (SoapObject) object;
-        Vector vector = (Vector) soapObject.getProperty("results");
-        for (int i = 0; i <= vector.size() - 1; i++) {
-            SoapObject tagObject = (SoapObject) vector.get(i);
-            Tag<Long> tag = new Tag<>();
-            tag.setId(Long.parseLong(tagObject.getPropertyAsString("id")));
-            tag.setTitle(tagObject.getPropertyAsString("name"));
-            tag.setDescription(tagObject.getPropertyAsString("description"));
-            tags.add(tag);
+        if(soapObject!=null) {
+            Vector vector = (Vector) soapObject.getProperty("results");
+            for (int i = 0; i <= vector.size() - 1; i++) {
+                SoapObject tagObject = (SoapObject) vector.get(i);
+                Tag<Long> tag = new Tag<>();
+                tag.setId(Long.parseLong(tagObject.getPropertyAsString("id")));
+                tag.setTitle(tagObject.getPropertyAsString("name"));
+                tag.setDescription(tagObject.getPropertyAsString("description"));
+                tags.add(tag);
+            }
+
         }
 
         return tags;
@@ -1098,20 +1116,22 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object result = this.getResult(object);
         if (object instanceof Vector) {
             Vector vector = (Vector) result;
-            for (int i = 0; i <= vector.size() - 1; i++) {
-                SoapObject soapObject = (SoapObject) vector.get(i);
-                Version<Long> version = new Version<>();
-                version.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
-                if (soapObject.hasProperty("name")) {
-                    version.setTitle(soapObject.getPropertyAsString("name"));
+            if(vector != null) {
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    SoapObject soapObject = (SoapObject) vector.get(i);
+                    Version<Long> version = new Version<>();
+                    version.setId(Long.parseLong(soapObject.getPropertyAsString("id")));
+                    if (soapObject.hasProperty("name")) {
+                        version.setTitle(soapObject.getPropertyAsString("name"));
+                    }
+                    if (soapObject.hasProperty("description")) {
+                        version.setDescription(soapObject.getPropertyAsString("description"));
+                    }
+                    version.setDeprecatedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("obsolete")));
+                    version.setReleasedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("released")));
+                    version.setReleasedVersionAt(Converter.convertStringToDate(soapObject.getPropertyAsString("date_order"), MantisBT.DATE_TIME_FORMAT).getTime());
+                    versions.add(version);
                 }
-                if (soapObject.hasProperty("description")) {
-                    version.setDescription(soapObject.getPropertyAsString("description"));
-                }
-                version.setDeprecatedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("obsolete")));
-                version.setReleasedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("released")));
-                version.setReleasedVersionAt(Converter.convertStringToDate(soapObject.getPropertyAsString("date_order"), MantisBT.DATE_TIME_FORMAT).getTime());
-                versions.add(version);
             }
         }
         return versions;
