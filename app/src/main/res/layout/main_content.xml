@@ -115,7 +115,6 @@
             android:layout_margin="10dp"
             android:layout_gravity="end"
             android:layout_alignEnd="@+id/footer"
-            android:layout_alignRight="@+id/footer"
             android:layout_above="@+id/footer" />
 
         <LinearLayout

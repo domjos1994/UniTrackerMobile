@@ -127,6 +127,9 @@
     <string name="issues_context_attachment_overwrite_yes">Yes</string>
     <string name="issues_context_attachment_overwrite_no">No</string>
     <string name="issues_context_attachment_saved">Attachment successfully saved!</string>
+    <string name="issues_relations">Relations</string>
+    <string name="issues_relations_issue">Relation to</string>
+    <string name="issues_relations_relation">Relation</string>
 
     <string name="issues_descriptions">Descriptions</string>
     <string name="issues_descriptions_website">Website</string>

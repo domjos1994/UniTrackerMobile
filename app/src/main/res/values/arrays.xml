@@ -661,4 +661,26 @@
         <item>6</item>
         <item>WORKSFORME</item>
     </array>
+
+
+    <array name="issues_general_relations_mantisbt_values_0">
+        <item>0</item>
+        <item>Duplicate of</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_1">
+        <item>1</item>
+        <item>Related to</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_2">
+        <item>2</item>
+        <item>Depending on</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_3">
+        <item>3</item>
+        <item>Blocking</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_4">
+        <item>4</item>
+        <item>Has duplicate</item>
+    </array>
 </resources>

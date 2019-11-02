@@ -21,7 +21,7 @@ package de.domjos.unitrackerlibrary.permissions;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
-public class GithubPermissions implements IFunctionImplemented {
+public final class GithubPermissions implements IFunctionImplemented {
     private Authentication authentication;
 
     public GithubPermissions(Authentication authentication) {
@@ -125,6 +125,26 @@ public class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteAttachments() {
+        return false;
+    }
+
+    @Override
+    public boolean listRelations() {
+        return false;
+    }
+
+    @Override
+    public boolean addRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean updateRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteRelation() {
         return false;
     }
 

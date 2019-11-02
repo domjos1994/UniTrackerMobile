@@ -20,28 +20,16 @@ package de.domjos.unitrackerlibrary.services.tracker;
 
 import androidx.annotation.NonNull;
 
+import de.domjos.unitrackerlibrary.model.issues.*;
 import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.issues.Attachment;
-import de.domjos.unitrackerlibrary.model.issues.CustomField;
-import de.domjos.unitrackerlibrary.model.issues.History;
-import de.domjos.unitrackerlibrary.model.issues.Issue;
-import de.domjos.unitrackerlibrary.model.issues.Note;
-import de.domjos.unitrackerlibrary.model.issues.Profile;
-import de.domjos.unitrackerlibrary.model.issues.Tag;
-import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
@@ -364,6 +352,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public Issue<Long> getIssue(Long id, Long project_id) throws Exception {
+        return this.getIssue(id, true);
+    }
+
+    public Issue<Long> getIssue(Long id, boolean showRelations) throws Exception {
         Issue<Long> issue = new Issue<>();
 
         if (id != null) {
@@ -550,6 +542,23 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                             issue.setTags(issue.getTags() + ((SoapObject) vector.get(i)).getPropertyAsString("name") + ", ");
                         }
                     }
+
+                    if(showRelations) {
+                        if(soapObject.hasProperty("relationships")) {
+                            Vector vector = (Vector) soapObject.getProperty("relationships");
+                            for(int i = 0; i<= vector.size() - 1; i++) {
+                                SoapObject obj = (SoapObject) vector.get(i);
+                                SoapObject typeObject = (SoapObject)obj.getProperty("type");
+                                Issue<Long> targetIssue = this.getIssue(Long.parseLong(obj.getPropertyAsString("target_id")), false);
+                                int type = Integer.parseInt(typeObject.getPropertyAsString("id"));
+                                Relationship<Long> relationship = new Relationship<>();
+                                relationship.setId(Long.parseLong(obj.getPropertyAsString("id")));
+                                relationship.setIssue(targetIssue);
+                                relationship.setType(new AbstractMap.SimpleEntry<>(typeObject.getPropertyAsString("name"), type));
+                                issue.getRelations().add(relationship);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -688,13 +697,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             id = Long.parseLong(String.valueOf(object));
         }
 
-        List<Note<Long>> oldNotes = new LinkedList<>();
-        List<Attachment<Long>> oldAttachments = new LinkedList<>();
         Issue<Long> oldIssue = this.getIssue(id, project_id);
-        if (oldIssue != null) {
-            oldNotes = oldIssue.getNotes();
-            oldAttachments = oldIssue.getAttachments();
-        }
+        List<Note<Long>> oldNotes = oldIssue.getNotes();
+        List<Attachment<Long>> oldAttachments = oldIssue.getAttachments();
 
         for (Note<Long> oldNote : oldNotes) {
             boolean available = false;
@@ -728,6 +733,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
                     this.insertOrUpdateAttachment(attachment, id, project_id);
                 }
+            }
+        }
+
+        if(!issue.getRelations().isEmpty()) {
+            for(Relationship<Long> relationship : issue.getRelations()) {
+                this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
         }
     }
@@ -802,6 +813,39 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
         deleteRequest.addProperty("issue_attachment_id", id);
         Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
+        this.getResult(deleteObject);
+    }
+
+    @Override
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+        SoapObject relationshipObject = new SoapObject(super.soapPath, "mc_issue_relationship_add");
+        relationshipObject.addProperty("issue_id", issue_id);
+
+        SoapObject soapObject = new SoapObject(NAMESPACE, "RelationshipData");
+        soapObject.addProperty("id", relationship.getId());
+        soapObject.addProperty("target_id", relationship.getIssue().getId());
+
+        SoapObject objectRef = new SoapObject(NAMESPACE, "ObjectRef");
+        objectRef.addProperty("id", relationship.getType().getValue());
+        objectRef.addProperty("name", relationship.getType().getKey());
+        soapObject.addProperty("type", objectRef);
+
+        relationshipObject.addProperty("relationship", soapObject);
+        Object noteResult = this.executeAction(relationshipObject, "mc_issue_relationship_add", true);
+        this.getResult(noteResult);
+    }
+
+    @Override
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+        SoapObject relationshipObject = new SoapObject(super.soapPath, "mc_issue_relationship_delete");
+        relationshipObject.addProperty("issue_id", issue_id);
+        relationshipObject.addProperty("relationship_id", relationship.getId());
+        Object deleteObject = this.executeAction(relationshipObject, "mc_issue_relationship_delete", true);
         this.getResult(deleteObject);
     }
 

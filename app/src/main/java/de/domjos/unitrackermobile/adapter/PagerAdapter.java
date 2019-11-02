@@ -20,6 +20,7 @@ package de.domjos.unitrackermobile.adapter;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.DynamicDrawableSpan;
@@ -34,14 +35,9 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.fragments.AbstractFragment;
-import de.domjos.unitrackermobile.fragments.IssueAttachmentsFragment;
-import de.domjos.unitrackermobile.fragments.IssueCustomFragment;
-import de.domjos.unitrackermobile.fragments.IssueDescriptionsFragment;
-import de.domjos.unitrackermobile.fragments.IssueGeneralFragment;
-import de.domjos.unitrackermobile.fragments.IssueHistoryFragment;
-import de.domjos.unitrackermobile.fragments.IssueNotesFragment;
+import de.domjos.unitrackermobile.fragments.*;
 import de.domjos.unitrackermobile.helper.Helper;
 
 /**
@@ -50,7 +46,7 @@ import de.domjos.unitrackermobile.helper.Helper;
  */
 public class PagerAdapter extends FragmentPagerAdapter {
     private final Context context;
-    private AbstractFragment general, notes, descriptions, attachments, custom, history;
+    private AbstractFragment general, notes, descriptions, attachments, custom, history, relation;
     private IBugService bugService;
     private int count;
 
@@ -64,8 +60,11 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.attachments = new IssueAttachmentsFragment();
         this.custom = new IssueCustomFragment();
         this.history = new IssueHistoryFragment();
+        this.relation = new IssueRelationsFragment();
         this.bugService = Helper.getCurrentBugService(context);
-        this.count = 6;
+
+
+        this.count = 7;
         if (!this.bugService.getPermissions().listNotes()) {
             this.count--;
         }
@@ -76,6 +75,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
             this.count--;
         }
         if (!this.bugService.getPermissions().listHistory()) {
+            this.count--;
+        }
+        if(!this.bugService.getPermissions().listRelations()) {
             this.count--;
         }
     }
@@ -102,6 +104,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
             }
             i++;
         }
+        if(this.bugService.getPermissions().listRelations()) {
+            if (position == i) {
+                return this.relation;
+            }
+            i++;
+        }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
                 return this.custom;
@@ -125,6 +133,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions.manageControls(editMode);
         this.notes.manageControls(editMode);
         this.attachments.manageControls(editMode);
+        this.relation.manageControls(editMode);
         this.custom.manageControls(editMode);
         this.history.manageControls(editMode);
     }
@@ -134,6 +143,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.descriptions.setObject(object);
         this.notes.setObject(object);
         this.attachments.setObject(object);
+        this.relation.setObject(object);
         this.custom.setObject(object);
         this.history.setObject(object);
     }
@@ -143,14 +153,15 @@ public class PagerAdapter extends FragmentPagerAdapter {
         object = this.descriptions.getObject(object);
         object = this.notes.getObject(object);
         object = this.attachments.getObject(object);
+        object = this.relation.getObject(object);
         object = this.custom.getObject(object);
         return this.history.getObject(object);
     }
 
     public boolean validate() {
         return this.general.initValidator().getState() && this.descriptions.initValidator().getState()
-                && this.attachments.initValidator().getState() && this.notes.initValidator().getState()
-                && this.history.initValidator().getState();
+                && this.attachments.initValidator().getState() && this.relation.initValidator().getState()
+                && this.notes.initValidator().getState() && this.history.initValidator().getState();
     }
 
     public CharSequence getTitle(int position) {
@@ -178,6 +189,12 @@ public class PagerAdapter extends FragmentPagerAdapter {
             }
             i++;
         }
+        if (this.bugService.getPermissions().listRelations()) {
+            if (position == i) {
+                title += this.context.getString(R.string.issues_relations);
+            }
+            i++;
+        }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
                 title += this.context.getString(R.string.issues_custom);
@@ -200,35 +217,41 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                drawable = context.getResources().getDrawable(R.drawable.ic_bug_report_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
                 break;
             case 1:
-                drawable = context.getResources().getDrawable(R.drawable.ic_description_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_description_black_24dp);
                 break;
         }
 
         int i = 2;
         if (this.bugService.getPermissions().listNotes()) {
             if (position == i) {
-                drawable = context.getResources().getDrawable(R.drawable.ic_note_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_note_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listAttachments()) {
             if (position == i) {
-                drawable = context.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_file_upload_black_24dp);
+            }
+            i++;
+        }
+        if (this.bugService.getPermissions().listRelations()) {
+            if (position == i) {
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
-                drawable = context.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_account_circle_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listHistory()) {
             if (position == i) {
-                drawable = context.getResources().getDrawable(R.drawable.ic_history_black_24dp);
+                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_history_black_24dp);
             }
         }
 

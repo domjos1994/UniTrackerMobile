@@ -20,7 +20,7 @@ package de.domjos.unitrackerlibrary.permissions;
 
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 
-public class JiraPermissions implements IFunctionImplemented {
+public final class JiraPermissions implements IFunctionImplemented {
     @Override
     public boolean listProjects() {
         return true;
@@ -119,6 +119,26 @@ public class JiraPermissions implements IFunctionImplemented {
     @Override
     public boolean deleteAttachments() {
         return true;
+    }
+
+    @Override
+    public boolean listRelations() {
+        return false;
+    }
+
+    @Override
+    public boolean addRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean updateRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteRelation() {
+        return false;
     }
 
     @Override

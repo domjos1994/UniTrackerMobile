@@ -24,9 +24,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import androidx.core.content.res.ResourcesCompat;
-
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.utils.Converter;
 
 public class ListObject {
     private byte[] icon;
@@ -40,7 +39,7 @@ public class ListObject {
 
         this.context = context;
         this.icon = null;
-        this.drawable = ResourcesCompat.getDrawable(this.context.getResources(), resID, null);
+        this.drawable = Converter.convertResourcesToDrawable(context, resID);
         this.descriptionObject = descriptionObject;
     }
 

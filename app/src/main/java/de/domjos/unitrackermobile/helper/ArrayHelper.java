@@ -58,6 +58,17 @@ public class ArrayHelper {
         return 0;
     }
 
+    @SuppressLint("ResourceType")
+    public static String getStringOfEnum(Context context, int id, String key) {
+        List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
+        for (int i = 0; i <= typedArrays.size() - 1; i++) {
+            if(id==typedArrays.get(i).getInt(0, 0)) {
+                return typedArrays.get(i).getString(1);
+            }
+        }
+        return "";
+    }
+
     public static void setValueOfEnum(Context context, int id, String key, Spinner spinner) {
         List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
         for (int i = 0; i <= typedArrays.size() - 1; i++) {

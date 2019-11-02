@@ -660,4 +660,26 @@
         <item>6</item>
         <item>WORKSFORME</item>
     </array>
+
+
+    <array name="issues_general_relations_mantisbt_values_0">
+        <item>0</item>
+        <item>Duplikat von</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_1">
+        <item>1</item>
+        <item>Verwandt mit</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_2">
+        <item>2</item>
+        <item>Abhängig von</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_3">
+        <item>3</item>
+        <item>Blockiert</item>
+    </array>
+    <array name="issues_general_relations_mantisbt_values_4">
+        <item>4</item>
+        <item>Hat Duplikat</item>
+    </array>
 </resources>

@@ -124,6 +124,9 @@
     <string name="issues_context_attachment_overwrite_yes">Ja</string>
     <string name="issues_context_attachment_overwrite_no">Nein</string>
     <string name="issues_context_attachment_saved">Anhang erfolgreich gespeichert!</string>
+    <string name="issues_relations">Beziehungen</string>
+    <string name="issues_relations_issue">Beziehung zu</string>
+    <string name="issues_relations_relation">Beziehung</string>
 
     <string name="issues_descriptions">Beschreibungen</string>
     <string name="issues_descriptions_website">Website</string>

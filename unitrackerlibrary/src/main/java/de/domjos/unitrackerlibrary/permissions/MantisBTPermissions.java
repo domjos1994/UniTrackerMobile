@@ -21,7 +21,7 @@ package de.domjos.unitrackerlibrary.permissions;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
-public class MantisBTPermissions implements IFunctionImplemented {
+public final class MantisBTPermissions implements IFunctionImplemented {
     private Authentication authentication;
 
     public MantisBTPermissions(Authentication authentication) {
@@ -125,6 +125,26 @@ public class MantisBTPermissions implements IFunctionImplemented {
 
     @Override
     public boolean deleteAttachments() {
+        return !this.authentication.isGuest();
+    }
+
+    @Override
+    public boolean listRelations() {
+        return true;
+    }
+
+    @Override
+    public boolean addRelation() {
+        return !this.authentication.isGuest();
+    }
+
+    @Override
+    public boolean updateRelation() {
+        return !this.authentication.isGuest();
+    }
+
+    @Override
+    public boolean deleteRelation() {
         return !this.authentication.isGuest();
     }
 

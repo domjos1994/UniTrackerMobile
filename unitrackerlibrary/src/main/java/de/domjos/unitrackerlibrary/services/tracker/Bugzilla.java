@@ -22,6 +22,7 @@ import android.util.Base64;
 
 import androidx.annotation.NonNull;
 
+import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -35,14 +36,6 @@ import java.util.Map;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.issues.Attachment;
-import de.domjos.unitrackerlibrary.model.issues.CustomField;
-import de.domjos.unitrackerlibrary.model.issues.History;
-import de.domjos.unitrackerlibrary.model.issues.Issue;
-import de.domjos.unitrackerlibrary.model.issues.Note;
-import de.domjos.unitrackerlibrary.model.issues.Profile;
-import de.domjos.unitrackerlibrary.model.issues.Tag;
-import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
@@ -549,6 +542,21 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     @Override
     public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
         this.deleteRequest("/rest/bug/attachment/" + id + "?" + this.loginParams);
+    }
+
+    @Override
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
+        return null;
+    }
+
+    @Override
+    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+
+    }
+
+    @Override
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+
     }
 
     @Override

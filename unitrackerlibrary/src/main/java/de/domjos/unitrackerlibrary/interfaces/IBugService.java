@@ -21,15 +21,9 @@ package de.domjos.unitrackerlibrary.interfaces;
 import androidx.annotation.NonNull;
 
 import java.util.List;
+import java.util.Map;
 
-import de.domjos.unitrackerlibrary.model.issues.Attachment;
-import de.domjos.unitrackerlibrary.model.issues.CustomField;
-import de.domjos.unitrackerlibrary.model.issues.History;
-import de.domjos.unitrackerlibrary.model.issues.Issue;
-import de.domjos.unitrackerlibrary.model.issues.Note;
-import de.domjos.unitrackerlibrary.model.issues.Profile;
-import de.domjos.unitrackerlibrary.model.issues.Tag;
-import de.domjos.unitrackerlibrary.model.issues.User;
+import de.domjos.unitrackerlibrary.model.issues.*;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
@@ -223,6 +217,30 @@ public interface IBugService<T> {
      */
     void deleteAttachment(T id, T issue_id, T project_id) throws Exception;
 
+
+    /**
+     * Returns a list of Bug-Relations
+     * @param issue_id the ID of the issue
+     * @param project_id the ID of the project
+     * @return List of Bug-Relations
+     */
+    List<Relationship<T>> getBugRelations(T issue_id, T project_id) throws Exception;
+
+    /**
+     * Inserts of Updates Bug-Relations
+     * @param relationship the Relationship
+     * @param issue_id the ID of the Issue
+     * @param project_id the ID of the Project
+     */
+    void insertOrUpdateBugRelations(Relationship<T> relationship, T issue_id, T project_id) throws Exception;
+
+    /**
+     * Delete a Bug-Relation
+     * @param relationship the Relationship
+     * @param issue_id the ID of the Issue
+     * @param project_id the ID of the Project
+     */
+    void deleteBugRelation(Relationship<T> relationship, T issue_id, T project_id) throws Exception;
 
     /**
      * Returns a List of Users

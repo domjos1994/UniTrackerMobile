@@ -122,6 +122,26 @@ public final class BacklogPermissions implements IFunctionImplemented {
     }
 
     @Override
+    public boolean listRelations() {
+        return false;
+    }
+
+    @Override
+    public boolean addRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean updateRelation() {
+        return false;
+    }
+
+    @Override
+    public boolean deleteRelation() {
+        return false;
+    }
+
+    @Override
     public boolean listUsers() {
         return true;
     }

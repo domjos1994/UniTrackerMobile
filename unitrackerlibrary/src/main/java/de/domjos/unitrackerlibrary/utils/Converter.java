@@ -18,9 +18,11 @@
 
 package de.domjos.unitrackerlibrary.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -115,5 +117,14 @@ public class Converter {
         FileOutputStream fos = new FileOutputStream(file);
         fos.write(content);
         fos.close();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static Drawable convertResourcesToDrawable(Context context, int resource_id) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return context.getDrawable(resource_id);
+        } else {
+            return context.getResources().getDrawable(resource_id);
+        }
     }
 }

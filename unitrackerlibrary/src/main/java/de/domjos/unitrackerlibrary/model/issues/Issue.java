@@ -44,6 +44,7 @@ public class Issue<T> extends DescriptionObject<T> {
     private String tags;
     private String stepsToReproduce;
     private String additionalInformation;
+    private List<Relationship<T>> relations;
 
     public Issue() {
         super();
@@ -54,6 +55,7 @@ public class Issue<T> extends DescriptionObject<T> {
         this.status = new AbstractMap.SimpleEntry<>(0, "");
         this.reproducibility = new AbstractMap.SimpleEntry<>(0, "");
         this.resolution = new AbstractMap.SimpleEntry<>(0, "");
+        this.relations = new LinkedList<>();
         this.version = "";
         this.fixedInVersion = "";
         this.targetVersion = "";
@@ -224,5 +226,13 @@ public class Issue<T> extends DescriptionObject<T> {
 
     public void setProfile(Profile<T> profile) {
         this.profile = profile;
+    }
+
+    public List<Relationship<T>> getRelations() {
+        return relations;
+    }
+
+    public void setRelations(List<Relationship<T>>relations) {
+        this.relations = relations;
     }
 }

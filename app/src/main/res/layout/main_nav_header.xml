@@ -65,6 +65,7 @@
             android:id="@+id/spMainAccounts"
             android:layout_width="0dp"
             android:layout_weight="7"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:popupBackground="@android:color/white"/>
     </LinearLayout>
 </LinearLayout>
