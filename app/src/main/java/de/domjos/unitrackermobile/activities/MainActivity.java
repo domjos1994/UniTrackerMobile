@@ -47,6 +47,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
+import de.domjos.unitrackerlibrary.model.issues.Attachment;
+import de.domjos.unitrackerlibrary.model.issues.Note;
+import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.List;
@@ -432,6 +435,21 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (!statusArray.isEmpty()) {
                         Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload);
                     }
+                    break;
+                case R.id.ctxClone:
+                    issue.setId(null);
+                    issue.setTitle(issue.getTitle() + " - Copy");
+                    for(int i = 0; i<=issue.getAttachments().size() - 1; i++) {
+                        ((Attachment) issue.getAttachments().get(i)).setId(null);
+                    }
+                    for(int i = 0; i<=issue.getNotes().size() - 1; i++) {
+                        ((Note) issue.getNotes().get(i)).setId(null);
+                    }
+                    for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
+                        ((Relationship) issue.getRelations().get(i)).setId(null);
+                    }
+                    new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp).execute(issue).get();
+                    reload();
                     break;
                 case R.id.ctxShowAttachment:
                     if (issue != null) {

@@ -121,6 +121,7 @@
     <string name="issues_general_platform">Platform</string>
     <string name="issues_general_os">OS</string>
     <string name="issues_general_build">Version</string>
+    <string name="issues_context_clone">Clone Bug</string>
     <string name="issues_context_solve">Solve Bug</string>
     <string name="issues_context_attachment">Show Attachments</string>
     <string name="issues_context_attachment_overwrite">Should the file be overwritten?</string>

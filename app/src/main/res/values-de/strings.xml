@@ -118,6 +118,7 @@
     <string name="issues_general_platform">Plattform</string>
     <string name="issues_general_os">OS</string>
     <string name="issues_general_build">Version</string>
+    <string name="issues_context_clone">Bug klonen</string>
     <string name="issues_context_solve">Bug lösen</string>
     <string name="issues_context_attachment">Anhänge anzeigen</string>
     <string name="issues_context_attachment_overwrite">Soll die Datei überschrieben werden?</string>
