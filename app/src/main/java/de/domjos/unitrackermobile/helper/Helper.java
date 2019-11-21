@@ -440,6 +440,26 @@ public class Helper {
         }
     }
 
+    public static FilePickerDialog initFilePickerDialog(Activity activity, boolean selectDir, String[] extensions, String title) {
+        DialogProperties dialogProperties = new DialogProperties();
+        dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
+        dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        if(selectDir) {
+            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
+            dialogProperties.extensions = extensions;
+        } else {
+            dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
+            dialogProperties.extensions = extensions;
+        }
+
+        FilePickerDialog dialog = new FilePickerDialog(activity, dialogProperties);
+        dialog.setCancelable(true);
+        dialog.setTitle(title);
+        return dialog;
+    }
+
     private static String getStringResourceByName(Activity activity, String aString) {
         try {
             String packageName = activity.getPackageName();

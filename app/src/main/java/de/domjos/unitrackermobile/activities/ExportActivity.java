@@ -32,9 +32,6 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-
-import com.github.angads25.filepicker.model.DialogConfigs;
-import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
@@ -71,7 +68,6 @@ public final class ExportActivity extends AbstractActivity {
     private ArrayAdapter<IBugService> bugTrackerAdapter;
     private ArrayAdapter<Project> projectAdapter;
     private Settings settings;
-    private FilePickerDialog dialog;
     private TableLayout tblControls;
 
     public ExportActivity() {
@@ -124,8 +120,8 @@ public final class ExportActivity extends AbstractActivity {
         });
 
         this.cmdExportPath.setOnClickListener(v ->{
-            this.initDialog(true);
-            this.dialog.setDialogSelectionListener(files -> {
+            FilePickerDialog dialog = Helper.initFilePickerDialog(ExportActivity.this, true, null, this.getString(R.string.export_path_choose));
+            dialog.setDialogSelectionListener(files -> {
                 if(files!=null) {
                     if(files.length >= 1) {
                         String name = files[0] + File.separatorChar + this.createFileName();
@@ -133,7 +129,7 @@ public final class ExportActivity extends AbstractActivity {
                     }
                 }
             });
-            this.dialog.show();
+            dialog.show();
         });
 
         this.chkCopyExampleData.setOnCheckedChangeListener((compoundButton, b) -> {
@@ -147,16 +143,16 @@ public final class ExportActivity extends AbstractActivity {
         });
 
         this.cmdXSLTPath.setOnClickListener(v->{
-            this.initDialog(false);
-            this.dialog.setDialogSelectionListener(files -> {
+            FilePickerDialog dialog = Helper.initFilePickerDialog(ExportActivity.this, false, new String[]{"xslt"}, this.getString(R.string.export_path_choose));
+            dialog.setDialogSelectionListener(files -> {
                 if(files!=null) {
                     if(files.length >= 1) {
                         this.txtXSLTPath.setText(files[0]);
                     }
                 }
             });
-            this.dialog.setOnCancelListener(dialogInterface -> this.txtXSLTPath.setText(""));
-            this.dialog.show();
+            dialog.setOnCancelListener(dialogInterface -> this.txtXSLTPath.setText(""));
+            dialog.show();
         });
 
         this.cmdExport.setOnClickListener(v -> {
@@ -297,25 +293,5 @@ public final class ExportActivity extends AbstractActivity {
 
     private String createFileName() {
         return "export_" + new Date().getTime();
-    }
-
-    private void initDialog(boolean dir) {
-        DialogProperties dialogProperties = new DialogProperties();
-        dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
-        dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
-        dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
-        dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        if(dir) {
-            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
-            dialogProperties.extensions = null;
-        } else {
-            dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
-            dialogProperties.extensions = new String[]{"xslt"};
-        }
-
-
-        this.dialog = new FilePickerDialog(ExportActivity.this, dialogProperties);
-        this.dialog.setCancelable(true);
-        this.dialog.setTitle(this.getString(R.string.export_path_choose));
     }
 }

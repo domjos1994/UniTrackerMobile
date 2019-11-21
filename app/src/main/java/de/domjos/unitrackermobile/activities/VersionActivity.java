@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackermobile.activities;
 
-import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,9 +30,9 @@ import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
 
+import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.File;
 import java.util.Date;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -332,39 +331,39 @@ public final class VersionActivity extends AbstractActivity {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        try {
-            if(item.getItemId()==R.id.menChangelog) {
-                if(this.currentVersion != null) {
-                    String downloadDir = "";
-                    File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-                    if(file!=null) {
-                        downloadDir = file.getAbsolutePath();
-                    }
-                    Object vid = this.currentVersion.getId();
-                    Object pid = this.currentProject;
+        if(item.getItemId()==R.id.menChangelog) {
+            FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
+            dialog.setDialogSelectionListener(files -> {
+                try {
+                    if(files != null) {
+                        if (this.currentVersion != null) {
+                            Object vid = this.currentVersion.getId();
+                            Object pid = this.currentProject;
 
-                    byte[] bg, icon;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                        bg = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.background));
-                        icon = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.ic_launcher_web));
-                    } else {
-                        bg = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
-                        icon = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.ic_launcher_web));
-                    }
+                            byte[] bg, icon;
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                                bg = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.background));
+                                icon = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.ic_launcher_web));
+                            } else {
+                                bg = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
+                                icon = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                            }
 
-                    ExportTask exportTask = new ExportTask(
-                            VersionActivity.this, bugService, null, pid, downloadDir,
-                            false, R.drawable.ic_bug_report_black_24dp, bg, icon, "", vid);
-                    exportTask.execute(0).get();
-                    MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_created), VersionActivity.this);
-                } else {
-                    MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), VersionActivity.this);
+                            ExportTask exportTask = new ExportTask(
+                                    VersionActivity.this, bugService, null, pid, files[0],
+                                    false, R.drawable.ic_bug_report_black_24dp, bg, icon, "", vid);
+                            exportTask.execute(0).get();
+                            MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_created), VersionActivity.this);
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), VersionActivity.this);
+                        }
+                    }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, VersionActivity.this);
                 }
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, VersionActivity.this);
+            });
+            dialog.show();
         }
         return super.onOptionsItemSelected(item);
     }

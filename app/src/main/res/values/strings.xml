@@ -83,8 +83,9 @@
         <item>@string/versions_released</item>
     </string-array>
     <string name="versions_menu_changelog">Create Changelog as PDF</string>
+    <string name="versions_menu_changelog_dir">Select directory to save Changelog!</string>
     <string name="versions_menu_changelog_no_selected">No Version selected!</string>
-    <string name="versions_menu_changelog_created">Changelog was created successfully in Download-Folder!</string>
+    <string name="versions_menu_changelog_created">Changelog was created successfully!</string>
 
     <string name="users">User</string>
     <string name="users_login">Login-Name</string>
