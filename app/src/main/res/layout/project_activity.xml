@@ -107,9 +107,17 @@
                         android:id="@+id/txtProjectWebsite"
                         android:inputType="textUri"
                         android:hint="@string/projects_website"
-                        android:layout_weight="10"
+                        android:layout_weight="9"
                         android:layout_width="0dp"
                         tools:ignore="Autofill" />
+
+                    <ImageButton
+                        android:id="@+id/cmdProjectWebsite"
+                        app:srcCompat="@drawable/ic_open_in_browser_black_24dp"
+                        android:contentDescription="@string/projects_website"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"/>
                 </TableRow>
 
                 <TableRow android:id="@+id/rowSubProjects">

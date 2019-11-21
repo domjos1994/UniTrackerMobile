@@ -55,6 +55,11 @@ public class IntentHelper {
         return null;
     }
 
+    public static void openBrowserIntent(Activity activity, String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        activity.startActivity(intent);
+    }
+
     public static void saveAndOpenFile(byte[] array, Activity activity) throws Exception {
         Uri uri = FileProvider.getUriForFile(activity, "de.domjos.unitrackermobile.provider.FileProvider", IntentHelper.saveFile(array, activity));
         String mimeType = activity.getContentResolver().getType(uri);

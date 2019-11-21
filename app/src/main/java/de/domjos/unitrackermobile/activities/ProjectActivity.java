@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.TableRow;
@@ -47,6 +48,7 @@ import de.domjos.unitrackermobile.custom.CommaTokenizer;
 import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
+import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
 
@@ -57,6 +59,7 @@ public final class ProjectActivity extends AbstractActivity {
 
     private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription, txtProjectWebsite;
     private EditText txtProjectIconUrl, txtProjectVersion;
+    private ImageButton cmdProjectWebsite;
     private TextView lblCreatedAt, lblUpdatedAt;
     private CheckBox chkProjectEnabled, chkProjectPrivate;
     private MultiAutoCompleteTextView txtProjectsSubProject;
@@ -116,6 +119,16 @@ public final class ProjectActivity extends AbstractActivity {
                         MessageHelper.printException(ex, getApplicationContext());
                     }
                 }
+            }
+        });
+
+        this.cmdProjectWebsite.setOnClickListener(view -> {
+            String url = this.txtProjectWebsite.getText().toString().trim();
+            if(!url.isEmpty()) {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "http://" + url;
+                }
+                IntentHelper.openBrowserIntent(ProjectActivity.this, url);
             }
         });
 
@@ -197,6 +210,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
         this.txtProjectDescription = this.findViewById(R.id.txtProjectDescription);
         this.txtProjectWebsite = this.findViewById(R.id.txtProjectWebsite);
+        this.cmdProjectWebsite = this.findViewById(R.id.cmdProjectWebsite);
         this.txtProjectIconUrl = this.findViewById(R.id.txtProjectIcon);
         this.txtProjectVersion = this.findViewById(R.id.txtProjectVersion);
         this.lblCreatedAt = this.findViewById(R.id.lblCreatedAt);
