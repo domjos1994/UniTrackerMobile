@@ -38,7 +38,8 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     private Authentication authentication;
 
     public PivotalTracker(Authentication authentication) {
-        super(authentication, "X-TrackerToken: " + authentication.getAPIKey().trim());
+        super(authentication);
+        super.addHeader("X-TrackerToken: " + authentication.getAPIKey().trim());
         this.authentication = authentication;
     }
 

@@ -50,7 +50,9 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     private Map<Long, User<Long>> map;
 
     public Jira(Authentication authentication) {
-        super(authentication, "Authorization: Basic " + Base64.encodeToString((authentication.getUserName() + ":" + authentication.getPassword()).getBytes(), Base64.NO_WRAP));
+        super(authentication);
+        super.addHeader("Authorization: Basic " + Base64.encodeToString((authentication.getUserName() + ":" + authentication.getPassword()).getBytes(), Base64.NO_WRAP));
+
         this.authentication = authentication;
         this.map = new LinkedHashMap<>();
     }

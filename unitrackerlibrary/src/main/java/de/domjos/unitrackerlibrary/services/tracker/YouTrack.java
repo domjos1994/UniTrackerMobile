@@ -60,7 +60,8 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final String hubPart;
 
     public YouTrack(Authentication authentication) {
-        super(authentication, "Authorization: Bearer " + authentication.getAPIKey());
+        super(authentication);
+        super.addHeader("Authorization: Bearer " + authentication.getAPIKey());
         this.authentication = authentication;
 
         String hub = this.authentication.getHints().get("hub");

@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackermobile.activities;
 
-import android.os.Build;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;

@@ -124,7 +124,8 @@ public class Authentication extends DescriptionObject<Long> {
         PivotalTracker,
         OpenProject,
         Backlog,
-        //Tuleap
+        AzureDevOps,
+        TuLeap
     }
 
     public enum Auth {

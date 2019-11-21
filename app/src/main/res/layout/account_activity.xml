@@ -85,7 +85,7 @@
                         android:text="@string/accounts_guest" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:id="@+id/rowAuthentication">
                     <TextView
                         android:text="@string/accounts_auth"
                         android:layout_width="0dp"

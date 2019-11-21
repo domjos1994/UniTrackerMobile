@@ -22,6 +22,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+
 /**
  * Abstract-Class for Activities
  */
@@ -42,6 +43,7 @@ public abstract class AbstractActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(this.layout);
         this.initControls();
+        this.hideExperimentalFeatures();
         this.initValidators();
         this.initActions();
         this.manageControls(false, true, false);
@@ -92,6 +94,13 @@ public abstract class AbstractActivity extends AppCompatActivity {
      * Function to reload List-View
      */
     protected void reload() {
+
+    }
+
+    /**
+     * Function to hide unstable features
+     */
+    protected void hideExperimentalFeatures() {
 
     }
 }

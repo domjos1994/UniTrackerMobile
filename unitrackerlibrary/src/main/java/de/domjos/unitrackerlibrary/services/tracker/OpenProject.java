@@ -43,7 +43,9 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
     private final static String DATE_FORMAT = "yyyy-MM-dd";
 
     public OpenProject(Authentication authentication) {
-        super(authentication, "Content-Type: application/hal+json", "Authorization: " + Credentials.basic("apikey", authentication.getPassword()));
+        super(authentication);
+        super.addHeader("Content-Type: application/hal+json");
+        super.addHeader("Authorization: " + Credentials.basic("apikey", authentication.getPassword()));
         this.authentication = authentication;
     }
 

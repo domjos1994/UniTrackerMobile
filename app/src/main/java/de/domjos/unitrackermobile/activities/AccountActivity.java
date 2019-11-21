@@ -35,6 +35,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TableRow;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -70,6 +71,8 @@ public final class AccountActivity extends AbstractActivity {
 
     private Authentication currentAccount;
     private Validator accountValidator;
+
+    private TableRow rowAuthentication;
 
     public AccountActivity() {
         super(R.layout.account_activity);
@@ -124,6 +127,13 @@ public final class AccountActivity extends AbstractActivity {
                             txtAccountAPI.setHint(R.string.accounts_github_client_secret);
                             break;
                         case Bugzilla:
+                        case AzureDevOps:
+                            if (chkAccountGuest.isChecked()) {
+                                accountValidator.removeValidator(txtAccountAPI);
+                            } else {
+                                accountValidator.addEmptyValidator(txtAccountAPI);
+                            }
+                            break;
                         case YouTrack:
                             txtAccountExtended.setVisibility(View.VISIBLE);
                             txtAccountExtended.setHint(R.string.accounts_youtrack_hub);
@@ -316,7 +326,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
 
         this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
-        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, Authentication.Tracker.values());
+        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
 
@@ -324,6 +334,7 @@ public final class AccountActivity extends AbstractActivity {
         this.authAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
         this.cmbAccountAuthentication.setAdapter(this.authAdapter);
         this.authAdapter.notifyDataSetChanged();
+        this.rowAuthentication = this.findViewById(R.id.rowAuthentication);
 
         this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
@@ -496,6 +507,24 @@ public final class AccountActivity extends AbstractActivity {
                if(!sever.trim().isEmpty()) {
                    this.txtAccountServer.setText(sever.trim());
                }
+            }
+        }
+    }
+
+    @Override
+    protected void hideExperimentalFeatures() {
+        this.rowAuthentication.setVisibility(View.GONE);
+
+        for(Authentication.Tracker tracker : Authentication.Tracker.values()) {
+            boolean trackerDisabled = false;
+            for(Authentication.Tracker disabledTracker : Helper.disabledBugTrackers) {
+                if(tracker == disabledTracker) {
+                    trackerDisabled = true;
+                    break;
+                }
+            }
+            if(!trackerDisabled) {
+                this.trackerAdapter.add(tracker);
             }
         }
     }

@@ -39,7 +39,9 @@ public final class Tuleap extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
 
     public Tuleap(Authentication authentication) {
-        super(authentication, "X-Auth-AccessKey: " + authentication.getAPIKey());
+        super(authentication);
+        super.addHeader("X-Auth-AccessKey: " + authentication.getAPIKey());
+
         this.authentication = authentication;
     }
 

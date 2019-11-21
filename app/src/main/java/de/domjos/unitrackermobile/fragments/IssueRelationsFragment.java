@@ -249,6 +249,16 @@ public final class IssueRelationsFragment extends AbstractFragment {
         if (reset) {
             this.currentEntry = new Relationship();
         }
+        if (selected) {
+            this.txtIssuesRelationsIssues.setText(currentEntry.getTitle());
+
+            for(int i = 0; i<=this.relationTypeAdapter.getCount()-1; i++) {
+                if(this.currentEntry.getType().getKey().toString().equals(this.relationTypeAdapter.getItem(i))) {
+                    this.spIssuesRelationsType.setSelection(i);
+                    break;
+                }
+            }
+        }
     }
 
     private void delete() {

@@ -51,11 +51,10 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
     public Bugzilla(Authentication authentication) {
-        super(
-                authentication,
-                authentication.getAPIKey().isEmpty() ? "" : "X-BUGZILLA-API-KEY: " + authentication.getAPIKey(),
-                authentication.getUserName().isEmpty() ? "" : "X-BUGZILLA-LOGIN: " + authentication.getUserName(),
-                authentication.getPassword().isEmpty() ? "" : "X-BUGZILLA-PASSWORD: " + authentication.getPassword());
+        super(authentication);
+        super.addHeader(authentication.getAPIKey().isEmpty() ? "" : "X-BUGZILLA-API-KEY: " + authentication.getAPIKey());
+        super.addHeader(authentication.getUserName().isEmpty() ? "" : "X-BUGZILLA-LOGIN: " + authentication.getUserName());
+        super.addHeader(authentication.getPassword().isEmpty() ? "" : "X-BUGZILLA-PASSWORD: " + authentication.getPassword());
         this.loginParams = "login=" + authentication.getUserName() + "&password=" + authentication.getPassword();
         this.authentication = authentication;
     }

@@ -55,6 +55,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -64,6 +65,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.Tag;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.tracker.AzureDevOps;
 import de.domjos.unitrackerlibrary.services.tracker.Backlog;
 import de.domjos.unitrackerlibrary.services.tracker.Bugzilla;
 import de.domjos.unitrackerlibrary.services.tracker.Github;
@@ -73,6 +75,7 @@ import de.domjos.unitrackerlibrary.services.tracker.OpenProject;
 import de.domjos.unitrackerlibrary.services.tracker.PivotalTracker;
 import de.domjos.unitrackerlibrary.services.tracker.Redmine;
 import de.domjos.unitrackerlibrary.services.tracker.SQLite;
+import de.domjos.unitrackerlibrary.services.tracker.Tuleap;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.LoaderTask;
@@ -83,6 +86,12 @@ import de.domjos.unitrackermobile.custom.CommaTokenizer;
 import de.domjos.unitrackermobile.settings.Settings;
 
 public class Helper {
+    public static final List<Authentication.Tracker> disabledBugTrackers =
+            Arrays.asList(
+                Authentication.Tracker.Github,
+                Authentication.Tracker.TuLeap,
+                Authentication.Tracker.AzureDevOps
+            );
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static String readStringFromRaw(int rawID, Context context) throws Exception {
@@ -148,9 +157,12 @@ public class Helper {
                     case Backlog:
                         bugService = new Backlog(authentication);
                         break;
-                    /*case Tuleap:
+                    case AzureDevOps:
+                        bugService = new AzureDevOps(authentication);
+                        break;
+                    case TuLeap:
                         bugService = new Tuleap(authentication);
-                        break;*/
+                        break;
                     default:
                         bugService = new SQLite(context, Helper.getVersionCode(context), authentication);
                         break;
