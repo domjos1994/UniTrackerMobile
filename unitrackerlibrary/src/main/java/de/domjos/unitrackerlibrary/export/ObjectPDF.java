@@ -84,7 +84,7 @@ final class ObjectPDF {
         Document pdfDocument = new Document();
         PdfWriter writer = PdfWriter.getInstance(pdfDocument, new FileOutputStream(path + File.separatorChar + "changelog_" + version.getId() + ".pdf"));
         writer.setBoxSize("art", new Rectangle(55, 25, 550, 788));
-        writer.setPageEvent(new PDFPageEvent(1, array, icon));
+        writer.setPageEvent(new PDFPageEvent(0, array, icon));
         pdfDocument.open();
         ObjectPDF.saveChangeLogToPDF(issues, pdfDocument, fonts, version);
         pdfDocument.close();
@@ -314,7 +314,7 @@ final class ObjectPDF {
 
         public void onEndPage(PdfWriter writer, Document document) {
             Rectangle rect = writer.getBoxSize("art");
-            ColumnText.showTextAligned(writer.getDirectContent(),Element.ALIGN_CENTER, new Phrase(document.getPageNumber() + " / " + this.maxPage), rect.getRight(), rect.getBottom(), 0);
+            ColumnText.showTextAligned(writer.getDirectContent(),Element.ALIGN_CENTER, new Phrase(document.getPageNumber() + " / " + (this.maxPage != 0 ? this.maxPage : "")), rect.getRight(), rect.getBottom(), 0);
 
 
             try {
