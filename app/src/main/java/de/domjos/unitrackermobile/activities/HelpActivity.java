@@ -35,11 +35,11 @@ import androidx.core.text.HtmlCompat;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.MantisBTSpecific.ChangeLog;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.ExpandableTextView;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.ExpandableTextView;
 
 public final class HelpActivity extends AbstractActivity {
-    private ExpandableTextView lblWhatsNew, lblNeedsHelp;
+    private ExpandableTextView lblWhatsNew;
     private LinearLayout pnlQuestions;
     private EditText txtSearch;
 
@@ -102,7 +102,7 @@ public final class HelpActivity extends AbstractActivity {
 
         this.pnlQuestions = this.findViewById(R.id.pnlQuestions);
         this.lblWhatsNew = this.findViewById(R.id.lblWhatsNew);
-        this.lblNeedsHelp = this.findViewById(R.id.lblNeedsHelp);
+        ExpandableTextView lblNeedsHelp = this.findViewById(R.id.lblNeedsHelp);
         this.txtSearch = this.findViewById(R.id.txtSearch);
 
         try {
@@ -124,11 +124,11 @@ public final class HelpActivity extends AbstractActivity {
         try {
             String content = this.getString(R.string.help_need_help_text);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                this.lblNeedsHelp.setContent(Html.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
+                lblNeedsHelp.setContent(Html.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
             } else {
-                this.lblNeedsHelp.setContent(HtmlCompat.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", HtmlCompat.FROM_HTML_MODE_LEGACY));
+                lblNeedsHelp.setContent(HtmlCompat.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", HtmlCompat.FROM_HTML_MODE_LEGACY));
             }
-            this.lblNeedsHelp.getContextTextView().setMovementMethod(LinkMovementMethod.getInstance());
+            lblNeedsHelp.getContextTextView().setMovementMethod(LinkMovementMethod.getInstance());
         } catch (Exception ignored) {
         }
     }

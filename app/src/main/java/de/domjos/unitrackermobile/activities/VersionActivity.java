@@ -35,9 +35,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Date;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ExportTask;
@@ -45,8 +45,8 @@ import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
@@ -78,11 +78,11 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvVersions.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvVersions.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
+            public void onDelete(BaseDescriptionObject listObject) {
                 try {
-                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
+                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(((Version)listObject.getObject()).getId()).get();
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, VersionActivity.this);
                 }
@@ -91,8 +91,8 @@ public final class VersionActivity extends AbstractActivity {
 
         this.lvVersions.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
-                currentVersion = (Version) listObject.getDescriptionObject();
+            public void onClick(BaseDescriptionObject listObject) {
+                currentVersion = (Version) listObject.getObject();
                 objectToControls();
                 manageControls(false, false, true);
             }
@@ -184,7 +184,7 @@ public final class VersionActivity extends AbstractActivity {
     }
 
     @Override
-    protected void initValidators() {
+    protected void initValidator() {
         this.versionValidator = new Validator(this.getApplicationContext());
         this.versionValidator.addEmptyValidator(this.txtVersionTitle);
         this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
@@ -208,8 +208,10 @@ public final class VersionActivity extends AbstractActivity {
                     }
                     VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction, R.drawable.ic_update_black_24dp);
                     for (Version version : versionTask.execute(0).get()) {
-                        ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_update_black_24dp, version);
-                        this.lvVersions.getAdapter().add(listObject);
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(version);
+                        baseDescriptionObject.setTitle(version.getTitle());
+                        baseDescriptionObject.setDescription(version.getDescription());
+                        this.lvVersions.getAdapter().add(baseDescriptionObject);
                     }
 
                 }

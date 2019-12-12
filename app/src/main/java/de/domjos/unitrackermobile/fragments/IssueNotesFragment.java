@@ -22,7 +22,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
@@ -33,8 +32,9 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.User;
@@ -45,8 +45,8 @@ import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.adapter.SuggestionAdapter;
-import de.domjos.unitrackermobile.custom.SpecialTokenizer;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -115,9 +115,9 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         this.lvIssueNotes.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
-                    currentNote = (Note) listObject.getDescriptionObject();
+                    currentNote = (Note) listObject.getObject();
                     noteToFields();
                 }
                 manageNoteControls(false, false, true);
@@ -135,15 +135,15 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.cmdIssueNotesDelete.setOnClickListener(v -> {
             Object id = this.currentNote.getId();
             for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
-                ListObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
+                BaseDescriptionObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                 if (listObject != null) {
                     if (id != null) {
-                        if (id.equals(listObject.getDescriptionObject().getId())) {
+                        if (id.equals(((Attachment)listObject.getObject()).getId())) {
                             this.lvIssueNotes.getAdapter().deleteItem(i);
                             break;
                         }
                     } else {
-                        if (this.currentNote.getDescription().equals(listObject.getDescriptionObject().getDescription())) {
+                        if (this.currentNote.getDescription().equals(listObject.getDescription())) {
                             this.lvIssueNotes.getAdapter().deleteItem(i);
                             break;
                         }
@@ -163,19 +163,22 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.cmdIssueNotesSave.setOnClickListener(v -> {
             this.fieldsToNote();
             Object id = this.currentNote.getId();
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(this.currentNote);
+            baseDescriptionObject.setTitle(this.currentNote.getTitle());
+            baseDescriptionObject.setDescription(this.currentNote.getDescription());
             if (id != null) {
                 for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
-                    ListObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
+                    BaseDescriptionObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                     if (listObject != null) {
-                        if (id.equals(listObject.getDescriptionObject().getId())) {
+                        if (id.equals(((Attachment)listObject.getObject()).getId())) {
                             this.lvIssueNotes.getAdapter().deleteItem(i);
-                            this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+                            this.lvIssueNotes.getAdapter().add(baseDescriptionObject);
                             break;
                         }
                     }
                 }
             } else {
-                this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.mipmap.ic_launcher_round, this.currentNote));
+                this.lvIssueNotes.getAdapter().add(baseDescriptionObject);
             }
             this.manageNoteControls(false, true, false);
         });
@@ -199,9 +202,9 @@ public final class IssueNotesFragment extends AbstractFragment {
         if (this.root != null) {
             issue.getNotes().clear();
             for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
-                ListObject object = this.lvIssueNotes.getAdapter().getItem(i);
+                BaseDescriptionObject object = this.lvIssueNotes.getAdapter().getItem(i);
                 if (object != null) {
-                    issue.getNotes().add(object.getDescriptionObject());
+                    issue.getNotes().add(object.getObject());
                 }
             }
         }
@@ -222,8 +225,12 @@ public final class IssueNotesFragment extends AbstractFragment {
     protected void initData() {
         this.lvIssueNotes.getAdapter().clear();
         for (Object note : this.issue.getNotes()) {
+
             this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
-            this.lvIssueNotes.getAdapter().add(new ListObject(this.getContext(), R.drawable.ic_note_black_24dp, (Note) note));
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(note);
+            baseDescriptionObject.setTitle(((Note) note).getTitle());
+            baseDescriptionObject.setDescription(((Note) note).getDescription());
+            this.lvIssueNotes.getAdapter().add(baseDescriptionObject);
         }
     }
 
@@ -238,8 +245,6 @@ public final class IssueNotesFragment extends AbstractFragment {
 
         switch (authentication.getTracker()) {
             case MantisBT:
-                this.statusValueArray = "issues_general_view_values";
-                break;
             case YouTrack:
                 this.statusValueArray = "issues_general_view_values";
                 break;

@@ -54,7 +54,7 @@ import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
+import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.settings.Settings;
 

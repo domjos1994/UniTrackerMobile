@@ -47,6 +47,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.Relationship;
@@ -58,7 +59,6 @@ import java.util.TimerTask;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
@@ -67,8 +67,8 @@ import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.settings.Globals;
@@ -185,24 +185,24 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
         this.lvMainIssues.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
                     Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                    intent.putExtra("id", String.valueOf(listObject.getDescriptionObject().getId()));
+                    intent.putExtra("id", String.valueOf(((Issue)listObject.getObject()).getId()));
                     intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
                     startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
                 }
             }
         });
 
-        this.lvMainIssues.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvMainIssues.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
+            public void onDelete(BaseDescriptionObject listObject) {
                 try {
                     if (listObject != null) {
-                        if (listObject.getDescriptionObject() != null) {
+                        if (listObject.getObject() != null) {
                             Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
-                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute((listObject.getDescriptionObject()).getId()).get();
+                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(((Issue)listObject.getObject()).getId()).get();
                         }
                     }
                 } catch (Exception ex) {
@@ -326,7 +326,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues.setContextMenu(R.menu.context_main);
             this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, new SwipeRefreshDeleteList.ButtonClickListener() {
                 @Override
-                public void onClick(List<ListObject> objectList) {
+                public void onClick(List<BaseDescriptionObject> objectList) {
                     try {
                         Activity act = MainActivity.this;
                         boolean show = settings.showNotifications();
@@ -334,9 +334,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
                         String tags = Helper.showTagDialog(act, bugService, show, pid);
 
-                        for(ListObject listObject : objectList) {
+                        for(BaseDescriptionObject listObject : objectList) {
                             IssueTask issueTask = new IssueTask(act, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
-                            List<Issue> issues = issueTask.execute(listObject.getDescriptionObject().getId()).get();
+                            List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
 
                             if(issues!=null) {
                                 if(!issues.isEmpty()) {
@@ -378,9 +378,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             Object pid = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId();
             boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
-            ListObject currentObject = lvMainIssues.getAdapter().getObject();
+            BaseDescriptionObject currentObject = lvMainIssues.getAdapter().getObject();
             IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
-            Issue issue = issueTask.execute(currentObject.getDescriptionObject().getId()).get().get(0);
+            Issue issue = issueTask.execute(((Issue)currentObject.getObject()).getId()).get().get(0);
 
             switch (item.getItemId()) {
                 case R.id.ctxSolve:
@@ -589,7 +589,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 for (Object issue : listIssueTask.execute(0).get()) {
                                     Issue tmp = (Issue) issue;
                                     if (tmp.getTitle().contains(search)) {
-                                        this.lvMainIssues.getAdapter().add(new ListObject(MainActivity.this, R.drawable.ic_bug_report_black_24dp, tmp));
+                                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(tmp);
+                                        baseDescriptionObject.setTitle(tmp.getTitle());
+                                        baseDescriptionObject.setDescription(tmp.getDescription());
+                                        this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                                     }
                                 }
                                 maximum = listIssueTask.getMaximum();

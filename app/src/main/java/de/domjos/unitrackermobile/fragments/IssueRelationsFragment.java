@@ -24,8 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
+
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
@@ -34,7 +35,7 @@ import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
@@ -100,29 +101,27 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
         this.lvIssuesRelations.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
-                currentEntry = (Relationship) listObject.getDescriptionObject();
+            public void onClick(BaseDescriptionObject listObject) {
+                currentEntry = (Relationship) listObject.getObject();
                 manageRelationControls(false, false, true);
             }
         });
 
-        this.lvIssuesRelations.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvIssuesRelations.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
-                currentEntry = (Relationship) listObject.getDescriptionObject();
+            public void onDelete(BaseDescriptionObject listObject) {
+                currentEntry = (Relationship) listObject.getObject();
                 delete();
             }
         });
 
-        this.cmdIssuesRelationsAdd.setOnClickListener(v -> {
-            this.manageRelationControls(true, true, false);
-        });
+        this.cmdIssuesRelationsAdd.setOnClickListener(v -> this.manageRelationControls(true, true, false));
 
         this.cmdIssuesRelationsEdit.setOnClickListener(v -> this.manageRelationControls(true, false, false));
 
         this.cmdIssuesRelationsDelete.setOnClickListener(v -> {
             for(int i = 0; i<=this.lvIssuesRelations.getAdapter().getItemCount()-1; i++) {
-                if(this.lvIssuesRelations.getAdapter().getItem(i).getDescriptionObject().getTitle().equals(this.currentEntry.getTitle())) {
+                if(this.lvIssuesRelations.getAdapter().getItem(i).getTitle().equals(this.currentEntry.getTitle())) {
                     this.lvIssuesRelations.getAdapter().deleteItem(i);
                     break;
                 }
@@ -130,9 +129,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
             this.manageRelationControls(false, true, false);
         });
 
-        this.cmdIssuesRelationsCancel.setOnClickListener(v -> {
-            this.manageRelationControls(false, true, false);
-        });
+        this.cmdIssuesRelationsCancel.setOnClickListener(v -> this.manageRelationControls(false, true, false));
 
         this.cmdIssuesRelationsSave.setOnClickListener(v -> {
             Issue issue = null;
@@ -152,8 +149,10 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 int id = ArrayHelper.getIdOfEnum(this.getContext(), this.spIssuesRelationsType, this.arrayKey);
                 relationship.setType(new AbstractMap.SimpleEntry<>(this.spIssuesRelationsType.getSelectedItem().toString(), id));
                 issue.setDescription(this.spIssuesRelationsType.getSelectedItem().toString());
-                ListObject listObject = new ListObject(this.getContext(), R.drawable.ic_bug_report_black_24dp, relationship);
-                this.lvIssuesRelations.getAdapter().add(listObject);
+                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(relationship);
+                baseDescriptionObject.setTitle(relationship.getTitle());
+                baseDescriptionObject.setDescription(relationship.getDescription());
+                this.lvIssuesRelations.getAdapter().add(baseDescriptionObject);
                 this.manageRelationControls(false, true, false);
             }
         });
@@ -177,7 +176,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
         if (this.root != null) {
             issue.getRelations().clear();
             for(int i = 0; i <= this.lvIssuesRelations.getAdapter().getItemCount() - 1; i++) {
-                Relationship relationship = (Relationship) this.lvIssuesRelations.getAdapter().getItem(i).getDescriptionObject();
+                Relationship relationship = (Relationship) this.lvIssuesRelations.getAdapter().getItem(i).getObject();
                 issue.getRelations().add(relationship);
             }
         }
@@ -201,13 +200,14 @@ public final class IssueRelationsFragment extends AbstractFragment {
             if(obj instanceof Relationship) {
                 Relationship relationship = (Relationship) obj;
 
+                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(relationship);
+                baseDescriptionObject.setTitle(relationship.getTitle());
+                baseDescriptionObject.setDescription(relationship.getDescription());
                 if(this.getContext() != null) {
-                    ListObject listObject = new ListObject(this.getContext(), R.drawable.ic_bug_report_black_24dp, relationship);
-                    this.lvIssuesRelations.getAdapter().add(listObject);
+                    this.lvIssuesRelations.getAdapter().add(baseDescriptionObject);
                 } else {
                     if(this.getActivity() != null) {
-                        ListObject listObject = new ListObject(this.getContext(), R.drawable.ic_bug_report_black_24dp, relationship);
-                        this.lvIssuesRelations.getAdapter().add(listObject);
+                        this.lvIssuesRelations.getAdapter().add(baseDescriptionObject);
                     }
                 }
             }
@@ -223,10 +223,8 @@ public final class IssueRelationsFragment extends AbstractFragment {
     public void updateUITrackerSpecific() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
 
-        switch (authentication.getTracker()) {
-            case MantisBT:
-                this.arrayKey = "issues_general_relations_mantisbt_values";
-                break;
+        if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
+            this.arrayKey = "issues_general_relations_mantisbt_values";
         }
 
         if(this.getContext()!=null)  {

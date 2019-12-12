@@ -26,12 +26,13 @@
     tools:context=".activities.SearchActivity"
     android:background="@drawable/background">
 
-    <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvSearchResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="12"
-        android:padding="5dp" />
+        android:padding="5dp"
+        app:itemIcon="@drawable/ic_search_black_24dp"/>
 
     <ScrollView
         android:layout_width="match_parent"

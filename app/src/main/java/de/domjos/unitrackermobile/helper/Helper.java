@@ -82,7 +82,7 @@ import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unitrackermobile.settings.Settings;
 
 public class Helper {

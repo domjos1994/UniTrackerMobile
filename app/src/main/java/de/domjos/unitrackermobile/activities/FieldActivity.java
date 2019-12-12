@@ -27,17 +27,17 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -68,20 +68,20 @@ public final class FieldActivity extends AbstractActivity {
     protected void initActions() {
         this.lvFields.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
-                    currentField = (CustomField) listObject.getDescriptionObject();
+                    currentField = (CustomField) listObject.getObject();
                     manageControls(false, false, true);
                     objectToControls();
                 }
             }
         });
 
-        this.lvFields.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvFields.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
+            public void onDelete(BaseDescriptionObject listObject) {
                 try {
-                    new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
+                    new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(((CustomField)listObject.getObject()).getId()).get();
                     manageControls(false, true, false);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, FieldActivity.this);
@@ -104,7 +104,10 @@ public final class FieldActivity extends AbstractActivity {
             if (this.permissions.listCustomFields()) {
                 if(this.currentProject!=null) {
                     for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(0).get()) {
-                        this.lvFields.getAdapter().add(new ListObject(this.getApplicationContext(), R.drawable.ic_text_fields_black_24dp, customField));
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(customField);
+                        baseDescriptionObject.setTitle(customField.getTitle());
+                        baseDescriptionObject.setDescription(customField.getDescription());
+                        this.lvFields.getAdapter().add(baseDescriptionObject);
                     }
                 }
             }
@@ -175,7 +178,7 @@ public final class FieldActivity extends AbstractActivity {
     }
 
     @Override
-    protected void initValidators() {
+    protected void initValidator() {
         this.fieldValidator = new Validator(this.getApplicationContext());
     }
 

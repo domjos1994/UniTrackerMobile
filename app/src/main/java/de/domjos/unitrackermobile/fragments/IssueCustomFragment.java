@@ -47,7 +47,7 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 

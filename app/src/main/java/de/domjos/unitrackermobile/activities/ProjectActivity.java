@@ -33,18 +33,18 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.CommaTokenizer;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
@@ -83,18 +83,18 @@ public final class ProjectActivity extends AbstractActivity {
 
         this.lvProjects.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
-                    currentProject = (Project) listObject.getDescriptionObject();
+                    currentProject = (Project) listObject.getObject();
                     objectToControls();
                     manageControls(false, false, true);
                 }
             }
         });
 
-        this.lvProjects.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvProjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
+            public void onDelete(BaseDescriptionObject listObject) {
                 if(bugService.getPermissions().deleteProjects()) {
                     try {
                         final ProjectTask[] task = new ProjectTask[1];
@@ -103,7 +103,7 @@ public final class ProjectActivity extends AbstractActivity {
                         builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
                             try {
                                 task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
-                                task[0].execute(listObject.getDescriptionObject().getId()).get();
+                                task[0].execute(((Project)listObject.getObject()).getId()).get();
                                 if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
                                     MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
                                 } else {
@@ -241,7 +241,7 @@ public final class ProjectActivity extends AbstractActivity {
     }
 
     @Override
-    protected void initValidators() {
+    protected void initValidator() {
         this.projectValidator = new Validator(this.getApplicationContext());
         this.projectValidator.addEmptyValidator(this.txtProjectTitle);
 
@@ -293,15 +293,17 @@ public final class ProjectActivity extends AbstractActivity {
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Project project : task.execute(0).get()) {
-                    ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_apps_black_24dp, project);
+                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(project);
+                    baseDescriptionObject.setTitle(project.getTitle());
+                    baseDescriptionObject.setDescription(project.getDescription());
                     if (project.getIconUrl() != null) {
                         if (!project.getIconUrl().isEmpty()) {
                             try {
                                 new Thread(() -> {
                                     try {
-                                        listObject.setIcon(Converter.convertStringToByteArray(project.getIconUrl()));
-                                        if (listObject.getIcon() != null) {
-                                            listObject.setIcon(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
+                                        baseDescriptionObject.setCover(Converter.convertStringToByteArray(project.getIconUrl()));
+                                        if (baseDescriptionObject.getCover() != null) {
+                                            baseDescriptionObject.setCover(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
                                         }
                                     } catch (Exception ex) {
                                         runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
@@ -312,8 +314,8 @@ public final class ProjectActivity extends AbstractActivity {
                             }
                         }
                     }
-                    subProjects.add(listObject.getDescriptionObject().getTitle());
-                    this.lvProjects.getAdapter().add(listObject);
+                    subProjects.add(baseDescriptionObject.getTitle());
+                    this.lvProjects.getAdapter().add(baseDescriptionObject);
                 }
                 this.txtProjectsSubProject.setAdapter(subProjects);
             }
@@ -374,12 +376,12 @@ public final class ProjectActivity extends AbstractActivity {
                 for (String text : this.txtProjectsSubProject.getText().toString().split(",")) {
                     text = text.trim();
                     for (int i = 0; i <= this.lvProjects.getAdapter().getItemCount() - 1; i++) {
-                        ListObject object = this.lvProjects.getAdapter().getItem(i);
+                        BaseDescriptionObject object = this.lvProjects.getAdapter().getItem(i);
                         if (object != null) {
-                            if (text.equals(object.getDescriptionObject().getTitle())) {
+                            if (text.equals(object.getTitle())) {
                                 Project project = new Project();
                                 project.setTitle(text);
-                                project.setId(object.getDescriptionObject().getId());
+                                project.setId(((Project)object.getObject()).getId());
                                 this.currentProject.getSubProjects().add(project);
                                 break;
                             }
@@ -389,12 +391,12 @@ public final class ProjectActivity extends AbstractActivity {
             } else {
                 String text = this.txtProjectsSubProject.getText().toString().trim();
                 for (int i = 0; i <= this.lvProjects.getAdapter().getItemCount() - 1; i++) {
-                    ListObject object = this.lvProjects.getAdapter().getItem(i);
+                    BaseDescriptionObject object = this.lvProjects.getAdapter().getItem(i);
                     if (object != null) {
-                        if (text.equals(object.getDescriptionObject().getTitle())) {
+                        if (text.equals(object.getTitle())) {
                             Project project = new Project();
                             project.setTitle(text);
-                            project.setId(object.getDescriptionObject().getId());
+                            project.setId(((Project)object.getObject()).getId());
                             this.currentProject.getSubProjects().add(project);
                             break;
                         }

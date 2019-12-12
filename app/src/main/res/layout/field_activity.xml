@@ -33,12 +33,13 @@
         android:orientation="vertical"
         android:weightSum="20">
 
-        <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
             android:id="@+id/lvFields"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="12"
-            android:padding="5dp" />
+            android:padding="5dp"
+            app:itemIcon="@drawable/ic_text_fields_black_24dp"/>
 
         <ScrollView
             android:layout_width="match_parent"

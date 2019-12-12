@@ -41,37 +41,37 @@
             android:autofillHints="@string/search"
             tools:targetApi="o"/>
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             custom:title="@string/help_no_connection_title"
             custom:text="@string/help_no_connection_text" />
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             custom:title="@string/help_problem_mantis_title"
             custom:text="@string/help_problem_mantis_text" />
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             custom:title="@string/help_key_youtrack_title"
             custom:text="@string/help_key_youtrack_text" />
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             custom:title="@string/help_key_redmine_title"
             custom:text="@string/help_key_redmine_text" />
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:id="@+id/lblNeedsHelp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             custom:title="@string/help_need_help_title" />
 
-        <de.domjos.unitrackermobile.custom.ExpandableTextView
+        <de.domjos.customwidgets.widgets.ExpandableTextView
             android:id="@+id/lblWhatsNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

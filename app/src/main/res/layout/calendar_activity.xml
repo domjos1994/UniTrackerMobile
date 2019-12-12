@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="de.domjos.unitrackermobile.activities.CalendarActivity"
     android:orientation="vertical"
     android:weightSum="20">
 
-    <com.applandeo.materialcalendarview.CalendarView
+    <de.domjos.customwidgets.widgets.calendar.WidgetCalendar
         android:id="@+id/cvEventCalendar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="15"/>
+        android:layout_weight="15"
+        app:toolBarBackground="@android:color/white"
+        app:monthViewBackground="@android:color/transparent"
+        app:dayViewBackground="@android:color/transparent"
+        app:groupLabelWidth="25dp"
+        app:focusBackground="@color/colorPrimary"/>
 
     <LinearLayout
         android:id="@+id/llToObject"

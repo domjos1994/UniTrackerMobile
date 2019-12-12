@@ -100,12 +100,13 @@
             android:background="@color/colorPrimaryDark" />
 
 
-        <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
             android:id="@+id/lvMainIssues"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/separator"
-            android:layout_above="@+id/footer" />
+            android:layout_above="@+id/footer"
+            app:itemIcon="@drawable/ic_bug_report_black_24dp"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cmdIssueAdd"

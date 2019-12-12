@@ -51,7 +51,7 @@ import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.custom.CommaTokenizer;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
 import de.domjos.unitrackermobile.helper.DateConverter;
 import de.domjos.unitrackermobile.helper.Helper;

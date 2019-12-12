@@ -18,7 +18,6 @@
 
 package de.domjos.unitrackermobile.fragments;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -42,7 +41,7 @@ import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.adapter.SuggestionAdapter;
-import de.domjos.unitrackermobile.custom.SpecialTokenizer;
+import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 

@@ -29,11 +29,12 @@
 
         <TableRow>
 
-            <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+            <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
                 android:id="@+id/lvIssuesNote"
                 android:layout_width="0dp"
                 android:layout_weight="10"
-                android:layout_height="250dp" />
+                android:layout_height="250dp"
+                app:itemIcon="@drawable/ic_note_black_24dp"/>
         </TableRow>
 
         <TableRow>

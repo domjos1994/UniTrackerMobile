@@ -21,11 +21,12 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvIssueAttachments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/ll" />
+        android:layout_below="@+id/ll"
+        app:itemIcon="@drawable/ic_file_upload_black_24dp"/>
 
     <LinearLayout
         android:id="@+id/ll"

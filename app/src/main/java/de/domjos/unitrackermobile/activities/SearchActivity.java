@@ -31,17 +31,18 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.ListObject;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.SearchTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.CommaTokenizer;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.tokenizer.CommaTokenizer;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 
 public final class SearchActivity extends AbstractActivity {
@@ -66,18 +67,18 @@ public final class SearchActivity extends AbstractActivity {
 
         this.lvSearchResults.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
                     for (IBugService bugService : bugServices) {
-                        Object title = listObject.getDescriptionObject().getHints().get("title");
+                        Object title = ((DescriptionObject) listObject.getObject()).getHints().get("title");
                         if (title != null) {
                             if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
                                 MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
-                                Object project = listObject.getDescriptionObject().getHints().get("project");
+                                Object project = ((DescriptionObject) listObject.getObject()).getHints().get("project");
                                 if (project != null) {
                                     MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(project.toString());
                                     Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                                    intent.putExtra("id", listObject.getDescriptionObject().getId().toString());
+                                    intent.putExtra("id", ((DescriptionObject)listObject.getObject()).getId().toString());
                                     intent.putExtra("pid", project.toString());
                                     startActivity(intent);
                                 }
@@ -125,8 +126,11 @@ public final class SearchActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
                             R.drawable.ic_search_black_24dp
                     );
-            for (ListObject obj : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
-                this.lvSearchResults.getAdapter().add(obj);
+            for (DescriptionObject descriptionObject : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
+                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(descriptionObject);
+                baseDescriptionObject.setDescription(descriptionObject.getDescription());
+                baseDescriptionObject.setTitle(descriptionObject.getTitle());
+                this.lvSearchResults.getAdapter().add(baseDescriptionObject);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, SearchActivity.this);

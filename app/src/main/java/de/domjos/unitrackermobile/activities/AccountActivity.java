@@ -42,15 +42,15 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 import java.util.List;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.utils.Converter;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
@@ -83,10 +83,10 @@ public final class AccountActivity extends AbstractActivity {
 
         this.lvAccounts.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
                 if (listObject != null) {
-                    currentAccount = (Authentication) listObject.getDescriptionObject();
+                    currentAccount = (Authentication) listObject.getObject();
                     accountValidator.addDuplicatedEntry(txtAccountTitle, "accounts", "title", currentAccount.getId());
                 }
                 objectToControls();
@@ -101,10 +101,10 @@ public final class AccountActivity extends AbstractActivity {
             }
         });
 
-        this.lvAccounts.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvAccounts.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
-                MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getDescriptionObject().getId());
+            public void onDelete(BaseDescriptionObject listObject) {
+                MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getID());
                 manageControls(false, true, false);
             }
         });
@@ -374,7 +374,7 @@ public final class AccountActivity extends AbstractActivity {
     }
 
     @Override
-    protected void initValidators() {
+    protected void initValidator() {
         this.accountValidator = new Validator(this.getApplicationContext());
         this.accountValidator.addEmptyValidator(this.txtAccountTitle);
         this.accountValidator.addEmptyValidator(this.txtAccountServer);
@@ -385,13 +385,12 @@ public final class AccountActivity extends AbstractActivity {
     protected void reload() {
         this.lvAccounts.getAdapter().clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            if (authentication.getCover() != null) {
-                ListObject listObject = new ListObject(this.getApplicationContext(), authentication.getCover(), authentication);
-                this.lvAccounts.getAdapter().add(listObject);
-            } else {
-                ListObject listObject = new ListObject(this.getApplicationContext(), R.drawable.ic_account_circle_black_24dp, authentication);
-                this.lvAccounts.getAdapter().add(listObject);
-            }
+            BaseDescriptionObject listObject = new BaseDescriptionObject(authentication);
+            listObject.setID(Integer.parseInt(String.valueOf(authentication.getId())));
+            listObject.setCover(authentication.getCover());
+            listObject.setTitle(authentication.getTitle());
+            listObject.setDescription(authentication.getDescription());
+            this.lvAccounts.getAdapter().add(listObject);
         }
     }
 
@@ -468,7 +467,7 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setDescription(this.txtAccountDescription.getText().toString());
             this.currentAccount.setTracker(this.trackerAdapter.getItem(this.cmbAccountTracker.getSelectedItemPosition()));
             this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
-            this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
+            //this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
             if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
                 this.currentAccount.setCover(Converter.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
             } else {

@@ -26,15 +26,15 @@ import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
+import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class SearchTask extends AbstractTask<Integer, Void, List<ListObject>> {
+public final class SearchTask extends AbstractTask<Integer, Void, List<DescriptionObject>> {
     private String search, projects, versions;
     private boolean summary, description;
-    private final List<ListObject> issues;
+    private final List<DescriptionObject> issues;
     private final List<IBugService> bugServices;
 
     public SearchTask(Activity activity, String search, boolean summary, boolean description, String projects, String versions, List<IBugService> bugServices, boolean notify, int icon) {
@@ -55,7 +55,7 @@ public final class SearchTask extends AbstractTask<Integer, Void, List<ListObjec
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<ListObject> doInBackground(Integer... issues) {
+    protected List<DescriptionObject> doInBackground(Integer... issues) {
         try {
             List<String> projects = new LinkedList<>(Arrays.asList(this.projects.split(",")));
             List<String> versions = new LinkedList<>(Arrays.asList(this.versions.split(",")));
@@ -103,11 +103,10 @@ public final class SearchTask extends AbstractTask<Integer, Void, List<ListObjec
                             }
 
                             if (searchSuccess) {
-                                ListObject listObject = new ListObject(this.getContext(), issues[0], issue);
-                                listObject.getDescriptionObject().setDescription(service.getAuthentication().getTracker().name());
-                                listObject.getDescriptionObject().getHints().put("title", service.getAuthentication().getTitle());
-                                listObject.getDescriptionObject().getHints().put("project", project.getId().toString());
-                                this.issues.add(listObject);
+                                issue.setDescription(service.getAuthentication().getTracker().name());
+                                issue.getHints().put("title", service.getAuthentication().getTitle());
+                                issue.getHints().put("project", project.getId().toString());
+                                this.issues.add(issue);
                             }
                         }
                     }

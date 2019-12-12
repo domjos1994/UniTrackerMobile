@@ -57,12 +57,13 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
             android:id="@+id/lvVersions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="12"
-            android:padding="5dp" />
+            android:padding="5dp"
+            app:itemIcon="@drawable/ic_update_black_24dp"/>
 
         <ScrollView
             android:id="@+id/viewControls"

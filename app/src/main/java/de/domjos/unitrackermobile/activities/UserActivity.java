@@ -22,17 +22,17 @@ import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
-import de.domjos.unitrackerlibrary.model.ListObject;
 import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
-import de.domjos.unitrackermobile.custom.AbstractActivity;
-import de.domjos.unitrackermobile.custom.swiperefreshlist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -60,10 +60,10 @@ public final class UserActivity extends AbstractActivity {
     protected void initActions() {
         this.lvUsers.click(new SwipeRefreshDeleteList.ClickListener() {
             @Override
-            public void onClick(ListObject listObject) {
+            public void onClick(BaseDescriptionObject listObject) {
                 if (listObject != null) {
-                    if (listObject.getDescriptionObject() instanceof User) {
-                        currentUser = (User) listObject.getDescriptionObject();
+                    if (listObject.getObject() instanceof User) {
+                        currentUser = (User) listObject.getObject();
                         objectToControls();
                         manageControls(false, false, true);
                     }
@@ -78,12 +78,12 @@ public final class UserActivity extends AbstractActivity {
             }
         });
 
-        this.lvUsers.delete(new SwipeRefreshDeleteList.DeleteListener() {
+        this.lvUsers.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
             @Override
-            public void onDelete(ListObject listObject) {
+            public void onDelete(BaseDescriptionObject listObject) {
                 if(bugService.getPermissions().deleteUsers()) {
                     try {
-                        new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(listObject.getDescriptionObject().getId()).get();
+                        new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(((User)listObject.getObject()).getId()).get();
                         manageControls(false, true, false);
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, UserActivity.this);
@@ -100,7 +100,10 @@ public final class UserActivity extends AbstractActivity {
             if (this.currentProject != null) {
                 if (this.permissions.listUsers()) {
                     for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(0).get()) {
-                        this.lvUsers.getAdapter().add(new ListObject(this.getApplicationContext(), R.drawable.ic_person_black_24dp, user));
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(user);
+                        baseDescriptionObject.setTitle(user.getTitle());
+                        baseDescriptionObject.setDescription(user.getDescription());
+                        this.lvUsers.getAdapter().add(baseDescriptionObject);
                     }
                 }
             }
@@ -168,7 +171,7 @@ public final class UserActivity extends AbstractActivity {
     }
 
     @Override
-    protected void initValidators() {
+    protected void initValidator() {
         this.userValidator = new Validator(this.getApplicationContext());
     }
 

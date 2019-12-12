@@ -16,4 +16,6 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-include ':app', ':unitrackerlibrary'
+include ':app', ':unitrackerlibrary', ':customwidgets'
+
+project(':customwidgets').projectDir = new File(rootDir, '../Libraries/customwidgets')
