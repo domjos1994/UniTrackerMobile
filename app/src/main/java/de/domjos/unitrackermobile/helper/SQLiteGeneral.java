@@ -32,9 +32,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.utils.Crypto;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Crypto;
 import de.domjos.unitrackermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
@@ -142,7 +142,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             if(onlyCheck) {
                 return null;
             } else {
-                MessageHelper.printException(ex, this.context);
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
             }
         }
         return authentications;
@@ -190,7 +190,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 this.setHints(authentication);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 
@@ -204,7 +204,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             }
             cursor.close();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
         return hints;
     }
@@ -261,7 +261,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 
@@ -274,7 +274,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 
@@ -304,7 +304,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", table, column, typeString));
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 

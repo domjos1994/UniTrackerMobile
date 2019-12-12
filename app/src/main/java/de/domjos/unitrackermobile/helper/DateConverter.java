@@ -24,7 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.settings.Settings;
 

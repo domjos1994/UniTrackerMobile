@@ -36,12 +36,12 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.unitrackerlibrary.utils.Converter;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -95,7 +95,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, getActivity());
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
                 }
             }
         });
@@ -142,12 +142,12 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                         bugService.deleteAttachment(id, null, null);
                         getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
                     } catch (Exception ex) {
-                        getActivity().runOnUiThread(()->MessageHelper.printException(ex, getActivity()));
+                        getActivity().runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity()));
                     }
                 }).start();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, getActivity());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
         }
         return true;
     }
@@ -231,7 +231,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getActivity());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
     }
 

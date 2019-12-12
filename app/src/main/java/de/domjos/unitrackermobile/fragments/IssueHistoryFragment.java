@@ -31,11 +31,11 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.History;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.helper.DateConverter;
@@ -123,7 +123,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
                             }
                         }
                     } catch (Exception ex) {
-                        this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, this.getActivity()));
+                        this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
                     }
                 }).start();
             }

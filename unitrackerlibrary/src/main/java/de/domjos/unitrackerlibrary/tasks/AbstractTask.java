@@ -24,8 +24,9 @@ import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
 
+import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 
 public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result> {
     private WeakReference<Context> weakReference;
@@ -71,13 +72,13 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     void printMessage() {
         if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
             if (!this.bugService.getCurrentMessage().isEmpty()) {
-                ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getContext()));
+                ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getContext()));
             }
         }
     }
 
     void printException(Exception ex) {
-        ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, this.getContext()));
+        ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext()));
     }
 
     protected abstract void before();

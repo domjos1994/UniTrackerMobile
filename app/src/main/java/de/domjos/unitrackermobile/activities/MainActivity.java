@@ -48,6 +48,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.Relationship;
@@ -65,7 +66,6 @@ import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -206,7 +206,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, getApplicationContext());
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
                 }
             }
         });
@@ -347,7 +347,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                             }
                         }
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, MainActivity.this);
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                     }
                 }
             });
@@ -368,7 +368,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, MainActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
     }
 
@@ -462,7 +462,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     break;
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, MainActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
         return super.onContextItemSelected(item);
     }
@@ -492,7 +492,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
             OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, MainActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
     }
 
@@ -617,7 +617,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
             this.lvMainIssues.getAdapter().notifyDataSetChanged();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, MainActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
     }
 
@@ -649,7 +649,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, MainActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
     }
 

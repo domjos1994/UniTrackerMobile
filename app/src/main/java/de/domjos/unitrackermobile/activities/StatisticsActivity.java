@@ -49,13 +49,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.StatisticsTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.DiagramHelper;
@@ -117,7 +117,7 @@ public final class StatisticsActivity extends AbstractActivity {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 String label = bcStatisticsBugsPerProject.getXAxis().getValueFormatter().getFormattedValue(e.getX(), bcStatisticsBugsPerProject.getXAxis());
-                MessageHelper.printMessage(label + ": " + (int) e.getY() + " Bugs", StatisticsActivity.this);
+                MessageHelper.printMessage(label + ": " + (int) e.getY() + " Bugs", R.mipmap.ic_launcher_round, StatisticsActivity.this);
             }
 
             @Override
@@ -148,9 +148,9 @@ public final class StatisticsActivity extends AbstractActivity {
                         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
                         value += "-" + simpleDateFormat.format(calendar.getTime());
                     }
-                    MessageHelper.printMessage(value + ": Bugs: " + e.getY(), StatisticsActivity.this);
+                    MessageHelper.printMessage(value + ": Bugs: " + e.getY(), R.mipmap.ic_launcher_round, StatisticsActivity.this);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, StatisticsActivity.this);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, StatisticsActivity.this);
                 }
             }
 
@@ -203,7 +203,7 @@ public final class StatisticsActivity extends AbstractActivity {
         if (item.getItemId() == R.id.menExport) {
             this.lcStatisticsBugsInTime.saveToGallery("uniTrackerMobile_bugsInTime.jpg");
             this.bcStatisticsBugsPerProject.saveToGallery("uniTrackerMobile_bugsPerProject.jpg");
-            MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), StatisticsActivity.this);
+            MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), R.mipmap.ic_launcher_round, StatisticsActivity.this);
         }
 
         return super.onOptionsItemSelected(item);
@@ -236,7 +236,7 @@ public final class StatisticsActivity extends AbstractActivity {
                 data = result;
                 load();
                 reloadCharts();
-                MessageHelper.printMessage(getString(R.string.statistics_loaded), StatisticsActivity.this);
+                MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this);
             }
         });
         statisticsTask.execute();

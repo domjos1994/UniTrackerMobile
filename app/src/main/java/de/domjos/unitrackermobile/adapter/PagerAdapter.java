@@ -35,7 +35,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.fragments.*;
 import de.domjos.unitrackermobile.helper.Helper;

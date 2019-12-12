@@ -37,7 +37,7 @@ import de.domjos.unitrackerlibrary.permissions.GithubPermissions;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;

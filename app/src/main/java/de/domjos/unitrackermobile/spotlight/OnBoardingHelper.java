@@ -33,7 +33,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.AccountActivity;
 import de.domjos.unitrackermobile.activities.MainActivity;
@@ -102,7 +102,7 @@ public class OnBoardingHelper {
                         }
                     }
                 } catch (Exception ex) {
-                    activity.runOnUiThread(() -> MessageHelper.printException(ex, activity));
+                    activity.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity));
                 }
                 return null;
             }
@@ -146,7 +146,7 @@ public class OnBoardingHelper {
                         });
                         OnBoardingHelper.secondSteps = false;
                     } catch (Exception ex) {
-                        activity.runOnUiThread(() -> MessageHelper.printException(ex, activity));
+                        activity.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity));
                     }
                     return null;
                 }

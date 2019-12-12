@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -42,7 +43,6 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.SQLitePermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 
 public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> {
     private Context context;
@@ -626,17 +626,17 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
-    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 
     @Override
-    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 
@@ -923,7 +923,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 
@@ -934,7 +934,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
         }
     }
 

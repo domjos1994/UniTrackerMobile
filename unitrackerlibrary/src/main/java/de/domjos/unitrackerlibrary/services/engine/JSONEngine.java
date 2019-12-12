@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import de.domjos.unitrackerlibrary.services.authentication.AccessTokenProvider;
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 import okhttp3.Authenticator;
 import okhttp3.Call;
 import okhttp3.ConnectionPool;

@@ -36,12 +36,12 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.io.File;
 import java.util.ArrayList;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.LocalSyncTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.adapter.LocalSyncAdapter;
 import de.domjos.customwidgets.model.AbstractActivity;
@@ -71,7 +71,7 @@ public final class LocalSyncActivity extends AbstractActivity {
                 try {
                     reloadProjects(position);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, activity);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
                 }
             }
 
@@ -139,7 +139,7 @@ public final class LocalSyncActivity extends AbstractActivity {
                 this.sync();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.activity);
         }
     }
 
@@ -165,10 +165,10 @@ public final class LocalSyncActivity extends AbstractActivity {
             }
 
             LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.settings.getLocalSyncPath(), pid);
-            MessageHelper.printMessage(localSyncTask.execute().get(), LocalSyncActivity.this);
+            MessageHelper.printMessage(localSyncTask.execute().get(), R.mipmap.ic_launcher_round, LocalSyncActivity.this);
             this.reload();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.activity);
         }
     }
 
@@ -224,7 +224,7 @@ public final class LocalSyncActivity extends AbstractActivity {
             this.expLvLocalSync.setAdapter(localSyncAdapter);
             localSyncAdapter.notifyDataSetChanged();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getApplicationContext());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
         }
     }
 }

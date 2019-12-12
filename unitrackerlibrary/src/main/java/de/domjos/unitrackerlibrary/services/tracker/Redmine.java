@@ -41,7 +41,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.RedminePermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 
 public final class Redmine extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;

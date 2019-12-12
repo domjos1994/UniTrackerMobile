@@ -31,7 +31,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.PivotalTrackerPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.unitrackerlibrary.utils.Converter;
+import de.domjos.customwidgets.utils.Converter;
 
 public final class PivotalTracker extends JSONEngine implements IBugService<Long> {
     private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";

@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.Administration;
@@ -43,7 +44,6 @@ import de.domjos.unitrackerlibrary.tasks.AdministrationTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
@@ -94,7 +94,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     }
                     checkPermissions();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, AdministrationActivity.this);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AdministrationActivity.this);
                 }
             }
             @Override
@@ -116,7 +116,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     }
                     checkPermissions();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, AdministrationActivity.this);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AdministrationActivity.this);
                 }
             }
             @Override
@@ -243,7 +243,7 @@ public final class AdministrationActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getApplicationContext());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
         }
     }
 
@@ -296,9 +296,9 @@ public final class AdministrationActivity extends AbstractActivity {
                     this.getResources().getStringArray(R.array.administration_data)[this.spData1.getSelectedItemPosition()],
                     move ? this.getString(R.string.administration_move) : this.getString(R.string.administration_copy)
             );
-            MessageHelper.printMessage(message, this.ctx);
+            MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, this.ctx);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getApplicationContext());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
         }
     }
 

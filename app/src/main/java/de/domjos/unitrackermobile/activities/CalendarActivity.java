@@ -10,6 +10,7 @@ import android.widget.TextView;
 import java.util.Date;
 import java.util.List;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.calendar.Event;
 import de.domjos.customwidgets.widgets.calendar.WidgetCalendar;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -22,7 +23,6 @@ import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -156,7 +156,7 @@ public class CalendarActivity extends AbstractActivity {
                 projectTask.execute(0);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, CalendarActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CalendarActivity.this);
         }
     }
 

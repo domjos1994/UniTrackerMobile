@@ -59,6 +59,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -79,7 +80,6 @@ import de.domjos.unitrackerlibrary.services.tracker.Tuleap;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.LoaderTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
@@ -171,7 +171,7 @@ public class Helper {
                 bugService = new SQLite(context, Helper.getVersionCode(context), new Authentication());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
         }
         return bugService;
     }
@@ -261,7 +261,7 @@ public class Helper {
             catch(RuntimeException ignored){}
             str_result = txtTags.getText().toString();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
         return str_result;
     }
@@ -323,7 +323,7 @@ public class Helper {
                                             pwdDialog.cancel();
                                         }
                                     } catch (Exception ex) {
-                                        MessageHelper.printException(ex, activity);
+                                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
                                     }
                                 })).start();
                             } else {
@@ -346,11 +346,11 @@ public class Helper {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, activity);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
                 }
             });
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
     }
 
@@ -387,13 +387,13 @@ public class Helper {
                     resolveDialog.dismiss();
                     runnable.run();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, activity);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
                 }
             });
             resolveDialog.setCancelable(true);
             resolveDialog.show();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
     }
 
@@ -421,7 +421,7 @@ public class Helper {
             });
             attachmentDialog.show();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
     }
 
@@ -448,7 +448,7 @@ public class Helper {
                 settings.setWhatsNewVersion();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
     }
 
@@ -487,7 +487,7 @@ public class Helper {
             PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             return pInfo.versionName;
         } catch (Exception ex) {
-            MessageHelper.printException(ex, context);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
         }
         return "";
     }
@@ -535,7 +535,7 @@ public class Helper {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, activity);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
                 }
             });
             filePickerDialog.show();
@@ -548,9 +548,9 @@ public class Helper {
             bos.write(content);
             bos.flush();
             bos.close();
-            MessageHelper.printMessage(activity.getString(R.string.issues_context_attachment_saved), activity);
+            MessageHelper.printMessage(activity.getString(R.string.issues_context_attachment_saved), R.mipmap.ic_launcher_round, activity);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, activity);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
     }
 

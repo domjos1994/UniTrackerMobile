@@ -34,13 +34,13 @@ import androidx.appcompat.app.AlertDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackerlibrary.utils.Converter;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
@@ -105,17 +105,17 @@ public final class ProjectActivity extends AbstractActivity {
                                 task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                                 task[0].execute(((Project)listObject.getObject()).getId()).get();
                                 if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
-                                    MessageHelper.printMessage(bugService.getCurrentMessage(), getApplicationContext());
+                                    MessageHelper.printMessage(bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, getApplicationContext());
                                 } else {
                                     manageControls(false, false, false);
                                 }
                             } catch (Exception ex) {
-                                MessageHelper.printException(ex, getApplicationContext());
+                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
                             }
                         });
                         builder.create().show();
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, getApplicationContext());
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
                     }
                 }
             }
@@ -163,18 +163,18 @@ public final class ProjectActivity extends AbstractActivity {
                                 task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                                 task[0].execute(this.currentProject.getId()).get();
                                 if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
-                                    MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
+                                    MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
                                 } else {
                                     this.reload();
                                     this.manageControls(false, false, false);
                                 }
                             } catch (Exception ex) {
-                                MessageHelper.printException(ex, this.getApplicationContext());
+                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
                             }
                         });
                         builder.create().show();
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, this.getApplicationContext());
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
                     }
                     break;
                 case R.id.navCancel:
@@ -187,16 +187,16 @@ public final class ProjectActivity extends AbstractActivity {
                             task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp);
                             task[0].execute(this.currentProject).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
-                                MessageHelper.printMessage(this.bugService.getCurrentMessage(), this.getApplicationContext());
+                                MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
                             } else {
                                 this.reload();
                                 this.manageControls(false, false, false);
                             }
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
                         }
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, this.getApplicationContext());
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
                     }
                     break;
             }
@@ -306,11 +306,11 @@ public final class ProjectActivity extends AbstractActivity {
                                             baseDescriptionObject.setCover(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
                                         }
                                     } catch (Exception ex) {
-                                        runOnUiThread(() -> MessageHelper.printException(ex, getApplicationContext()));
+                                        runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext()));
                                     }
                                 }).start();
                             } catch (Exception ex) {
-                                MessageHelper.printException(ex, this.getApplicationContext());
+                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
                             }
                         }
                     }
@@ -320,7 +320,7 @@ public final class ProjectActivity extends AbstractActivity {
                 this.txtProjectsSubProject.setAdapter(subProjects);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getApplicationContext());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
         }
     }
 

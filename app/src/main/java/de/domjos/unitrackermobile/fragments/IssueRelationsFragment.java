@@ -26,13 +26,13 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -267,12 +267,12 @@ public final class IssueRelationsFragment extends AbstractFragment {
                         Object obj = this.returnTemp(MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentProjectId());
                         this.bugService.deleteBugRelation(this.currentEntry, this.issue.getId(), obj);
                     }  catch (Exception ex) {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(()->MessageHelper.printException(ex, this.getActivity()));
+                        Objects.requireNonNull(getActivity()).runOnUiThread(()-> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
                     }
                 }).start();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, this.getActivity());
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
         }
     }
 

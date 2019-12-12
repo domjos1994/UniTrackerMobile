@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.export.TrackerXML;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
@@ -51,8 +52,7 @@ import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.unitrackerlibrary.utils.Converter;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
+import de.domjos.customwidgets.utils.Converter;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -109,7 +109,7 @@ public final class ExportActivity extends AbstractActivity {
                     List<Project> projects = projectTask.execute(0).get();
                     projectAdapter.addAll(projects);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, ExportActivity.this);
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, ExportActivity.this);
                 }
             }
 
@@ -138,7 +138,7 @@ public final class ExportActivity extends AbstractActivity {
                 this.copyExampleContent(R.raw.example_projects, "example_projects.xslt", download);
                 this.copyExampleContent(R.raw.example_issues, "example_issues.xslt", download);
                 this.copyExampleContent(R.raw.example_custom_fields, "example_custom_fields.xslt", download);
-                MessageHelper.printMessage(this.getString(R.string.export_extended_xml_xslt_example_success), ExportActivity.this);
+                MessageHelper.printMessage(this.getString(R.string.export_extended_xml_xslt_example_success), R.mipmap.ic_launcher_round, ExportActivity.this);
             }
         });
 
@@ -204,12 +204,12 @@ public final class ExportActivity extends AbstractActivity {
                             break;
                     }
                     exportTask.execute(objects.toArray()).get();
-                    MessageHelper.printMessage(this.getString(R.string.export_success), ExportActivity.this);
+                    MessageHelper.printMessage(this.getString(R.string.export_success), R.mipmap.ic_launcher_round, ExportActivity.this);
                 }
             } catch (Exception ex) {
-                MessageHelper.printException(ex, ExportActivity.this);
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, ExportActivity.this);
             } catch (OutOfMemoryError error) {
-                MessageHelper.printMessage(error.getMessage(), ExportActivity.this);
+                MessageHelper.printMessage(error.getMessage(), R.mipmap.ic_launcher_round, ExportActivity.this);
             }
         });
     }
@@ -221,7 +221,7 @@ public final class ExportActivity extends AbstractActivity {
             outputStreamWriter.write(content);
             outputStreamWriter.close();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, ExportActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, ExportActivity.this);
         }
     }
 

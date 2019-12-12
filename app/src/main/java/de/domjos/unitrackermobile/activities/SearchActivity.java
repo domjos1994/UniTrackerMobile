@@ -32,13 +32,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.SearchTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
@@ -133,7 +133,7 @@ public final class SearchActivity extends AbstractActivity {
                 this.lvSearchResults.getAdapter().add(baseDescriptionObject);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, SearchActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, SearchActivity.this);
         }
     }
 
@@ -168,7 +168,7 @@ public final class SearchActivity extends AbstractActivity {
                 }
                 SearchActivity.this.runOnUiThread(() -> this.txtSearchProjects.setAdapter(projects));
             } catch (Exception ex) {
-                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, this.getApplicationContext()));
+                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext()));
             }
         }).start();
     }
@@ -204,7 +204,7 @@ public final class SearchActivity extends AbstractActivity {
 
                 SearchActivity.this.runOnUiThread(() -> this.txtSearchVersions.setAdapter(versions));
             } catch (Exception ex) {
-                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, this.getApplicationContext()));
+                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext()));
             }
         }).start();
     }

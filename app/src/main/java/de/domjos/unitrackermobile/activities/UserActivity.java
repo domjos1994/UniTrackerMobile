@@ -23,13 +23,13 @@ import android.widget.EditText;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.User;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.UserTask;
-import de.domjos.unitrackerlibrary.utils.MessageHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -86,7 +86,7 @@ public final class UserActivity extends AbstractActivity {
                         new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(((User)listObject.getObject()).getId()).get();
                         manageControls(false, true, false);
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, UserActivity.this);
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
                     }
                 }
             }
@@ -108,7 +108,7 @@ public final class UserActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, UserActivity.this);
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
         }
     }
 
@@ -132,7 +132,7 @@ public final class UserActivity extends AbstractActivity {
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, UserActivity.this);
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
                     }
                     break;
                 case R.id.navCancel:
@@ -146,10 +146,10 @@ public final class UserActivity extends AbstractActivity {
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), this.getApplicationContext());
+                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
                         }
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, UserActivity.this);
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
                     }
                     break;
             }
