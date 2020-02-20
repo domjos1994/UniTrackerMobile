@@ -58,36 +58,25 @@ public final class UserActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvUsers.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    if (listObject.getObject() instanceof User) {
-                        currentUser = (User) listObject.getObject();
-                        objectToControls();
-                        manageControls(false, false, true);
-                    }
+        this.lvUsers.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            if (listObject != null) {
+                if (listObject.getObject() instanceof User) {
+                    currentUser = (User) listObject.getObject();
+                    objectToControls();
+                    manageControls(false, false, true);
                 }
             }
         });
 
-        this.lvUsers.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvUsers.setOnReloadListener(this::reload);
 
-        this.lvUsers.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                if(bugService.getPermissions().deleteUsers()) {
-                    try {
-                        new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(((User)listObject.getObject()).getId()).get();
-                        manageControls(false, true, false);
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
-                    }
+        this.lvUsers.setOnDeleteListener(listObject -> {
+            if(bugService.getPermissions().deleteUsers()) {
+                try {
+                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_person_black_24dp).execute(((User)listObject.getObject()).getId()).get();
+                    manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
                 }
             }
         });

@@ -47,7 +47,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
@@ -81,32 +81,21 @@ public final class AccountActivity extends AbstractActivity {
     @Override
     protected void initActions() {
 
-        this.lvAccounts.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
-                if (listObject != null) {
-                    currentAccount = (Authentication) listObject.getObject();
-                    accountValidator.addDuplicatedEntry(txtAccountTitle, "accounts", "title", currentAccount.getId());
-                }
-                objectToControls();
-                manageControls(false, false, true);
+        this.lvAccounts.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
+            if (listObject != null) {
+                this.currentAccount = (Authentication) listObject.getObject();
+                this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, "accounts", "title", this.currentAccount.getId());
             }
+            objectToControls();
+            manageControls(false, false, true);
         });
 
-        this.lvAccounts.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvAccounts.setOnReloadListener(this::reload);
 
-        this.lvAccounts.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getID());
-                manageControls(false, true, false);
-            }
+        this.lvAccounts.setOnDeleteListener(listObject -> {
+            MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getId());
+            manageControls(false, true, false);
         });
 
         this.cmbAccountTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -185,7 +174,7 @@ public final class AccountActivity extends AbstractActivity {
             public void afterTextChanged(Editable s) {
                 new Thread(() -> {
                     try {
-                        Drawable drawable = Converter.convertStringToImage(s.toString());
+                        Drawable drawable = ConvertHelper.convertStringToImage(s.toString());
                         if (drawable != null) {
                             runOnUiThread(() -> cmdAccountImageGallery.setImageDrawable(drawable));
                         }
@@ -386,7 +375,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.getAdapter().clear();
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
             BaseDescriptionObject listObject = new BaseDescriptionObject(authentication);
-            listObject.setID(Integer.parseInt(String.valueOf(authentication.getId())));
+            listObject.setId(Integer.parseInt(String.valueOf(authentication.getId())));
             listObject.setCover(authentication.getCover());
             listObject.setTitle(authentication.getTitle());
             listObject.setDescription(authentication.getDescription());
@@ -469,7 +458,7 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
             //this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
             if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
-                this.currentAccount.setCover(Converter.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
+                this.currentAccount.setCover(ConvertHelper.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
             } else {
                 this.currentAccount.setCover(null);
             }

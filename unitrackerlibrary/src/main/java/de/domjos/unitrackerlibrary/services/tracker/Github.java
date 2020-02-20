@@ -37,7 +37,7 @@ import de.domjos.unitrackerlibrary.permissions.GithubPermissions;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
@@ -90,13 +90,13 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 project.setEnabled(!jsonObject.getBoolean("disabled"));
 
                 if (jsonObject.has("created_at")) {
-                    Date dt = Converter.convertStringToDate(jsonObject.getString("created_at"), Github.DATE_TIME_FORMAT);
+                    Date dt = ConvertHelper.convertStringToDate(jsonObject.getString("created_at"), Github.DATE_TIME_FORMAT);
                     if (dt != null) {
                         project.setCreatedAt(dt.getTime());
                     }
                 }
                 if (jsonObject.has("updated_at")) {
-                    Date dt = Converter.convertStringToDate(jsonObject.getString("updated_at"), Github.DATE_TIME_FORMAT);
+                    Date dt = ConvertHelper.convertStringToDate(jsonObject.getString("updated_at"), Github.DATE_TIME_FORMAT);
                     if (dt != null) {
                         project.setUpdatedAt(dt.getTime());
                     }
@@ -171,7 +171,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                     Version<Long> version = new Version<>();
                     version.setTitle(jsonObject.getString("name"));
                     version.setDescription(jsonObject.getString("body"));
-                    version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("published_at"), Github.DATE_TIME_FORMAT).getTime());
+                    version.setReleasedVersionAt(ConvertHelper.convertStringToDate(jsonObject.getString("published_at"), Github.DATE_TIME_FORMAT).getTime());
                     version.setId(jsonObject.getLong("id"));
                     version.setReleasedVersion(jsonObject.getBoolean("prerelease"));
                     versions.add(version);
@@ -298,8 +298,8 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 issue.setId(issueObject.getLong("number"));
                 issue.setTitle(issueObject.getString("title"));
                 issue.setDescription(issueObject.getString("body"));
-                issue.setLastUpdated(Converter.convertStringToDate(issueObject.getString("updated_at"), Github.DATE_TIME_FORMAT));
-                issue.setSubmitDate(Converter.convertStringToDate(issueObject.getString("created_at"), Github.DATE_TIME_FORMAT));
+                issue.setLastUpdated(ConvertHelper.convertStringToDate(issueObject.getString("updated_at"), Github.DATE_TIME_FORMAT));
+                issue.setSubmitDate(ConvertHelper.convertStringToDate(issueObject.getString("created_at"), Github.DATE_TIME_FORMAT));
                 issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
             }
         }

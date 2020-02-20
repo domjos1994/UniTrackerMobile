@@ -48,7 +48,7 @@ import de.domjos.unitrackermobile.adapter.SuggestionAdapter;
 import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
-import de.domjos.unitrackermobile.helper.DateConverter;
+import de.domjos.unitrackermobile.helper.DateConvertHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -113,15 +113,12 @@ public final class IssueNotesFragment extends AbstractFragment {
             descriptionAdapter.notifyDataSetChanged();
         }
 
-        this.lvIssueNotes.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    currentNote = (Note) listObject.getObject();
-                    noteToFields();
-                }
-                manageNoteControls(false, false, true);
+        this.lvIssueNotes.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            if (listObject != null) {
+                currentNote = (Note) listObject.getObject();
+                noteToFields();
             }
+            manageNoteControls(false, false, true);
         });
 
         this.cmdIssueNotesAdd.setOnClickListener(v -> {
@@ -260,10 +257,10 @@ public final class IssueNotesFragment extends AbstractFragment {
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.currentNote.getState().getKey().toString()), this.statusValueArray, this.spIssueNotesView);
 
             if (this.currentNote.getLastUpdated() != null) {
-                this.txtIssueNotesLastUpdated.setText(DateConverter.convertDateTimeToString(this.currentNote.getLastUpdated(), this.getContext()));
+                this.txtIssueNotesLastUpdated.setText(DateConvertHelper.convertDateTimeToString(this.currentNote.getLastUpdated(), this.getContext()));
             }
             if (this.currentNote.getSubmitDate() != null) {
-                this.txtIssueNotesSubmitDate.setText(DateConverter.convertDateTimeToString(this.currentNote.getSubmitDate(), this.getContext()));
+                this.txtIssueNotesSubmitDate.setText(DateConvertHelper.convertDateTimeToString(this.currentNote.getSubmitDate(), this.getContext()));
             }
 
         }

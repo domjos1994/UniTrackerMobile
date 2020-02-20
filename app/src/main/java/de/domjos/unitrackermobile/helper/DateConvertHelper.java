@@ -24,17 +24,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.unitrackermobile.settings.Settings;
 
-public class DateConverter {
+public class DateConvertHelper {
     public static Date convertStringToDate(String dt, Context context) throws Exception {
         Settings settings = MainActivity.GLOBALS.getSettings(context);
         try {
-            return Converter.convertStringToDate(dt, settings.getDateFormat() + " " + settings.getTimeFormat());
+            return ConvertHelper.convertStringToDate(dt, settings.getDateFormat() + " " + settings.getTimeFormat());
         } catch (Exception ex) {
-            return Converter.convertStringToDate(dt, settings.getDateFormat());
+            return ConvertHelper.convertStringToDate(dt, settings.getDateFormat());
         }
     }
 

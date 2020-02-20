@@ -42,7 +42,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.BugzillaPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     private final String loginParams;
@@ -280,8 +280,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                 JSONObject bugObject = jsonArray.getJSONObject(i);
                 issue.setId(bugObject.getLong("id"));
                 issue.setTitle(bugObject.getString("summary"));
-                issue.setLastUpdated(Converter.convertStringToDate(bugObject.getString("last_change_time"), Bugzilla.DATE_TIME_FORMAT));
-                issue.setSubmitDate(Converter.convertStringToDate(bugObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
+                issue.setLastUpdated(ConvertHelper.convertStringToDate(bugObject.getString("last_change_time"), Bugzilla.DATE_TIME_FORMAT));
+                issue.setSubmitDate(ConvertHelper.convertStringToDate(bugObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
                 issue.setDescription(bugObject.getString("url"));
 
                 String priority = bugObject.getString("priority");
@@ -333,7 +333,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
 
                 if (bugObject.has("deadline")) {
                     if (!bugObject.isNull("deadline")) {
-                        issue.setDueDate(Converter.convertStringToDate(bugObject.getString("deadline"), Bugzilla.DATE_FORMAT));
+                        issue.setDueDate(ConvertHelper.convertStringToDate(bugObject.getString("deadline"), Bugzilla.DATE_FORMAT));
                     }
                 }
 
@@ -372,8 +372,8 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                             note.setTitle(text);
                         }
                         note.setDescription(text);
-                        note.setSubmitDate(Converter.convertStringToDate(commentObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
-                        note.setLastUpdated(Converter.convertStringToDate(commentObject.getString("time"), Bugzilla.DATE_TIME_FORMAT));
+                        note.setSubmitDate(ConvertHelper.convertStringToDate(commentObject.getString("creation_time"), Bugzilla.DATE_TIME_FORMAT));
+                        note.setLastUpdated(ConvertHelper.convertStringToDate(commentObject.getString("time"), Bugzilla.DATE_TIME_FORMAT));
                         issue.getNotes().add(note);
                     }
                 }
@@ -747,7 +747,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                     for (int k = 0; k <= changeArray.length() - 1; k++) {
                         JSONObject changeObject = changeArray.getJSONObject(k);
                         History<Long> history = new History<>();
-                        Date when = Converter.convertStringToDate(historyObject.getString("when"), Bugzilla.DATE_TIME_FORMAT);
+                        Date when = ConvertHelper.convertStringToDate(historyObject.getString("when"), Bugzilla.DATE_TIME_FORMAT);
                         history.setTime(when.getTime());
                         history.setUser(historyObject.getString("who"));
                         history.setField(changeObject.getString("field_name"));

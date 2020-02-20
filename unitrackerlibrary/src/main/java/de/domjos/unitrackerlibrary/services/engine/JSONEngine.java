@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import de.domjos.unitrackerlibrary.services.authentication.AccessTokenProvider;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import okhttp3.Authenticator;
 import okhttp3.Call;
 import okhttp3.ConnectionPool;
@@ -102,7 +102,7 @@ public class JSONEngine {
 
             ResponseBody responseBody = response.body();
             if (responseBody != null) {
-                this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+                this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
             }
             return this.state;
         } catch (OutOfMemoryError error) {
@@ -118,7 +118,7 @@ public class JSONEngine {
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
-            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
         }
         return this.state;
     }
@@ -130,7 +130,7 @@ public class JSONEngine {
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
-            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
         }
         return this.state;
     }
@@ -142,7 +142,7 @@ public class JSONEngine {
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
-            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
         }
     }
 
@@ -164,7 +164,7 @@ public class JSONEngine {
 
         ResponseBody responseBody = response.body();
         if (responseBody != null) {
-            this.currentMessage = Converter.convertStreamToString(responseBody.byteStream());
+            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
         }
         return this.state;
     }

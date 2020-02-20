@@ -32,7 +32,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
     private String path;
@@ -110,7 +110,7 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
                                 }
 
                                 for (Attachment attachment : attachments) {
-                                    Converter.convertByteArrayToFile(attachment.getContent(), new File(aPath.getAbsolutePath() + File.separatorChar + attachment.getFilename()));
+                                    ConvertHelper.convertByteArrayToFile(attachment.getContent(), new File(aPath.getAbsolutePath() + File.separatorChar + attachment.getFilename()));
                                 }
                             }
                         }

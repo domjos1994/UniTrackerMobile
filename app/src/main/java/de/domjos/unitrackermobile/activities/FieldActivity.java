@@ -66,35 +66,24 @@ public final class FieldActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvFields.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    currentField = (CustomField) listObject.getObject();
-                    manageControls(false, false, true);
-                    objectToControls();
-                }
+        this.lvFields.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            if (listObject != null) {
+                currentField = (CustomField) listObject.getObject();
+                manageControls(false, false, true);
+                objectToControls();
             }
         });
 
-        this.lvFields.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                try {
-                    new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(((CustomField)listObject.getObject()).getId()).get();
-                    manageControls(false, true, false);
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
-                }
+        this.lvFields.setOnDeleteListener(listObject -> {
+            try {
+                new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(((CustomField)listObject.getObject()).getId()).get();
+                manageControls(false, true, false);
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
             }
         });
 
-        this.lvFields.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvFields.setOnReloadListener(this::reload);
     }
 
     @Override

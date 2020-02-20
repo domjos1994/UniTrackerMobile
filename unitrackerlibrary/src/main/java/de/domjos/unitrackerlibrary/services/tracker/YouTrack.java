@@ -44,7 +44,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
@@ -1015,7 +1015,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                         case DATE:
                             if(entry.getValue()!=null) {
                                 if(!entry.getValue().equals("null")) {
-                                    Date dt = Converter.convertStringToDate(entry.getValue(), YouTrack.DATE_TIME_FIELD);
+                                    Date dt = ConvertHelper.convertStringToDate(entry.getValue(), YouTrack.DATE_TIME_FIELD);
                                     if(dt!=null) {
                                         customFieldObject.put("value", dt.getTime());
                                     }

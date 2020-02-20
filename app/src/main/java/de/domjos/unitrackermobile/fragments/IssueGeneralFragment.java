@@ -53,7 +53,7 @@ import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unitrackermobile.helper.ArrayHelper;
-import de.domjos.unitrackermobile.helper.DateConverter;
+import de.domjos.unitrackermobile.helper.DateConvertHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -286,7 +286,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
             try {
                 if (!this.txtIssueGeneralDueDate.getText().toString().equals("")) {
-                    issue.setDueDate(DateConverter.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), this.getContext()));
+                    issue.setDueDate(DateConvertHelper.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), this.getContext()));
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
@@ -367,14 +367,14 @@ public final class IssueGeneralFragment extends AbstractFragment {
             }
 
             if (this.issue.getSubmitDate() != null) {
-                this.txtIssueGeneralSubmitted.setText(DateConverter.convertDateTimeToString(this.issue.getSubmitDate(), this.getContext()));
+                this.txtIssueGeneralSubmitted.setText(DateConvertHelper.convertDateTimeToString(this.issue.getSubmitDate(), this.getContext()));
 
             }
             if (this.issue.getLastUpdated() != null) {
-                this.txtIssueGeneralUpdated.setText(DateConverter.convertDateTimeToString(this.issue.getLastUpdated(), this.getContext()));
+                this.txtIssueGeneralUpdated.setText(DateConvertHelper.convertDateTimeToString(this.issue.getLastUpdated(), this.getContext()));
             }
             if (this.issue.getDueDate() != null) {
-                this.txtIssueGeneralDueDate.setText(DateConverter.convertDateTimeToString(this.issue.getDueDate(), this.getContext()));
+                this.txtIssueGeneralDueDate.setText(DateConvertHelper.convertDateTimeToString(this.issue.getDueDate(), this.getContext()));
             }
 
             this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {

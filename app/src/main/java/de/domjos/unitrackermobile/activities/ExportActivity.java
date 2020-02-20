@@ -52,7 +52,7 @@ import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -167,10 +167,10 @@ public final class ExportActivity extends AbstractActivity {
                     byte[] background = null, icon = null;
 
                     if(this.chkShowBackground.isChecked()) {
-                        background = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.background));
+                        background = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.background));
                     }
                     if(this.chkShowIcon.isChecked()) {
-                        icon = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                        icon = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web));
                     }
 
 

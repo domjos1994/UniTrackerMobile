@@ -27,7 +27,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.AzureDevOpsPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import kotlin.text.Charsets;
 
 public final class AzureDevOps extends JSONEngine implements IBugService<String> {
@@ -68,7 +68,7 @@ public final class AzureDevOps extends JSONEngine implements IBugService<String>
                 project.setId(projectObject.getString("id"));
                 project.setTitle(projectObject.getString("name"));
                 project.setEnabled(!projectObject.getString("visibility").equals("private"));
-                project.setUpdatedAt(Converter.convertStringToDate(projectObject.getString("lastUpdateTime"), AzureDevOps.DATE_TIME_FORMAT).getTime());
+                project.setUpdatedAt(ConvertHelper.convertStringToDate(projectObject.getString("lastUpdateTime"), AzureDevOps.DATE_TIME_FORMAT).getTime());
                 projects.add(project);
             }
         }

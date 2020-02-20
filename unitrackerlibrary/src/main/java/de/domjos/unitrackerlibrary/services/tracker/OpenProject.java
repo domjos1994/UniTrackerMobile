@@ -33,7 +33,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.OpenProjectPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import okhttp3.Credentials;
 
 public final class OpenProject extends JSONEngine implements IBugService<Long> {
@@ -75,8 +75,8 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 project.setAlias(elementObject.getString("identifier"));
                 project.setTitle(elementObject.getString("name"));
                 project.setDescription(elementObject.getString("description"));
-                project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
-                project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+                project.setCreatedAt(ConvertHelper.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+                project.setUpdatedAt(ConvertHelper.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
                 projects.add(project);
             }
         }
@@ -93,8 +93,8 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             project.setAlias(elementObject.getString("identifier"));
             project.setTitle(elementObject.getString("name"));
             project.setDescription(elementObject.getString("description"));
-            project.setCreatedAt(Converter.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
-            project.setUpdatedAt(Converter.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+            project.setCreatedAt(ConvertHelper.convertStringToDate(elementObject.getString("createdAt"), OpenProject.DATE_TIME_FORMAT).getTime());
+            project.setUpdatedAt(ConvertHelper.convertStringToDate(elementObject.getString("updatedAt"), OpenProject.DATE_TIME_FORMAT).getTime());
         }
         return project;
     }
@@ -128,7 +128,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 }
                 if (elementObject.has("startDate")) {
                     if (!elementObject.isNull("startDate")) {
-                        version.setReleasedVersionAt(Converter.convertStringToDate(elementObject.getString("startDate"), OpenProject.DATE_FORMAT).getTime());
+                        version.setReleasedVersionAt(ConvertHelper.convertStringToDate(elementObject.getString("startDate"), OpenProject.DATE_FORMAT).getTime());
                     }
                 }
                 if (elementObject.has("status")) {
@@ -283,11 +283,11 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             }
             if (jsonObject.has("dueDate")) {
                 if (!jsonObject.isNull("dueDate")) {
-                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("dueDate"), OpenProject.DATE_FORMAT));
+                    issue.setDueDate(ConvertHelper.convertStringToDate(jsonObject.getString("dueDate"), OpenProject.DATE_FORMAT));
                 }
             }
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("createdAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updatedAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
+            issue.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("createdAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
+            issue.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updatedAt"), OpenProject.OTHER_DATE_TIME_FORMAT));
 
             JSONObject linkObject = jsonObject.getJSONObject("_links");
             if (linkObject.has("assignee")) {
@@ -566,7 +566,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 JSONObject linkObject = elementObject.getJSONObject("_links");
                 JSONObject downloadObject = linkObject.getJSONObject("downloadLocation");
                 attachment.setDownloadUrl(downloadObject.getString("href"));
-                attachment.setContent(Converter.convertStringToByteArray(attachment.getDownloadUrl()));
+                attachment.setContent(ConvertHelper.convertStringToByteArray(attachment.getDownloadUrl()));
                 attachments.add(attachment);
             }
         }
@@ -727,7 +727,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                     JSONObject detailsObject = detailsArray.getJSONObject(j);
                     History<Long> history = new History<>();
                     history.setId(historyObject.getLong("id"));
-                    history.setTime(Converter.convertStringToDate(historyObject.getString("createdAt"), OTHER_DATE_TIME_FORMAT).getTime());
+                    history.setTime(ConvertHelper.convertStringToDate(historyObject.getString("createdAt"), OTHER_DATE_TIME_FORMAT).getTime());
 
                     JSONObject linksObject = historyObject.getJSONObject("_links");
                     JSONObject userObject = linksObject.getJSONObject("user");

@@ -31,7 +31,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.PivotalTrackerPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class PivotalTracker extends JSONEngine implements IBugService<Long> {
     private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
@@ -100,7 +100,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     }
 
     private long getDate(String key, JSONObject object) throws Exception {
-        Date dt = Converter.convertStringToDate(object.getString(key), PivotalTracker.DATE_FORMAT);
+        Date dt = ConvertHelper.convertStringToDate(object.getString(key), PivotalTracker.DATE_FORMAT);
         if(dt!=null) {
             return dt.getTime();
         }
@@ -145,7 +145,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 version.setId(jsonObject.getLong("id"));
                 version.setTitle(jsonObject.getString("name"));
-                version.setReleasedVersionAt(Converter.convertStringToDate(jsonObject.getString("deadline"), PivotalTracker.DATE_FORMAT).getTime());
+                version.setReleasedVersionAt(ConvertHelper.convertStringToDate(jsonObject.getString("deadline"), PivotalTracker.DATE_FORMAT).getTime());
                 versions.add(version);
             }
         }
@@ -245,8 +245,8 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
             if (jsonObject.has("description")) {
                 issue.setDescription(jsonObject.getString("description"));
             }
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_at"), PivotalTracker.DATE_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_at"), PivotalTracker.DATE_FORMAT));
+            issue.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("created_at"), PivotalTracker.DATE_FORMAT));
+            issue.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updated_at"), PivotalTracker.DATE_FORMAT));
 
             String state = jsonObject.getString("current_state");
             state = state.substring(0, 1).toUpperCase() + state.substring(1);
@@ -349,8 +349,8 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                     note.setTitle(text);
                 }
                 note.setDescription(text);
-                note.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_at"), PivotalTracker.DATE_FORMAT));
-                note.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_at"), PivotalTracker.DATE_FORMAT));
+                note.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("created_at"), PivotalTracker.DATE_FORMAT));
+                note.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updated_at"), PivotalTracker.DATE_FORMAT));
                 notes.add(note);
             }
         }
@@ -538,7 +538,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                         history.setOldValue(originalObject.getString(field));
                         history.setNewValue(newObject.getString(field));
                         if (jsonObject.has("occured_at")) {
-                            history.setTime(Converter.convertStringToDate(jsonObject.getString("occured_at"), PivotalTracker.DATE_FORMAT).getTime());
+                            history.setTime(ConvertHelper.convertStringToDate(jsonObject.getString("occured_at"), PivotalTracker.DATE_FORMAT).getTime());
                         }
                         history.setUser(personObject.getString("initials"));
                         histories.add(history);

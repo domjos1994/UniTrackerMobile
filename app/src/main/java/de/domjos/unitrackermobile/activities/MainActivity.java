@@ -183,31 +183,25 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.lvMainIssues.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                    intent.putExtra("id", String.valueOf(((Issue)listObject.getObject()).getId()));
-                    intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
-                    startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
-                }
+        this.lvMainIssues.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            if (listObject != null) {
+                Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
+                intent.putExtra("id", String.valueOf(((Issue)listObject.getObject()).getId()));
+                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
+                startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
             }
         });
 
-        this.lvMainIssues.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                try {
-                    if (listObject != null) {
-                        if (listObject.getObject() != null) {
-                            Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
-                            new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(((Issue)listObject.getObject()).getId()).get();
-                        }
+        this.lvMainIssues.setOnDeleteListener(listObject -> {
+            try {
+                if (listObject != null) {
+                    if (listObject.getObject() != null) {
+                        Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
+                        new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(((Issue)listObject.getObject()).getId()).get();
                     }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
                 }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
             }
         });
 
@@ -279,12 +273,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reload();
         });
 
-        this.lvMainIssues.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvMainIssues.setOnReloadListener(this::reload);
     }
 
     @Override
@@ -324,31 +313,28 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.lvMainIssues.setContextMenu(R.menu.context_main);
-            this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, new SwipeRefreshDeleteList.ButtonClickListener() {
-                @Override
-                public void onClick(List<BaseDescriptionObject> objectList) {
-                    try {
-                        Activity act = MainActivity.this;
-                        boolean show = settings.showNotifications();
-                        Object pid = settings.getCurrentProjectId();
+            this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, this.getString(R.string.issues_general_tags), objectList -> {
+                try {
+                    Activity act = MainActivity.this;
+                    boolean show = settings.showNotifications();
+                    Object pid = settings.getCurrentProjectId();
 
-                        String tags = Helper.showTagDialog(act, bugService, show, pid);
+                    String tags = Helper.showTagDialog(act, bugService, show, pid);
 
-                        for(BaseDescriptionObject listObject : objectList) {
-                            IssueTask issueTask = new IssueTask(act, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
-                            List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
+                    for(BaseDescriptionObject listObject : objectList) {
+                        IssueTask issueTask = new IssueTask(act, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
+                        List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
 
-                            if(issues!=null) {
-                                if(!issues.isEmpty()) {
-                                    issues.get(0).setTags(tags);
-                                    issueTask = new IssueTask(act, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
-                                    issueTask.execute(issues.get(0)).get();
-                                }
+                        if(issues!=null) {
+                            if(!issues.isEmpty()) {
+                                issues.get(0).setTags(tags);
+                                issueTask = new IssueTask(act, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                                issueTask.execute(issues.get(0)).get();
                             }
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                     }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                 }
             });
 

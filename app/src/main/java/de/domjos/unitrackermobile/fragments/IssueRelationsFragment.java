@@ -99,20 +99,14 @@ public final class IssueRelationsFragment extends AbstractFragment {
             this.issuesAdapter.notifyDataSetChanged();
         }
 
-        this.lvIssuesRelations.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentEntry = (Relationship) listObject.getObject();
-                manageRelationControls(false, false, true);
-            }
+        this.lvIssuesRelations.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            currentEntry = (Relationship) listObject.getObject();
+            manageRelationControls(false, false, true);
         });
 
-        this.lvIssuesRelations.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                currentEntry = (Relationship) listObject.getObject();
-                delete();
-            }
+        this.lvIssuesRelations.setOnDeleteListener(listObject -> {
+            currentEntry = (Relationship) listObject.getObject();
+            delete();
         });
 
         this.cmdIssuesRelationsAdd.setOnClickListener(v -> this.manageRelationControls(true, true, false));

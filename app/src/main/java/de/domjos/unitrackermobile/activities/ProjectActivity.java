@@ -40,12 +40,12 @@ import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unitrackermobile.helper.DateConverter;
+import de.domjos.unitrackermobile.helper.DateConvertHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.IntentHelper;
 import de.domjos.unitrackermobile.helper.Validator;
@@ -81,42 +81,36 @@ public final class ProjectActivity extends AbstractActivity {
     @Override
     protected void initActions() {
 
-        this.lvProjects.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    currentProject = (Project) listObject.getObject();
-                    objectToControls();
-                    manageControls(false, false, true);
-                }
+        this.lvProjects.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            if (listObject != null) {
+                currentProject = (Project) listObject.getObject();
+                objectToControls();
+                manageControls(false, false, true);
             }
         });
 
-        this.lvProjects.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                if(bugService.getPermissions().deleteProjects()) {
-                    try {
-                        final ProjectTask[] task = new ProjectTask[1];
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
-                        builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
-                        builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
-                            try {
-                                task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
-                                task[0].execute(((Project)listObject.getObject()).getId()).get();
-                                if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
-                                    MessageHelper.printMessage(bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, getApplicationContext());
-                                } else {
-                                    manageControls(false, false, false);
-                                }
-                            } catch (Exception ex) {
-                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+        this.lvProjects.setOnDeleteListener(listObject -> {
+            if(bugService.getPermissions().deleteProjects()) {
+                try {
+                    final ProjectTask[] task = new ProjectTask[1];
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
+                    builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
+                    builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
+                        try {
+                            task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
+                            task[0].execute(((Project)listObject.getObject()).getId()).get();
+                            if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
+                                MessageHelper.printMessage(bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, getApplicationContext());
+                            } else {
+                                manageControls(false, false, false);
                             }
-                        });
-                        builder.create().show();
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
-                    }
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+                        }
+                    });
+                    builder.create().show();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
                 }
             }
         });
@@ -131,12 +125,7 @@ public final class ProjectActivity extends AbstractActivity {
             }
         });
 
-        this.lvProjects.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvProjects.setOnReloadListener(this::reload);
     }
 
     @Override
@@ -301,9 +290,9 @@ public final class ProjectActivity extends AbstractActivity {
                             try {
                                 new Thread(() -> {
                                     try {
-                                        baseDescriptionObject.setCover(Converter.convertStringToByteArray(project.getIconUrl()));
+                                        baseDescriptionObject.setCover(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
                                         if (baseDescriptionObject.getCover() != null) {
-                                            baseDescriptionObject.setCover(Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
+                                            baseDescriptionObject.setCover(ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_apps_black_24dp)));
                                         }
                                     } catch (Exception ex) {
                                         runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext()));
@@ -342,10 +331,10 @@ public final class ProjectActivity extends AbstractActivity {
             this.txtProjectVersion.setText(this.currentProject.getDefaultVersion());
 
             if (this.currentProject.getCreatedAt() != 0) {
-                this.lblCreatedAt.setText(DateConverter.convertLongToString(this.currentProject.getCreatedAt(), this.getApplicationContext()));
+                this.lblCreatedAt.setText(DateConvertHelper.convertLongToString(this.currentProject.getCreatedAt(), this.getApplicationContext()));
             }
             if (this.currentProject.getUpdatedAt() != 0) {
-                this.lblUpdatedAt.setText(DateConverter.convertLongToString(this.currentProject.getUpdatedAt(), this.getApplicationContext()));
+                this.lblUpdatedAt.setText(DateConvertHelper.convertLongToString(this.currentProject.getUpdatedAt(), this.getApplicationContext()));
             }
 
             StringBuilder builder = new StringBuilder();

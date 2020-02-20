@@ -43,11 +43,11 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unitrackermobile.helper.DateConverter;
+import de.domjos.unitrackermobile.helper.DateConvertHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 import de.domjos.unitrackermobile.settings.Settings;
@@ -78,32 +78,21 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.lvVersions.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                try {
-                    new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(((Version)listObject.getObject()).getId()).get();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
-                }
+        this.lvVersions.setOnDeleteListener(listObject -> {
+            try {
+                new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(((Version)listObject.getObject()).getId()).get();
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
             }
         });
 
-        this.lvVersions.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                currentVersion = (Version) listObject.getObject();
-                objectToControls();
-                manageControls(false, false, true);
-            }
+        this.lvVersions.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            currentVersion = (Version) listObject.getObject();
+            objectToControls();
+            manageControls(false, false, true);
         });
 
-        this.lvVersions.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                reload();
-            }
-        });
+        this.lvVersions.setOnReloadListener(this::reload);
 
         this.spVersionFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -249,7 +238,7 @@ public final class VersionActivity extends AbstractActivity {
             this.txtVersionDescription.setText(this.currentVersion.getDescription());
             Date date = new Date();
             date.setTime(this.currentVersion.getReleasedVersionAt());
-            this.txtVersionReleasedAt.setText(DateConverter.convertDateTimeToString(date, this.getApplicationContext()));
+            this.txtVersionReleasedAt.setText(DateConvertHelper.convertDateTimeToString(date, this.getApplicationContext()));
             this.chkVersionDeprecated.setChecked(this.currentVersion.isDeprecatedVersion());
             this.chkVersionReleased.setChecked(this.currentVersion.isReleasedVersion());
         }
@@ -261,7 +250,7 @@ public final class VersionActivity extends AbstractActivity {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
                 String strDate = this.txtVersionReleasedAt.getText().toString();
-                this.currentVersion.setReleasedVersionAt(DateConverter.convertStringToDate(strDate, this.getApplicationContext()).getTime());
+                this.currentVersion.setReleasedVersionAt(DateConvertHelper.convertStringToDate(strDate, this.getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }
@@ -345,11 +334,11 @@ public final class VersionActivity extends AbstractActivity {
 
                             byte[] bg, icon;
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                                bg = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.background));
-                                icon = Converter.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.ic_launcher_web));
+                                bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.background));
+                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.ic_launcher_web));
                             } else {
-                                bg = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
-                                icon = Converter.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                                bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
+                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.ic_launcher_web));
                             }
 
                             ExportTask exportTask = new ExportTask(

@@ -36,7 +36,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.MantisBTPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.SoapEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 import static org.ksoap2.serialization.MarshalHashtable.NAMESPACE;
 
@@ -1173,7 +1173,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     }
                     version.setDeprecatedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("obsolete")));
                     version.setReleasedVersion(Boolean.parseBoolean(soapObject.getPropertyAsString("released")));
-                    version.setReleasedVersionAt(Converter.convertStringToDate(soapObject.getPropertyAsString("date_order"), MantisBT.DATE_TIME_FORMAT).getTime());
+                    version.setReleasedVersionAt(ConvertHelper.convertStringToDate(soapObject.getPropertyAsString("date_order"), MantisBT.DATE_TIME_FORMAT).getTime());
                     versions.add(version);
                 }
             }

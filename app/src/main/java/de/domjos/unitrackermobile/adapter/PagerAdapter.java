@@ -34,7 +34,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.fragments.*;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -216,41 +216,41 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
                 break;
             case 1:
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_description_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_description_black_24dp);
                 break;
         }
 
         int i = 2;
         if (this.bugService.getPermissions().listNotes()) {
             if (position == i) {
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_note_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_note_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listAttachments()) {
             if (position == i) {
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_file_upload_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_file_upload_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listRelations()) {
             if (position == i) {
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_account_circle_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_account_circle_black_24dp);
             }
             i++;
         }
         if (this.bugService.getPermissions().listHistory()) {
             if (position == i) {
-                drawable = Converter.convertResourcesToDrawable(this.context, R.drawable.ic_history_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_history_black_24dp);
             }
         }
 

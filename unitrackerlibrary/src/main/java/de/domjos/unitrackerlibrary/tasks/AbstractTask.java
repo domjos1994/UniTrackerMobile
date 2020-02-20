@@ -62,7 +62,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     protected void onPostExecute(Result result) {
         super.onPostExecute(result);
         if (this.showNotifications) {
-            MessageHelper.stopProgressNotification((Activity) this.getContext(), this.id);
+            MessageHelper.stopNotification(this.getContext(), this.id);
         }
         if (this.postExecuteListener != null) {
             this.postExecuteListener.onPostExecute(result);

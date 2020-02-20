@@ -41,7 +41,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.JiraPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class Jira extends JSONEngine implements IBugService<Long> {
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
@@ -162,7 +162,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 version.setReleasedVersion(jsonObject.getBoolean("released"));
                 version.setDeprecatedVersion(jsonObject.getBoolean("archived"));
                 if (jsonObject.has("releaseDate")) {
-                    Date dt = Converter.convertStringToDate(jsonObject.getString("releaseDate"), Jira.DATE_FORMAT);
+                    Date dt = ConvertHelper.convertStringToDate(jsonObject.getString("releaseDate"), Jira.DATE_FORMAT);
                     if(dt!=null)  {
                         version.setReleasedVersionAt(dt.getTime());
                     }
@@ -305,7 +305,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             }
             if (fieldsObject.has("duedate")) {
                 if (!fieldsObject.isNull("duedate")) {
-                    issue.setDueDate(Converter.convertStringToDate(fieldsObject.getString("duedate"), Jira.DATE_FORMAT));
+                    issue.setDueDate(ConvertHelper.convertStringToDate(fieldsObject.getString("duedate"), Jira.DATE_FORMAT));
                 }
             }
             if (fieldsObject.has("status")) {
@@ -386,8 +386,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            issue.setSubmitDate(Converter.convertStringToDate(fieldsObject.getString("created"), Jira.DATE_TIME_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(fieldsObject.getString("updated"), Jira.DATE_TIME_FORMAT));
+            issue.setSubmitDate(ConvertHelper.convertStringToDate(fieldsObject.getString("created"), Jira.DATE_TIME_FORMAT));
+            issue.setLastUpdated(ConvertHelper.convertStringToDate(fieldsObject.getString("updated"), Jira.DATE_TIME_FORMAT));
             issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
             issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
         }
@@ -654,7 +654,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 attachment.setId(jsonObject.getLong("id"));
                 attachment.setFilename(jsonObject.getString("filename"));
                 String url = jsonObject.getString("content");
-                attachment.setContent(Converter.downloadFile(new URL(url)));
+                attachment.setContent(ConvertHelper.downloadFile(new URL(url)));
                 attachment.setContentType(jsonObject.getString("mimeType"));
                 attachments.add(attachment);
             }
@@ -860,7 +860,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 JSONObject userObject = historyObject.getJSONObject("author");
                 history.setUser(userObject.getString("name"));
 
-                Date dt = Converter.convertStringToDate(historyObject.getString("created"), Jira.DATE_TIME_FORMAT);
+                Date dt = ConvertHelper.convertStringToDate(historyObject.getString("created"), Jira.DATE_TIME_FORMAT);
                 if(dt!=null) {
                     history.setTime(dt.getTime());
                 }

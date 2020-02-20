@@ -38,7 +38,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.BacklogPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class Backlog extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
@@ -145,7 +145,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 version.setReleasedVersion(false);
                 if (jsonObject.has("releaseDueDate")) {
                     if (!jsonObject.isNull("releaseDueDate")) {
-                        Date dt = Converter.convertStringToDate(jsonObject.getString("releaseDueDate"), Backlog.DATE_FORMAT);
+                        Date dt = ConvertHelper.convertStringToDate(jsonObject.getString("releaseDueDate"), Backlog.DATE_FORMAT);
                         if (dt != null) {
                             version.setReleasedVersionAt(dt.getTime());
                             version.setReleasedVersion(dt.before(new Date()));
@@ -268,8 +268,8 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
             issue.setId(jsonObject.getLong("id"));
             issue.setTitle(jsonObject.getString("summary"));
             issue.setDescription(jsonObject.getString("description"));
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
+            issue.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
+            issue.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
 
             if (!jsonObject.isNull("issueType")) {
                 JSONObject typeObject = jsonObject.getJSONObject("issueType");
@@ -312,7 +312,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
 
             if (!jsonObject.isNull("dueDate")) {
                 String dueDate = jsonObject.getString("dueDate");
-                issue.setDueDate(Converter.convertStringToDate(dueDate, Backlog.DATE_TIME_FORMAT));
+                issue.setDueDate(ConvertHelper.convertStringToDate(dueDate, Backlog.DATE_TIME_FORMAT));
             }
 
             if (!jsonObject.isNull("customFields")) {
@@ -485,8 +485,8 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                         note.setTitle(content);
                     }
                     note.setDescription(content);
-                    note.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
-                    note.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
+                    note.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT));
+                    note.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updated"), Backlog.DATE_TIME_FORMAT));
                     notes.add(note);
                 }
             }
@@ -756,7 +756,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 JSONObject contentObject = jsonObject.getJSONObject("content");
                 JSONObject createdUserObject = jsonObject.getJSONObject("createdUser");
-                Date dt = Converter.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT);
+                Date dt = ConvertHelper.convertStringToDate(jsonObject.getString("created"), Backlog.DATE_TIME_FORMAT);
 
                 if (contentObject.has("changes")) {
                     if (!contentObject.isNull("changes")) {

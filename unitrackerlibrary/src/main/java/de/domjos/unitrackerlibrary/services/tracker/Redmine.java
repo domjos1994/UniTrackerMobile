@@ -41,7 +41,7 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.RedminePermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 
 public final class Redmine extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
@@ -341,11 +341,11 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             if (jsonObject.has("description")) {
                 issue.setDescription(jsonObject.getString("description"));
             }
-            issue.setSubmitDate(Converter.convertStringToDate(jsonObject.getString("created_on"), Redmine.DATE_TIME_FORMAT));
-            issue.setLastUpdated(Converter.convertStringToDate(jsonObject.getString("updated_on"), Redmine.DATE_TIME_FORMAT));
+            issue.setSubmitDate(ConvertHelper.convertStringToDate(jsonObject.getString("created_on"), Redmine.DATE_TIME_FORMAT));
+            issue.setLastUpdated(ConvertHelper.convertStringToDate(jsonObject.getString("updated_on"), Redmine.DATE_TIME_FORMAT));
             if (jsonObject.has("due_date")) {
                 if (!jsonObject.isNull("due_date")) {
-                    issue.setDueDate(Converter.convertStringToDate(jsonObject.getString("due_date"), Redmine.DATE_FORMAT));
+                    issue.setDueDate(ConvertHelper.convertStringToDate(jsonObject.getString("due_date"), Redmine.DATE_FORMAT));
                 }
             }
             if (jsonObject.has("status")) {
@@ -437,7 +437,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                         attachment.setId(attachmentObject.getLong("id"));
                         attachment.setFilename(attachmentObject.getString("filename"));
                         attachment.setDownloadUrl(attachmentObject.getString("content_url"));
-                        attachment.setContent(Converter.convertStringToByteArray(attachment.getDownloadUrl()));
+                        attachment.setContent(ConvertHelper.convertStringToByteArray(attachment.getDownloadUrl()));
                         issue.getAttachments().add(attachment);
                     }
                 }
@@ -908,7 +908,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             }
             project.setPrivateProject(!obj.getBoolean("is_public"));
 
-            Date dt = Converter.convertStringToDate(obj.getString("created_on"), Redmine.DATE_TIME_FORMAT);
+            Date dt = ConvertHelper.convertStringToDate(obj.getString("created_on"), Redmine.DATE_TIME_FORMAT);
 
             if (dt != null) {
                 project.setCreatedAt(dt.getTime());

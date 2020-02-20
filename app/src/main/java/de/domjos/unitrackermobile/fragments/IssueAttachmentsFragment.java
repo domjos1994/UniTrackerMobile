@@ -41,7 +41,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.customwidgets.utils.Converter;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unitrackermobile.R;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackermobile.helper.Helper;
@@ -82,32 +82,26 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.cmdIssueAttachmentAdd = this.root.findViewById(R.id.cmdIssueAttachmentAdd);
         this.cmdIssueAttachmentPhoto = this.root.findViewById(R.id.cmdIssueAttachmentPhoto);
 
-        this.lvIssueAttachments.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                try {
-                    if (listObject != null) {
-                        if (getContext() != null) {
-                            if(listObject.getObject() instanceof Attachment) {
-                                Attachment attachment = (Attachment) listObject.getObject();
-                                IntentHelper.saveAndOpenFile(attachment.getContent(), getActivity());
-                            }
+        this.lvIssueAttachments.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
+            try {
+                if (listObject != null) {
+                    if (getContext() != null) {
+                        if(listObject.getObject() instanceof Attachment) {
+                            Attachment attachment = (Attachment) listObject.getObject();
+                            IntentHelper.saveAndOpenFile(attachment.getContent(), getActivity());
                         }
                     }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
                 }
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
             }
         });
 
-        this.lvIssueAttachments.deleteItem(new SwipeRefreshDeleteList.DeleteListener() {
-            @Override
-            public void onDelete(BaseDescriptionObject listObject) {
-                for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
-                    BaseDescriptionObject current = lvIssueAttachments.getAdapter().getItem(i);
-                    if (((Attachment)current.getObject()).getId() == ((Attachment)listObject.getObject()).getId()) {
-                        lvIssueAttachments.getAdapter().deleteItem(i);
-                    }
+        this.lvIssueAttachments.setOnDeleteListener(listObject ->  {
+            for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
+                BaseDescriptionObject current = lvIssueAttachments.getAdapter().getItem(i);
+                if (((Attachment)current.getObject()).getId() == ((Attachment)listObject.getObject()).getId()) {
+                    lvIssueAttachments.getAdapter().deleteItem(i);
                 }
             }
         });
@@ -195,7 +189,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                             attachment.setDownloadUrl(imageUri.getPath());
                             attachment.setFilename(this.getFileName(imageUri));
                             attachment.setContentType(data.getType());
-                            attachment.setContent(Converter.convertStreamToByteArray(imageStream));
+                            attachment.setContent(ConvertHelper.convertStreamToByteArray(imageStream));
                             BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(attachment);
                             baseDescriptionObject.setTitle(attachment.getTitle());
                             baseDescriptionObject.setDescription(attachment.getDescription());
@@ -295,7 +289,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 content = attachment.getContent();
             } else {
                 try {
-                    content = Converter.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
+                    content = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
                 } catch (Exception ex) {
                     this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
                     continue;

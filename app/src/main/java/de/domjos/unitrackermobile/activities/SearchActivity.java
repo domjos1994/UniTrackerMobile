@@ -65,23 +65,20 @@ public final class SearchActivity extends AbstractActivity {
             this.search();
         });
 
-        this.lvSearchResults.click(new SwipeRefreshDeleteList.ClickListener() {
-            @Override
-            public void onClick(BaseDescriptionObject listObject) {
-                if (listObject != null) {
-                    for (IBugService bugService : bugServices) {
-                        Object title = ((DescriptionObject) listObject.getObject()).getHints().get("title");
-                        if (title != null) {
-                            if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
-                                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
-                                Object project = ((DescriptionObject) listObject.getObject()).getHints().get("project");
-                                if (project != null) {
-                                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(project.toString());
-                                    Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                                    intent.putExtra("id", ((DescriptionObject)listObject.getObject()).getId().toString());
-                                    intent.putExtra("pid", project.toString());
-                                    startActivity(intent);
-                                }
+        this.lvSearchResults.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener)  listObject -> {
+            if (listObject != null) {
+                for (IBugService bugService : bugServices) {
+                    Object title = ((DescriptionObject) listObject.getObject()).getHints().get("title");
+                    if (title != null) {
+                        if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
+                            MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
+                            Object project = ((DescriptionObject) listObject.getObject()).getHints().get("project");
+                            if (project != null) {
+                                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(project.toString());
+                                Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
+                                intent.putExtra("id", ((DescriptionObject)listObject.getObject()).getId().toString());
+                                intent.putExtra("pid", project.toString());
+                                startActivity(intent);
                             }
                         }
                     }
@@ -89,12 +86,7 @@ public final class SearchActivity extends AbstractActivity {
             }
         });
 
-        this.lvSearchResults.reload(new SwipeRefreshDeleteList.ReloadListener() {
-            @Override
-            public void onReload() {
-                search();
-            }
-        });
+        this.lvSearchResults.setOnReloadListener(this::reload);
 
         this.txtSearchProjects.addTextChangedListener(new TextWatcher() {
             @Override

@@ -38,7 +38,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackermobile.R;
 import de.domjos.unitrackermobile.activities.MainActivity;
-import de.domjos.unitrackermobile.helper.DateConverter;
+import de.domjos.unitrackermobile.helper.DateConvertHelper;
 import de.domjos.unitrackermobile.helper.Helper;
 import de.domjos.unitrackermobile.helper.Validator;
 
@@ -114,7 +114,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
                                     tableRow.addView(this.createTextView(history.getField()));
                                     tableRow.addView(this.createTextView(history.getUser()));
-                                    tableRow.addView(this.createTextView(DateConverter.convertLongToString(history.getTime(), this.getContext())));
+                                    tableRow.addView(this.createTextView(DateConvertHelper.convertLongToString(history.getTime(), this.getContext())));
                                     tableRow.addView(this.createTextView(history.getOldValue()));
                                     tableRow.addView(this.createTextView(history.getNewValue()));
 
