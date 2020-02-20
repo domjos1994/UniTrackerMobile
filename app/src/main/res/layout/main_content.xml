@@ -106,7 +106,11 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/separator"
             android:layout_above="@+id/footer"
-            app:itemIcon="@drawable/ic_bug_report_black_24dp"/>
+            app:itemIcon="@drawable/ic_bug_report_black_24dp"
+            app:listItemBackground="@drawable/controls_background"
+            app:selectedListItemBackground="@drawable/selected_background"
+            app:listItemDivider="@drawable/selected_background"
+            app:listItemForeground="@android:color/black"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cmdIssueAdd"

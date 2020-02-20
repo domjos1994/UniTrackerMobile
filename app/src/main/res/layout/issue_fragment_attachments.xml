@@ -26,7 +26,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/ll"
-        app:itemIcon="@drawable/ic_file_upload_black_24dp"/>
+        app:itemIcon="@drawable/ic_file_upload_black_24dp"
+        app:listItemBackground="@drawable/controls_background"
+        app:selectedListItemBackground="@drawable/selected_background"
+        app:listItemDivider="@drawable/selected_background"
+        app:listItemForeground="@android:color/black"/>
 
     <LinearLayout
         android:id="@+id/ll"
