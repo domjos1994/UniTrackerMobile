@@ -39,12 +39,23 @@ buildscript {
     }
 }
 
+def githubProperties = new Properties()
+githubProperties.load(new FileInputStream(new File(projectDir, "../Libraries/customwidgets/github.properties")))
+
 allprojects {
     repositories {
         google()
         jcenter()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/domjos1994/Customwidgets")
+            credentials {
+                username = githubProperties['gpr.usr']
+                password = githubProperties['gpr.key']
+            }
+        }
     }
 }
 

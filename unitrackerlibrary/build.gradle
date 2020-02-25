@@ -65,5 +65,7 @@ dependencies {
 
     // library to create pdf-files
     implementation 'com.itextpdf:itextg:5.5.10'
-    implementation project(path: ':customwidgets')
+
+    // own libraries
+    implementation 'de.domjos:customwidgets:2.1'
 }
