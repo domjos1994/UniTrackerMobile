@@ -32,7 +32,7 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;

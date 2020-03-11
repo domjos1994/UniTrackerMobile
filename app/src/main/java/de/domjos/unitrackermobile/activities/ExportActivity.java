@@ -170,7 +170,7 @@ public final class ExportActivity extends AbstractActivity {
                         background = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.background));
                     }
                     if(this.chkShowIcon.isChecked()) {
-                        icon = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                        icon = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.mipmap.ic_launcher));
                     }
 
 

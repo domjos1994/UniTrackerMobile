@@ -34,8 +34,9 @@ import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Date;
+import java.util.Objects;
 
-import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -334,11 +335,11 @@ public final class VersionActivity extends AbstractActivity {
 
                             byte[] bg, icon;
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                                bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.background));
-                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getDrawable(R.drawable.ic_launcher_web));
+                                bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.drawable.background)));
+                                icon = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.mipmap.ic_launcher)));
                             } else {
                                 bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
-                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.ic_launcher_web));
+                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.mipmap.ic_launcher));
                             }
 
                             ExportTask exportTask = new ExportTask(

@@ -42,7 +42,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 import java.util.List;
 
-import de.domjos.customwidgets.model.objects.BaseDescriptionObject;
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
