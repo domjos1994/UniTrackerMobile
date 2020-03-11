@@ -28,6 +28,22 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/lblTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:text="@string/issues_attachments"
+            android:paddingTop="8dp"
+            android:paddingEnd="8dp"
+            android:paddingStart="8dp"
+            android:paddingBottom="20dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/textColorPrimary"
+            android:background="@color/colorPrimary"/>
+
         <ImageView
             android:id="@+id/ivCurrentAttachment"
             android:contentDescription="@string/issues_attachments"
