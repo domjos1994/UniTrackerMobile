@@ -131,7 +131,11 @@ public class CalendarActivity extends AbstractActivity {
                                                 Version version = (Version) obj;
                                                 addEvent(version.getReleasedVersionAt(), version, R.drawable.ic_update_black_24dp);
                                             }
-                                            runOnUiThread(()->widgetCalendar.reload());
+                                            runOnUiThread(()->{
+                                                try {
+                                                    widgetCalendar.reload();
+                                                } catch (Exception ignored) {}
+                                            });
                                         }
                                     });
                                     versionTask.execute(0);
@@ -162,7 +166,11 @@ public class CalendarActivity extends AbstractActivity {
                                                 i++;
                                                 loadingFinish(i, objList.size());
                                             }
-                                            runOnUiThread(()->widgetCalendar.reload());
+                                            runOnUiThread(()->{
+                                                try {
+                                                    widgetCalendar.reload();
+                                                } catch (Exception ignored) {}
+                                            });
                                         }
                                     });
                                     issueTask.execute(0);
