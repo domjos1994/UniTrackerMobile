@@ -313,6 +313,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.lvMainIssues.setContextMenu(R.menu.context_main);
+            this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
             this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, this.getString(R.string.issues_general_tags), objectList -> {
                 try {
                     Activity act = MainActivity.this;
@@ -676,6 +677,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
         if(resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_SETTINGS) {
             this.bugService = Helper.getCurrentBugService(MainActivity.this);
+            this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
             this.reload();
             this.changePagination();
         }
