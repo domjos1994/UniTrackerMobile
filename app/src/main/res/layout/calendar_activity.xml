@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="de.domjos.unitrackermobile.activities.CalendarActivity"
+    tools:context="de.domjos.unibuggermobile.activities.CalendarActivity"
     android:orientation="vertical"
     android:weightSum="20">
 

@@ -22,7 +22,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="de.domjos.unitrackermobile.activities.StatisticsActivity"
+    tools:context="de.domjos.unibuggermobile.activities.StatisticsActivity"
     android:background="@drawable/background">
 
     <ScrollView

@@ -20,7 +20,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:dist="http://schemas.android.com/apk/distribution"
     xmlns:tools="http://schemas.android.com/tools"
-    package="de.domjos.unitrackermobile">
+    package="de.domjos.unibuggermobile">
 
     <dist:module dist:instant="true" />
 
@@ -38,121 +38,121 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
-            android:name=".activities.CalendarActivity"
+            android:name="de.domjos.unibuggermobile.activities.CalendarActivity"
             android:label="@string/calendar"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
 
         <activity
-            android:name=".activities.StatisticsActivity"
+            android:name="de.domjos.unibuggermobile.activities.StatisticsActivity"
             android:label="@string/statistics"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.LocalSyncActivity"
+            android:name="de.domjos.unibuggermobile.activities.LocalSyncActivity"
             android:label="@string/local_sync"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.HelpActivity"
+            android:name="de.domjos.unibuggermobile.activities.HelpActivity"
             android:label="@string/help"
-            android:parentActivityName=".activities.MainActivity"
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.ExportActivity"
+            android:name="de.domjos.unibuggermobile.activities.ExportActivity"
             android:label="@string/export"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.SearchActivity"
+            android:name="de.domjos.unibuggermobile.activities.SearchActivity"
             android:label="@string/search"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.AdministrationActivity"
+            android:name="de.domjos.unibuggermobile.activities.AdministrationActivity"
             android:label="@string/administration"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.FieldActivity"
+            android:name="de.domjos.unibuggermobile.activities.FieldActivity"
             android:label="@string/fields"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.UserActivity"
+            android:name="de.domjos.unibuggermobile.activities.UserActivity"
             android:label="@string/users"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.SettingsActivity"
+            android:name="de.domjos.unibuggermobile.activities.SettingsActivity"
             android:label="@string/settings"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.IssueActivity"
+            android:name="de.domjos.unibuggermobile.activities.IssueActivity"
             android:label="@string/issues"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.VersionActivity"
+            android:name="de.domjos.unibuggermobile.activities.VersionActivity"
             android:label="@string/versions"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.ProjectActivity"
+            android:name="de.domjos.unibuggermobile.activities.ProjectActivity"
             android:label="@string/projects"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.AccountActivity"
+            android:name="de.domjos.unibuggermobile.activities.AccountActivity"
             android:label="@string/accounts"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.domjos.unitrackermobile.activities.MainActivity" />
+                android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.MainActivity"
+            android:name="de.domjos.unibuggermobile.activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -165,7 +165,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="de.domjos.unitrackermobile.provider.FileProvider"
+            android:authorities="de.domjos.unibuggermobile.provider.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
