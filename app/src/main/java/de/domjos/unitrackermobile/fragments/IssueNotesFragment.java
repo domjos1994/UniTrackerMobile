@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019 Domjos
- * This file is part of UniTrackerMobile <https://github.com/domjos1994/UniTrackerMobile>.
+ * Copyright (C)  2019-2020 Domjos
+ *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- * UniTrackerMobile is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  UniTrackerMobile is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * UniTrackerMobile is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  UniTrackerMobile is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackermobile.fragments;
@@ -160,7 +160,8 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.cmdIssueNotesSave.setOnClickListener(v -> {
             this.fieldsToNote();
             Object id = this.currentNote.getId();
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(this.currentNote);
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+            baseDescriptionObject.setObject(this.currentNote);
             baseDescriptionObject.setTitle(this.currentNote.getTitle());
             baseDescriptionObject.setDescription(this.currentNote.getDescription());
             if (id != null) {
@@ -224,7 +225,8 @@ public final class IssueNotesFragment extends AbstractFragment {
         for (Object note : this.issue.getNotes()) {
 
             this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
-            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject(note);
+            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+            baseDescriptionObject.setObject(note);
             baseDescriptionObject.setTitle(((Note) note).getTitle());
             baseDescriptionObject.setDescription(((Note) note).getDescription());
             this.lvIssueNotes.getAdapter().add(baseDescriptionObject);
