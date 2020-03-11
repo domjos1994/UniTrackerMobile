@@ -64,8 +64,8 @@ A copy of the License is in the License-Folder.
 
 ## License
 
-Copyright (C)  2019 Domjos
-This file is part of UniBuggerMobile <https://github.com/domjos1994/UniBuggerMobile>.
+Copyright (C) 2019-2020 Domjos
+This file is part of UniBuggerMobile <https://unitrackermobile.de>.
 
 UniBuggerMobile is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
