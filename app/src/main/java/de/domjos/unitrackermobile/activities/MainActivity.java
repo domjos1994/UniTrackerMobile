@@ -577,7 +577,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                     if (tmp.getTitle().contains(search)) {
                                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                                         baseDescriptionObject.setObject(tmp);
-                                        baseDescriptionObject.setTitle(tmp.getTitle());
+                                        String title;
+                                        if(MainActivity.GLOBALS.getSettings(MainActivity.this).isShowID()) {
+                                            title = tmp.getId() + ": " + tmp.getTitle();
+                                        } else {
+                                            title = tmp.getTitle();
+                                        }
+                                        baseDescriptionObject.setTitle(title);
                                         baseDescriptionObject.setDescription(tmp.getDescription());
                                         this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                                     }

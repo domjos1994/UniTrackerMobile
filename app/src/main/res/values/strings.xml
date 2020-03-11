@@ -162,6 +162,8 @@
     <string name="settings_general_time_format">Time-Format</string>
     <string name="settings_general_time_format_summary">Enter the time format here!</string>
     <string name="settings_general_time_format_default">HH:mm:ss</string>
+    <string name="settings_general_show_id_title">Show ID in list</string>
+    <string name="settings_general_show_id_summary">Show ID of the bugs in the list</string>
     <string name="settings_general_list_scroll_title">Scroll list item</string>
     <string name="settings_general_list_scroll_summary">Do you want to scroll a list item that is too long for the width of the screen?</string>
     <string name="settings_general_tutorial_title">Show tutorial again</string>
