@@ -28,10 +28,13 @@ import android.database.sqlite.SQLiteStatement;
 import androidx.annotation.NonNull;
 
 import java.io.InputStream;
+import java.util.AbstractMap;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.R;
@@ -84,13 +87,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         Cursor cursor = db.rawQuery("SELECT id FROM projects WHERE authentication=?", new String[]{String.valueOf(this.authentication.getTitle())});
         while (cursor.moveToNext()) {
             Project<Long> project = this.getProject(this.getLong(cursor, "id"));
-            if (project != null) {
-                Cursor subProjects = db.rawQuery("SELECT childProject FROM subProjects WHERE parentProject=?", new String[]{String.valueOf(project.getId())});
-                while (subProjects.moveToNext()) {
-                    project.getSubProjects().add(this.getProject(this.getLong(cursor, "childProject")));
-                }
-                subProjects.close();
+            Cursor subProjects = db.rawQuery("SELECT childProject FROM subProjects WHERE parentProject=?", new String[]{String.valueOf(project.getId())});
+            while (subProjects.moveToNext()) {
+                project.getSubProjects().add(this.getProject(this.getLong(cursor, "childProject")));
             }
+            subProjects.close();
             projects.add(project);
         }
         cursor.close();
@@ -284,7 +285,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT id FROM issues WHERE project=?" + filterQuery + limitation, new String[]{String.valueOf(project_id)});
         while (cursor.moveToNext()) {
-            Issue<Long> issue = this.getIssue((long) this.getInt(cursor, "id"), project_id);
+            Issue<Long> issue = this.getIssue((long) this.getInt(cursor, "id"), project_id, false);
             issue.getHints().put("version", issue.getVersion());
             issue.getHints().put("view", issue.getState().getValue());
             issue.getHints().put("status", issue.getStatus().getValue());
@@ -296,6 +297,10 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public Issue<Long> getIssue(Long id, Long project_id) {
+        return this.getIssue(id, project_id, true);
+    }
+
+    public Issue<Long> getIssue(Long id, Long project_id, boolean listRelations) {
         Issue<Long> issue = new Issue<>();
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM issues WHERE id=?", new String[]{String.valueOf(id)});
@@ -390,6 +395,11 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
             if (!hasValue) {
                 issue.getCustomFields().put(customField, "");
             }
+        }
+
+        if(listRelations) {
+            issue.getRelations().clear();
+            issue.getRelations().addAll(this.getBugRelations(issue.getId(), project_id));
         }
 
         return issue;
@@ -500,6 +510,13 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                 sqLiteStatement.bindLong(3, Long.parseLong(String.valueOf(issue.getId())));
                 sqLiteStatement.executeInsert();
                 sqLiteStatement.close();
+            }
+        }
+
+        if(!issue.getRelations().isEmpty()) {
+            db.execSQL("DELETE FROM relations WHERE issue=?", new String[]{String.valueOf(issue.getId())});
+            for(Relationship<Long> relationship : issue.getRelations()) {
+                this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
         }
     }
@@ -627,17 +644,52 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
-        return null;
+        List<Relationship<Long>> bugRelations = new LinkedList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Map<Long, Issue<Long>> issues = new LinkedHashMap<>();
+        for(Issue<Long> issue : this.getIssues(project_id)) {
+            issues.put(issue.getId(), issue);
+        }
+        Cursor cursor = db.rawQuery("SELECT * FROM relations WHERE issue=?", new String[]{String.valueOf(issue_id)});
+        while (cursor.moveToNext()) {
+            Relationship<Long> relationship = new Relationship<>();
+            relationship.setIssue(Objects.requireNonNull(issues.get(cursor.getLong(cursor.getColumnIndex("related_issue")))));
+
+            int id = cursor.getInt(cursor.getColumnIndex("relation_id"));
+            String name = cursor.getString(cursor.getColumnIndex("relation_name"));
+            relationship.setType(new AbstractMap.SimpleEntry<>(name, id));
+            bugRelations.add(relationship);
+        }
+        cursor.close();
+
+        return bugRelations;
     }
 
     @Override
     public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) {
-
+        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteStatement sqLiteStatement;
+        if (relationship.getId() == null) {
+            sqLiteStatement = db.compileStatement("INSERT INTO relations(issue, related_issue, relation_id, relation_name) VALUES(?,?,?,?)");
+        } else {
+            sqLiteStatement = db.compileStatement("UPDATE relations SET issue=?, related_issue=?, relation_id=?, relation_name=? WHERE ID=?");
+            sqLiteStatement.bindLong(5, relationship.getId());
+        }
+        sqLiteStatement.bindLong(1, issue_id);
+        sqLiteStatement.bindLong(2, relationship.getIssue().getId());
+        sqLiteStatement.bindLong(3, relationship.getType().getValue());
+        sqLiteStatement.bindString(4, relationship.getType().getKey());
+        if (relationship.getId() != null) {
+            sqLiteStatement.execute();
+        } else {
+            relationship.setId(sqLiteStatement.executeInsert());
+        }
+        sqLiteStatement.close();
     }
 
     @Override
     public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) {
-
+        this.getWritableDatabase().execSQL("DELETE FROM relations WHERE issue=? AND related_issue=?", new String[]{String.valueOf(issue_id), String.valueOf(relationship.getIssue().getId())});
     }
 
     @Override

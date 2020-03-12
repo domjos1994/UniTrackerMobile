@@ -128,22 +128,22 @@ public final class SQLitePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listRelations() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addRelation() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean updateRelation() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteRelation() {
-        return false;
+        return true;
     }
 
     @Override

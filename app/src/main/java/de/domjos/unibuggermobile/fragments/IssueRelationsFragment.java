@@ -127,11 +127,13 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
         this.cmdIssuesRelationsSave.setOnClickListener(v -> {
             Issue issue = null;
+            int index = -1;
             for(int i = 0; i<=this.issuesAdapter.getCount()-1; i++) {
                 Issue tmp = this.issuesAdapter.getItem(i);
                 if(tmp!=null) {
                     if(tmp.getTitle().equals(this.txtIssuesRelationsIssues.getText().toString().trim())) {
                         issue = tmp;
+                        index = i;
                         break;
                     }
                 }
@@ -147,6 +149,9 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 baseDescriptionObject.setObject(relationship);
                 baseDescriptionObject.setTitle(relationship.getTitle());
                 baseDescriptionObject.setDescription(relationship.getDescription());
+                if(index != -1)  {
+                    this.lvIssuesRelations.getAdapter().deleteItem(index);
+                }
                 this.lvIssuesRelations.getAdapter().add(baseDescriptionObject);
                 this.manageRelationControls(false, true, false);
             }
@@ -219,7 +224,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
     public void updateUITrackerSpecific() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
 
-        if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
+        if (authentication.getTracker() == Authentication.Tracker.MantisBT || authentication.getTracker() == Authentication.Tracker.Local) {
             this.arrayKey = "issues_general_relations_mantisbt_values";
         }
 
