@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    <string name="whats_new_0.1.beta.5">
+    <string name="whats_new_0.1.beta.5" translatable="true">
         <![CDATA[
             - News-Dialog at Start<br/>
             - Solve Administration-Bug<br/>
