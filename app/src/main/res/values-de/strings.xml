@@ -225,7 +225,7 @@
     <string name="administration_project">Projekt auswählen</string>
     <string name="administration_data">Daten auswählen</string>
     <string name="administration_withIssues">mit Fehlern</string>
-    <string name="administration_addToProject">an Project anhängen</string>
+    <string name="administration_addToProject">an Projekt anhängen</string>
     <string name="administration_copy">Kopieren</string>
     <string name="administration_move">Verschieben</string>
     <string-array name="administration_data">
