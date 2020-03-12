@@ -27,11 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -447,32 +443,31 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 if (!jsonObject.isNull("custom_fields")) {
                     JSONArray customFieldArray = jsonObject.getJSONArray("custom_fields");
                     List<CustomField<Long>> customFields = this.getCustomFields(project_id);
-                    if (customFields != null) {
-                        for (int i = 0; i <= customFieldArray.length() - 1; i++) {
-                            JSONObject fieldObject = customFieldArray.getJSONObject(i);
-                            long field_id = fieldObject.getLong("id");
-                            for (CustomField<Long> customField : customFields) {
-                                if (customField.getId() == field_id) {
-                                    if (fieldObject.has("value")) {
-                                        if (!fieldObject.isNull("value")) {
-                                            issue.getCustomFields().put(customField, fieldObject.getString("value"));
-                                            break;
-                                        }
+                    for (int i = 0; i <= customFieldArray.length() - 1; i++) {
+                        JSONObject fieldObject = customFieldArray.getJSONObject(i);
+                        long field_id = fieldObject.getLong("id");
+                        for (CustomField<Long> customField : customFields) {
+                            if (customField.getId() == field_id) {
+                                if (fieldObject.has("value")) {
+                                    if (!fieldObject.isNull("value")) {
+                                        issue.getCustomFields().put(customField, fieldObject.getString("value"));
+                                        break;
                                     }
-                                    issue.getCustomFields().put(customField, "");
-                                    break;
                                 }
+                                issue.getCustomFields().put(customField, "");
+                                break;
                             }
                         }
                     }
                 }
             }
+
+            issue.getRelations().addAll(this.getBugRelations(issue.getId(), project_id));
         }
         return issue;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         JSONObject requestObject = new JSONObject();
         JSONObject issueObject = new JSONObject();
@@ -544,7 +539,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
         if (issue.getId() != null) {
             if (!issue.getNotes().isEmpty()) {
-                for (DescriptionObject descriptionObject : issue.getNotes()) {
+                for (DescriptionObject<Long>  descriptionObject : issue.getNotes()) {
                     if (descriptionObject instanceof Note) {
                         Note<Long> note = (Note<Long>) descriptionObject;
                         if (note.getId() == null) {
@@ -559,7 +554,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
             }
 
             if (!issue.getAttachments().isEmpty()) {
-                for (DescriptionObject descriptionObject : issue.getAttachments()) {
+                for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
                     if (descriptionObject instanceof Attachment) {
                         Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
                         if (attachment.getId() == null) {
@@ -594,6 +589,13 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                             }
                         }
                     }
+                }
+            }
+
+            if(!issue.getRelations().isEmpty()) {
+                for(Relationship<Long> relationship : issue.getRelations()) {
+                    this.deleteBugRelation(relationship, issue.getId(), project_id);
+                    this.insertOrUpdateBugRelations(relationship, issue.getId(), project_id);
                 }
             }
         }
@@ -632,17 +634,44 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
-        return null;
+        List<Relationship<Long>> relationships = new LinkedList<>();
+        int status = this.executeRequest("/issues/" + issue_id + "/relations.json");
+        if (status == 200 || status == 201) {
+            List<Issue<Long>> issues = this.getIssues(project_id);
+
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray relationArray = jsonObject.getJSONArray("relations");
+            for(int i = 0; i<=relationArray.length() - 1; i++) {
+                JSONObject relationObject = relationArray.getJSONObject(i);
+                Relationship<Long> relationship = new Relationship<>();
+                relationship.setId(relationObject.getLong("id"));
+                relationship.setType(new AbstractMap.SimpleEntry<>(relationObject.getString("relation_type"), 0));
+                for(Issue<Long> issue : issues) {
+                    if(issue.getId()==relationObject.getLong("issue_to_id")) {
+                        relationship.setIssue(issue);
+                        break;
+                    }
+                }
+                relationships.add(relationship);
+            }
+        }
+        return relationships;
     }
 
     @Override
     public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject relationObject = new JSONObject();
+        relationObject.put("issue_to_id", relationship.getIssue().getId());
+        relationObject.put("relation_type", relationship.getType().getKey());
+        jsonObject.put("relation", relationObject);
 
+        this.executeRequest("/issues/" + issue_id + "/relations.json", jsonObject.toString(), "POST");
     }
 
     @Override
     public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
-
+        this.deleteRequest("/relations/" + relationship.getId() + ".json");
     }
 
     @Override

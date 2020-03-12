@@ -245,6 +245,12 @@ public final class IssueRelationsFragment extends AbstractFragment {
             case YouTrack:
                 this.arrayKey = "issues_general_relations_youtrack_values";
                 break;
+            case Jira:
+                this.arrayKey = "issues_general_relations_jira_values";
+                break;
+            case RedMine:
+                this.arrayKey = "issues_general_relations_redmine_values";
+                break;
         }
 
         if(this.getContext()!=null)  {

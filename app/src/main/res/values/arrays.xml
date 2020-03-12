@@ -700,4 +700,58 @@
         <item>3</item>
         <item>parent for</item>
     </array>
+
+    <array name="issues_general_relations_jira_values_0">
+        <item>10000</item>
+        <item>blocks</item>
+    </array>
+    <array name="issues_general_relations_jira_values_1">
+        <item>10001</item>
+        <item>clones</item>
+    </array>
+    <array name="issues_general_relations_jira_values_2">
+        <item>10002</item>
+        <item>duplicates</item>
+    </array>
+    <array name="issues_general_relations_jira_values_3">
+        <item>10003</item>
+        <item>relates to</item>
+    </array>
+
+    <array name="issues_general_relations_redmine_values_0">
+        <item>0</item>
+        <item>relates</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_1">
+        <item>1</item>
+        <item>duplicates</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_2">
+        <item>2</item>
+        <item>duplicated</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_3">
+        <item>3</item>
+        <item>blocks</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_4">
+        <item>4</item>
+        <item>blocked</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_5">
+        <item>5</item>
+        <item>precedes</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_6">
+        <item>6</item>
+        <item>follows</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_7">
+        <item>7</item>
+        <item>copied_to</item>
+    </array>
+    <array name="issues_general_relations_redmine_values_8">
+        <item>8</item>
+        <item>copied_from</item>
+    </array>
 </resources>

@@ -26,12 +26,7 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -291,6 +286,39 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                     issue.setDescription(fieldsObject.getString("description"));
                 }
             }
+
+            List<Issue<Long>> issues = this.getIssues(project_id);
+            if(fieldsObject.has("issuelinks")) {
+                if(!fieldsObject.isNull("issuelinks")) {
+                    JSONArray jsonArray = fieldsObject.getJSONArray("issuelinks");
+                    for(int i = 0; i<=jsonArray.length()-1; i++) {
+                        JSONObject linkObject = jsonArray.getJSONObject(i);
+                        JSONObject typeObject = linkObject.getJSONObject("type");
+                        String type = "outward";
+                        long linkedId;
+                        if(linkObject.has("outwardIssue")) {
+                            linkedId = linkObject.getJSONObject("outwardIssue").getLong("id");
+                        } else {
+                            type = "inward";
+                            linkedId = linkObject.getJSONObject("inwardIssue").getLong("id");
+                        }
+
+                        Relationship<Long> relationship = new Relationship<>();
+                        relationship.setId(linkObject.getLong("id"));
+                        relationship.setType(new AbstractMap.SimpleEntry<>(typeObject.getString(type), typeObject.getInt("id")));
+                        Issue<Long> linkedIssue = new Issue<>();
+                        linkedIssue.setId(linkedId);
+                        for(Issue<Long> temp : issues) {
+                            if(temp.getId()==linkedId) {
+                                linkedIssue.setTitle(temp.getTitle());
+                                break;
+                            }
+                        }
+                        relationship.setIssue(linkedIssue);
+                        issue.getRelations().add(relationship);
+                    }
+                }
+            }
             if(fieldsObject.has("issuetype")) {
                 if(!fieldsObject.isNull("issuetype")) {
                     JSONObject typeObject = fieldsObject.getJSONObject("issuetype");
@@ -424,7 +452,6 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
         JSONObject jsonObject = new JSONObject();
         JSONObject fieldsObject = new JSONObject();
@@ -547,7 +574,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 }
             }
 
-            for (DescriptionObject descriptionObject : issue.getNotes()) {
+            for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
                 if(descriptionObject instanceof Note) {
                     Note<Long> note = (Note<Long>) descriptionObject;
                     this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
@@ -559,12 +586,17 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 this.deleteAttachment(oldAttachment.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
 
-            for (DescriptionObject descriptionObject : issue.getAttachments()) {
+            for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
                 if(descriptionObject instanceof Attachment) {
                     Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
                     attachment.setId(null);
                     this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
+            }
+
+            for(Relationship<Long> relationship : issue.getRelations()) {
+                this.deleteBugRelation(relationship, issue.getId(), project_id);
+                this.insertOrUpdateBugRelations(relationship, issue.getId(), project_id);
             }
         }
     }
@@ -682,18 +714,35 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
     public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        JSONObject updateObject = new JSONObject();
+        JSONArray linkArray = new JSONArray();
+        JSONObject linkObject = new JSONObject();
+        JSONObject addObject = new JSONObject();
+        JSONObject typeObject = new JSONObject();
+        typeObject.put("id", relationship.getType().getValue());
+        typeObject.put("outward", relationship.getType().getKey());
+        JSONObject issueObject = new JSONObject();
+        issueObject.put("id", relationship.getIssue().getId());
+        addObject.put("type", typeObject);
+        addObject.put("outwardIssue", issueObject);
+        linkObject.put("add", addObject);
+        linkArray.put(linkObject);
+        updateObject.put("issueLinks", linkArray);
+        jsonObject.put("update", updateObject);
 
+        this.executeRequest("/rest/api/2/issue/" + issue_id, jsonObject.toString(), "PUT");
     }
 
     @Override
     public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
-
+        this.deleteRequest("/rest/api/2/issueLink/" + relationship.getId());
     }
 
     @Override

@@ -130,22 +130,22 @@ public final class RedminePermissions implements IFunctionImplemented {
 
     @Override
     public boolean listRelations() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addRelation() {
-        return false;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean updateRelation() {
-        return false;
+        return !this.authentication.isGuest();
     }
 
     @Override
     public boolean deleteRelation() {
-        return false;
+        return !this.authentication.isGuest();
     }
 
     @Override
