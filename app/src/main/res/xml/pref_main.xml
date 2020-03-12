@@ -23,37 +23,37 @@
     android:layout_height="match_parent">
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsGeneralFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsGeneralFragment"
         android:icon="@drawable/ic_info_black_24dp"
         android:title="@string/settings_general"
         android:summary="@string/settings_general_summary" />
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsBugTrackerFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsBugTrackerFragment"
         android:icon="@drawable/ic_bug_report_black_24dp"
         android:title="@string/settings_bug_tracker"
         android:summary="@string/settings_bug_tracker_summary" />
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsInternetFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsInternetFragment"
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/settings_internet"
         android:summary="@string/settings_internet_summary" />
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsSecurityFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsSecurityFragment"
         android:icon="@drawable/ic_security_black_24dp"
         android:title="@string/settings_security"
         android:summary="@string/settings_security_summary" />
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsSyncFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsSyncFragment"
         android:icon="@drawable/ic_sync_black_24dp"
         android:title="@string/settings_sync"
         android:summary="@string/settings_sync_summary" />
 
     <Preference
-        app:fragment="de.domjos.unitrackermobile.fragments.SettingsLogFragment"
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsLogFragment"
         android:icon="@drawable/ic_error_black_24dp"
         android:title="@string/settings_log"
         android:summary="@string/settings_log_summary" />
