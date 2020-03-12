@@ -682,4 +682,21 @@
         <item>4</item>
         <item>Hat Duplikat</item>
     </array>
+
+    <array name="issues_general_relations_youtrack_values_0">
+        <item>0</item>
+        <item>verwandt mit</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_1">
+        <item>1</item>
+        <item>wird benötigt für</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_2">
+        <item>2</item>
+        <item>duplikat von</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_3">
+        <item>3</item>
+        <item>Eltern von</item>
+    </array>
 </resources>

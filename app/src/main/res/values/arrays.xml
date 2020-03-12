@@ -683,4 +683,21 @@
         <item>4</item>
         <item>Has duplicate</item>
     </array>
+
+    <array name="issues_general_relations_youtrack_values_0">
+        <item>0</item>
+        <item>relates to</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_1">
+        <item>1</item>
+        <item>is required for</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_2">
+        <item>2</item>
+        <item>is duplicated by</item>
+    </array>
+    <array name="issues_general_relations_youtrack_values_3">
+        <item>3</item>
+        <item>parent for</item>
+    </array>
 </resources>

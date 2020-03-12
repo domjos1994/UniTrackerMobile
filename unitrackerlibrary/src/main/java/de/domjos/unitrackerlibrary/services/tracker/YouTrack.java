@@ -414,6 +414,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
                     issue.getNotes().addAll(this.getNotes(issue.getId(), project_id));
                     issue.getAttachments().addAll(this.getAttachments(issue.getId(), project_id));
+                    issue.getRelations().addAll(this.getBugRelations(issue.getId(), project_id));
                 }
             }
         }
@@ -484,6 +485,13 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 if (descriptionObject instanceof Attachment) {
                     this.insertOrUpdateAttachment((Attachment<String>) descriptionObject, issue.getId(), project_id);
                 }
+            }
+        }
+
+        if(!issue.getRelations().isEmpty()) {
+            for(Relationship<String> relationship : issue.getRelations()) {
+                this.deleteBugRelation(relationship, issue.getId(), project_id);
+                this.insertOrUpdateBugRelations(relationship, issue.getId(), project_id);
             }
         }
     }
@@ -586,17 +594,103 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
 
     @Override
     public List<Relationship<String>> getBugRelations(String issue_id, String project_id) throws Exception {
-        return null;
+        List<Relationship<String>> relationships = new LinkedList<>();
+        int status = this.executeRequest("/api/issues/" + issue_id + "/links?fields=id,idReadable,direction,linkType(name,localizedName,sourceToTarget,targetToSource,directed,aggregation),issues(id,idReadable,summary)");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for(int i = 0; i<=jsonArray.length()-1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                String direction = jsonObject.getString("direction");
+                String type = "";
+                if(jsonObject.has("linkType")) {
+                    if(!jsonObject.isNull("linkType")) {
+                        JSONObject linkObject = jsonObject.getJSONObject("linkType");
+                        if(direction.equals("INWARD")) {
+                            if(linkObject.has("targetToSource")) {
+                                if(!linkObject.isNull("targetToSource")) {
+                                    type = linkObject.getString("targetToSource");
+                                }
+                            }
+                        } else {
+                            if(linkObject.has("sourceToTarget")) {
+                                if(!linkObject.isNull("sourceToTarget")) {
+                                    type = linkObject.getString("sourceToTarget");
+                                }
+                            }
+                        }
+                    }
+                }
+                String id = jsonObject.getString("id");
+
+                JSONArray issueArray = jsonObject.getJSONArray("issues");
+                for(int j = 0; j<=issueArray.length() - 1; j++) {
+                    JSONObject issueObject = issueArray.getJSONObject(j);
+                    Relationship<String> relationship = new Relationship<>();
+                    relationship.setId(id);
+                    relationship.setType(new AbstractMap.SimpleEntry<>(type, 0));
+                    Issue<String> issue = new Issue<>();
+                    issue.setId(issueObject.getString("id"));
+                    issue.setTitle(issueObject.getString("summary"));
+                    relationship.setIssue(issue);
+                    relationships.add(relationship);
+                }
+            }
+        }
+        return relationships;
+    }
+
+    private Map<String, String> getTypeEnum(String issue_id) throws Exception {
+        Map<String, String> types = new LinkedHashMap<>();
+        int status = this.executeRequest("/api/issues/" + issue_id + "/links?fields=id,direction,linkType(sourceToTarget,targetToSource)");
+        if (status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for(int i = 0; i<=jsonArray.length()-1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject linkObject = jsonObject.getJSONObject("linkType");
+                String sourceToTarget = linkObject.getString("sourceToTarget");
+                String targetToSource = linkObject.getString("targetToSource");
+
+                String id = jsonObject.getString("id");
+                String direction = jsonObject.getString("direction");
+                if(direction.equals("BOTH")) {
+                    types.put(sourceToTarget, id);
+                } else if(direction.equals("OUTWARD")) {
+                    types.put(sourceToTarget, id);
+                } else {
+                    types.put(targetToSource, "id");
+                }
+            }
+        }
+        return types;
     }
 
     @Override
     public void insertOrUpdateBugRelations(Relationship<String> relationship, String issue_id, String project_id) throws Exception {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", relationship.getIssue().getId());
 
+        String type = "";
+        switch (relationship.getType().getValue()) {
+            case 0:
+                type = "relates to";
+                break;
+            case 1:
+                type = "is required for";
+                break;
+            case 2:
+                type = "is duplicated by";
+                break;
+            case 3:
+                type = "parent for";
+                break;
+        }
+
+        this.executeRequest("/api/issues/" + issue_id + "/links/" + this.getTypeEnum(issue_id).get(type) + "/issues?fields=id", jsonObject.toString(), "POST");
     }
 
     @Override
     public void deleteBugRelation(Relationship<String> relationship, String issue_id, String project_id) throws Exception {
-
+        this.deleteRequest("/api/issues/" + issue_id + "/links/" + relationship.getId() + "/issues/" + relationship.getIssue().getId());
     }
 
     @Override
@@ -973,10 +1067,15 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                             boolean setField = false;
                             if(entry.getKey().getPossibleValues()!=null) {
                                 for (String item : entry.getKey().getPossibleValues().split("\\|")) {
-                                    if (item.split(":")[0].trim().equals(entry.getValue())) {
-                                        valueObject.put("name", item.split(":")[1].trim());
-                                        setField = true;
-                                        break;
+                                    String[] spl = item.split(":");
+                                    if(spl.length > 1) {
+                                        if (spl[0].trim().equals(entry.getValue())) {
+                                            valueObject.put("name", spl[1].trim());
+                                            setField = true;
+                                            break;
+                                        }
+                                    } else {
+                                        valueObject.put("name", "");
                                     }
                                 }
                             }

@@ -127,12 +127,22 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
         this.cmdIssuesRelationsSave.setOnClickListener(v -> {
             Issue issue = null;
-            int index = -1;
             for(int i = 0; i<=this.issuesAdapter.getCount()-1; i++) {
                 Issue tmp = this.issuesAdapter.getItem(i);
                 if(tmp!=null) {
                     if(tmp.getTitle().equals(this.txtIssuesRelationsIssues.getText().toString().trim())) {
                         issue = tmp;
+                        break;
+                    }
+                }
+            }
+
+            int index = -1;
+            for(int i = 0; i<=this.lvIssuesRelations.getAdapter().getItemCount()-1; i++) {
+                Object id = ((Relationship)this.lvIssuesRelations.getAdapter().getItem(i).getObject()).getId();
+                Object entryId = currentEntry.getId();
+                if(id != null && entryId != null) {
+                    if(entryId.toString().equals(id.toString())) {
                         index = i;
                         break;
                     }
@@ -141,6 +151,9 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
             if(issue != null) {
                 Relationship relationship = new Relationship();
+                if(index != -1) {
+                    relationship.setId(((Relationship)this.lvIssuesRelations.getAdapter().getItem(index).getObject()).getId());
+                }
                 relationship.setIssue(issue);
                 int id = ArrayHelper.getIdOfEnum(this.getContext(), this.spIssuesRelationsType, this.arrayKey);
                 relationship.setType(new AbstractMap.SimpleEntry<>(this.spIssuesRelationsType.getSelectedItem().toString(), id));
@@ -149,7 +162,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 baseDescriptionObject.setObject(relationship);
                 baseDescriptionObject.setTitle(relationship.getTitle());
                 baseDescriptionObject.setDescription(relationship.getDescription());
-                if(index != -1)  {
+                if(index != -1 && this.lvIssuesRelations.getAdapter().getItemCount() != 0)  {
                     this.lvIssuesRelations.getAdapter().deleteItem(index);
                 }
                 this.lvIssuesRelations.getAdapter().add(baseDescriptionObject);
@@ -224,8 +237,14 @@ public final class IssueRelationsFragment extends AbstractFragment {
     public void updateUITrackerSpecific() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
 
-        if (authentication.getTracker() == Authentication.Tracker.MantisBT || authentication.getTracker() == Authentication.Tracker.Local) {
-            this.arrayKey = "issues_general_relations_mantisbt_values";
+        switch (authentication.getTracker()) {
+            case MantisBT:
+            case Local:
+                this.arrayKey = "issues_general_relations_mantisbt_values";
+                break;
+            case YouTrack:
+                this.arrayKey = "issues_general_relations_youtrack_values";
+                break;
         }
 
         if(this.getContext()!=null)  {
