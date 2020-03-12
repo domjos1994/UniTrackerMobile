@@ -282,18 +282,35 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
         jsonObject.put("name", issue.getTitle());
         jsonObject.put("description", issue.getDescription());
         jsonObject.put("story_type", issue.getSeverity().getValue());
-        jsonObject.put("current_state", issue.getStatus().getValue());
 
-        if (issue.getStatus().getKey() == 2) {
-            jsonObject.put("estimate", 2);
+        if(issue.getSeverity().getKey() == 2) {
+            if(issue.getStatus().getKey() == 2 || issue.getStatus().getKey() == 3 || issue.getStatus().getKey() == 4) {
+                jsonObject.put("current_state", "Accepted");
+            } else {
+                jsonObject.put("current_state", issue.getStatus().getValue());
+            }
+        } else {
+            jsonObject.put("current_state", issue.getStatus().getValue());
         }
-        JSONArray jsonArray = new JSONArray();
-        for (String tag : issue.getTags().split(",")) {
-            JSONObject tagObject = new JSONObject();
-            tagObject.put("name", tag.trim());
-            jsonArray.put(tagObject);
+
+
+        if(issue.getSeverity().getKey() == 1) {
+            if (issue.getStatus().getKey() <= 2) {
+                jsonObject.put("estimate", issue.getStatus().getKey());
+            } else {
+                jsonObject.put("estimate", 3);
+            }
         }
-        jsonObject.put("labels", jsonArray);
+
+        if(!issue.getTags().isEmpty()) {
+            JSONArray jsonArray = new JSONArray();
+            for (String tag : issue.getTags().split(",")) {
+                JSONObject tagObject = new JSONObject();
+                tagObject.put("name", tag.trim());
+                jsonArray.put(tagObject);
+            }
+            jsonObject.put("labels", jsonArray);
+        }
 
         int status;
         if (issue.getId() != null) {
