@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import java.util.Arrays;
@@ -40,6 +41,7 @@ import de.domjos.unitrackerlibrary.model.Administration;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.AdministrationTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
@@ -59,6 +61,7 @@ public final class AdministrationActivity extends AbstractActivity {
     private ArrayAdapter<String> dataAdapter1;
     private CheckBox chkWithIssues, chkAddToProject;
     private IBugService bugService1, bugService2;
+    private ProgressBar pbProcess;
 
     private ArrayAdapter<String> logAdapter;
 
@@ -283,25 +286,31 @@ public final class AdministrationActivity extends AbstractActivity {
             this.administration.setDataItem(dataItem1);
             this.administration.setArray(this.getArrays(this.administration.getToBugService()));
 
+            this.initAction(true);
             AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.ic_settings_black_24dp);
-            String logs = administrationTask.execute(this.administration).get();
-            this.logAdapter.clear();
-            for (String logItem : logs.split("\n")) {
-                this.logAdapter.add(logItem);
-            }
-            this.reloadAuthentications();
+            administrationTask.after(new AbstractTask.PostExecuteListener<String>() {
+                @Override
+                public void onPostExecute(String logs) {
+                    logAdapter.clear();
+                    for (String logItem : logs.split("\n")) {
+                        logAdapter.add(logItem);
+                    }
+                    reloadAuthentications();
 
-            String message = String.format(
-                    this.getString(R.string.administration_message),
-                    this.getResources().getStringArray(R.array.administration_data)[this.spData1.getSelectedItemPosition()],
-                    move ? this.getString(R.string.administration_move) : this.getString(R.string.administration_copy)
-            );
-            MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, this.ctx);
+                    String msg = getString(R.string.administration_message);
+                    String item = getResources().getStringArray(R.array.administration_data)[spData1.getSelectedItemPosition()];
+                    String action = move ? getString(R.string.administration_move) : getString(R.string.administration_copy);
+                    String message = String.format(msg, item, action);
+                    MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, ctx);
+                    initAction(false);
+                }
+            });
+            administrationTask.execute(this.administration);
+
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
         }
     }
-
 
     private Map<String, Map<String, Long>> getArrays(IBugService bugService) {
         Map<String, Map<String, Long>> arrays = new LinkedHashMap<>();
@@ -380,8 +389,7 @@ public final class AdministrationActivity extends AbstractActivity {
         this.settings = MainActivity.GLOBALS.getSettings(this.ctx);
         this.cmdCopy = this.findViewById(R.id.cmdCopy);
         this.cmdMove = this.findViewById(R.id.cmdMove);
-
-
+        this.pbProcess = this.findViewById(R.id.pbProcess);
 
         this.spBugTracker1 = this.findViewById(R.id.spBugTracker1);
         this.bugTrackerAdapter1 = new ArrayAdapter<>(ctx, spinner);
@@ -419,5 +427,20 @@ public final class AdministrationActivity extends AbstractActivity {
         this.logAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
         lvLogs.setAdapter(this.logAdapter);
         this.logAdapter.notifyDataSetChanged();
+    }
+
+    private void initAction(boolean start) {
+        this.pbProcess.setVisibility(start ? View.VISIBLE : View.GONE);
+        this.cmdCopy.setEnabled(!start);
+        this.cmdMove.setEnabled(!start);
+
+        this.spBugTracker1.setEnabled(!start);
+        this.spBugTracker2.setEnabled(!start);
+        this.spProject1.setEnabled(!start);
+        this.spProject2.setEnabled(!start);
+        this.spData1.setEnabled(!start);
+        this.spDataItem1.setEnabled(!start);
+        this.chkWithIssues.setEnabled(!start);
+        this.chkAddToProject.setEnabled(!start);
     }
 }

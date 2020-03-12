@@ -429,7 +429,7 @@ public class Helper {
         try {
             Dialog whatsNewDialog = new Dialog(activity);
             whatsNewDialog.setContentView(R.layout.whats_new_dialog);
-            TextView lblTitle = whatsNewDialog.findViewById(R.id.lblWhatsNewTitle);
+            TextView lblTitle = whatsNewDialog.findViewById(R.id.lblTitle);
             TextView lblContent = whatsNewDialog.findViewById(R.id.lblWhatsNewContent);
             String version = Helper.getVersion(activity);
 

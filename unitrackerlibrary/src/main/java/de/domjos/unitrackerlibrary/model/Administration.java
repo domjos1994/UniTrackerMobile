@@ -141,6 +141,12 @@ public class Administration {
     }
 
     public Project convertProjectToValidNewProject(Project project) {
+        if(project.getTitle().startsWith("-")) {
+            while (project.getTitle().startsWith("-")) {
+                project.setTitle(project.getTitle().replaceFirst("-", ""));
+            }
+        }
+
         switch (this.toBugService.getAuthentication().getTracker()) {
             case Jira:
                 // key in upper case and maximum length of 10
@@ -155,6 +161,9 @@ public class Administration {
                 break;
             case RedMine:
                 project.setAlias(project.getTitle().replace(" ", "-").toLowerCase());
+                break;
+            case Backlog:
+                project.setAlias(project.getTitle().replace(" ", "_").toUpperCase());
                 break;
         }
         return project;

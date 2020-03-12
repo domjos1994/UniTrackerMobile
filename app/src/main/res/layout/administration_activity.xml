@@ -213,7 +213,7 @@
         android:layout_below="@+id/adminControls"
         android:layout_above="@+id/controls" />
 
-    <LinearLayout
+    <TableLayout
         android:id="@+id/controls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -223,20 +223,30 @@
         android:background="@android:color/background_light"
         style="?android:attr/buttonBarStyle">
 
-        <Button
-            android:id="@+id/cmdCopy"
-            android:text="@string/administration_copy"
-            android:layout_weight="5"
-            android:layout_width="0dp"
+        <ProgressBar
+            android:id="@+id/pbProcess"
+            android:visibility="gone"
+            android:layout_weight="10"
             android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:layout_width="0dp"
+            android:padding="2dp"/>
 
-        <Button
-            android:id="@+id/cmdMove"
-            android:text="@string/administration_move"
-            android:layout_weight="5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            style="?android:attr/buttonBarButtonStyle"/>
-    </LinearLayout>
+        <TableRow>
+            <Button
+                android:id="@+id/cmdCopy"
+                android:text="@string/administration_copy"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"/>
+
+            <Button
+                android:id="@+id/cmdMove"
+                android:text="@string/administration_move"
+                android:layout_weight="5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="?android:attr/buttonBarButtonStyle"/>
+        </TableRow>
+    </TableLayout>
 </RelativeLayout>
