@@ -594,8 +594,8 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
             if(!issue.getRelations().isEmpty()) {
                 for(Relationship<Long> relationship : issue.getRelations()) {
-                    this.deleteBugRelation(relationship, issue.getId(), project_id);
-                    this.insertOrUpdateBugRelations(relationship, issue.getId(), project_id);
+                    this.deleteBugRelation(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                    this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
             }
         }
@@ -637,22 +637,26 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         List<Relationship<Long>> relationships = new LinkedList<>();
         int status = this.executeRequest("/issues/" + issue_id + "/relations.json");
         if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             List<Issue<Long>> issues = this.getIssues(project_id);
 
-            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
-            JSONArray relationArray = jsonObject.getJSONArray("relations");
-            for(int i = 0; i<=relationArray.length() - 1; i++) {
-                JSONObject relationObject = relationArray.getJSONObject(i);
-                Relationship<Long> relationship = new Relationship<>();
-                relationship.setId(relationObject.getLong("id"));
-                relationship.setType(new AbstractMap.SimpleEntry<>(relationObject.getString("relation_type"), 0));
-                for(Issue<Long> issue : issues) {
-                    if(issue.getId()==relationObject.getLong("issue_to_id")) {
-                        relationship.setIssue(issue);
-                        break;
+            if(jsonObject.has("relations")) {
+                if(!jsonObject.isNull("relations")) {
+                    JSONArray relationArray = jsonObject.getJSONArray("relations");
+                    for(int i = 0; i<=relationArray.length() - 1; i++) {
+                        JSONObject relationObject = relationArray.getJSONObject(i);
+                        Relationship<Long> relationship = new Relationship<>();
+                        relationship.setId(relationObject.getLong("id"));
+                        relationship.setType(new AbstractMap.SimpleEntry<>(relationObject.getString("relation_type"), 0));
+                        for(Issue<Long> issue : issues) {
+                            if(issue.getId()==relationObject.getLong("issue_to_id")) {
+                                relationship.setIssue(issue);
+                                break;
+                            }
+                        }
+                        relationships.add(relationship);
                     }
                 }
-                relationships.add(relationship);
             }
         }
         return relationships;
