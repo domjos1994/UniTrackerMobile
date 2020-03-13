@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +35,7 @@ import androidx.annotation.NonNull;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Objects;
 
@@ -91,6 +94,33 @@ public final class VersionActivity extends AbstractActivity {
             currentVersion = (Version) listObject.getObject();
             objectToControls();
             manageControls(false, false, true);
+        });
+
+        this.lvVersions.addButtonClick(R.drawable.ic_update_black_24dp, this.getString(R.string.versions_menu_changelog), list -> {
+            FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
+            dialog.setDialogSelectionListener(files -> {
+                try {
+                    if(files != null) {
+                        Object pid = this.currentProject;
+                        byte[] bg, icon = this.getBytes();
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                            bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.drawable.background)));
+                        } else {
+                            bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
+                        }
+
+                        for(BaseDescriptionObject baseDescriptionObject : list) {
+                            Object vid = ((Version) baseDescriptionObject.getObject()).getId();
+
+                            this.createPDF(pid, vid, files, icon, bg);
+                        }
+                        MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
+                    }
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                }
+            });
+            dialog.show();
         });
 
         this.lvVersions.setOnReloadListener(this::reload);
@@ -334,19 +364,14 @@ public final class VersionActivity extends AbstractActivity {
                             Object vid = this.currentVersion.getId();
                             Object pid = this.currentProject;
 
-                            byte[] bg, icon;
+                            byte[] bg, icon = this.getBytes();
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                                 bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.drawable.background)));
-                                icon = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.mipmap.ic_launcher)));
                             } else {
                                 bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
-                                icon = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.mipmap.ic_launcher));
                             }
 
-                            ExportTask exportTask = new ExportTask(
-                                    VersionActivity.this, bugService, null, pid, files[0],
-                                    false, R.drawable.ic_bug_report_black_24dp, bg, icon, "", vid);
-                            exportTask.execute(0).get();
+                            this.createPDF(pid, vid, files, icon, bg);
                             MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
                         } else {
                             MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
@@ -359,5 +384,24 @@ public final class VersionActivity extends AbstractActivity {
             dialog.show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void createPDF(Object pid, Object vid, String[] files, byte[] icon, byte[] bg) throws Exception {
+        ExportTask exportTask = new ExportTask(
+                VersionActivity.this, bugService, null, pid, files[0],
+                false, R.drawable.ic_bug_report_black_24dp, bg, icon, "", vid);
+        exportTask.execute(0).get();
+    }
+
+    private byte[] getBytes() {
+        Bitmap bitmap;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.ic_launcher_round, this.getTheme())).getBitmap();
+        } else {
+            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.ic_launcher_round)).getBitmap();
+        }
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        return stream.toByteArray();
     }
 }

@@ -104,7 +104,7 @@ public final class AdministrationTask extends AbstractTask<Administration, Integ
                                                     this.message.append(administration.getFromBugService().getCurrentMessage()).append("\n");
                                                 }
                                             }
-                                            this.publishProgress((100 / max) * counter);
+                                            this.publishProgress((int) ((100.0 / max) * counter));
                                             counter++;
                                         } catch (Exception ex) {
                                             this.message.append(ex.toString()).append("\n");
