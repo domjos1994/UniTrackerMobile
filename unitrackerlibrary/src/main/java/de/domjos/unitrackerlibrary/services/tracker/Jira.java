@@ -595,8 +595,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             }
 
             for(Relationship<Long> relationship : issue.getRelations()) {
-                this.deleteBugRelation(relationship, issue.getId(), project_id);
-                this.insertOrUpdateBugRelations(relationship, issue.getId(), project_id);
+                this.deleteBugRelation(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
             }
         }
     }
@@ -720,6 +720,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+        this.addIssueLinkFieldIfNotAdded();
+
         JSONObject jsonObject = new JSONObject();
         JSONObject updateObject = new JSONObject();
         JSONArray linkArray = new JSONArray();
@@ -734,15 +736,31 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         addObject.put("outwardIssue", issueObject);
         linkObject.put("add", addObject);
         linkArray.put(linkObject);
-        updateObject.put("issueLinks", linkArray);
+        updateObject.put("issuelinks", linkArray);
         jsonObject.put("update", updateObject);
 
         this.executeRequest("/rest/api/2/issue/" + issue_id, jsonObject.toString(), "PUT");
     }
 
+    private void addIssueLinkFieldIfNotAdded() throws Exception {
+        int status = this.executeRequest("/rest/api/2/screens/1/availableFields");
+        if(status == 200 || status == 201) {
+            JSONArray fieldsArray = new JSONArray(this.getCurrentMessage());
+            for(int i = 0; i<=fieldsArray.length() - 1; i++) {
+                JSONObject fieldsObject = fieldsArray.getJSONObject(i);
+                if(fieldsObject.getString("id").trim().toLowerCase().equals("issuelinks")) {
+                    this.executeRequest("/rest/api/2/screens/addToDefault/issuelinks", "", "POST");
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
-    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
-        this.deleteRequest("/rest/api/2/issueLink/" + relationship.getId());
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) {
+        try {
+            this.deleteRequest("/rest/api/2/issueLink/" + relationship.getId());
+        } catch (Exception ignored) {}
     }
 
     @Override
