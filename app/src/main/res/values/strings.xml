@@ -237,6 +237,7 @@
         <item>@string/issues_custom</item>
     </string-array>
     <string name="administration_message" formatted="false">%s %s successfully!</string>
+    <string name="administration_log_copy">Copy to Clipboard</string>
 
     <string name="local_sync">Local Synchronisation</string>
     <string name="local_sync_sync">Synchronise</string>

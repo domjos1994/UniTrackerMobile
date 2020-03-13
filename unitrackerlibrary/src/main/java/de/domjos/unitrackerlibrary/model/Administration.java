@@ -175,6 +175,7 @@ public class Administration {
         this.severity = false;
         this.priority = false;
 
+        issue.setId(null);
         issue.setTags(issue.getTags().replace(" ", ""));
 
         switch (this.fromBugService.getAuthentication().getTracker()) {

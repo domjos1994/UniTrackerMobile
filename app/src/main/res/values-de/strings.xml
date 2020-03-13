@@ -234,6 +234,7 @@
         <item>@string/issues_custom</item>
     </string-array>
     <string name="administration_message" formatted="false">%s erfolgreich %s!</string>
+    <string name="administration_log_copy">In Zwischenablage kopieren</string>
 
     <string name="local_sync">Lokale Synchronisation</string>
     <string name="local_sync_sync">Synchronisieren</string>

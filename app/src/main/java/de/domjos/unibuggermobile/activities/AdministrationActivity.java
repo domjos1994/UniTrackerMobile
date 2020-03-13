@@ -19,7 +19,11 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +37,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -153,6 +158,27 @@ public final class AdministrationActivity extends AbstractActivity {
         this.chkWithIssues.setOnCheckedChangeListener((buttonView, isChecked) -> checkPermissions());
         this.cmdCopy.setOnClickListener((v) -> this.writeData(false));
         this.cmdMove.setOnClickListener((v) -> this.writeData(true));
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        this.getMenuInflater().inflate(R.menu.context_administration, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.ctxCopyLog) {
+            StringBuilder builder = new StringBuilder();
+            for(int i = 0; i<=this.logAdapter.getCount() - 1; i++) {
+                builder.append(this.logAdapter.getItem(i)).append("\n");
+                builder.append("----------------------------------------------------------------------------------").append("\n");
+            }
+            ClipboardManager clipboardManager = (ClipboardManager) this.getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData data = ClipData.newPlainText("Log", builder.toString());
+            Objects.requireNonNull(clipboardManager).setPrimaryClip(data);
+        }
+        return true;
     }
 
     private void checkPermissions() {
@@ -424,6 +450,7 @@ public final class AdministrationActivity extends AbstractActivity {
         this.chkAddToProject = this.findViewById(R.id.chkAddToProject);
 
         ListView lvLogs = this.findViewById(R.id.lvLogs);
+        this.registerForContextMenu(lvLogs);
         this.logAdapter = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
         lvLogs.setAdapter(this.logAdapter);
         this.logAdapter.notifyDataSetChanged();
