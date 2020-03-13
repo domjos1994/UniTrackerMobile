@@ -313,7 +313,8 @@ public final class AdministrationActivity extends AbstractActivity {
             this.administration.setArray(this.getArrays(this.administration.getToBugService()));
 
             this.initAction(true);
-            AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.ic_settings_black_24dp);
+            this.pbProcess.setMax(100);
+            AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.ic_settings_black_24dp, this.pbProcess);
             administrationTask.after(new AbstractTask.PostExecuteListener<String>() {
                 @Override
                 public void onPostExecute(String logs) {

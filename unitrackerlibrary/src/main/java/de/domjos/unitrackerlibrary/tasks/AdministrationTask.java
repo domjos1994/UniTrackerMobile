@@ -19,7 +19,9 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
@@ -32,12 +34,19 @@ import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class AdministrationTask extends AbstractTask<Administration, Void, String> {
+public final class AdministrationTask extends AbstractTask<Administration, Integer, String> {
     private StringBuilder message;
+    private WeakReference<ProgressBar> progressBar;
 
-    public AdministrationTask(Activity activity, boolean showNotifications, int icon) {
+    public AdministrationTask(Activity activity, boolean showNotifications, int icon, ProgressBar progressBar) {
         super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon);
         this.message = new StringBuilder();
+        this.progressBar = new WeakReference<>(progressBar);
+    }
+
+    @Override
+    public final void onProgressUpdate(Integer... progress) {
+        this.progressBar.get().setProgress(progress[0]);
     }
 
     @Override
@@ -64,6 +73,7 @@ public final class AdministrationTask extends AbstractTask<Administration, Void,
                             if (administration.isWithBugs()) {
                                 if (objId != null) {
                                     List<Issue> issues = administration.getFromBugService().getIssues(id);
+                                    int counter = 0, max = issues.size();
                                     for (Issue issue : issues) {
                                         try {
                                             issue = administration.getFromBugService().getIssue(issue.getId(), id);
@@ -94,6 +104,8 @@ public final class AdministrationTask extends AbstractTask<Administration, Void,
                                                     this.message.append(administration.getFromBugService().getCurrentMessage()).append("\n");
                                                 }
                                             }
+                                            this.publishProgress((100 / max) * counter);
+                                            counter++;
                                         } catch (Exception ex) {
                                             this.message.append(ex.toString()).append("\n");
                                         }
