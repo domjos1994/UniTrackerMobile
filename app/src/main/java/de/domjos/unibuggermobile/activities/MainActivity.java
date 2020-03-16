@@ -55,6 +55,7 @@ import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -586,6 +587,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                         }
                                         baseDescriptionObject.setTitle(title);
                                         baseDescriptionObject.setDescription(tmp.getDescription());
+                                        boolean resolved = false;
+                                        if(tmp.getHints().containsKey(Issue.RESOLVED)) {
+                                            Object resolve = tmp.getHints().get(Issue.RESOLVED);
+                                            if(resolve != null) {
+                                                resolved = Boolean.parseBoolean(resolve.toString());
+                                            }
+                                        }
+                                        baseDescriptionObject.setState(resolved);
                                         this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                                     }
                                 }

@@ -251,6 +251,11 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
                 issue.setId(jsonObject.getLong("id"));
                 issue.setTitle(jsonObject.getString("summary"));
                 issue.setDescription(jsonObject.getString("description"));
+                if(jsonObject.has("status")) {
+                    JSONObject statusObject = jsonObject.getJSONObject("status");
+                    int id = statusObject.getInt("id");
+                    issue.getHints().put(Issue.RESOLVED, String.valueOf(id == 3 || id == 4));
+                }
                 issues.add(issue);
             }
         }

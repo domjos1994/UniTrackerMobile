@@ -240,9 +240,11 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             pagination = "?offset=" + (page * numberOfItems) + "&pageSize=" + numberOfItems;
         }
 
+        boolean resolved = false;
         String filterQuery = "&filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}}]";
         if (filter != IssueFilter.all) {
             if (filter == IssueFilter.resolved) {
+                resolved = true;
                 filterQuery = "&filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}},{\"status_id\":{\"operator\":\"=\",\"values\":[\"12\",\"13\",\"14\"]}}]";
             } else {
                 filterQuery = "&filters=[{\"type_id\":{\"operator\":\"=\",\"values\":[\"4\",\"7\"]}},{\"status_id\":{\"operator\":\"!\",\"values\":[\"12\",\"13\",\"14\"]}}]";
@@ -259,6 +261,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 Issue<Long> issue = new Issue<>();
                 issue.setId(elementObject.getLong("id"));
                 issue.setTitle(elementObject.getString("subject"));
+                issue.getHints().put(Issue.RESOLVED, String.valueOf(resolved));
                 issues.add(issue);
             }
         }

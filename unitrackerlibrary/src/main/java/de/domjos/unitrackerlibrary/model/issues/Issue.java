@@ -28,6 +28,8 @@ import java.util.Map;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 
 public class Issue<T> extends DescriptionObject<T> {
+    public final static String RESOLVED = "resolved";
+
     private String category;
     private Map.Entry<Integer, String> state, priority, severity, status, reproducibility, resolution;
     private Date lastUpdated;

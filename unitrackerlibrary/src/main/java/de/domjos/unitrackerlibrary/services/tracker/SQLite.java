@@ -289,6 +289,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
             issue.getHints().put("version", issue.getVersion());
             issue.getHints().put("view", issue.getState().getValue());
             issue.getHints().put("status", issue.getStatus().getValue());
+            issue.getHints().put(Issue.RESOLVED, String.valueOf(issue.getStatus().getKey()>=80));
             issues.add(issue);
         }
         cursor.close();

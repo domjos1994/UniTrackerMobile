@@ -298,7 +298,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         List<Issue<String>> issues = new LinkedList<>();
         Project<String> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + filterQuery + "&fields=id,summary,description" + limitation);
+            int status = this.executeRequest("/api/issues?query=project:%20" + project.getTitle().replace(" ", "%20") + filterQuery + "&fields=id,summary,description,state" + limitation);
             if (status == 200 || status == 201) {
                 JSONArray response = new JSONArray(this.getCurrentMessage());
                 for (int i = 0; i <= response.length() - 1; i++) {
@@ -307,6 +307,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                     issue.setId(jsonObject.getString("id"));
                     issue.setDescription(jsonObject.getString("description"));
                     issue.setTitle(jsonObject.getString("summary"));
+                    issue.getHints().put(Issue.RESOLVED, String.valueOf(jsonObject.getString("state").toLowerCase().equals("resolved")));
                     issues.add(issue);
                 }
             }

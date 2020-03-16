@@ -317,7 +317,10 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                 if (issueObject.has("status")) {
                     if (!issueObject.isNull("status")) {
                         JSONObject statusObject = issueObject.getJSONObject("status");
-                        issue.getHints().put("status", statusObject.getString("name"));
+                        String name = statusObject.getString("name");
+
+                        issue.getHints().put("status", name);
+                        issue.getHints().put(Issue.RESOLVED, String.valueOf(name.toLowerCase().equals("closed") || name.toLowerCase().equals("resolved")));
                     }
                 }
                 issues.add(issue);

@@ -313,14 +313,15 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
                     boolean fitsInFilter = true;
                     String status = soapObject.getPropertyAsString("status");
+                    boolean resolved = Integer.parseInt(status) >= 80;
                     switch (filter) {
                         case resolved:
-                            if (Integer.parseInt(status) < 80) {
+                            if (!resolved) {
                                 fitsInFilter = false;
                             }
                             break;
                         case unresolved:
-                            if (Integer.parseInt(status) >= 80) {
+                            if (resolved) {
                                 fitsInFilter = false;
                             }
                             break;
@@ -343,6 +344,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     issue.setTitle(summary);
                     issue.setDescription(String.format("%s - %s - %s", category, view, status));
                     issue.setLastUpdated(dt);
+                    issue.getHints().put(Issue.RESOLVED, String.valueOf(resolved));
                     issues.add(issue);
                 }
             }

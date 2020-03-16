@@ -226,6 +226,8 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                 if (jsonObject.has("description")) {
                     issue.setDescription(jsonObject.getString("description"));
                 }
+                String st = jsonObject.getString("current_state").toLowerCase();
+                issue.getHints().put(Issue.RESOLVED, String.valueOf(st.equals("delivered")||st.equals("finished")||st.equals("rejected")));
 
                 issues.add(issue);
             }

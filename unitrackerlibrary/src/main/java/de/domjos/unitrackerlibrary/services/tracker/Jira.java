@@ -266,6 +266,12 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                         issue.setDescription(fieldsObject.getString("description"));
                     }
                 }
+                if(fieldsObject.has("status")) {
+                    if(!fieldsObject.isNull("status")) {
+                        JSONObject statusObject = fieldsObject.getJSONObject("status");
+                        issue.getHints().put(Issue.RESOLVED, String.valueOf(statusObject.getInt("id")==10002));
+                    }
+                }
                 issues.add(issue);
             }
         }

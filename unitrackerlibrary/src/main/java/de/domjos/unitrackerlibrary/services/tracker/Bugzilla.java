@@ -262,6 +262,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
                         issue.getHints().put("version", bugObject.getString("version"));
                     }
                     issue.getHints().put("status", bugObject.getString("status"));
+                    issue.getHints().put(Issue.RESOLVED, String.valueOf(!bugObject.getBoolean("is_open")));
                     issues.add(issue);
                 }
             }
