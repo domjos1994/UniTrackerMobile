@@ -268,6 +268,9 @@ public final class AccountActivity extends AbstractActivity {
                     try {
                         if (this.accountValidator.getState()) {
                             this.controlsToObject();
+                            if(currentAccount.getTracker()==Authentication.Tracker.Github) {
+                                currentAccount.setAuthentication(Authentication.Auth.OAUTH);
+                            }
 
                             new Thread(() -> {
                                 try {
