@@ -433,19 +433,22 @@ public class Helper {
             TextView lblContent = whatsNewDialog.findViewById(R.id.lblWhatsNewContent);
             String version = Helper.getVersion(activity);
 
-            lblTitle.setText(version);
-            lblContent.setText(Html.fromHtml(Helper.getStringResourceByName(activity, "whats_new_" + version)));
+            String content = Helper.getStringResourceByName(activity, "whats_new_" + version);
+            if(!content.isEmpty()) {
+                lblTitle.setText(version);
+                lblContent.setText(Html.fromHtml(content));
 
-            Settings settings = MainActivity.GLOBALS.getSettings(activity);
+                Settings settings = MainActivity.GLOBALS.getSettings(activity);
 
-            if(!settings.getWhatsNewVersion().isEmpty()) {
-                if(!settings.getWhatsNewVersion().equals(version)) {
+                if(!settings.getWhatsNewVersion().isEmpty()) {
+                    if(!settings.getWhatsNewVersion().equals(version)) {
+                        whatsNewDialog.show();
+                        settings.setWhatsNewVersion();
+                    }
+                } else {
                     whatsNewDialog.show();
                     settings.setWhatsNewVersion();
                 }
-            } else {
-                whatsNewDialog.show();
-                settings.setWhatsNewVersion();
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
