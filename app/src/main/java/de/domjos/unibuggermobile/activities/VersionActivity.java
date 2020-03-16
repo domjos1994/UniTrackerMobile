@@ -232,6 +232,7 @@ public final class VersionActivity extends AbstractActivity {
                         baseDescriptionObject.setObject(version);
                         baseDescriptionObject.setTitle(version.getTitle());
                         baseDescriptionObject.setDescription(version.getDescription());
+                        baseDescriptionObject.setState(version.isReleasedVersion());
                         this.lvVersions.getAdapter().add(baseDescriptionObject);
                     }
 
