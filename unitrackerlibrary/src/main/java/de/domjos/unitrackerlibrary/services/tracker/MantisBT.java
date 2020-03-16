@@ -176,37 +176,39 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public void insertOrUpdateVersion(Version<Long> version, Long project_id) throws Exception {
-        String action;
-        SoapObject request;
-        if (version.getId() == null) {
-            action = "mc_project_version_add";
-            request = new SoapObject(super.soapPath, action);
-        } else {
-            action = "mc_project_version_update";
-            request = new SoapObject(super.soapPath, action);
-            request.addProperty("version_id", version.getId());
+        if(!version.getTitle().trim().isEmpty()) {
+            String action;
+            SoapObject request;
+            if (version.getId() == null) {
+                action = "mc_project_version_add";
+                request = new SoapObject(super.soapPath, action);
+            } else {
+                action = "mc_project_version_update";
+                request = new SoapObject(super.soapPath, action);
+                request.addProperty("version_id", version.getId());
+            }
+
+            SoapObject projectData = new SoapObject(NAMESPACE, "ProjectVersionData");
+            projectData.addProperty("id", version.getId());
+            projectData.addProperty("name", version.getTitle());
+            projectData.addProperty("project_id", project_id);
+
+            if (version.getReleasedVersionAt() != 0) {
+                Date dt = new Date();
+                dt.setTime(version.getReleasedVersionAt());
+                SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
+                projectData.addProperty("date_order", sdf.format(dt));
+            } else {
+                projectData.addProperty("date_order", null);
+            }
+            projectData.addProperty("description", version.getDescription());
+            projectData.addProperty("released", version.isReleasedVersion());
+            projectData.addProperty("obsolete", version.isDeprecatedVersion());
+            request.addProperty("version", projectData);
+
+            Object object = this.executeAction(request, action, true);
+            this.getResult(object);
         }
-
-        SoapObject projectData = new SoapObject(NAMESPACE, "ProjectVersionData");
-        projectData.addProperty("id", version.getId());
-        projectData.addProperty("name", version.getTitle());
-        projectData.addProperty("project_id", project_id);
-
-        if (version.getReleasedVersionAt() != 0) {
-            Date dt = new Date();
-            dt.setTime(version.getReleasedVersionAt());
-            SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
-            projectData.addProperty("date_order", sdf.format(dt));
-        } else {
-            projectData.addProperty("date_order", null);
-        }
-        projectData.addProperty("description", version.getDescription());
-        projectData.addProperty("released", version.isReleasedVersion());
-        projectData.addProperty("obsolete", version.isDeprecatedVersion());
-        request.addProperty("version", projectData);
-
-        Object object = this.executeAction(request, action, true);
-        this.getResult(object);
     }
 
     @Override
