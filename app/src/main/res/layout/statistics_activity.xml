@@ -25,90 +25,117 @@
     tools:context="de.domjos.unibuggermobile.activities.StatisticsActivity"
     android:background="@drawable/background">
 
-    <ScrollView
-        android:layout_above="@+id/splitter2"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_above="@+id/splitter2">
 
-        <LinearLayout
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:weightSum="20"
+            android:id="@+id/pnlControls"
+            android:background="@drawable/controls_background">
 
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="20"
-                android:id="@+id/pnlControls">
+            <TableRow>
+                <RadioGroup
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_weight="10"
+                    android:orientation="horizontal">
 
-                <TableRow>
-                    <RadioGroup
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:orientation="horizontal">
-
-                        <RadioButton
-                            android:id="@+id/rbStatisticsMonthly"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/statistics_monthly"
-                            android:checked="true" />
-
-                        <RadioButton
-                            android:id="@+id/rbStatisticsYearly"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="@string/statistics_yearly" />
-                    </RadioGroup>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="10"
-                        android:layout_height="match_parent"
-                        android:text="@string/settings_bug_tracker"
-                        android:textSize="@dimen/header_text_size"
-                        android:textColor="@color/divider"
-                        android:textStyle="bold"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"/>
-                </TableRow>
-
-                <TableRow>
-                    <EditText
-                        android:id="@+id/txtStatisticsValue"
-                        android:inputType="text"
-                        android:layout_width="0dp"
+                    <RadioButton
+                        android:id="@+id/rbStatisticsMonthly"
+                        android:layout_width="wrap_content"
                         android:layout_height="@dimen/min_height"
-                        android:layout_weight="10"
-                        android:hint="@string/statistics_value"
-                        android:autofillHints="@string/statistics_value"
-                        tools:targetApi="o" />
+                        android:text="@string/statistics_monthly"
+                        android:checked="true" />
 
-                    <Spinner
-                        android:id="@+id/spStatisticsBugTracker"
-                        android:layout_width="0dp"
-                        android:layout_weight="10"
-                        android:layout_height="@dimen/min_height" />
-                </TableRow>
-            </TableLayout>
+                    <RadioButton
+                        android:id="@+id/rbStatisticsYearly"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/min_height"
+                        android:text="@string/statistics_yearly" />
+                </RadioGroup>
 
+                <EditText
+                    android:id="@+id/txtStatisticsValue"
+                    android:inputType="text"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_weight="10"
+                    android:hint="@string/statistics_value"
+                    android:autofillHints="@string/statistics_value"
+                    tools:targetApi="o" />
+            </TableRow>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider" />
+            <TableRow>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:layout_height="match_parent"
+                    android:text="@string/settings_bug_tracker"
+                    android:textSize="@dimen/header_text_size"
+                    android:textColor="@color/divider"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"/>
+                <Spinner
+                    android:id="@+id/spStatisticsBugTracker"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:layout_height="@dimen/min_height" />
+            </TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
+            <TableRow>
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:layout_height="match_parent"
+                    android:text="@string/statistics_diagram"
+                    android:textSize="@dimen/header_text_size"
+                    android:textColor="@color/divider"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"/>
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/bcStatisticsBugsPerProject"
-                android:layout_width="match_parent"
-                android:layout_height="300dp" />
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lcStatisticsBugsInTime"
-                android:layout_width="match_parent"
-                android:layout_height="300dp" />
-        </LinearLayout>
-    </ScrollView>
+                <Spinner
+                    android:id="@+id/spStatisticsDiagram"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"
+                    android:layout_height="@dimen/min_height"
+                    android:entries="@array/statistics_diagram"/>
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bcStatisticsBugsPerProject"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lcStatisticsBugsInTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"/>
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bcStatisticsBugsPerUser"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/splitter2"
@@ -122,23 +149,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:weightSum="10"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/pbStatistics"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:visibility="gone"
-            android:indeterminate="true" />
+            style="@android:style/Widget.ProgressBar.Horizontal" />
 
         <ImageButton
             android:id="@+id/cmdStatisticsSync"
             android:contentDescription="@string/local_sync"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_sync_black_24dp"
             android:background="@android:color/background_light"
             style="?android:attr/buttonBarButtonStyle"/>

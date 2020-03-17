@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -100,8 +101,13 @@ public class DiagramHelper {
         this.authentications = authentications;
     }
 
-    public void updateBarChart(BarChart barChart) {
-        this.createBarData(barChart);
+    public void updateProjectBarChart(BarChart barChart) {
+        this.createProjectBarData(barChart);
+        barChart.invalidate();
+    }
+
+    public void updateUserBarChart(BarChart barChart) {
+        this.createUserBarData(barChart);
         barChart.invalidate();
     }
 
@@ -111,7 +117,7 @@ public class DiagramHelper {
     }
 
     @SuppressWarnings("MagicConstant")
-    private void createBarData(BarChart barChart) {
+    private void createProjectBarData(BarChart barChart) {
         Random generator = new Random();
         BarData barData = new BarData();
         Map<Integer, Project> tmp = new LinkedHashMap<>();
@@ -162,7 +168,6 @@ public class DiagramHelper {
                                 counter = projects.getValue().size();
                                 break;
                         }
-
                         if (counter != 0) {
                             tmp.put(i, projects.getKey());
                             barEntries.add(new BarEntry(i, counter));
@@ -184,6 +189,89 @@ public class DiagramHelper {
             return project == null ? "" : project.getTitle();
         });
 
+        barChart.setData(barData);
+    }
+
+    private void createUserBarData(BarChart barChart) {
+        Random generator = new Random();
+        BarData barData = new BarData();
+        Map<String, Integer> tmp = new LinkedHashMap<>();
+        Map<Integer, Integer> mp = new LinkedHashMap<>();
+        int i = 0, current;
+
+        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+            boolean goOn = false;
+            if (this.authentications.isEmpty()) {
+                goOn = true;
+            } else {
+                for (Authentication authentication : this.authentications) {
+                    if (authentication != null) {
+                        if (authentication.getId() != null) {
+                            if (authentication.getId().equals(accounts.getKey().getId())) {
+                                goOn = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(goOn) {
+                for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
+                    mp.clear();
+                    for(Issue issue : projects.getValue()) {
+                        if(issue.getHandler() != null) {
+                            if(tmp.containsKey(issue.getHandler().getTitle())) {
+                                current = Objects.requireNonNull(tmp.get(issue.getHandler().getTitle()));
+                            } else {
+                                i++;
+                                tmp.put(issue.getHandler().getTitle(), i);
+                                current = i;
+                            }
+
+                            if(mp.containsKey(current)) {
+                                mp.put(current, mp.get(current) + 1);
+                            } else {
+                                mp.put(current, 1);
+                            }
+                        }
+                    }
+
+
+                    for(Map.Entry<Integer, Integer> entry : mp.entrySet()) {
+                        List<BarEntry> barEntries = new LinkedList<>();
+                        barEntries.add(new BarEntry(entry.getKey(), entry.getValue()));
+
+                        String currentItem = "";
+                        int counter = 1;
+                        for(String item : tmp.keySet()) {
+                            if(counter==entry.getKey()) {
+                                currentItem = item;
+                            }
+                            counter++;
+                        }
+
+                        BarDataSet barDataSet = new BarDataSet(barEntries, currentItem);
+                        barDataSet.setColor(generator.nextInt());
+                        barData.addDataSet(barDataSet);
+                    }
+                }
+            }
+        }
+
+        XAxis axis = barChart.getXAxis();
+        axis.setTypeface(Typeface.DEFAULT);
+        axis.setGranularity(1f);
+        axis.setValueFormatter((value, axis1) -> {
+            int counter = 1;
+            for(String item : tmp.keySet()) {
+                if(counter==value) {
+                    return item;
+                }
+                counter++;
+            }
+            return "";
+        });
         barChart.setData(barData);
     }
 

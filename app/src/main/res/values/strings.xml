@@ -251,8 +251,15 @@
     <string name="statistics_loaded">Data are loaded successfully</string>
     <string name="statistics_bar_description">Bugs per project</string>
     <string name="statistics_line_description">Bugs in history</string>
+    <string name="statistics_bar_user">Bugs per User</string>
     <string name="statistics_export">Export Diagrams</string>
     <string name="statistics_export_succes">Export successfully!</string>
+    <string name="statistics_diagram">Diagram</string>
+    <string-array name="statistics_diagram">
+        <item>@string/statistics_bar_description</item>
+        <item>@string/statistics_line_description</item>
+        <item>@string/statistics_bar_user</item>
+    </string-array>
 
     <string name="calendar">Calendar</string>
     <string name="calendar_project">Project</string>

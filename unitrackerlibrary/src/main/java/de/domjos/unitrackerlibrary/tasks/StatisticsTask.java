@@ -19,7 +19,9 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,17 +33,32 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
-public final class StatisticsTask extends AbstractTask<Void, Void, Map<Authentication, Map<Project, List<Issue>>>> {
+public final class StatisticsTask extends AbstractTask<Void, Integer, Map<Authentication, Map<Project, List<Issue>>>> {
     private List<IBugService> bugServices;
+    private final WeakReference<ProgressBar> progressBar;
+    private int max = 0;
+    private Update update;
 
-    public StatisticsTask(Activity activity, List<IBugService> bugServices, boolean showNotifications, int icon) {
+    public StatisticsTask(Activity activity, List<IBugService> bugServices, boolean showNotifications, int icon, ProgressBar progressBar) {
         super(activity, null, R.string.task_statistics_title, R.string.task_statistics_content, showNotifications, icon);
+
+        this.progressBar = new WeakReference<>(progressBar);
         this.bugServices = bugServices;
+    }
+
+    public void setOnUpdate(Update update) {
+        this.update = update;
     }
 
     @Override
     protected void before() {
 
+    }
+
+    @Override
+    protected void onProgressUpdate(Integer... values) {
+        int percentage = (int) (100.0 / this.max * values[0]);
+        this.progressBar.get().setProgress(percentage);
     }
 
     @Override
@@ -55,24 +72,35 @@ public final class StatisticsTask extends AbstractTask<Void, Void, Map<Authentic
                 for (Project project : projects) {
                     List<Issue> currentIssues = new LinkedList<>();
                     List<Issue> issues = bugService.getIssues(project.getId());
+                    this.max = issues.size();
+                    int counter = 0;
                     for (Issue issue : issues) {
                         try {
-                            if (issue.getLastUpdated() == null) {
+                            if (issue.getLastUpdated() == null || issue.getHandler() == null) {
                                 currentIssues.add(bugService.getIssue(issue.getId(), project.getId()));
                             } else {
                                 currentIssues.add(issue);
                             }
+                            this.publishProgress(counter);
                         } catch (Exception ex) {
                             super.printException(ex);
+                        } finally {
+                            counter++;
                         }
                     }
                     projectMap.put(project, currentIssues);
                 }
                 data.put(bugService.getAuthentication(), projectMap);
+                this.update.onUpdate(bugService.getAuthentication(), projectMap);
             }
         } catch (Exception ex) {
             super.printException(ex);
         }
         return data;
+    }
+
+    @FunctionalInterface
+    public interface Update {
+        void onUpdate(Authentication authentication, Map<Project, List<Issue>> data);
     }
 }

@@ -23,17 +23,16 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.Entry;
@@ -62,26 +61,41 @@ import de.domjos.unibuggermobile.helper.DiagramHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 
 public final class StatisticsActivity extends AbstractActivity {
-    private BarChart bcStatisticsBugsPerProject;
+    private BarChart bcStatisticsBugsPerProject, bcStatisticsBugsPerUser;
     private LineChart lcStatisticsBugsInTime;
     private RadioButton rbStatisticsMonthly, rbStatisticsYearly;
     private EditText txtStatisticsValue;
     private ProgressBar pbStatistics;
     private ImageButton cmdStatisticsReload;
-    private LinearLayout pnlControls;
 
     private Spinner spStatisticsBugTracker;
+    private Spinner spStatisticsDiagram;
     private ArrayAdapter<Authentication> bugTrackerAdapter;
 
     private Map<Authentication, Map<Project, List<Issue>>> data;
+    private List<Chart<?>> charts;
 
     public StatisticsActivity() {
         super(R.layout.statistics_activity);
         this.data = new LinkedHashMap<>();
+        this.charts = new LinkedList<>();
     }
 
     @Override
     protected void initActions() {
+
+        this.spStatisticsDiagram.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                for(Chart<?> chart : charts) {
+                    chart.setVisibility(View.GONE);
+                }
+                charts.get(i).setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {}
+        });
 
         this.cmdStatisticsReload.setOnClickListener(view -> reloadCharts());
         this.rbStatisticsMonthly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadCharts());
@@ -166,18 +180,25 @@ public final class StatisticsActivity extends AbstractActivity {
         Description description = new Description();
         description.setText(this.getString(R.string.statistics_bar_description));
         this.bcStatisticsBugsPerProject.setDescription(description);
+        this.charts.add(this.bcStatisticsBugsPerProject);
 
         this.lcStatisticsBugsInTime = this.findViewById(R.id.lcStatisticsBugsInTime);
         description = new Description();
         description.setText(this.getString(R.string.statistics_line_description));
         this.lcStatisticsBugsInTime.setDescription(description);
+        this.charts.add(this.lcStatisticsBugsInTime);
+
+        this.bcStatisticsBugsPerUser = this.findViewById(R.id.bcStatisticsBugsPerUser);
+        description = new Description();
+        description.setText(this.getString(R.string.statistics_bar_user));
+        this.bcStatisticsBugsPerUser.setDescription(description);
+        this.charts.add(this.bcStatisticsBugsPerUser);
 
         this.rbStatisticsMonthly = this.findViewById(R.id.rbStatisticsMonthly);
         this.rbStatisticsYearly = this.findViewById(R.id.rbStatisticsYearly);
         this.txtStatisticsValue = this.findViewById(R.id.txtStatisticsValue);
         this.pbStatistics = this.findViewById(R.id.pbStatistics);
         this.cmdStatisticsReload = this.findViewById(R.id.cmdStatisticsSync);
-        this.pnlControls = this.findViewById(R.id.pnlControls);
 
         this.spStatisticsBugTracker = this.findViewById(R.id.spStatisticsBugTracker);
         this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
@@ -188,6 +209,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.bugTrackerAdapter.add(authentication);
         }
         this.spStatisticsBugTracker.setSelection(0);
+        this.spStatisticsDiagram = this.findViewById(R.id.spStatisticsDiagram);
 
         this.initData();
     }
@@ -223,19 +245,20 @@ public final class StatisticsActivity extends AbstractActivity {
             }
         }
 
-        load();
+        this.data = new LinkedHashMap<>();
         StatisticsTask statisticsTask = new StatisticsTask(
                 StatisticsActivity.this,
                 bugServices,
                 MainActivity.GLOBALS.getSettings(StatisticsActivity.this).showNotifications(),
-                R.drawable.ic_multiline_chart_black_24dp
+                R.drawable.ic_multiline_chart_black_24dp, this.pbStatistics
         );
+        statisticsTask.setOnUpdate((auth, data) -> {
+            this.data.put(auth, data);
+            reloadCharts();
+        });
         statisticsTask.after(new AbstractTask.PostExecuteListener<Map<Authentication, Map<Project, List<Issue>>>>() {
             @Override
             public void onPostExecute(Map<Authentication, Map<Project, List<Issue>>> result) {
-                data = result;
-                load();
-                reloadCharts();
                 MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this);
             }
         });
@@ -268,21 +291,8 @@ public final class StatisticsActivity extends AbstractActivity {
             diagramHelper.setAuthentications(MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
         }
 
-        diagramHelper.updateBarChart(this.bcStatisticsBugsPerProject);
+        diagramHelper.updateProjectBarChart(this.bcStatisticsBugsPerProject);
         diagramHelper.updateLineChart(this.lcStatisticsBugsInTime);
-    }
-
-    private void load() {
-        if (this.pbStatistics.getVisibility() == View.GONE) {
-            this.pbStatistics.setVisibility(View.VISIBLE);
-            this.pbStatistics.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
-            this.pnlControls.setVisibility(View.INVISIBLE);
-            this.cmdStatisticsReload.setVisibility(View.GONE);
-        } else {
-            this.pbStatistics.setVisibility(View.GONE);
-            this.pnlControls.setVisibility(View.VISIBLE);
-            this.cmdStatisticsReload.setVisibility(View.VISIBLE);
-            this.cmdStatisticsReload.setLayoutParams(new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 10));
-        }
+        diagramHelper.updateUserBarChart(this.bcStatisticsBugsPerUser);
     }
 }
