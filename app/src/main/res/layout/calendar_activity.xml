@@ -47,7 +47,7 @@
         android:id="@+id/llToObject"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4"
+        android:layout_weight="3"
         android:orientation="vertical">
         <TextView
             android:id="@+id/lblCalendarTitle"
@@ -69,10 +69,25 @@
             android:layout_margin="2dp"/>
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/pbCalendar"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:visibility="gone"/>
+        android:layout_weight="2"
+        android:orientation="vertical"
+        android:background="@android:color/background_light">
+
+        <TextView
+            android:id="@+id/lblCalendarState"
+            android:text="@string/calendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="2dp"
+            android:layout_margin="2dp"/>
+
+        <ProgressBar
+            android:id="@+id/pbCalendar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@android:style/Widget.ProgressBar.Horizontal"/>
+    </LinearLayout>
 </LinearLayout>

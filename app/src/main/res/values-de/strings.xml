@@ -252,6 +252,9 @@
     <string name="statistics_export_succes">Export erfolgreich!</string>
 
     <string name="calendar">Kalender</string>
+    <string name="calendar_project">Projekt</string>
+    <string name="calendar_version">Version</string>
+    <string name="calendar_issue">Fehler</string>
 
     <string name="filter">Filter</string>
     <string-array name="filter_view">
