@@ -32,12 +32,11 @@
         android:background="@drawable/controls_background">
 
         <TableRow>
-
             <TextView
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="@dimen/header_text_size"
                 android:text="@string/administration_bugTracker"
                 android:layout_margin="4dp" />
         </TableRow>
@@ -45,7 +44,7 @@
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -57,19 +56,21 @@
                 android:id="@+id/spBugTracker1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
             <Spinner
                 android:id="@+id/spBugTracker2"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -81,7 +82,7 @@
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="@dimen/header_text_size"
                 android:text="@string/administration_project"
                 android:layout_margin="4dp" />
         </TableRow>
@@ -89,7 +90,7 @@
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -101,19 +102,21 @@
                 android:id="@+id/spProject1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
             <Spinner
                 android:id="@+id/spProject2"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
         </TableRow>
 
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -125,7 +128,7 @@
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:textStyle="bold"
-                android:textSize="14sp"
+                android:textSize="@dimen/header_text_size"
                 android:text="@string/administration_data"
                 android:layout_margin="4dp" />
         </TableRow>
@@ -133,7 +136,7 @@
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -145,6 +148,7 @@
                 android:id="@+id/spData1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
             <TextView
@@ -157,7 +161,7 @@
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -169,6 +173,7 @@
                 android:id="@+id/spDataItem1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
             <TextView
@@ -181,7 +186,7 @@
         <TableRow>
 
             <TextView
-                android:background="@color/colorPrimaryDark"
+                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -238,6 +243,7 @@
                 android:text="@string/administration_copy"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:textColor="@color/divider"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"/>
 
@@ -246,6 +252,7 @@
                 android:text="@string/administration_move"
                 android:layout_weight="5"
                 android:layout_width="0dp"
+                android:textColor="@color/divider"
                 android:layout_height="wrap_content"
                 style="?android:attr/buttonBarButtonStyle"/>
         </TableRow>

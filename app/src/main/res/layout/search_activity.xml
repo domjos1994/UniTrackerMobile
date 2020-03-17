@@ -115,5 +115,6 @@
         android:layout_height="40dp"
         app:srcCompat="@drawable/ic_search_black_24dp"
         android:contentDescription="@string/search"
-        android:background="@drawable/control_background" />
+        android:background="@android:color/background_light"
+        style="?android:attr/buttonBarButtonStyle" />
 </LinearLayout>

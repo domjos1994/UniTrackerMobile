@@ -24,18 +24,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="de.domjos.unibuggermobile.activities.CalendarActivity"
     android:orientation="vertical"
-    android:weightSum="20">
+    android:weightSum="20"
+    android:background="@drawable/background">
 
     <de.domjos.customwidgets.widgets.calendar.WidgetCalendar
         android:id="@+id/cvEventCalendar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="15"
-        app:toolBarBackground="@android:color/white"
+        app:toolBarBackground="@android:color/transparent"
         app:monthViewBackground="@android:color/transparent"
         app:dayViewBackground="@android:color/transparent"
         app:groupLabelWidth="25dp"
         app:focusBackground="@color/colorPrimary"/>
+
+    <TextView
+        android:background="@color/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
 
     <LinearLayout
         android:id="@+id/llToObject"

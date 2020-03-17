@@ -20,4 +20,6 @@
     <color name="colorPrimary">#708090</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorAccent">#808080</color>
+
+    <color name="divider">#000000</color>
 </resources>

@@ -25,7 +25,8 @@
     android:layout_width="300dp"
     android:weightSum="10"
     android:orientation="horizontal"
-    android:id="@+id/root">
+    android:id="@+id/root"
+    android:background="@color/colorPrimaryDark">
 
     <TextView
         android:id="@+id/lblTitle"
@@ -46,9 +47,10 @@
     <TableRow>
         <TextView
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="3"
-            android:textSize="24sp"
+            android:textSize="@dimen/header_text_size"
+            android:textStyle="bold"
             android:text="@string/issues_general_status"
             android:gravity="center"
             android:layout_gravity="center"
@@ -57,7 +59,7 @@
         <Spinner
             android:id="@+id/cmbStatus"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/min_height"
             android:layout_weight="7"
             android:layout_margin="4dp"/>
     </TableRow>
@@ -80,5 +82,7 @@
         android:layout_weight="10"
         android:contentDescription="@string/sys_save"
         app:srcCompat="@drawable/ic_save_black_24dp"
-        android:layout_margin="1dp"/>
+        android:layout_margin="1dp"
+        android:background="@android:color/background_light"
+        style="?android:attr/buttonBarButtonStyle"/>
 </TableLayout>

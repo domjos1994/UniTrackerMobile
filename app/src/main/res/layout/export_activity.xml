@@ -17,234 +17,269 @@
   ~  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:weightSum="10"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     tools:context=".activities.ExportActivity"
     android:background="@drawable/background">
 
-    <TableLayout
-        android:id="@+id/tblControls"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:weightSum="10"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/controls_background">
+        android:layout_alignParentTop="true">
 
-        <TableRow>
+        <TableLayout
+            android:id="@+id/tblControls"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="10"
+            android:background="@drawable/controls_background">
 
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:text="@string/administration_bugTracker"
-                android:layout_margin="4dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/header_text_size"
+                    android:text="@string/administration_bugTracker"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow>
+                <Spinner
+                    android:id="@+id/spBugTracker"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <Spinner
-                android:id="@+id/spBugTracker"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_margin="4dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/header_text_size"
+                    android:text="@string/administration_project"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow>
+                <Spinner
+                    android:id="@+id/spProjects"
+                    android:layout_weight="5"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:text="@string/administration_project"
-                android:layout_margin="4dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/header_text_size"
+                    android:text="@string/administration_data"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow>
+                <Spinner
+                    android:id="@+id/spData"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <Spinner
-                android:id="@+id/spProjects"
-                android:layout_weight="5"
-                android:layout_width="0dp"
-                android:layout_margin="4dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/header_text_size"
+                    android:text="@string/export_path"
+                    android:layout_margin="4dp" />
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:id="@+id/txtExportPath"
+                    android:inputType="none"
+                    android:layout_weight="6"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:hint="@string/export_path"
+                    android:layout_margin="4dp"
+                    android:autofillHints="@string/export_path"
+                    tools:targetApi="o"/>
 
-        <TableRow>
+                <Spinner
+                    android:id="@+id/spExportPath"
+                    android:entries="@array/export_path_extensions"
+                    android:layout_weight="3"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:gravity="center_vertical"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"/>
 
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:text="@string/administration_data"
-                android:layout_margin="4dp" />
-        </TableRow>
+                <ImageButton
+                    android:id="@+id/cmdExportPath"
+                    android:contentDescription="@string/export"
+                    app:srcCompat="@drawable/ic_search_black_24dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:background="@null"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"/>
+            </TableRow>
 
-        <TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow
+                android:tag="pdf"
+                android:visibility="gone">
+                <CheckBox
+                    android:id="@+id/chkShowBackground"
+                    android:checked="true"
+                    android:text="@string/export_extended_pdf_background"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"/>
+                <CheckBox
+                    android:id="@+id/chkShowIcon"
+                    android:checked="true"
+                    android:text="@string/export_extended_pdf_icon"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"/>
+            </TableRow>
 
-        <TableRow>
 
-            <Spinner
-                android:id="@+id/spData"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_margin="4dp" />
-        </TableRow>
+            <TableRow
+                android:tag="xml">
+                <TextView
+                    android:id="@+id/txtXSLTPath"
+                    android:inputType="none"
+                    android:layout_weight="7"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:hint="@string/export_extended_xml_xslt"
+                    android:layout_margin="4dp"
+                    android:autofillHints="@string/export_extended_xml_xslt"
+                    tools:targetApi="o"/>
 
-        <TableRow>
+                <ImageButton
+                    android:id="@+id/cmdXSLTPath"
+                    android:contentDescription="@string/export"
+                    app:srcCompat="@drawable/ic_search_black_24dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/min_height"
+                    android:background="@null"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"/>
+            </TableRow>
 
-            <TextView
-                android:background="@color/colorPrimaryDark"
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+            <TableRow>
+                <TextView
+                    android:background="@color/divider"
+                    android:layout_weight="10"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp" />
+            </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:text="@string/export_path"
-                android:layout_margin="4dp" />
-        </TableRow>
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/txtExportPath"
-                android:inputType="none"
-                android:layout_weight="6"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:hint="@string/export_path"
-                android:layout_margin="4dp"
-                android:autofillHints="@string/export_path"
-                tools:targetApi="o"/>
-
-            <Spinner
-                android:id="@+id/spExportPath"
-                android:entries="@array/export_path_extensions"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                android:layout_gravity="center"
-                android:foregroundGravity="center"/>
-
-            <ImageButton
-                android:id="@+id/cmdExportPath"
-                android:contentDescription="@string/export"
-                app:srcCompat="@drawable/ic_search_black_24dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:background="@null"
-                android:layout_gravity="center"
-                android:foregroundGravity="center"/>
-        </TableRow>
-        <TableRow
-            android:tag="pdf"
-            android:visibility="gone">
-            <CheckBox
-                android:id="@+id/chkShowBackground"
-                android:checked="true"
-                android:text="@string/export_extended_pdf_background"
-                android:layout_width="0dp"
-                android:layout_weight="5"/>
-            <CheckBox
-                android:id="@+id/chkShowIcon"
-                android:checked="true"
-                android:text="@string/export_extended_pdf_icon"
-                android:layout_width="0dp"
-                android:layout_weight="5"/>
-        </TableRow>
-        <TableRow
-            android:tag="xml">
-            <TextView
-                android:id="@+id/txtXSLTPath"
-                android:inputType="none"
-                android:layout_weight="7"
-                android:layout_width="0dp"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:hint="@string/export_extended_xml_xslt"
-                android:layout_margin="4dp"
-                android:autofillHints="@string/export_extended_xml_xslt"
-                tools:targetApi="o"/>
-
-            <ImageButton
-                android:id="@+id/cmdXSLTPath"
-                android:contentDescription="@string/export"
-                app:srcCompat="@drawable/ic_search_black_24dp"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:background="@null"
-                android:layout_gravity="center"
-                android:foregroundGravity="center"/>
-        </TableRow>
-        <TableRow
-            android:tag="xml">
-            <CheckBox
-                android:id="@+id/chkCopyExampleData"
-                android:text="@string/export_extended_xml_xslt_example"
-                android:layout_width="0dp"
-                android:layout_weight="10"/>
-        </TableRow>
-    </TableLayout>
+            <TableRow
+                android:tag="xml">
+                <CheckBox
+                    android:id="@+id/chkCopyExampleData"
+                    android:text="@string/export_extended_xml_xslt_example"
+                    android:layout_width="0dp"
+                    android:layout_weight="10"/>
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/cmdExport"
         android:text="@string/export"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true" />
+        android:layout_height="@dimen/min_height"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/divider"
+        android:background="@android:color/background_light"
+        style="?android:attr/buttonBarButtonStyle" />
 </RelativeLayout>
