@@ -296,7 +296,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
             if (linkObject.has("assignee")) {
                 if (!linkObject.isNull("assignee")) {
                     String href = linkObject.getJSONObject("assignee").getString("href");
-                    String user_id = href.substring(href.lastIndexOf("/") + 1);
+                    String user_id = href.substring(href.lastIndexOf('/') + 1);
                     if(!user_id.equals("null")) {
                         issue.setHandler(this.getUser(Long.parseLong(user_id), project_id));
                     }
@@ -307,7 +307,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 if (!linkObject.isNull("priority")) {
                     String href = linkObject.getJSONObject("priority").getString("href");
                     String title = linkObject.getJSONObject("priority").getString("title");
-                    String priority_id = href.substring(href.lastIndexOf("/") + 1);
+                    String priority_id = href.substring(href.lastIndexOf('/') + 1);
                     issue.setPriority(Integer.parseInt(priority_id), title);
                 }
             }
@@ -316,7 +316,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 if (!linkObject.isNull("status")) {
                     String href = linkObject.getJSONObject("status").getString("href");
                     String title = linkObject.getJSONObject("status").getString("title");
-                    String status_id = href.substring(href.lastIndexOf("/") + 1);
+                    String status_id = href.substring(href.lastIndexOf('/') + 1);
                     issue.setStatus(Integer.parseInt(status_id), title);
                 }
             }
@@ -325,7 +325,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                 if (!linkObject.isNull("type")) {
                     String href = linkObject.getJSONObject("type").getString("href");
                     String title = linkObject.getJSONObject("type").getString("title");
-                    String type_id = href.substring(href.lastIndexOf("/") + 1);
+                    String type_id = href.substring(href.lastIndexOf('/') + 1);
                     issue.setSeverity(Integer.parseInt(type_id), title);
                 }
             }
@@ -735,7 +735,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
                     JSONObject linksObject = historyObject.getJSONObject("_links");
                     JSONObject userObject = linksObject.getJSONObject("user");
                     String userLink = userObject.getString("href");
-                    long id = Long.parseLong(userLink.substring(userLink.lastIndexOf("/") + 1));
+                    long id = Long.parseLong(userLink.substring(userLink.lastIndexOf('/') + 1));
                     history.setUser(this.getUser(id, project_id).getTitle());
 
                     history.setField(detailsObject.getString("format"));

@@ -132,9 +132,9 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
         }
         if (ivChild != null) {
             if (item.toLowerCase().trim().contains("issue.pdf")) {
-                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.ic_bug_report_black_24dp));
+                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.icon_issues));
             } else {
-                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.ic_file_download_black_24dp));
+                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.icon_download));
             }
         }
         return convertView;

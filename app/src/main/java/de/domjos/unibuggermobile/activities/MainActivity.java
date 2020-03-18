@@ -198,7 +198,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 if (listObject != null) {
                     if (listObject.getObject() != null) {
                         Project project = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProject(MainActivity.this, bugService);
-                        new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.ic_bug_report_black_24dp).execute(((Issue)listObject.getObject()).getId()).get();
+                        new IssueTask(MainActivity.this, bugService, project.getId(), true, false, settings.showNotifications(), R.drawable.icon_issues).execute(((Issue)listObject.getObject()).getId()).get();
                     }
                 }
             } catch (Exception ex) {
@@ -315,7 +315,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.lvMainIssues.setContextMenu(R.menu.context_main);
             this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
-            this.lvMainIssues.addButtonClick(R.drawable.ic_style_black_24dp, this.getString(R.string.issues_general_tags), objectList -> {
+            this.lvMainIssues.addButtonClick(R.drawable.icon_tags, this.getString(R.string.issues_general_tags), objectList -> {
                 try {
                     Activity act = MainActivity.this;
                     boolean show = settings.showNotifications();
@@ -354,7 +354,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Object pid = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getCurrentProjectId();
             boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
             BaseDescriptionObject currentObject = lvMainIssues.getAdapter().getObject();
-            IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
+            IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show, R.drawable.icon_issues);
             Issue issue = issueTask.execute(((Issue)currentObject.getObject()).getId()).get().get(0);
 
             switch (item.getItemId()) {
@@ -423,7 +423,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
                         ((Relationship) issue.getRelations().get(i)).setId(null);
                     }
-                    new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp).execute(issue).get();
+                    new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues).execute(issue).get();
                     reload();
                     break;
                 case R.id.ctxShowAttachment:
@@ -563,7 +563,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                     filter = this.spMainFilters.getSelectedItem().toString();
                                 }
 
-                                IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp);
+                                IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
                                 listIssueTask.after(new AbstractTask.PostExecuteListener<List<Issue>>() {
                                     @Override
                                     public void onPostExecute(List<Issue> issues) {
@@ -643,7 +643,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.clear();
             this.projectList.add(new Project());
 
-            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.ic_apps_black_24dp).execute(0).get();
+            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects).execute(0).get();
             if (projects != null) {
                 for (Project project : projects) {
                     this.projectList.add(project);
@@ -830,9 +830,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @SuppressWarnings("deprecation")
     private Drawable getDrawable() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getDrawable(R.drawable.ic_account_circle_black_24dp);
+            return getDrawable(R.drawable.icon_accounts);
         } else {
-            return getResources().getDrawable(R.drawable.ic_account_circle_black_24dp);
+            return getResources().getDrawable(R.drawable.icon_accounts);
         }
     }
 

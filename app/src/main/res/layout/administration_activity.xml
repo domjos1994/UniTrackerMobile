@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:weightSum="10"
         android:layout_alignParentTop="true"
-        android:background="@drawable/controls_background">
+        android:background="@drawable/background_controls_2">
 
         <TableRow>
             <TextView

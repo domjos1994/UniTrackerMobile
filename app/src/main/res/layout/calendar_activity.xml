@@ -49,7 +49,7 @@
         android:layout_height="0dp"
         android:layout_weight="3"
         android:orientation="vertical"
-        android:background="@drawable/controls_background">
+        android:background="@drawable/background_controls_2">
         <TextView
             android:id="@+id/lblCalendarTitle"
             android:text="@string/calendar"

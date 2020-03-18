@@ -26,10 +26,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/ll"
-        app:itemIcon="@drawable/ic_file_upload_black_24dp"
-        app:listItemBackground="@drawable/controls_background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/selected_background"
+        app:itemIcon="@drawable/icon_issues_attachments"
+        app:listItemBackground="@drawable/background_controls_2"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_selected"
         app:listItemForeground="@android:color/black"/>
 
     <LinearLayout
@@ -44,13 +44,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            app:srcCompat="@drawable/ic_file_upload_black_24dp" />
+            app:srcCompat="@drawable/icon_issues_attachments" />
         <ImageButton
             android:id="@+id/cmdIssueAttachmentPhoto"
             android:contentDescription="@string/issues_attachments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            app:srcCompat="@drawable/ic_photo_camera_black_24dp" />
+            app:srcCompat="@drawable/icon_camera" />
     </LinearLayout>
 </RelativeLayout>

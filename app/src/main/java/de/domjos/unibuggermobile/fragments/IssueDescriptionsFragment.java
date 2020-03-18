@@ -80,10 +80,10 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
                 Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 
-                UserTask userTask = new UserTask(this.getActivity(), bugService, pid, false, show, R.drawable.ic_person_black_24dp);
+                UserTask userTask = new UserTask(this.getActivity(), bugService, pid, false, show, R.drawable.icon_users);
                 users = userTask.execute(0).get();
 
-                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.icon_issues);
                 issues = issueTask.execute(0).get();
             } catch (Exception ignored) {}
 

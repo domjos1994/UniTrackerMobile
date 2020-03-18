@@ -37,7 +37,7 @@
             android:orientation="horizontal"
             android:weightSum="20"
             android:id="@+id/pnlControls"
-            android:background="@drawable/controls_background">
+            android:background="@drawable/background_controls_2">
 
             <TableRow>
                 <RadioGroup
@@ -162,7 +162,7 @@
             android:contentDescription="@string/local_sync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_sync_black_24dp"
+            app:srcCompat="@drawable/icon_local_sync"
             android:background="@android:color/background_light"
             style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>

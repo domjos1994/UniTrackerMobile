@@ -32,17 +32,17 @@
         android:layout_height="0dp"
         android:layout_weight="12"
         android:padding="5dp"
-        app:itemIcon="@drawable/ic_search_black_24dp"
-        app:listItemBackground="@drawable/controls_background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/selected_background"
+        app:itemIcon="@drawable/icon_search"
+        app:listItemBackground="@drawable/background_controls_2"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_selected"
         app:listItemForeground="@android:color/black"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:background="@drawable/control_background"
+        android:background="@drawable/background_controls_1"
         android:padding="5dp">
 
         <TableLayout
@@ -113,7 +113,7 @@
         android:id="@+id/cmdSearch"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        app:srcCompat="@drawable/ic_search_black_24dp"
+        app:srcCompat="@drawable/icon_search"
         android:contentDescription="@string/search"
         android:background="@android:color/background_light"
         style="?android:attr/buttonBarButtonStyle" />

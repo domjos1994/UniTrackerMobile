@@ -754,7 +754,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             JSONArray fieldsArray = new JSONArray(this.getCurrentMessage());
             for(int i = 0; i<=fieldsArray.length() - 1; i++) {
                 JSONObject fieldsObject = fieldsArray.getJSONObject(i);
-                if(fieldsObject.getString("id").trim().toLowerCase().equals("issuelinks")) {
+                if(fieldsObject.getString("id").trim().equalsIgnoreCase("issuelinks")) {
                     this.executeRequest("/rest/api/2/screens/addToDefault/issuelinks", "", "POST");
                     break;
                 }

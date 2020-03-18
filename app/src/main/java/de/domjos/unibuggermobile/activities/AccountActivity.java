@@ -57,6 +57,8 @@ import de.domjos.unibuggermobile.helper.Validator;
 import de.domjos.unibuggermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
+    private final static String ACCOUNTS = "accounts";
+
     private SwipeRefreshDeleteList lvAccounts;
     private Spinner cmbAccountTracker, cmbAccountAuthentication;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
@@ -85,7 +87,7 @@ public final class AccountActivity extends AbstractActivity {
             this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
             if (listObject != null) {
                 this.currentAccount = (Authentication) listObject.getObject();
-                this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, "accounts", "title", this.currentAccount.getId());
+                this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, AccountActivity.ACCOUNTS, "title", this.currentAccount.getId());
             }
             objectToControls();
             manageControls(false, false, true);
@@ -94,7 +96,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.setOnReloadListener(this::reload);
 
         this.lvAccounts.setOnDeleteListener(listObject -> {
-            MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", listObject.getId());
+            MainActivity.GLOBALS.getSqLiteGeneral().delete(AccountActivity.ACCOUNTS, "ID", listObject.getId());
             manageControls(false, true, false);
         });
 
@@ -257,7 +259,7 @@ public final class AccountActivity extends AbstractActivity {
                     this.manageControls(true, false, false);
                     break;
                 case R.id.navDelete:
-                    MainActivity.GLOBALS.getSqLiteGeneral().delete("accounts", "ID", this.currentAccount.getId());
+                    MainActivity.GLOBALS.getSqLiteGeneral().delete(AccountActivity.ACCOUNTS, "ID", this.currentAccount.getId());
                     this.manageControls(false, true, false);
                     this.reload();
                     break;
@@ -370,7 +372,7 @@ public final class AccountActivity extends AbstractActivity {
         this.accountValidator = new Validator(this.getApplicationContext());
         this.accountValidator.addEmptyValidator(this.txtAccountTitle);
         this.accountValidator.addEmptyValidator(this.txtAccountServer);
-        this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, "accounts", "title", 0);
+        this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, AccountActivity.ACCOUNTS, "title", 0);
     }
 
     @Override
@@ -441,7 +443,7 @@ public final class AccountActivity extends AbstractActivity {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(this.currentAccount.getCover(), 0, this.currentAccount.getCover().length);
                 this.cmdAccountImageGallery.setImageBitmap(bitmap);
             } else {
-                this.cmdAccountImageGallery.setImageDrawable(this.getResources().getDrawable(R.drawable.ic_account_circle_black_24dp));
+                this.cmdAccountImageGallery.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_accounts));
             }
 
             if(this.currentAccount.getTracker() == Authentication.Tracker.YouTrack) {

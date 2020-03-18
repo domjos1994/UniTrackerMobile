@@ -825,7 +825,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                 if (!jsonObject.isNull("fieldType")) {
                     field_id = jsonObject.getJSONObject("fieldType").getString("id");
                     if (field_id.contains("[")) {
-                        field_id = field_id.substring(0, field_id.lastIndexOf("["));
+                        field_id = field_id.substring(0, field_id.lastIndexOf('['));
                     }
                     StringBuilder possibleValues = new StringBuilder();
                     Project<String> project = this.getProject(project_id);

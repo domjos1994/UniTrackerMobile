@@ -216,41 +216,41 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues);
                 break;
             case 1:
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_description_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_descriptions);
                 break;
         }
 
         int i = 2;
         if (this.bugService.getPermissions().listNotes()) {
             if (position == i) {
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_note_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_notes);
             }
             i++;
         }
         if (this.bugService.getPermissions().listAttachments()) {
             if (position == i) {
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_file_upload_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_attachments);
             }
             i++;
         }
         if (this.bugService.getPermissions().listRelations()) {
             if (position == i) {
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_bug_report_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues);
             }
             i++;
         }
         if (this.bugService.getPermissions().listCustomFields()) {
             if (position == i) {
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_account_circle_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_accounts);
             }
             i++;
         }
         if (this.bugService.getPermissions().listHistory()) {
             if (position == i) {
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.ic_history_black_24dp);
+                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_history);
             }
         }
 

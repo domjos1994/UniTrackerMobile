@@ -292,7 +292,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 content = attachment.getContent();
             } else {
                 try {
-                    content = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.ic_file_upload_black_24dp));
+                    content = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.icon_issues_attachments));
                 } catch (Exception ex) {
                     this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
                     continue;

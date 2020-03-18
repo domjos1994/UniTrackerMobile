@@ -78,7 +78,7 @@ public class Settings {
         try {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (!title.isEmpty()) {
-                List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.ic_apps_black_24dp).execute(title).get();
+                List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.icon_projects).execute(title).get();
                 if (projects.size() >= 1) {
                     return projects.get(0);
                 }

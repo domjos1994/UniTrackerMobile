@@ -201,7 +201,7 @@ public final class AdministrationTask extends AbstractTask<Administration, Integ
         if(administration.isAddToExistingProject()) {
             List<Project> projects = administration.getToBugService().getProjects();
             for(Project temp : projects) {
-                if (temp.getTitle().replace("-", "").toLowerCase().equals(project.getTitle().toLowerCase())) {
+                if (temp.getTitle().replace("-", "").equalsIgnoreCase(project.getTitle())) {
                     newId = temp.getId();
                 }
             }

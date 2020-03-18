@@ -68,7 +68,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/ic_navigate_before_black_24dp"
+                app:srcCompat="@drawable/icon_controls_before"
                 style="?android:attr/buttonBarButtonStyle" />
 
             <ImageButton
@@ -77,7 +77,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/ic_navigate_next_black_24dp"
+                app:srcCompat="@drawable/icon_controls_next"
                 style="?android:attr/buttonBarButtonStyle" />
         </LinearLayout>
     </LinearLayout>

@@ -75,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="10"
         android:contentDescription="@string/sys_save"
-        app:srcCompat="@drawable/ic_save_black_24dp"
+        app:srcCompat="@drawable/icon_controls_save"
         android:layout_margin="1dp"
         android:background="@android:color/background_light"
         style="?android:attr/buttonBarButtonStyle"/>

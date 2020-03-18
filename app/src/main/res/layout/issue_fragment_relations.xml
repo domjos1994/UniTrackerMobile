@@ -29,10 +29,10 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@+id/tblIssuesRelations"
-        app:itemIcon="@drawable/ic_bug_report_black_24dp"
-        app:listItemBackground="@drawable/controls_background"
-        app:selectedListItemBackground="@drawable/selected_background"
-        app:listItemDivider="@drawable/selected_background"
+        app:itemIcon="@drawable/icon_issues"
+        app:listItemBackground="@drawable/background_controls_2"
+        app:selectedListItemBackground="@drawable/background_selected"
+        app:listItemDivider="@drawable/background_selected"
         app:listItemForeground="@android:color/black"/>
 
     <TableLayout
@@ -70,7 +70,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:srcCompat="@drawable/ic_add_circle_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_add" />
 
             <ImageButton
                     android:id="@+id/cmdIssuesRelationsEdit"
@@ -78,7 +78,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:srcCompat="@drawable/ic_edit_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_edit" />
 
             <ImageButton
                     android:id="@+id/cmdIssuesRelationsDelete"
@@ -86,7 +86,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:srcCompat="@drawable/ic_delete_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_delete" />
 
             <ImageButton
                     android:id="@+id/cmdIssuesRelationsCancel"
@@ -94,7 +94,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:srcCompat="@drawable/ic_cancel_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_cancel" />
 
             <ImageButton
                     android:id="@+id/cmdIssuesRelationsSave"
@@ -102,7 +102,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    app:srcCompat="@drawable/ic_save_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_save" />
         </TableRow>
     </TableLayout>
 </RelativeLayout>

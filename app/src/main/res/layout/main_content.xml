@@ -39,7 +39,7 @@
             android:orientation="horizontal"
             android:weightSum="10"
             android:layout_alignParentTop="true"
-            android:background="@drawable/controls_background">
+            android:background="@drawable/background_controls_2">
 
             <TableRow
                 android:id="@+id/rowNoConnection"
@@ -113,16 +113,16 @@
             android:layout_above="@+id/footer"
             android:layout_margin="2dp"
             android:padding="2dp"
-            app:itemIcon="@drawable/ic_bug_report_black_24dp"
-            app:listItemBackground="@drawable/controls_background"
-            app:selectedListItemBackground="@drawable/selected_background"
-            app:listItemDivider="@drawable/selected_background"
+            app:itemIcon="@drawable/icon_issues"
+            app:listItemBackground="@drawable/background_controls_2"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_selected"
             app:listItemForeground="@android:color/black"
-            app:listItemBackgroundStatePositive="@drawable/positive_background"/>
+            app:listItemBackgroundStatePositive="@drawable/background_positive"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cmdIssueAdd"
-            app:srcCompat="@drawable/ic_add_circle_black_24dp"
+            app:srcCompat="@drawable/icon_controls_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
@@ -137,7 +137,7 @@
             android:layout_gravity="bottom|end"
             android:orientation="vertical"
             android:layout_alignParentBottom="true"
-            android:background="@drawable/controls_background">
+            android:background="@drawable/background_controls_2">
             <TextView
                 android:id="@+id/lblItems"
                 android:layout_width="match_parent"
@@ -157,14 +157,14 @@
                     android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_navigate_before_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_before" />
                 <ImageButton
                     android:id="@+id/cmdNext"
                     android:contentDescription="@string/issues"
                     android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_navigate_next_black_24dp" />
+                    app:srcCompat="@drawable/icon_controls_next" />
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

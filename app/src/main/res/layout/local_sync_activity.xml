@@ -33,7 +33,7 @@
         android:orientation="horizontal"
         android:weightSum="10"
         android:layout_alignParentTop="true"
-        android:background="@drawable/controls_background">
+        android:background="@drawable/background_controls_2">
 
         <TableRow>
 
@@ -61,7 +61,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/search_content"
-                app:srcCompat="@drawable/ic_search_black_24dp" />
+                app:srcCompat="@drawable/icon_search" />
         </TableRow>
 
         <TableRow>
@@ -126,7 +126,7 @@
             android:id="@+id/cmdSync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/ic_sync_black_24dp"
+            app:srcCompat="@drawable/icon_local_sync"
             android:contentDescription="@string/local_sync"
             style="?android:attr/buttonBarButtonStyle"/>
     </LinearLayout>

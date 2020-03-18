@@ -24,37 +24,37 @@
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsGeneralFragment"
-        android:icon="@drawable/ic_info_black_24dp"
+        android:icon="@drawable/icon_settings_general"
         android:title="@string/settings_general"
         android:summary="@string/settings_general_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsBugTrackerFragment"
-        android:icon="@drawable/ic_bug_report_black_24dp"
+        android:icon="@drawable/icon_issues"
         android:title="@string/settings_bug_tracker"
         android:summary="@string/settings_bug_tracker_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsInternetFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
+        android:icon="@drawable/icon_local_sync"
         android:title="@string/settings_internet"
         android:summary="@string/settings_internet_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsSecurityFragment"
-        android:icon="@drawable/ic_security_black_24dp"
+        android:icon="@drawable/icon_settings_security"
         android:title="@string/settings_security"
         android:summary="@string/settings_security_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsSyncFragment"
-        android:icon="@drawable/ic_sync_black_24dp"
+        android:icon="@drawable/icon_local_sync"
         android:title="@string/settings_sync"
         android:summary="@string/settings_sync_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsLogFragment"
-        android:icon="@drawable/ic_error_black_24dp"
+        android:icon="@drawable/icon_settings_log"
         android:title="@string/settings_log"
         android:summary="@string/settings_log_summary" />
 </androidx.preference.PreferenceScreen>

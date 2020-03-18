@@ -84,7 +84,7 @@ public final class VersionActivity extends AbstractActivity {
     protected void initActions() {
         this.lvVersions.setOnDeleteListener(listObject -> {
             try {
-                new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(((Version)listObject.getObject()).getId()).get();
+                new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.icon_versions).execute(((Version)listObject.getObject()).getId()).get();
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
             }
@@ -96,7 +96,7 @@ public final class VersionActivity extends AbstractActivity {
             manageControls(false, false, true);
         });
 
-        this.lvVersions.addButtonClick(R.drawable.ic_update_black_24dp, this.getString(R.string.versions_menu_changelog), list -> {
+        this.lvVersions.addButtonClick(R.drawable.icon_versions, this.getString(R.string.versions_menu_changelog), list -> {
             FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
             dialog.setDialogSelectionListener(files -> {
                 try {
@@ -155,7 +155,7 @@ public final class VersionActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(this.currentVersion.getId()).get();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -169,7 +169,7 @@ public final class VersionActivity extends AbstractActivity {
                     try {
                         if (this.versionValidator.getState()) {
                             this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "", R.drawable.ic_update_black_24dp).execute(this.currentVersion).get();
+                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
@@ -226,7 +226,7 @@ public final class VersionActivity extends AbstractActivity {
                             filterAction = "versions";
                         }
                     }
-                    VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction, R.drawable.ic_update_black_24dp);
+                    VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction, R.drawable.icon_versions);
                     for (Version version : versionTask.execute(0).get()) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(version);
@@ -390,16 +390,16 @@ public final class VersionActivity extends AbstractActivity {
     private void createPDF(Object pid, Object vid, String[] files, byte[] icon, byte[] bg) throws Exception {
         ExportTask exportTask = new ExportTask(
                 VersionActivity.this, bugService, null, pid, files[0],
-                false, R.drawable.ic_bug_report_black_24dp, bg, icon, "", vid);
+                false, R.drawable.icon_issues, bg, icon, "", vid);
         exportTask.execute(0).get();
     }
 
     private byte[] getBytes() {
         Bitmap bitmap;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.ic_launcher_round, this.getTheme())).getBitmap();
+            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.icon, this.getTheme())).getBitmap();
         } else {
-            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.ic_launcher_round)).getBitmap();
+            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.icon)).getBitmap();
         }
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);

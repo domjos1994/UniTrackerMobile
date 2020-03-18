@@ -116,9 +116,9 @@ public final class SearchActivity extends AbstractActivity {
                             this.txtSearchVersions.getText().toString(),
                             this.bugServices,
                             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
-                            R.drawable.ic_search_black_24dp
+                            R.drawable.icon_search
                     );
-            for (DescriptionObject descriptionObject : searchTask.execute(R.drawable.ic_search_black_24dp).get()) {
+            for (DescriptionObject descriptionObject : searchTask.execute(R.drawable.icon_search).get()) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setObject(descriptionObject);
                 baseDescriptionObject.setDescription(descriptionObject.getDescription());

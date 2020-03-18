@@ -101,8 +101,7 @@ public class Helper {
     }
 
     static int getVersionCode(Context context) throws Exception {
-        PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-        return info.versionCode;
+        return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
     }
 
     public static View getRowView(Context context, ViewGroup parent, int layout) {
@@ -261,13 +260,13 @@ public class Helper {
                     String tags = txtTags.getText().toString();
 
                     for(BaseDescriptionObject listObject : objects) {
-                        IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
+                        IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.icon_issues);
                         List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
 
                         if(issues!=null) {
                             if(!issues.isEmpty()) {
                                 issues.get(0).setTags(tags);
-                                issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                                issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.icon_issues);
                                 issueTask.execute(issues.get(0)).get();
                             }
                         }
@@ -401,7 +400,7 @@ public class Helper {
                     }
                     issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
 
-                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.icon_issues);
                     issueTask.execute(issue).get();
                     resolveDialog.dismiss();
                     runnable.run();
@@ -508,8 +507,7 @@ public class Helper {
 
     public static String getVersion(Context context) {
         try {
-            PackageInfo pInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return pInfo.versionName;
+            return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
         }
@@ -528,7 +526,7 @@ public class Helper {
             Bitmap bitmap = BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length);
             iv.setImageBitmap(bitmap);
         } else {
-            iv.setImageDrawable(activity.getResources().getDrawable(R.drawable.ic_file_download_black_24dp));
+            iv.setImageDrawable(activity.getResources().getDrawable(R.drawable.icon_download));
         }
 
         iv.setOnClickListener(v -> {

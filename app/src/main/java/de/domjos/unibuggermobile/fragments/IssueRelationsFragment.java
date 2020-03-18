@@ -89,7 +89,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 
-                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.icon_issues);
                 issues = issueTask.execute(0).get();
             } catch (Exception ignored) {}
 

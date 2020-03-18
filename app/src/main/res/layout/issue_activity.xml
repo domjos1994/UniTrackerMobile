@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:layout_above="@+id/nav_view"
-        android:background="@drawable/controls_background">
+        android:background="@drawable/background_controls_2">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"

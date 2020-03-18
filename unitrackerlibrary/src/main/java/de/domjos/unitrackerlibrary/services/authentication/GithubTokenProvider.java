@@ -57,8 +57,7 @@ public final class GithubTokenProvider implements AccessTokenProvider {
 
             jsonEngine.executeRequest(this.authentication.getServer() + "/authorizations", jsonObject.toString(), "POST");
             if(jsonEngine.getCurrentState() == 200 || jsonEngine.getCurrentState() == 201) {
-                String token = new JSONObject(jsonEngine.getCurrentMessage()).getString("token");
-                return token;
+                return new JSONObject(jsonEngine.getCurrentMessage()).getString("token");
             }
         } catch (Exception ignored) {}
         return null;

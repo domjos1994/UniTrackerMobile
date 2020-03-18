@@ -146,7 +146,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
                 if (this.getActivity() != null) {
                     boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
-                    UserTask userTask = new UserTask(this.getActivity(), this.bugService, this.pid, false, show, R.drawable.ic_person_black_24dp);
+                    UserTask userTask = new UserTask(this.getActivity(), this.bugService, this.pid, false, show, R.drawable.icon_users);
                     List<User> users = userTask.execute(0).get();
                     users.add(0, new User());
 
@@ -604,7 +604,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.ic_update_black_24dp).execute(0).get();
+                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.icon_versions).execute(0).get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

@@ -39,17 +39,17 @@
             android:layout_height="0dp"
             android:layout_weight="12"
             android:padding="5dp"
-            app:itemIcon="@drawable/ic_text_fields_black_24dp"
-            app:listItemBackground="@drawable/controls_background"
-            app:selectedListItemBackground="@drawable/selected_background"
-            app:listItemDivider="@drawable/selected_background"
+            app:itemIcon="@drawable/icon_custom_fields"
+            app:listItemBackground="@drawable/background_controls_2"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_selected"
             app:listItemForeground="@android:color/black"/>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"
-            android:background="@drawable/control_background"
+            android:background="@drawable/background_controls_1"
             android:padding="5dp">
 
             <TableLayout

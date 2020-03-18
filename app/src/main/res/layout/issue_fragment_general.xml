@@ -45,7 +45,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/ic_description_black_24dp" />
+                app:srcCompat="@drawable/icon_issues_descriptions" />
         </TableRow>
 
         <TableRow android:id="@+id/rowIssueGeneralCategory">
@@ -234,7 +234,7 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/ic_smartphone_black_24dp" />
+                app:srcCompat="@drawable/icon_issues_general_profile" />
         </TableRow>
 
         <TableRow android:id="@+id/rowIssueGeneralTags">

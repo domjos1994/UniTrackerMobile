@@ -180,7 +180,7 @@ public final class LocalSyncActivity extends AbstractActivity {
         if (position != -1) {
             this.projectArrayAdapter.add(new Project());
             IBugService bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(position), getApplicationContext());
-            ProjectTask projectTask = new ProjectTask(activity, bugService, false, settings.showNotifications(), R.drawable.ic_apps_black_24dp);
+            ProjectTask projectTask = new ProjectTask(activity, bugService, false, settings.showNotifications(), R.drawable.icon_projects);
             for (Project project : projectTask.execute(0).get()) {
                 this.projectArrayAdapter.add(project);
             }

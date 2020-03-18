@@ -76,7 +76,7 @@ public final class FieldActivity extends AbstractActivity {
 
         this.lvFields.setOnDeleteListener(listObject -> {
             try {
-                new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(((CustomField)listObject.getObject()).getId()).get();
+                new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_custom_fields).execute(((CustomField)listObject.getObject()).getId()).get();
                 manageControls(false, true, false);
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
@@ -92,7 +92,7 @@ public final class FieldActivity extends AbstractActivity {
             this.lvFields.getAdapter().clear();
             if (this.permissions.listCustomFields()) {
                 if(this.currentProject!=null) {
-                    for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(0).get()) {
+                    for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(0).get()) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(customField);
                         baseDescriptionObject.setTitle(customField.getTitle());
@@ -122,7 +122,7 @@ public final class FieldActivity extends AbstractActivity {
                     break;
                 case R.id.navDelete:
                     try {
-                        new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(this.currentField.getId()).get();
+                        new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField.getId()).get();
                         this.reload();
                         this.manageControls(false, true, false);
                     } catch (Exception ex) {
@@ -136,7 +136,7 @@ public final class FieldActivity extends AbstractActivity {
                     try {
                         if (this.fieldValidator.getState()) {
                             this.controlsToObject();
-                            new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.ic_text_fields_black_24dp).execute(this.currentField).get();
+                            new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField).get();
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {

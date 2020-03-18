@@ -284,7 +284,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 Map<Integer, String> types = this.getAllJdbcTypeNames();
                 String typeString = types.get(type);
                 if(typeString!=null) {
-                    if(typeString.toLowerCase().equals("varchar")) {
+                    if(typeString.equalsIgnoreCase("varchar")) {
                         typeString += "(" + length + ")";
                     }
                 } else {

@@ -97,8 +97,8 @@ public final class CalendarActivity extends AbstractActivity {
                 bugServices.add(bugService);
             }
 
-            CalendarTask calendarTask = new CalendarTask(CalendarActivity.this, notifications, R.drawable.ic_perm_contact_calendar_black_24dp, this.progressBar, this.lblCalendarState, this.widgetCalendar, bugServices);
-            calendarTask.setIcons(R.drawable.ic_apps_black_24dp, R.drawable.ic_update_black_24dp, R.drawable.ic_bug_report_black_24dp);
+            CalendarTask calendarTask = new CalendarTask(CalendarActivity.this, notifications, R.drawable.icon_calendar, this.progressBar, this.lblCalendarState, this.widgetCalendar, bugServices);
+            calendarTask.setIcons(R.drawable.icon_projects, R.drawable.icon_versions, R.drawable.icon_issues);
             calendarTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CalendarActivity.this);

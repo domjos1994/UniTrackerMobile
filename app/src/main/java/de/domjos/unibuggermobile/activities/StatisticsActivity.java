@@ -250,7 +250,7 @@ public final class StatisticsActivity extends AbstractActivity {
                 StatisticsActivity.this,
                 bugServices,
                 MainActivity.GLOBALS.getSettings(StatisticsActivity.this).showNotifications(),
-                R.drawable.ic_multiline_chart_black_24dp, this.pbStatistics
+                R.drawable.icon_statistics, this.pbStatistics
         );
         statisticsTask.setOnUpdate((auth, data) -> {
             this.data.put(auth, data);

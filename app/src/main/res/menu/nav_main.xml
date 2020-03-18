@@ -24,19 +24,19 @@
         <menu>
             <item
                 android:id="@+id/navProjects"
-                android:icon="@drawable/ic_apps_black_24dp"
+                android:icon="@drawable/icon_projects"
                 android:title="@string/projects" />
             <item
                 android:id="@+id/navVersions"
-                android:icon="@drawable/ic_update_black_24dp"
+                android:icon="@drawable/icon_versions"
                 android:title="@string/versions" />
             <item
                 android:id="@+id/navUsers"
-                android:icon="@drawable/ic_person_black_24dp"
+                android:icon="@drawable/icon_users"
                 android:title="@string/users" />
             <item
                 android:id="@+id/navFields"
-                android:icon="@drawable/ic_text_fields_black_24dp"
+                android:icon="@drawable/icon_custom_fields"
                 android:title="@string/fields" />
         </menu>
     </item>
@@ -45,27 +45,27 @@
         <menu>
             <item
                 android:id="@+id/navStatistics"
-                android:icon="@drawable/ic_multiline_chart_black_24dp"
+                android:icon="@drawable/icon_statistics"
                 android:title="@string/statistics" />
             <item
                 android:id="@+id/navAdministration"
-                android:icon="@drawable/ic_settings_black_24dp"
+                android:icon="@drawable/icon_administration"
                 android:title="@string/administration" />
             <item
                 android:id="@+id/navLocalSync"
-                android:icon="@drawable/ic_sync_black_24dp"
+                android:icon="@drawable/icon_local_sync"
                 android:title="@string/local_sync" />
             <item
                 android:id="@+id/navExtendedSearch"
-                android:icon="@drawable/ic_search_black_24dp"
+                android:icon="@drawable/icon_search"
                 android:title="@string/search" />
             <item
                 android:id="@+id/navCalendar"
-                android:icon="@drawable/ic_perm_contact_calendar_black_24dp"
+                android:icon="@drawable/icon_calendar"
                 android:title="@string/calendar"/>
             <item
                 android:id="@+id/navExport"
-                android:icon="@drawable/ic_import_export_black_24dp"
+                android:icon="@drawable/icon_export"
                 android:title="@string/export" />
         </menu>
     </item>
