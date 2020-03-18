@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unitrackerlibrary.tasks.LocalSyncTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.helper.Helper;
@@ -110,10 +111,10 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
             Uri uri;
             if (item.contains("issue")) {
                 File file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + item);
-                uri = FileProvider.getUriForFile(this.context, "de.domjos.unitrackermobile.provider.FileProvider", file);
+                uri = FileProvider.getUriForFile(this.context, Globals.FILE_PROVIDER, file);
             } else {
                 File file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + "attachments" + File.separatorChar + item);
-                uri = FileProvider.getUriForFile(this.context, "de.domjos.unitrackermobile.provider.FileProvider", file);
+                uri = FileProvider.getUriForFile(this.context, Globals.FILE_PROVIDER, file);
             }
 
             String mimeType = this.context.getContentResolver().getType(uri);

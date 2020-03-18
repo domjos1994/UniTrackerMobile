@@ -27,11 +27,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
-
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +39,7 @@ import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.LocalSyncTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
@@ -57,7 +57,8 @@ public final class LocalSyncActivity extends AbstractActivity {
     private Activity activity;
 
     private EditText txtLocalSyncSearch;
-    private ImageButton cmdLocalSyncSearch;
+    private ImageButton cmdLocalSyncSearch, cmdSync;
+    private ProgressBar pbProcess;
 
     public LocalSyncActivity() {
         super(R.layout.local_sync_activity);
@@ -100,18 +101,12 @@ public final class LocalSyncActivity extends AbstractActivity {
                 this.reload();
             }
         });
+
+        this.cmdSync.setOnClickListener(view -> this.sync());
     }
 
     @Override
     protected void initControls() {
-        BottomNavigationView bottomNavigationView = this.findViewById(R.id.nav_view);
-        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            if (menuItem.getItemId() == R.id.navLocalSync) {
-                this.sync();
-            }
-            return true;
-        });
-
         this.activity = LocalSyncActivity.this;
         this.settings = MainActivity.GLOBALS.getSettings(this.activity);
         int item = R.layout.spinner_item;
@@ -130,6 +125,8 @@ public final class LocalSyncActivity extends AbstractActivity {
 
         this.txtLocalSyncSearch = this.findViewById(R.id.txtLocalSyncSearch);
         this.cmdLocalSyncSearch = this.findViewById(R.id.cmdLocalSyncSearch);
+        this.cmdSync = this.findViewById(R.id.cmdSync);
+        this.pbProcess = this.findViewById(R.id.pbProcess);
 
         try {
             Helper.isStoragePermissionGranted(LocalSyncActivity.this);
@@ -164,9 +161,15 @@ public final class LocalSyncActivity extends AbstractActivity {
                 }
             }
 
-            LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.settings.getLocalSyncPath(), pid);
-            MessageHelper.printMessage(localSyncTask.execute().get(), R.mipmap.ic_launcher_round, LocalSyncActivity.this);
-            this.reload();
+            LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.settings.getLocalSyncPath(), pid, this.pbProcess);
+            localSyncTask.after(new AbstractTask.PostExecuteListener<String>() {
+                @Override
+                public void onPostExecute(String result) {
+                    MessageHelper.printMessage(result, R.mipmap.ic_launcher_round, LocalSyncActivity.this);
+                    reload();
+                }
+            });
+            localSyncTask.execute();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.activity);
         }

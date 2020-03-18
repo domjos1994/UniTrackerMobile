@@ -23,6 +23,8 @@ import android.content.Context;
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
 
 public class Globals {
+    public final static String FILE_PROVIDER = "de.domjos.unibuggermobile.provider.FileProvider";
+
     private SQLiteGeneral sqLiteGeneral;
     private String password;
 

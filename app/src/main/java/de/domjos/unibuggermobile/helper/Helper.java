@@ -19,7 +19,6 @@
 package de.domjos.unibuggermobile.helper;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,17 +32,14 @@ import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.*;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -59,6 +55,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
@@ -78,12 +75,12 @@ import de.domjos.unitrackerlibrary.services.tracker.Redmine;
 import de.domjos.unitrackerlibrary.services.tracker.SQLite;
 import de.domjos.unitrackerlibrary.services.tracker.Tuleap;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
-import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
-import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 
 public class Helper {
     public static final List<Authentication.Tracker> disabledBugTrackers =
@@ -223,52 +220,73 @@ public class Helper {
         }
     }
 
-    public static String showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid) {
-        String str_result = "";
+    public static void showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid, List<BaseDescriptionObject> objects) {
         try {
-            @SuppressLint("HandlerLeak")
-            final Handler handler = new Handler() {
-                @Override
-                public void handleMessage(@NonNull Message mesg) {
-                    throw new RuntimeException();
-                }
-            };
+            Dialog tagDialog = new Dialog(activity);
+            tagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            tagDialog.setContentView(R.layout.tag_dialog);
 
-            AlertDialog.Builder tagDialogBuilder = new AlertDialog.Builder(activity);
-            MultiAutoCompleteTextView txtTags = new MultiAutoCompleteTextView(activity);
-            txtTags.setLayoutParams(new ViewGroup.LayoutParams(200, ViewGroup.LayoutParams.WRAP_CONTENT));
-            ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1);
-            txtTags.setAdapter(tagAdapter);
-            txtTags.setTokenizer(new CommaTokenizer());
+            final Spinner cmbTags = tagDialog.findViewById(R.id.cmbTags);
+            final EditText txtTags = tagDialog.findViewById(R.id.txtTags);
+            final ImageButton cmdTags = tagDialog.findViewById(R.id.cmdTags);
+
+            ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
+            cmbTags.setAdapter(tagAdapter);
             tagAdapter.notifyDataSetChanged();
-
             LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
-            Object result = loaderTask.execute(pid).get();
-            if (result instanceof List) {
-                List lst = (List) result;
-                for (Object item : lst) {
-                    if (item instanceof Tag) {
-                        tagAdapter.add(((Tag) item).getTitle());
+            loaderTask.after(new AbstractTask.PostExecuteListener<List<Tag>>() {
+                @Override
+                public void onPostExecute(List<Tag> o) {
+                    for(Tag tag : o) {
+                        tagAdapter.add(tag.getTitle());
                     }
                 }
-            }
-            tagDialogBuilder.setView(txtTags);
-            tagDialogBuilder.setNegativeButton(R.string.sys_cancel, (dialog, which) -> dialog.cancel());
-            tagDialogBuilder.setPositiveButton(R.string.sys_save, ((dialog, which) -> handler.sendMessage(handler.obtainMessage())));
-            tagDialogBuilder.create().show();
+            });
+            loaderTask.execute(pid);
 
-            try{ Looper.loop(); }
-            catch(RuntimeException ignored){}
-            str_result = txtTags.getText().toString();
+            cmbTags.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    String content = txtTags.getText().toString().trim();
+                    String newVal = content.isEmpty() ? tagAdapter.getItem(i) : content + "; " + tagAdapter.getItem(i);
+                    txtTags.setText(newVal);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {}
+            });
+
+            cmdTags.setOnClickListener(event -> {
+                try {
+                    String tags = txtTags.getText().toString();
+
+                    for(BaseDescriptionObject listObject : objects) {
+                        IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
+                        List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
+
+                        if(issues!=null) {
+                            if(!issues.isEmpty()) {
+                                issues.get(0).setTags(tags);
+                                issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
+                                issueTask.execute(issues.get(0)).get();
+                            }
+                        }
+                    }
+                    tagDialog.dismiss();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                }
+            });
+            tagDialog.show();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
         }
-        return str_result;
     }
 
     public static void showPasswordDialog(Activity activity, boolean firstLogin, boolean changePassword, Runnable successRunnable) {
         try {
             Dialog pwdDialog = new Dialog(activity);
+            pwdDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             pwdDialog.setContentView(R.layout.password_dialog);
             final TextView lblTitle = pwdDialog.findViewById(R.id.lblTitle);
             final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
@@ -358,6 +376,7 @@ public class Helper {
     public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
         try {
             Dialog resolveDialog = new Dialog(activity);
+            resolveDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             resolveDialog.setContentView(R.layout.resolve_dialog);
             final Spinner cmbState = resolveDialog.findViewById(R.id.cmbStatus);
             cmbState.setAdapter(Helper.setAdapter(activity, array));
@@ -401,6 +420,7 @@ public class Helper {
         try {
             AtomicInteger id = new AtomicInteger();
             Dialog attachmentDialog = new Dialog(activity);
+            attachmentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             attachmentDialog.setContentView(R.layout.attachment_dialog);
             final ImageView iv = attachmentDialog.findViewById(R.id.ivCurrentAttachment);
             final ImageButton cmdPrevious = attachmentDialog.findViewById(R.id.cmdPrevious);
@@ -428,6 +448,7 @@ public class Helper {
     public static void showWhatsNewDialog(Activity activity) {
         try {
             Dialog whatsNewDialog = new Dialog(activity);
+            whatsNewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             whatsNewDialog.setContentView(R.layout.whats_new_dialog);
             TextView lblTitle = whatsNewDialog.findViewById(R.id.lblTitle);
             TextView lblContent = whatsNewDialog.findViewById(R.id.lblWhatsNewContent);

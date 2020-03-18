@@ -55,7 +55,6 @@ import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,6 +64,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
@@ -321,20 +321,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     boolean show = settings.showNotifications();
                     Object pid = settings.getCurrentProjectId();
 
-                    String tags = Helper.showTagDialog(act, bugService, show, pid);
-
-                    for(BaseDescriptionObject listObject : objectList) {
-                        IssueTask issueTask = new IssueTask(act, bugService, pid, false, true, show, R.drawable.ic_bug_report_black_24dp);
-                        List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
-
-                        if(issues!=null) {
-                            if(!issues.isEmpty()) {
-                                issues.get(0).setTags(tags);
-                                issueTask = new IssueTask(act, bugService, pid, false, false, show, R.drawable.ic_bug_report_black_24dp);
-                                issueTask.execute(issues.get(0)).get();
-                            }
-                        }
-                    }
+                    Helper.showTagDialog(act, bugService, show, pid, objectList);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                 }
@@ -543,11 +530,14 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void reload(String search) {
         try {
             this.settings = new Settings(getApplicationContext());
-            long maximum = 0;
             if (!MainActivity.GLOBALS.getPassword().isEmpty()) {
+                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                baseDescriptionObject.setTitle(this.getString(R.string.task_loader_title));
+                baseDescriptionObject.setDescription(this.getString(R.string.task_loader_content));
+                this.lvMainIssues.getAdapter().clear();
+                this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                 this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
                 this.changePagination();
-                this.lvMainIssues.getAdapter().clear();
                 boolean isLocal = true;
                 if (this.bugService != null) {
                     if (this.bugService.getAuthentication() != null) {
@@ -574,54 +564,62 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 }
 
                                 IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.ic_bug_report_black_24dp);
-                                for (Object issue : listIssueTask.execute(0).get()) {
-                                    Issue tmp = (Issue) issue;
-                                    if (tmp.getTitle().contains(search)) {
-                                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                                        baseDescriptionObject.setObject(tmp);
-                                        String title;
-                                        if(MainActivity.GLOBALS.getSettings(MainActivity.this).isShowID()) {
-                                            title = tmp.getId() + ": " + tmp.getTitle();
-                                        } else {
-                                            title = tmp.getTitle();
-                                        }
-                                        baseDescriptionObject.setTitle(title);
-                                        baseDescriptionObject.setDescription(tmp.getDescription());
-                                        boolean resolved = false;
-                                        if(tmp.getHints().containsKey(Issue.RESOLVED)) {
-                                            Object resolve = tmp.getHints().get(Issue.RESOLVED);
-                                            if(resolve != null) {
-                                                resolved = Boolean.parseBoolean(resolve.toString());
+                                listIssueTask.after(new AbstractTask.PostExecuteListener<List<Issue>>() {
+                                    @Override
+                                    public void onPostExecute(List<Issue> issues) {
+                                        lvMainIssues.getAdapter().clear();
+                                        for (Issue issue : issues) {
+                                            if (issue.getTitle().contains(search)) {
+                                                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                                baseDescriptionObject.setObject(issue);
+                                                String title;
+                                                if(MainActivity.GLOBALS.getSettings(MainActivity.this).isShowID()) {
+                                                    title = issue.getId() + ": " + issue.getTitle();
+                                                } else {
+                                                    title = issue.getTitle();
+                                                }
+                                                baseDescriptionObject.setTitle(title);
+                                                baseDescriptionObject.setDescription(issue.getDescription());
+                                                boolean resolved = false;
+                                                if(issue.getHints().containsKey(Issue.RESOLVED)) {
+                                                    Object resolve = issue.getHints().get(Issue.RESOLVED);
+                                                    if(resolve != null) {
+                                                        resolved = Boolean.parseBoolean(resolve.toString());
+                                                    }
+                                                }
+                                                baseDescriptionObject.setState(resolved);
+                                                lvMainIssues.getAdapter().add(baseDescriptionObject);
+                                                reloadStateData(listIssueTask.getMaximum());
                                             }
                                         }
-                                        baseDescriptionObject.setState(resolved);
-                                        this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                                     }
-                                }
-                                maximum = listIssueTask.getMaximum();
+                                });
+                                listIssueTask.execute(0);
                             }
                         }
                     }
                 }
             }
-
-            int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
-            int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
-            if(max==maximum) {
-                if(max!=-1) {
-                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
-                }
-            } else {
-                if(max!=-1) {
-                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
-                } else {
-                    this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(maximum)));
-                }
-            }
-            this.lvMainIssues.getAdapter().notifyDataSetChanged();
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
+    }
+
+    private void reloadStateData(long maximum) {
+        int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
+        int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
+        if(max==maximum) {
+            if(max!=-1) {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+            }
+        } else {
+            if(max!=-1) {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
+            } else {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(maximum)));
+            }
+        }
+        this.lvMainIssues.getAdapter().notifyDataSetChanged();
     }
 
     private void reloadAccounts() {

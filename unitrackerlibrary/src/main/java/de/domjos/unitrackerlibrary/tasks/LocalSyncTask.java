@@ -19,8 +19,10 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,14 +36,23 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.customwidgets.utils.ConvertHelper;
 
-public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
+public final class LocalSyncTask extends AbstractTask<Void, Integer, String> {
     private String path;
     private Object pid;
+    private final WeakReference<ProgressBar> progressBar;
+    private int max = 0;
 
-    public LocalSyncTask(Activity activity, IBugService bugService, boolean showNotifications, String path, Object pid) {
+    public LocalSyncTask(Activity activity, IBugService bugService, boolean showNotifications, String path, Object pid, ProgressBar pbProcess) {
         super(activity, bugService, R.string.task_local_title, R.string.task_local_content, showNotifications, R.mipmap.ic_launcher_round);
         this.path = path;
         this.pid = pid;
+        this.progressBar = new WeakReference<>(pbProcess);
+    }
+
+    @Override
+    public final void onProgressUpdate(Integer... progress) {
+        int percentage = (int) (100.0 / this.max * progress[0]);
+        this.progressBar.get().setProgress(percentage);
     }
 
     @Override
@@ -89,6 +100,8 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
                 }
 
                 List<Issue> issues = super.bugService.getIssues(project.getId());
+                this.max = issues.size();
+                int current = 1;
                 for (Issue issue : issues) {
                     try {
                         String iName = LocalSyncTask.renameToPathPart(issue.getTitle());
@@ -125,6 +138,9 @@ public final class LocalSyncTask extends AbstractTask<Void, Void, String> {
                         trackerPDF.doExport();
                     } catch (Exception ex) {
                         super.printException(ex);
+                    } finally {
+                        this.publishProgress(current);
+                        current++;
                     }
                 }
             }

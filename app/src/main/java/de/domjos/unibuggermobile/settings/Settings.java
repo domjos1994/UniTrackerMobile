@@ -138,7 +138,7 @@ public class Settings {
     }
 
     public int getNumberOfItems() {
-        String strNumber = this.userPreferences.getString("txtNumberOfItems", "-1");
+        String strNumber = this.userPreferences.getString("txtNumberOfItems", "50");
         try {
             int number = Integer.parseInt(strNumber);
             if (number < -1) {

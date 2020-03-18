@@ -678,12 +678,16 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             List<Tag<Long>> tags = this.getTags(project_id);
             Vector<SoapObject> tagVector = new Vector<>();
             for (String strTag : issue.getTags().split(",")) {
-                for (Tag tag : tags) {
-                    if (strTag.trim().equals(tag.getTitle())) {
-                        SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
-                        tagObject.addProperty("id", tag.getId());
-                        tagObject.addProperty("name", tag.getTitle());
-                        tagVector.add(tagObject);
+                if(!strTag.trim().isEmpty()) {
+                    if(!tags.isEmpty()) {
+                        for (Tag tag : tags) {
+                            if (strTag.trim().equals(tag.getTitle())) {
+                                SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
+                                tagObject.addProperty("id", tag.getId());
+                                tagObject.addProperty("name", tag.getTitle());
+                                tagVector.add(tagObject);
+                            }
+                        }
                     }
                 }
             }

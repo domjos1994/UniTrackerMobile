@@ -58,37 +58,42 @@
             </TableRow>
 
             <TableRow>
-
                 <TextView
-                    android:layout_weight="3"
+                    android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    android:layout_margin="1dp"
                     android:text="@string/projects" />
-
+                <TextView
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divider" />
+                <TextView
+                    android:layout_weight="5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="1dp"
+                    android:text="@string/filter" />
+            </TableRow>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/divider" />
+            <TableRow>
                 <Spinner
                     android:id="@+id/spMainProjects"
-                    android:layout_weight="7"
+                    android:layout_weight="5"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
-            </TableRow>
-
-            <TableRow>
-
+                    android:layout_height="48dp" />
                 <TextView
-                    android:layout_weight="3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:text="@string/filter" />
-
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/divider" />
                 <Spinner
                     android:id="@+id/spMainFilters"
-                    android:layout_weight="7"
+                    android:layout_weight="5"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="48dp" />
             </TableRow>
         </TableLayout>
 
@@ -97,7 +102,7 @@
             android:id="@+id/separator"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/colorPrimaryDark" />
+            android:background="@color/divider" />
 
 
         <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
@@ -106,6 +111,8 @@
             android:layout_height="match_parent"
             android:layout_below="@+id/separator"
             android:layout_above="@+id/footer"
+            android:layout_margin="2dp"
+            android:padding="2dp"
             app:itemIcon="@drawable/ic_bug_report_black_24dp"
             app:listItemBackground="@drawable/controls_background"
             app:selectedListItemBackground="@drawable/selected_background"

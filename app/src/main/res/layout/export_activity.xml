@@ -59,6 +59,7 @@
             <TableRow>
                 <Spinner
                     android:id="@+id/spBugTracker"
+                    android:contentDescription="@string/administration_bugTracker"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
@@ -94,6 +95,7 @@
             <TableRow>
                 <Spinner
                     android:id="@+id/spProjects"
+                    android:contentDescription="@string/projects"
                     android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
@@ -129,6 +131,7 @@
             <TableRow>
                 <Spinner
                     android:id="@+id/spData"
+                    android:contentDescription="@string/administration_data"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
@@ -180,6 +183,7 @@
                 <Spinner
                     android:id="@+id/spExportPath"
                     android:entries="@array/export_path_extensions"
+                    android:contentDescription="@string/export_path"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"

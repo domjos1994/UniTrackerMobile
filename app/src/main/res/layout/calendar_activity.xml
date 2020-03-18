@@ -48,7 +48,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="3"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@drawable/controls_background">
         <TextView
             android:id="@+id/lblCalendarTitle"
             android:text="@string/calendar"
