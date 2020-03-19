@@ -187,7 +187,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.lvMainIssues.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             if (listObject != null) {
                 Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                intent.putExtra("id", String.valueOf(((Issue)listObject.getObject()).getId()));
+                if(listObject.getObject()!=null) {
+                    intent.putExtra("id", String.valueOf(((Issue)listObject.getObject()).getId()));
+                }
                 intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
                 startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
             }
