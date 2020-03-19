@@ -107,7 +107,11 @@ public final class AdministrationTask extends AbstractTask<Administration, Integ
                                             this.publishProgress((int) ((100.0 / max) * counter));
                                             counter++;
                                         } catch (Exception ex) {
-                                            this.message.append(ex.toString()).append("\n");
+                                            StringBuilder msg = new StringBuilder();
+                                            for(StackTraceElement element : ex.getStackTrace()) {
+                                                msg.append(element.getFileName()).append(".").append(element.getClassName()).append("#").append(element.getMethodName()).append("(").append(element.getLineNumber()).append(")\n");
+                                            }
+                                            this.message.append(ex.toString()).append(msg).append("\n").append("\n");
                                         }
                                     }
                                 }

@@ -177,6 +177,7 @@ public class Administration {
         return project;
     }
 
+    @SuppressWarnings("unchecked")
     public Issue convertIssueToValidNewIssue(Issue issue) {
         this.status = false;
         this.resolution = false;

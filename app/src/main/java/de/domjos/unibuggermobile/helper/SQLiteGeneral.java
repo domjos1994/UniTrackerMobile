@@ -153,7 +153,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             if (authentication != null) {
                 SQLiteDatabase db = this.getWritableDatabase();
                 SQLiteStatement stmt;
-                if (authentication.getId() != null) {
+                if (authentication.getId() != null && authentication.getId() != 0) {
                     stmt = db.compileStatement("UPDATE accounts SET title=?, serverName=?, apiKey=?, userName=?, password=?, description=?, cover=?, tracker=?, guest=?, authentication=? WHERE ID=?");
                     stmt.bindLong(11, authentication.getId());
                 } else {

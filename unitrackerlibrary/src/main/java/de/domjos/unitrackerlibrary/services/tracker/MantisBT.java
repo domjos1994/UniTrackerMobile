@@ -745,7 +745,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
         if(!issue.getRelations().isEmpty()) {
             for(Relationship<Long> relationship : issue.getRelations()) {
-                this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                if(issue.getId()!=null) {
+                    this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                }
             }
         }
     }
