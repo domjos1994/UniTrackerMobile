@@ -34,7 +34,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class UserActivity extends AbstractActivity {
@@ -136,7 +136,7 @@ public final class UserActivity extends AbstractActivity {
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.userValidator.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
@@ -162,7 +162,8 @@ public final class UserActivity extends AbstractActivity {
 
     @Override
     protected void initValidator() {
-        this.userValidator = new Validator(this.getApplicationContext());
+        this.userValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
+        this.userValidator.addEmptyValidator(this.txtUserName);
     }
 
     @Override

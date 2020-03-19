@@ -37,7 +37,9 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Profile;
@@ -53,9 +55,8 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.ArrayHelper;
-import de.domjos.unibuggermobile.helper.DateConvertHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -286,7 +287,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
             try {
                 if (!this.txtIssueGeneralDueDate.getText().toString().equals("")) {
-                    issue.setDueDate(DateConvertHelper.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), this.getContext()));
+                    Settings settings = MainActivity.GLOBALS.getSettings(this.getContext());
+                    String format = settings.getDateFormat() + " " + settings.getTimeFormat();
+                    issue.setDueDate(ConvertHelper.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), format));
                 }
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
@@ -366,15 +369,16 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralBuild.setText("");
             }
 
+            Settings settings = MainActivity.GLOBALS.getSettings(this.getContext());
+            String format = settings.getDateFormat() + " " + settings.getTimeFormat();
             if (this.issue.getSubmitDate() != null) {
-                this.txtIssueGeneralSubmitted.setText(DateConvertHelper.convertDateTimeToString(this.issue.getSubmitDate(), this.getContext()));
-
+                this.txtIssueGeneralSubmitted.setText(ConvertHelper.convertDateToString(this.issue.getSubmitDate(), format));
             }
             if (this.issue.getLastUpdated() != null) {
-                this.txtIssueGeneralUpdated.setText(DateConvertHelper.convertDateTimeToString(this.issue.getLastUpdated(), this.getContext()));
+                this.txtIssueGeneralUpdated.setText(ConvertHelper.convertDateToString(this.issue.getLastUpdated(), format));
             }
             if (this.issue.getDueDate() != null) {
-                this.txtIssueGeneralDueDate.setText(DateConvertHelper.convertDateTimeToString(this.issue.getDueDate(), this.getContext()));
+                this.txtIssueGeneralDueDate.setText(ConvertHelper.convertDateToString(this.issue.getDueDate(), format));
             }
 
             this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {
@@ -397,7 +401,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     @Override
     public Validator initValidator() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-        Validator validator = new Validator(this.getContext());
+        Validator validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
             validator.addEmptyValidator(this.txtIssueGeneralSummary);
 

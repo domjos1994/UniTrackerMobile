@@ -49,7 +49,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 public final class IssueCustomFragment extends AbstractFragment {
     private View root;
@@ -336,7 +336,7 @@ public final class IssueCustomFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return null;
+        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
     }
 
     @Override

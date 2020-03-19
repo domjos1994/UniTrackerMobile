@@ -43,7 +43,7 @@ import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.SuggestionAdapter;
 import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -171,7 +171,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     @Override
     public Validator initValidator() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-        Validator validator = new Validator(this.getContext());
+        Validator validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
             if (authentication.getTracker() != Authentication.Tracker.Bugzilla) {
                 validator.addEmptyValidator(this.txtIssueDescriptionsDescription);

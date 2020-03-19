@@ -38,8 +38,8 @@ import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class FieldActivity extends AbstractActivity {
@@ -140,7 +140,7 @@ public final class FieldActivity extends AbstractActivity {
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.fieldValidator.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
@@ -169,7 +169,8 @@ public final class FieldActivity extends AbstractActivity {
 
     @Override
     protected void initValidator() {
-        this.fieldValidator = new Validator(this.getApplicationContext());
+        this.fieldValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
+        this.fieldValidator.addEmptyValidator(this.txtFieldTitle);
     }
 
     @Override

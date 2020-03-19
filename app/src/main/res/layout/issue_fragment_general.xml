@@ -206,6 +206,7 @@
                 android:inputType="datetime"
                 android:layout_weight="10"
                 android:layout_width="0dp"
+                android:digits="0123456789 .:-"
                 tools:ignore="Autofill" />
         </TableRow>
 

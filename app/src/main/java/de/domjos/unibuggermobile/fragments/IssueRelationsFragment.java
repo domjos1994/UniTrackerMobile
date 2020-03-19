@@ -38,7 +38,7 @@ import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 import java.util.*;
 
@@ -230,7 +230,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return new Validator(this.getContext());
+        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
     }
 
     @Override

@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -51,11 +50,13 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
@@ -110,6 +111,20 @@ public class Helper {
             return inflater.inflate(layout, parent, false);
         }
         return new View(context);
+    }
+
+    public static Date checkDateAndReturn(EditText txt, Context context) throws Exception {
+        String content = txt.getText().toString().trim();
+        if(content.isEmpty()) {
+            return new Date();
+        } else {
+            Settings settings = MainActivity.GLOBALS.getSettings(context);
+            if(content.contains(":")) {
+                return ConvertHelper.convertStringToDate(content, settings.getDateFormat() + " " + settings.getTimeFormat());
+            } else {
+                return ConvertHelper.convertStringToDate(content, settings.getDateFormat());
+            }
+        }
     }
 
     public static IBugService getCurrentBugService(Context context) {

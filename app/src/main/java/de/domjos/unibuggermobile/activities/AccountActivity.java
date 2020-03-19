@@ -48,12 +48,12 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
-import de.domjos.unibuggermobile.helper.Validator;
 import de.domjos.unibuggermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
@@ -87,7 +87,6 @@ public final class AccountActivity extends AbstractActivity {
             this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
             if (listObject != null) {
                 this.currentAccount = (Authentication) listObject.getObject();
-                this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, AccountActivity.ACCOUNTS, "title", this.currentAccount.getId());
             }
             objectToControls();
             manageControls(false, false, true);
@@ -270,44 +269,48 @@ public final class AccountActivity extends AbstractActivity {
                     try {
                         if (this.accountValidator.getState()) {
                             this.controlsToObject();
-                            if(currentAccount.getTracker()==Authentication.Tracker.Github) {
-                                currentAccount.setAuthentication(Authentication.Auth.OAUTH);
-                            }
-
-                            new Thread(() -> {
-                                try {
-                                    if(!chkAccountGuest.isChecked()) {
-                                        if(currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
-                                            GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
-                                            currentAccount.setAPIKey(githubTokenProvider.refreshToken());
-                                        }
-                                    }
-                                    IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
-                                    if (chkAccountGuest.isChecked() || bugService.testConnection()) {
-                                        AccountActivity.this.runOnUiThread(() -> {
-                                            MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);
-                                            MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
-                                            this.manageControls(false, true, false);
-                                            this.reload();
-                                            OnBoardingHelper.tutorialStep3(AccountActivity.this);
-                                        });
-                                    } else {
-                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
-                                    }
-                                } catch (Exception ex) {
-                                    Log.v("Exception", ex.toString());
-                                    String msg = ex.getMessage();
-                                    if(msg!=null) {
-                                        if (msg.contains("PHP SOAP")) {
-                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round, AccountActivity.this));
-                                        } else {
-                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this));
-                                        }
-                                    }
+                            if(this.accountValidator.checkDuplicatedEntry(this.currentAccount.getTitle(), this.currentAccount.getId(), this.lvAccounts.getAdapter().getList())) {
+                                if (currentAccount.getTracker() == Authentication.Tracker.Github) {
+                                    currentAccount.setAuthentication(Authentication.Auth.OAUTH);
                                 }
-                            }).start();
+
+                                new Thread(() -> {
+                                    try {
+                                        if (!chkAccountGuest.isChecked()) {
+                                            if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
+                                                GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
+                                                currentAccount.setAPIKey(githubTokenProvider.refreshToken());
+                                            }
+                                        }
+                                        IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+                                        if (chkAccountGuest.isChecked() || bugService.testConnection()) {
+                                            AccountActivity.this.runOnUiThread(() -> {
+                                                MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);
+                                                MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
+                                                this.manageControls(false, true, false);
+                                                this.reload();
+                                                OnBoardingHelper.tutorialStep3(AccountActivity.this);
+                                            });
+                                        } else {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                        }
+                                    } catch (Exception ex) {
+                                        Log.v("Exception", ex.toString());
+                                        String msg = ex.getMessage();
+                                        if (msg != null) {
+                                            if (msg.contains("PHP SOAP")) {
+                                                AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                            } else {
+                                                AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this));
+                                            }
+                                        }
+                                    }
+                                }).start();
+                            } else {
+                                super.createSnackBar(this.accountValidator.getResult());
+                            }
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.accountValidator.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this);
@@ -369,10 +372,9 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void initValidator() {
-        this.accountValidator = new Validator(this.getApplicationContext());
+        this.accountValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
         this.accountValidator.addEmptyValidator(this.txtAccountTitle);
         this.accountValidator.addEmptyValidator(this.txtAccountServer);
-        this.accountValidator.addDuplicatedEntry(this.txtAccountTitle, AccountActivity.ACCOUNTS, "title", 0);
     }
 
     @Override
@@ -454,6 +456,9 @@ public final class AccountActivity extends AbstractActivity {
 
     private void controlsToObject() {
         if (this.currentAccount != null) {
+            if(this.currentAccount.getId() == null) {
+                this.currentAccount.setId(0L);
+            }
             this.currentAccount.setTitle(this.txtAccountTitle.getText().toString());
             this.currentAccount.setServer(this.txtAccountServer.getText().toString());
             this.currentAccount.setUserName(this.txtAccountUserName.getText().toString());

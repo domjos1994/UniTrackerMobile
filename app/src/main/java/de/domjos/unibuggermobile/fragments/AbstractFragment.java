@@ -21,7 +21,7 @@ package de.domjos.unibuggermobile.fragments;
 import androidx.fragment.app.Fragment;
 
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 public abstract class AbstractFragment extends Fragment {
 

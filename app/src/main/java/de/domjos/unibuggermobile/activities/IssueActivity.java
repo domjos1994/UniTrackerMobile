@@ -141,7 +141,7 @@ public final class IssueActivity extends AbstractActivity {
                             this.setResult(RESULT_OK);
                             this.finish();
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.pagerAdapter.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());

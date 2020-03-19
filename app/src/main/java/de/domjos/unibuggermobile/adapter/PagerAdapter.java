@@ -163,6 +163,29 @@ public class PagerAdapter extends FragmentPagerAdapter {
                 && this.notes.initValidator().getState() && this.history.initValidator().getState();
     }
 
+    public String getResult() {
+        StringBuilder result = new StringBuilder();
+        if(!this.general.initValidator().getState()) {
+            result.append(this.general.initValidator().getResult()).append("\n");
+        }
+        if(!this.descriptions.initValidator().getState()) {
+            result.append(this.descriptions.initValidator().getResult()).append("\n");
+        }
+        if(!this.attachments.initValidator().getState()) {
+            result.append(this.attachments.initValidator().getResult()).append("\n");
+        }
+        if(!this.notes.initValidator().getState()) {
+            result.append(this.notes.initValidator().getResult()).append("\n");
+        }
+        if(!this.relation.initValidator().getState()) {
+            result.append(this.relation.initValidator().getResult()).append("\n");
+        }
+        if(!this.history.initValidator().getState()) {
+            result.append(this.history.initValidator().getResult()).append("\n");
+        }
+        return result.toString();
+    }
+
     public CharSequence getTitle(int position) {
         String title = this.context.getString(R.string.issues) + " - ";
 

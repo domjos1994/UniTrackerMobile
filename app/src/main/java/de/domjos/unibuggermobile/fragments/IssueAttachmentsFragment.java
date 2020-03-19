@@ -46,7 +46,7 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -305,7 +305,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return new Validator(this.getContext());
+        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
     }
 
     @Override

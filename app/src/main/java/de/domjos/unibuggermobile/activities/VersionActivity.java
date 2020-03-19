@@ -48,12 +48,11 @@ import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unibuggermobile.helper.DateConvertHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class VersionActivity extends AbstractActivity {
@@ -173,7 +172,7 @@ public final class VersionActivity extends AbstractActivity {
                             this.reload();
                             this.manageControls(false, true, false);
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.versionValidator.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
@@ -205,9 +204,9 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initValidator() {
-        this.versionValidator = new Validator(this.getApplicationContext());
+        this.versionValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
         this.versionValidator.addEmptyValidator(this.txtVersionTitle);
-        this.versionValidator.addValueEqualsDate(this.txtVersionReleasedAt);
+        this.versionValidator.addDateValidator(this.txtVersionReleasedAt, this.settings.getDateFormat(), false);
     }
 
     @Override
@@ -271,7 +270,7 @@ public final class VersionActivity extends AbstractActivity {
             this.txtVersionDescription.setText(this.currentVersion.getDescription());
             Date date = new Date();
             date.setTime(this.currentVersion.getReleasedVersionAt());
-            this.txtVersionReleasedAt.setText(DateConvertHelper.convertDateTimeToString(date, this.getApplicationContext()));
+            this.txtVersionReleasedAt.setText(ConvertHelper.convertDateToString(date, this.settings.getDateFormat() + " " + this.settings.getTimeFormat()));
             this.chkVersionDeprecated.setChecked(this.currentVersion.isDeprecatedVersion());
             this.chkVersionReleased.setChecked(this.currentVersion.isReleasedVersion());
         }
@@ -282,8 +281,7 @@ public final class VersionActivity extends AbstractActivity {
             if (this.currentVersion != null) {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
-                String strDate = this.txtVersionReleasedAt.getText().toString();
-                this.currentVersion.setReleasedVersionAt(DateConvertHelper.convertStringToDate(strDate, this.getApplicationContext()).getTime());
+                this.currentVersion.setReleasedVersionAt(Helper.checkDateAndReturn(this.txtVersionReleasedAt, this.getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }

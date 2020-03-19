@@ -33,6 +33,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Date;
+
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -43,12 +45,11 @@ import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.customwidgets.utils.Validator;
 import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unibuggermobile.helper.DateConvertHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
-import de.domjos.unibuggermobile.helper.Validator;
 import de.domjos.unibuggermobile.settings.Settings;
 
 @SuppressWarnings("unchecked")
@@ -182,7 +183,7 @@ public final class ProjectActivity extends AbstractActivity {
                                 this.manageControls(false, false, false);
                             }
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.validator_no_success), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            super.createSnackBar(this.projectValidator.getResult());
                         }
                     } catch (Exception ex) {
                         MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
@@ -231,7 +232,7 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initValidator() {
-        this.projectValidator = new Validator(this.getApplicationContext());
+        this.projectValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
         this.projectValidator.addEmptyValidator(this.txtProjectTitle);
 
         switch (this.settings.getCurrentAuthentication().getTracker()) {
@@ -243,7 +244,7 @@ public final class ProjectActivity extends AbstractActivity {
                 this.projectValidator.addEmptyValidator(this.txtProjectDescription);
                 break;
             case YouTrack:
-                this.projectValidator.addValueEqualsRegex(this.txtProjectAlias, "^[a-zA-Z0-9_]{1,}$");
+                this.projectValidator.addRegexValidator(this.txtProjectAlias, "^[a-zA-Z0-9_]{1,}$");
                 break;
         }
     }
@@ -331,11 +332,16 @@ public final class ProjectActivity extends AbstractActivity {
             this.txtProjectIconUrl.setText(this.currentProject.getIconUrl());
             this.txtProjectVersion.setText(this.currentProject.getDefaultVersion());
 
+            String format = this.settings.getDateFormat() + " " + this.settings.getTimeFormat();
             if (this.currentProject.getCreatedAt() != 0) {
-                this.lblCreatedAt.setText(DateConvertHelper.convertLongToString(this.currentProject.getCreatedAt(), this.getApplicationContext()));
+                Date createdAt = new Date();
+                createdAt.setTime(this.currentProject.getCreatedAt());
+                this.lblCreatedAt.setText(ConvertHelper.convertDateToString(createdAt, format));
             }
             if (this.currentProject.getUpdatedAt() != 0) {
-                this.lblUpdatedAt.setText(DateConvertHelper.convertLongToString(this.currentProject.getUpdatedAt(), this.getApplicationContext()));
+                Date updatedAt = new Date();
+                updatedAt.setTime(this.currentProject.getUpdatedAt());
+                this.lblUpdatedAt.setText(ConvertHelper.convertDateToString(updatedAt, format));
             }
 
             StringBuilder builder = new StringBuilder();

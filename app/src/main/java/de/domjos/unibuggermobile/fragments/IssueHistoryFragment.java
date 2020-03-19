@@ -29,18 +29,20 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.util.Date;
 import java.util.List;
 
+import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.History;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
-import de.domjos.unibuggermobile.helper.DateConvertHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.Validator;
+import de.domjos.customwidgets.utils.Validator;
 
 public final class IssueHistoryFragment extends AbstractFragment {
     private Issue issue;
@@ -114,7 +116,12 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
                                     tableRow.addView(this.createTextView(history.getField()));
                                     tableRow.addView(this.createTextView(history.getUser()));
-                                    tableRow.addView(this.createTextView(DateConvertHelper.convertLongToString(history.getTime(), this.getContext())));
+
+                                    Date historyTime = new Date();
+                                    historyTime.setTime(history.getTime());
+                                    Settings settings = MainActivity.GLOBALS.getSettings(this.getContext());
+                                    String format = settings.getDateFormat() + " " + settings.getTimeFormat();
+                                    tableRow.addView(this.createTextView(ConvertHelper.convertDateToString(historyTime, format)));
                                     tableRow.addView(this.createTextView(history.getOldValue()));
                                     tableRow.addView(this.createTextView(history.getNewValue()));
 
@@ -140,7 +147,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return new Validator(getContext());
+        return new Validator(getContext(), R.mipmap.ic_launcher_round);
     }
 
     @Override
