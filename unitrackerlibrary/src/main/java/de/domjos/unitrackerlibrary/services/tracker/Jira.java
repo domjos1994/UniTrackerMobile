@@ -98,8 +98,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
                 project.setWebsite(jsonObject.getString("url"));
             }
             project.setEnabled(jsonObject.getBoolean("archived"));
-            if (jsonObject.has("avatar")) {
-                JSONObject avatar = jsonObject.getJSONObject("avatar");
+            if (jsonObject.has("avatarUrls")) {
+                JSONObject avatar = jsonObject.getJSONObject("avatarUrls");
                 if (avatar.has("48x48")) {
                     project.setIconUrl(avatar.getString("48x48"));
                 }

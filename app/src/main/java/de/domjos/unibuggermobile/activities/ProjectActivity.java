@@ -18,6 +18,9 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.os.AsyncTask;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -33,7 +36,9 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -41,6 +46,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
@@ -282,36 +288,57 @@ public final class ProjectActivity extends AbstractActivity {
                 ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
-                for (Project project : task.execute(0).get()) {
-                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                    baseDescriptionObject.setObject(project);
-                    baseDescriptionObject.setTitle(project.getTitle());
-                    baseDescriptionObject.setDescription(project.getDescription());
-                    if (project.getIconUrl() != null) {
-                        if (!project.getIconUrl().isEmpty()) {
+                task.after(new AbstractTask.PostExecuteListener<List<Project>>() {
+                    @Override
+                    public void onPostExecute(List<Project> projects) {
+                        for (Project project : projects) {
+                            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                            baseDescriptionObject.setObject(project);
+                            baseDescriptionObject.setTitle(project.getTitle());
+                            baseDescriptionObject.setDescription(project.getDescription());
                             try {
-                                new Thread(() -> {
-                                    try {
-                                        baseDescriptionObject.setCover(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
-                                        if (baseDescriptionObject.getCover() != null) {
-                                            baseDescriptionObject.setCover(ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.icon_projects)));
-                                        }
-                                    } catch (Exception ex) {
-                                        runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext()));
-                                    }
-                                }).start();
-                            } catch (Exception ex) {
-                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
-                            }
+                                baseDescriptionObject = new DownloadTask(ProjectActivity.this).execute(baseDescriptionObject, project).get();
+                            } catch (Exception ignored) {}
+                            subProjects.add(baseDescriptionObject.getTitle());
+                            lvProjects.getAdapter().add(baseDescriptionObject);
                         }
+                        txtProjectsSubProject.setAdapter(subProjects);
                     }
-                    subProjects.add(baseDescriptionObject.getTitle());
-                    this.lvProjects.getAdapter().add(baseDescriptionObject);
-                }
-                this.txtProjectsSubProject.setAdapter(subProjects);
+                });
+                task.execute(0);
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+        }
+    }
+
+    private static class DownloadTask extends AsyncTask<Object, Void, BaseDescriptionObject> {
+        private WeakReference<Activity> activity;
+
+        DownloadTask(Activity activity) {
+            this.activity = new WeakReference<>(activity);
+        }
+
+        @Override
+        protected BaseDescriptionObject doInBackground(Object... voids) {
+            BaseDescriptionObject baseDescriptionObject = (BaseDescriptionObject) voids[0];
+            Project project = (Project) voids[1];
+
+            try {
+                baseDescriptionObject.setCover(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
+                if (baseDescriptionObject.getCover() == null) {
+                    Bitmap bitmap = ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
+                    if(bitmap != null) {
+                        baseDescriptionObject.setCover(bitmap);
+                    } else {
+                        baseDescriptionObject.setCover(ConvertHelper.convertDrawableToByteArray(this.activity.get().getResources().getDrawable(R.drawable.icon_projects)));
+                    }
+                }
+            } catch (Exception ex) {
+                this.activity.get().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.activity.get().getApplicationContext()));
+            }
+
+            return baseDescriptionObject;
         }
     }
 

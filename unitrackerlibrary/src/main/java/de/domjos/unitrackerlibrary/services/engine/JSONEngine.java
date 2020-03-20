@@ -152,19 +152,21 @@ public class JSONEngine {
     }
 
     protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String filename, String type) throws Exception {
-        MultipartBody.Builder builder = new MultipartBody.Builder();
-        builder.setType(MediaType.get("multipart/form-data"));
-        builder.addFormDataPart("metadata", jsonBody);
-        RequestBody requestBody = RequestBody.create(data, MediaType.get(contentType));
-        builder.addFormDataPart("file", filename, requestBody);
+        if(!contentType.isEmpty()) {
+            MultipartBody.Builder builder = new MultipartBody.Builder();
+            builder.setType(MediaType.get("multipart/form-data"));
+            builder.addFormDataPart("metadata", jsonBody);
+            RequestBody requestBody = RequestBody.create(data, MediaType.get(contentType));
+            builder.addFormDataPart("file", filename, requestBody);
 
-        Call call = this.initAuthentication(path, builder.build(), type);
-        Response response = call.execute();
-        this.state = response.code();
+            Call call = this.initAuthentication(path, builder.build(), type);
+            Response response = call.execute();
+            this.state = response.code();
 
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            }
         }
         return this.state;
     }

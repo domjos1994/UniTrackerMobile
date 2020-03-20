@@ -72,6 +72,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation "androidx.sqlite:sqlite:2.1.0"
+    implementation 'com.caverock:androidsvg-aar:1.4'
 
     // google services
     implementation "com.google.android.material:material:$propAndroidVersion"

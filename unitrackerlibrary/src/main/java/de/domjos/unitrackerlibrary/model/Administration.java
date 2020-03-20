@@ -177,7 +177,6 @@ public class Administration {
         return project;
     }
 
-    @SuppressWarnings("unchecked")
     public Issue convertIssueToValidNewIssue(Issue issue) {
         this.status = false;
         this.resolution = false;
@@ -185,6 +184,7 @@ public class Administration {
         this.priority = false;
 
         issue.setTags(issue.getTags().replace(" ", ""));
+        issue.getRelations().clear();
 
         switch (this.fromBugService.getAuthentication().getTracker()) {
             case MantisBT:
