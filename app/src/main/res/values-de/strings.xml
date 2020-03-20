@@ -151,6 +151,8 @@
     <string name="settings_general_summary">Ändern Sie hier die generellen Einstellungen der App!</string>
     <string name="settings_general_notifications">Notifikationen</string>
     <string name="settings_general_notifications_summary">Notifikationen anzeigen!</string>
+    <string name="settings_general_debug_mode">Debug-Modus</string>
+    <string name="settings_general_debug_mode_summary">Debug-Modus aktivieren!</string>
     <string name="settings_general_numberOfItems">Anzahl an angezeigten Fehlern</string>
     <string name="settings_general_numberOfItems_summary">Ändern Sie hier die Anzahl der angezeigten Fehler! (-1 für alle Fehler)</string>
     <string name="settings_general_date_format">Datums-Format</string>

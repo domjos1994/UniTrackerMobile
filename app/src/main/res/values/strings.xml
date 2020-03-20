@@ -154,6 +154,8 @@
     <string name="settings_general_summary">"Change here the general settings of the app!  "</string>
     <string name="settings_general_notifications">Notifications</string>
     <string name="settings_general_notifications_summary">Show Notifications</string>
+    <string name="settings_general_debug_mode">Debug-Mode</string>
+    <string name="settings_general_debug_mode_summary">Enable Debug-Mode!</string>
     <string name="settings_general_numberOfItems">Number of displayed errors</string>
     <string name="settings_general_numberOfItems_summary">Change the number of displayed errors here! (-1 for all errors)</string>
     <string name="settings_general_date_format">Date Format</string>

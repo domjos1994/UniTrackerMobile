@@ -37,11 +37,13 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 public final class AdministrationTask extends AbstractTask<Administration, Integer, String> {
     private StringBuilder message;
     private WeakReference<ProgressBar> progressBar;
+    private boolean debug;
 
-    public AdministrationTask(Activity activity, boolean showNotifications, int icon, ProgressBar progressBar) {
+    public AdministrationTask(Activity activity, boolean showNotifications, boolean debug, int icon, ProgressBar progressBar) {
         super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon);
         this.message = new StringBuilder();
         this.progressBar = new WeakReference<>(progressBar);
+        this.debug = debug;
     }
 
     @Override
@@ -107,11 +109,15 @@ public final class AdministrationTask extends AbstractTask<Administration, Integ
                                             this.publishProgress((int) ((100.0 / max) * counter));
                                             counter++;
                                         } catch (Exception ex) {
-                                            StringBuilder msg = new StringBuilder();
-                                            for(StackTraceElement element : ex.getStackTrace()) {
-                                                msg.append(element.getFileName()).append(".").append(element.getClassName()).append("#").append(element.getMethodName()).append("(").append(element.getLineNumber()).append(")\n");
+                                            this.message.append(ex.toString()).append("\n");
+                                            if(this.debug) {
+                                                StringBuilder msg = new StringBuilder();
+                                                for (StackTraceElement element : ex.getStackTrace()) {
+                                                    msg.append(element.getFileName()).append(".").append(element.getClassName()).append("#").append(element.getMethodName()).append("(").append(element.getLineNumber()).append(")\n");
+                                                }
+                                                this.message.append(msg).append("\n");
                                             }
-                                            this.message.append(ex.toString()).append(msg).append("\n").append("\n");
+                                            this.message.append("----------------------------------------------------------------------------------").append("\n");
                                         }
                                     }
                                 }

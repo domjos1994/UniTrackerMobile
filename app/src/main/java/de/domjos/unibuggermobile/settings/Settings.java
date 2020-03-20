@@ -130,7 +130,11 @@ public class Settings {
     }
 
     public boolean showNotifications() {
-        return this.userPreferences.getBoolean("swtNotifications", false);
+        return this.userPreferences.getBoolean("swtNotifications", true);
+    }
+
+    public boolean isDebugMode() {
+        return this.userPreferences.getBoolean("swtDebugMode", false);
     }
 
     public boolean isEncryptionEnabled() {

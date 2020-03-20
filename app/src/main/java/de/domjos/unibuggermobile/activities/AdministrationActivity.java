@@ -280,6 +280,7 @@ public final class AdministrationActivity extends AbstractActivity {
         try {
             Activity act = AdministrationActivity.this;
             boolean notify = this.settings.showNotifications();
+            boolean debug = this.settings.isDebugMode();
 
             Project project2;
             if (this.spProject2.getSelectedItemPosition() != -1) {
@@ -314,7 +315,7 @@ public final class AdministrationActivity extends AbstractActivity {
 
             this.initAction(true);
             this.pbProcess.setMax(100);
-            AdministrationTask administrationTask = new AdministrationTask(act, notify, R.drawable.icon_administration, this.pbProcess);
+            AdministrationTask administrationTask = new AdministrationTask(act, notify, debug, R.drawable.icon_administration, this.pbProcess);
             administrationTask.after(new AbstractTask.PostExecuteListener<String>() {
                 @Override
                 public void onPostExecute(String logs) {
