@@ -113,6 +113,8 @@ public final class ProjectActivity extends AbstractActivity {
                             }
                         } catch (Exception ex) {
                             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+                        } finally {
+                            dialog.dismiss();
                         }
                     });
                     builder.create().show();
