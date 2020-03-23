@@ -17,7 +17,7 @@
  */
 
 ext.propVersion = 19
-ext.propVersionCode = "0.2.beta.3"
+ext.propVersionCode = "0.2.beta.4"
 
 ext.propJavaVersion = "8"
 

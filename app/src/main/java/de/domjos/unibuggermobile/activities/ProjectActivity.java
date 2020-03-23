@@ -19,6 +19,7 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.text.InputType;
@@ -333,7 +334,7 @@ public final class ProjectActivity extends AbstractActivity {
                     if(bitmap != null) {
                         baseDescriptionObject.setCover(bitmap);
                     } else {
-                        baseDescriptionObject.setCover(ConvertHelper.convertDrawableToByteArray(this.activity.get().getResources().getDrawable(R.drawable.icon_projects)));
+                        baseDescriptionObject.setCover(ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertDrawableToByteArray(this.activity.get(), R.drawable.icon_projects)));
                     }
                 }
             } catch (Exception ex) {
