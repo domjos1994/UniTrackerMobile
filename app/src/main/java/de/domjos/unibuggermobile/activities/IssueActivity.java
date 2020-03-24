@@ -201,6 +201,8 @@ public final class IssueActivity extends AbstractActivity {
     private void hideFieldsOfNavView() {
         this.navigationView.getMenu().getItem(0).setVisible(false);
         this.navigationView.getMenu().getItem(2).setVisible(false);
-        this.navigationView.getMenu().getItem(1).setVisible(!this.id.equals(""));
+        if(this.id != null) {
+            this.navigationView.getMenu().getItem(1).setVisible(!this.id.equals(""));
+        }
     }
 }

@@ -156,14 +156,14 @@
                     android:contentDescription="@string/issues"
                     android:layout_weight="5"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     app:srcCompat="@drawable/icon_controls_before" />
                 <ImageButton
                     android:id="@+id/cmdNext"
                     android:contentDescription="@string/issues"
                     android:layout_weight="5"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="48dp"
                     app:srcCompat="@drawable/icon_controls_next" />
             </LinearLayout>
         </LinearLayout>
