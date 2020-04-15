@@ -151,23 +151,23 @@
                         tools:ignore="Autofill" />
                 </TableRow>
 
-                <TableRow>
+                <TableRow android:layout_height="48dp">
 
                     <EditText
-                        android:id="@+id/txtAccountImageURL"
-                        android:inputType="textUri"
-                        android:hint="@string/accounts_image_url"
-                        android:layout_weight="9"
-                        android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                            android:id="@+id/txtAccountImageURL"
+                            android:inputType="textUri"
+                            android:hint="@string/accounts_image_url"
+                            android:layout_weight="8"
+                            android:layout_width="0dp"
+                            tools:ignore="Autofill"/>
 
                     <ImageButton
-                        android:id="@+id/cmdAccountImageGallery"
-                        android:contentDescription="@string/accounts_image_gallery"
-                        app:srcCompat="@drawable/icon_images"
-                        android:layout_height="match_parent"
-                        android:layout_width="0dp"
-                        android:layout_weight="1" />
+                            android:id="@+id/cmdAccountImageGallery"
+                            android:contentDescription="@string/accounts_image_gallery"
+                            app:srcCompat="@drawable/icon_images"
+                            android:layout_height="48dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"/>
                 </TableRow>
 
                 <TableRow>
