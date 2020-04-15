@@ -19,10 +19,13 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
 
+import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
 
+import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.export.TrackerCSV;
 import de.domjos.unitrackerlibrary.export.TrackerPDF;
@@ -31,17 +34,15 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class ExportTask extends AbstractTask<Object, Void, Void> {
+public final class ExportTask extends AbstractTask<Object, Integer, Void> {
     private String path, xslt;
     private TrackerXML.Type type;
-    private Object project_id, version_id;
+    private Object project_id;
     private byte[] array, icon;
+    private boolean changelog;
+    private WeakReference<ProgressBar> pb;
 
     public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, String xslt) {
-        this(activity, bugService, type, project_id, path, showNotifications, icon, array, appIcon, xslt, null);
-    }
-
-    public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, String xslt, Object versionId) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
         this.path = path;
         this.type = type;
@@ -49,7 +50,18 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
         this.array = array;
         this.icon = appIcon;
         this.xslt = xslt;
-        this.version_id = versionId;
+        this.changelog = false;
+        this.pb = new WeakReference<>(null);
+    }
+
+    public ExportTask(Activity activity, IBugService bugService, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, ProgressBar pb) {
+        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
+        this.changelog = true;
+        this.path = path;
+        this.project_id = project_id;
+        this.array = array;
+        this.icon = appIcon;
+        this.pb = new WeakReference<>(pb);
     }
 
     @Override
@@ -58,10 +70,17 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
     }
 
     @Override
+    protected void onProgressUpdate(Integer... values) {
+        if(this.pb.get() != null) {
+            ((Activity) super.getContext()).runOnUiThread(()->this.pb.get().setProgress(values[0]));
+        }
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     protected Void doInBackground(Object... objects) {
         try {
-            if(this.version_id == null) {
+            if(!this.changelog) {
                 List<Object> objectList = Arrays.asList(objects);
                 String[] splPath = this.path.split("\\.");
                 String extension = splPath[splPath.length - 1];
@@ -82,17 +101,40 @@ public final class ExportTask extends AbstractTask<Object, Void, Void> {
                         break;
                 }
             } else {
+                ((Activity) this.getContext()).runOnUiThread(()->this.pb.get().setProgress(0));
                 List<Issue> issues = super.bugService.getIssues(super.returnTemp(this.project_id));
                 for(int i = 0; i<=issues.size()-1; i++) {
                     issues.set(i, super.bugService.getIssue(issues.get(i).getId(), super.returnTemp(project_id)));
+                    publishProgress((int) ((100.0 / issues.size()) * (i + 1)));
                 }
 
+                ((Activity) this.getContext()).runOnUiThread(()->this.pb.get().setProgress(0));
                 List<Version> versions = super.bugService.getVersions("versions", super.returnTemp(this.project_id));
-                TrackerPDF<Issue> buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, issues, this.path, this.array, this.icon);
-                for(Version current : versions) {
-                    if(current.getId().equals(this.version_id)) {
-                        buggerPDF.createChangeLog(current);
-                        break;
+                int i = 1;
+                for(Object vidObject : objects) {
+                    if(vidObject instanceof List) {
+                        List vidList = (List) vidObject;
+                        for(Object vid : vidList) {
+                            TrackerPDF<Issue> buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, issues, this.path, this.array, this.icon);
+                            for (Version current : versions) {
+                                if (current.getTitle().equals(((BaseDescriptionObject)vid).getTitle())) {
+                                    buggerPDF.createChangeLog(current);
+                                    break;
+                                }
+                            }
+                            publishProgress((int) ((100.0 / vidList.size()) * i));
+                            i++;
+                        }
+                    } else {
+                        TrackerPDF<Issue> buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, issues, this.path, this.array, this.icon);
+                        for (Version current : versions) {
+                            if (current.getId().equals(vidObject)) {
+                                buggerPDF.createChangeLog(current);
+                                break;
+                            }
+                        }
+                        publishProgress((100) * i);
+                        i++;
                     }
                 }
             }
