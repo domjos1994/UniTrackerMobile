@@ -97,7 +97,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Settings settings;
     private SearchView cmdSearch;
     private Toolbar toolbar;
-    private int page;
+    private int page, currentNumberOfItems;
+    private long maximum;
 
     private static final int RELOAD_PROJECTS = 98;
     private static final int RELOAD_ACCOUNTS = 99;
@@ -110,7 +111,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     public MainActivity() {
         super(R.layout.main_activity);
         this.page = 1;
-
+        this.maximum = -1L;
+        this.currentNumberOfItems = -1;
     }
 
     @Override
@@ -272,8 +274,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         });
 
         this.cmdNext.setOnClickListener(v -> {
-            this.page++;
-            this.reload();
+            if(this.currentNumberOfItems!=this.maximum) {
+                this.page++;
+                this.reload();
+            }
         });
 
         this.lvMainIssues.setOnReloadListener(this::reload);
@@ -591,7 +595,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                                 }
                                                 baseDescriptionObject.setState(resolved);
                                                 lvMainIssues.getAdapter().add(baseDescriptionObject);
-                                                reloadStateData(listIssueTask.getMaximum());
+                                                maximum = listIssueTask.getMaximum();
+                                                reloadStateData();
                                             }
                                         }
                                     }
@@ -607,18 +612,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
-    private void reloadStateData(long maximum) {
+    private void reloadStateData() {
         int min = (this.page - 1) * this.settings.getNumberOfItems() + 1;
-        int max = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
-        if(max==maximum) {
-            if(max!=-1) {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(max)));
+        this.currentNumberOfItems = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
+        if(this.currentNumberOfItems==this.maximum) {
+            if(this.currentNumberOfItems!=-1) {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(this.currentNumberOfItems)));
             }
         } else {
-            if(max!=-1) {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(max), String.valueOf(maximum)));
+            if(this.currentNumberOfItems!=-1) {
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(this.currentNumberOfItems), String.valueOf(this.maximum)));
             } else {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(maximum)));
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(this.maximum)));
             }
         }
         this.lvMainIssues.getAdapter().notifyDataSetChanged();
