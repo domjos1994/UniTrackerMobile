@@ -21,9 +21,11 @@ package de.domjos.unibuggermobile.settings;
 import android.content.Context;
 
 import de.domjos.unibuggermobile.helper.SQLiteGeneral;
+import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 
 public class Globals {
     public final static String FILE_PROVIDER = "de.domjos.unibuggermobile.provider.FileProvider";
+    private AbstractTask abstractTask;
 
     private SQLiteGeneral sqLiteGeneral;
     private String password;
@@ -51,5 +53,13 @@ public class Globals {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public AbstractTask getAbstractTask() {
+        return this.abstractTask;
+    }
+
+    public void setAbstractTask(AbstractTask abstractTask) {
+        this.abstractTask = abstractTask;
     }
 }

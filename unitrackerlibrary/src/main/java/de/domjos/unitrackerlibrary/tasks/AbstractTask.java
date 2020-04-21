@@ -37,9 +37,12 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     private final String title, content;
     private boolean showNotifications;
     private PostExecuteListener postExecuteListener;
+    final static CurrentTask currentTask = new CurrentTask();
 
     AbstractTask(Activity activity, IBugService bugService, int title, int content, boolean showNotifications, int icon) {
         super();
+
+        AbstractTask.currentTask.abstractTask = this;
         this.weakReference = new WeakReference<>(activity);
         this.icon = icon;
         this.title = activity.getString(title);
@@ -51,12 +54,11 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+
+        Intent intent = new Intent(this.getContext(), Receiver.class);
+        intent.putExtra("id", this.id);
         if (this.showNotifications) {
-            if(this.id == -1) {
-                this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon);
-            } else {
-                this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon, this.id);
-            }
+            this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon, this.id, intent);
         }
         this.before();
     }
