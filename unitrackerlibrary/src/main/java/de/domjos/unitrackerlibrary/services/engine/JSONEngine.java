@@ -306,7 +306,7 @@ public class JSONEngine {
                     });
                 } else {
                     if (this.accessTokenProvider != null) {
-                        builder.authenticator((route, response) -> response.request().newBuilder().header("Authorization", this.accessTokenProvider.authorization()).build());
+                        builder.authenticator((route, response) -> response.request().newBuilder().header("Authorization", this.accessTokenProvider.token()).build());
                     } else {
                         return this.getClient(true);
                     }

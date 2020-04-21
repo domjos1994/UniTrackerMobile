@@ -1,1 +1,3 @@
-- App aktualisieren
+- schließbare Tasks
+- gelöste Fehler als Diagramm
+- löse Anhang-Fehler

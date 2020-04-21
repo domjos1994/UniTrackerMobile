@@ -35,6 +35,10 @@ android {
         multiDexEnabled true
 
         setProperty("archivesBaseName", "unitrackermobile_" + versionName.replace(".beta", "_beta").replace(".alpha", "_alpha"))
+
+        manifestPlaceholders = [
+            appAuthRedirectScheme: 'io.identityserver.demo'
+        ]
     }
 
     buildTypes {
@@ -49,6 +53,7 @@ android {
         targetCompatibility = propJavaVersion
         sourceCompatibility = propJavaVersion
     }
+
     packagingOptions {
         exclude '**/JavaMethod.class'
     }
