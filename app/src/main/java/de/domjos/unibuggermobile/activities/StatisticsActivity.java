@@ -225,6 +225,7 @@ public final class StatisticsActivity extends AbstractActivity {
         if (item.getItemId() == R.id.menExport) {
             this.lcStatisticsBugsInTime.saveToGallery("uniTrackerMobile_bugsInTime.jpg");
             this.bcStatisticsBugsPerProject.saveToGallery("uniTrackerMobile_bugsPerProject.jpg");
+            this.bcStatisticsBugsPerUser.saveToGallery("uniTrackerMobile_bugsPerUser.jpg");
             MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), R.mipmap.ic_launcher_round, StatisticsActivity.this);
         }
 
@@ -266,7 +267,7 @@ public final class StatisticsActivity extends AbstractActivity {
     }
 
     private void reloadCharts() {
-        DiagramHelper diagramHelper = new DiagramHelper(this.data);
+        DiagramHelper diagramHelper = new DiagramHelper(this.data, StatisticsActivity.this);
         if (this.rbStatisticsMonthly.isChecked()) {
             diagramHelper.setTimeSpan(DiagramHelper.TimeSpan.Month);
         } else if (this.rbStatisticsYearly.isChecked()) {

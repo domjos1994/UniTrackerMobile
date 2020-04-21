@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggermobile.helper;
 
+import android.app.Activity;
 import android.graphics.Typeface;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -44,13 +45,15 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class DiagramHelper {
+    private final Activity activity;
     private Map<Authentication, Map<Project, List<Issue>>> data;
     private List<Authentication> authentications;
     private TimeSpan timeSpan;
     private int year, month;
 
-    public DiagramHelper(Map<Authentication, Map<Project, List<Issue>>> data) {
+    public DiagramHelper(Map<Authentication, Map<Project, List<Issue>>> data, Activity activity) {
         this.data = data;
+        this.activity = activity;
         this.timeSpan = TimeSpan.None;
         this.month = -1;
         this.year = -1;
@@ -102,18 +105,24 @@ public class DiagramHelper {
     }
 
     public void updateProjectBarChart(BarChart barChart) {
-        this.createProjectBarData(barChart);
-        barChart.invalidate();
+        this.activity.runOnUiThread(()-> {
+            this.createProjectBarData(barChart);
+             barChart.invalidate();
+        });
     }
 
     public void updateUserBarChart(BarChart barChart) {
-        this.createUserBarData(barChart);
-        barChart.invalidate();
+        this.activity.runOnUiThread(()-> {
+            this.createUserBarData(barChart);
+            barChart.invalidate();
+        });
     }
 
     public void updateLineChart(LineChart lineChart) {
-        this.createLineData(lineChart);
-        lineChart.invalidate();
+        this.activity.runOnUiThread(()-> {
+            this.createLineData(lineChart);
+            lineChart.invalidate();
+        });
     }
 
     @SuppressWarnings("MagicConstant")
@@ -221,11 +230,11 @@ public class DiagramHelper {
                     mp.clear();
                     for(Issue issue : projects.getValue()) {
                         if(issue.getHandler() != null) {
-                            if(tmp.containsKey(issue.getHandler().getTitle())) {
-                                current = Objects.requireNonNull(tmp.get(issue.getHandler().getTitle()));
+                            if(tmp.containsKey(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle())) {
+                                current = Objects.requireNonNull(tmp.get(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle()));
                             } else {
                                 i++;
-                                tmp.put(issue.getHandler().getTitle(), i);
+                                tmp.put(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle(), i);
                                 current = i;
                             }
 
