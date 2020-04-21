@@ -251,6 +251,7 @@
     <string name="statistics_bar_description">Bugs pro Projekt</string>
     <string name="statistics_line_description">Bugs im Verlauf der Zeit</string>
     <string name="statistics_bar_user">Bugs pro Benutzer</string>
+    <string name="statistics_solved_bugs">Gelöste Fehler</string>
     <string name="statistics_export">Exportiere Diagramme</string>
     <string name="statistics_export_succes">Export erfolgreich!</string>
     <string name="statistics_diagram">Diagramm</string>
@@ -258,6 +259,7 @@
         <item>@string/statistics_bar_description</item>
         <item>@string/statistics_line_description</item>
         <item>@string/statistics_bar_user</item>
+        <item>@string/statistics_solved_bugs</item>
     </string-array>
 
     <string name="calendar">Kalender</string>

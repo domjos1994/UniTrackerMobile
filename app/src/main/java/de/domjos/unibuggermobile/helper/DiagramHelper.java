@@ -118,6 +118,13 @@ public class DiagramHelper {
         });
     }
 
+    public void updateSolvedBugsBarChart(BarChart barChart) {
+        this.activity.runOnUiThread(()-> {
+            this.createSolvedBugsBarData(barChart);
+            barChart.invalidate();
+        });
+    }
+
     public void updateLineChart(LineChart lineChart) {
         this.activity.runOnUiThread(()-> {
             this.createLineData(lineChart);
@@ -229,17 +236,156 @@ public class DiagramHelper {
                 for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
                     mp.clear();
                     for(Issue issue : projects.getValue()) {
+
+                        Calendar calendar = Calendar.getInstance();
+                        if(issue.getLastUpdated() != null) {
+                            calendar.setTime(issue.getLastUpdated());
+                        } else {
+                            if(issue.getSubmitDate() != null) {
+                                calendar.setTime(issue.getSubmitDate());
+                            } else {
+                                calendar = null;
+                            }
+                        }
+
+                        if(calendar != null) {
+                            if(this.year != -1 && this.month != -1) {
+                                if(calendar.get(Calendar.YEAR) != this.year && calendar.get(Calendar.MONTH) != this.month) {
+                                    continue;
+                                }
+                            } else if(this.year != -1) {
+                                if(calendar.get(Calendar.YEAR) != this.year) {
+                                    continue;
+                                }
+                            } else if(this.month != -1) {
+                                if(calendar.get(Calendar.MONTH) != this.month) {
+                                    continue;
+                                }
+                            }
+                        }
+
                         if(issue.getHandler() != null) {
-                            if(tmp.containsKey(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle())) {
-                                current = Objects.requireNonNull(tmp.get(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle()));
+                            if(tmp.containsKey(projects.getKey().getTitle().replace("-", "") + ": " + issue.getHandler().getTitle())) {
+                                current = Objects.requireNonNull(tmp.get(projects.getKey().getTitle().replace("-", "") + ": " + issue.getHandler().getTitle()));
                             } else {
                                 i++;
-                                tmp.put(projects.getKey().getTitle() + ": " + issue.getHandler().getTitle(), i);
+                                tmp.put(projects.getKey().getTitle().replace("-", "") + ": " + issue.getHandler().getTitle(), i);
                                 current = i;
                             }
 
                             if(mp.containsKey(current)) {
-                                mp.put(current, mp.get(current) + 1);
+                                mp.put(current, Objects.requireNonNull(mp.get(current)) + 1);
+                            } else {
+                                mp.put(current, 1);
+                            }
+                        }
+                    }
+
+
+                    for(Map.Entry<Integer, Integer> entry : mp.entrySet()) {
+                        List<BarEntry> barEntries = new LinkedList<>();
+                        barEntries.add(new BarEntry(entry.getKey(), entry.getValue()));
+
+                        String currentItem = "";
+                        int counter = 1;
+                        for(String item : tmp.keySet()) {
+                            if(counter==entry.getKey()) {
+                                currentItem = item;
+                            }
+                            counter++;
+                        }
+
+                        BarDataSet barDataSet = new BarDataSet(barEntries, currentItem);
+                        barDataSet.setColor(generator.nextInt());
+                        barData.addDataSet(barDataSet);
+                    }
+                }
+            }
+        }
+
+        XAxis axis = barChart.getXAxis();
+        axis.setTypeface(Typeface.DEFAULT);
+        axis.setGranularity(1f);
+        axis.setValueFormatter((value, axis1) -> {
+            int counter = 1;
+            for(String item : tmp.keySet()) {
+                if(counter==value) {
+                    return item;
+                }
+                counter++;
+            }
+            return "";
+        });
+        barChart.setData(barData);
+    }
+
+    private void createSolvedBugsBarData(BarChart barChart) {
+        Random generator = new Random();
+        BarData barData = new BarData();
+        Map<String, Integer> tmp = new LinkedHashMap<>();
+        Map<Integer, Integer> mp = new LinkedHashMap<>();
+        int i = 0, current;
+
+        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+            boolean goOn = false;
+            if (this.authentications.isEmpty()) {
+                goOn = true;
+            } else {
+                for (Authentication authentication : this.authentications) {
+                    if (authentication != null) {
+                        if (authentication.getId() != null) {
+                            if (authentication.getId().equals(accounts.getKey().getId())) {
+                                goOn = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(goOn) {
+                for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
+                    mp.clear();
+                    for(Issue issue : projects.getValue()) {
+
+                        Calendar calendar = Calendar.getInstance();
+                        if(issue.getLastUpdated() != null) {
+                            calendar.setTime(issue.getLastUpdated());
+                        } else {
+                            if(issue.getSubmitDate() != null) {
+                                calendar.setTime(issue.getSubmitDate());
+                            } else {
+                                calendar = null;
+                            }
+                        }
+
+                        if(calendar != null) {
+                            if(this.year != -1 && this.month != -1) {
+                                if(calendar.get(Calendar.YEAR) != this.year && calendar.get(Calendar.MONTH) != this.month) {
+                                    continue;
+                                }
+                            } else if(this.year != -1) {
+                                if(calendar.get(Calendar.YEAR) != this.year) {
+                                    continue;
+                                }
+                            } else if(this.month != -1) {
+                                if(calendar.get(Calendar.MONTH) != this.month) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                        if(issue.getStatus() != null) {
+                            if(tmp.containsKey(projects.getKey().getTitle().replace("-", "") + ": " + issue.getStatus().getValue())) {
+                                current = Objects.requireNonNull(tmp.get(projects.getKey().getTitle().replace("-", "") + ": " + issue.getStatus().getValue()));
+                            } else {
+                                i++;
+                                tmp.put(projects.getKey().getTitle().replace("-", "") + ": " + issue.getStatus().getValue(), i);
+                                current = i;
+                            }
+
+                            if(mp.containsKey(current)) {
+                                mp.put(current, Objects.requireNonNull(mp.get(current)) + 1);
                             } else {
                                 mp.put(current, 1);
                             }

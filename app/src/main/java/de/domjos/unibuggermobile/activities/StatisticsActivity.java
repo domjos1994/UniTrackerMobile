@@ -35,6 +35,7 @@ import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -61,7 +62,7 @@ import de.domjos.unibuggermobile.helper.DiagramHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 
 public final class StatisticsActivity extends AbstractActivity {
-    private BarChart bcStatisticsBugsPerProject, bcStatisticsBugsPerUser;
+    private BarChart bcStatisticsBugsPerProject, bcStatisticsBugsPerUser, bcStatisticsSolvedBugs;
     private LineChart lcStatisticsBugsInTime;
     private RadioButton rbStatisticsMonthly, rbStatisticsYearly;
     private EditText txtStatisticsValue;
@@ -179,12 +180,22 @@ public final class StatisticsActivity extends AbstractActivity {
         this.bcStatisticsBugsPerProject = this.findViewById(R.id.bcStatisticsBugsPerProject);
         Description description = new Description();
         description.setText(this.getString(R.string.statistics_bar_description));
+        Legend legend = this.bcStatisticsBugsPerProject.getLegend();
+        legend.setDrawInside(false);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
         this.bcStatisticsBugsPerProject.setDescription(description);
         this.charts.add(this.bcStatisticsBugsPerProject);
 
         this.lcStatisticsBugsInTime = this.findViewById(R.id.lcStatisticsBugsInTime);
         description = new Description();
         description.setText(this.getString(R.string.statistics_line_description));
+        legend = this.lcStatisticsBugsInTime.getLegend();
+        legend.setDrawInside(false);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
         this.lcStatisticsBugsInTime.setDescription(description);
         this.charts.add(this.lcStatisticsBugsInTime);
 
@@ -192,7 +203,23 @@ public final class StatisticsActivity extends AbstractActivity {
         description = new Description();
         description.setText(this.getString(R.string.statistics_bar_user));
         this.bcStatisticsBugsPerUser.setDescription(description);
+        legend = this.bcStatisticsBugsPerUser.getLegend();
+        legend.setDrawInside(false);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
         this.charts.add(this.bcStatisticsBugsPerUser);
+
+        this.bcStatisticsSolvedBugs = this.findViewById(R.id.bcStatisticsSolvedBugs);
+        description = new Description();
+        description.setText(this.getString(R.string.statistics_solved_bugs));
+        this.bcStatisticsSolvedBugs.setDescription(description);
+        legend = this.bcStatisticsSolvedBugs.getLegend();
+        legend.setDrawInside(false);
+        legend.setVerticalAlignment(Legend.LegendVerticalAlignment.CENTER);
+        legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        legend.setOrientation(Legend.LegendOrientation.VERTICAL);
+        this.charts.add(this.bcStatisticsSolvedBugs);
 
         this.rbStatisticsMonthly = this.findViewById(R.id.rbStatisticsMonthly);
         this.rbStatisticsYearly = this.findViewById(R.id.rbStatisticsYearly);
@@ -226,6 +253,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.lcStatisticsBugsInTime.saveToGallery("uniTrackerMobile_bugsInTime.jpg");
             this.bcStatisticsBugsPerProject.saveToGallery("uniTrackerMobile_bugsPerProject.jpg");
             this.bcStatisticsBugsPerUser.saveToGallery("uniTrackerMobile_bugsPerUser.jpg");
+            this.bcStatisticsSolvedBugs.saveToGallery("uniTrackerMobile_solvedBugs.jpg");
             MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), R.mipmap.ic_launcher_round, StatisticsActivity.this);
         }
 
@@ -295,5 +323,6 @@ public final class StatisticsActivity extends AbstractActivity {
         diagramHelper.updateProjectBarChart(this.bcStatisticsBugsPerProject);
         diagramHelper.updateLineChart(this.lcStatisticsBugsInTime);
         diagramHelper.updateUserBarChart(this.bcStatisticsBugsPerUser);
+        diagramHelper.updateSolvedBugsBarChart(this.bcStatisticsSolvedBugs);
     }
 }

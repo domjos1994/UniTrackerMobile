@@ -84,7 +84,8 @@
                     android:textColor="@color/divider"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:layout_margin="2dp"/>
                 <Spinner
                     android:id="@+id/spStatisticsBugTracker"
                     android:layout_width="0dp"
@@ -105,7 +106,8 @@
                     android:textColor="@color/divider"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"/>
+                    android:gravity="center_vertical"
+                    android:layout_margin="2dp"/>
 
                 <Spinner
                     android:id="@+id/spStatisticsDiagram"
@@ -132,6 +134,11 @@
             android:visibility="gone"/>
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bcStatisticsBugsPerUser"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/bcStatisticsSolvedBugs"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
