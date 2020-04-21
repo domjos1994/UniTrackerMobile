@@ -81,9 +81,11 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 
                 UserTask userTask = new UserTask(this.getActivity(), bugService, pid, false, show, R.drawable.icon_users);
+                userTask.setId(notificationId);
                 users = userTask.execute(0).get();
 
                 IssueTask issueTask = new IssueTask(this.getActivity(), bugService, pid, false, false, show, R.drawable.icon_issues);
+                issueTask.setId(notificationId);
                 issues = issueTask.execute(0).get();
             } catch (Exception ignored) {}
 

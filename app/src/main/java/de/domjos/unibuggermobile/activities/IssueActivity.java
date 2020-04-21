@@ -60,6 +60,7 @@ public final class IssueActivity extends AbstractActivity {
     @Override
     @SuppressWarnings("unchecked")
     protected void initControls() {
+        int notificationId = 0;
         try {
             this.settings = MainActivity.GLOBALS.getSettings(getApplicationContext());
             Intent intent = this.getIntent();
@@ -67,12 +68,16 @@ public final class IssueActivity extends AbstractActivity {
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
             if (this.id.equals("")) {
-                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues).execute(0).get();
+                IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
+                List<Issue> issues = task.execute(0).get();
+                notificationId = task.getId();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
                 }
             } else {
-                List<Issue> issues = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues).execute(this.id).get();
+                IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
+                List<Issue> issues = task.execute(this.id).get();
+                notificationId = task.getId();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
                 }
@@ -88,6 +93,7 @@ public final class IssueActivity extends AbstractActivity {
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
         this.hideFieldsOfNavView();
+        int finalNotificationId = notificationId;
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             switch (menuItem.getItemId()) {
                 case R.id.navEdit:
@@ -119,24 +125,29 @@ public final class IssueActivity extends AbstractActivity {
 
                             if(!exists1) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                                versionTask.setId(finalNotificationId);
                                 Version current = new Version();
                                 current.setTitle(issue.getVersion());
                                 versionTask.execute(current).get();
                             }
                             if(!exists2) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                                versionTask.setId(finalNotificationId);
                                 Version current = new Version();
                                 current.setTitle(issue.getFixedInVersion());
                                 versionTask.execute(current).get();
                             }
                             if(!exists3) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                                versionTask.setId(finalNotificationId);
                                 Version current = new Version();
                                 current.setTitle(issue.getTargetVersion());
                                 versionTask.execute(current).get();
                             }
 
-                            new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.icon_issues).execute(this.issue).get();
+                            IssueTask issueTask = new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
+                            issueTask.setId(finalNotificationId);
+                            issueTask.execute(this.issue).get();
                             this.manageControls(false, true, false);
                             this.setResult(RESULT_OK);
                             this.finish();
@@ -153,6 +164,7 @@ public final class IssueActivity extends AbstractActivity {
 
         // init View-Pager
         this.pagerAdapter = new PagerAdapter(this, this.getSupportFragmentManager());
+        this.pagerAdapter.setNotificationId(notificationId);
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(this.pagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);

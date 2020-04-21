@@ -234,7 +234,7 @@ public class Helper {
         }
     }
 
-    public static void showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid, List<BaseDescriptionObject> objects) {
+    public static void showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid, List<BaseDescriptionObject> objects, int notificationId) {
         try {
             Dialog tagDialog = new Dialog(activity);
             tagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -276,6 +276,7 @@ public class Helper {
 
                     for(BaseDescriptionObject listObject : objects) {
                         IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.icon_issues);
+                        issueTask.setId(notificationId);
                         List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
 
                         if(issues!=null) {
@@ -387,7 +388,7 @@ public class Helper {
     }
 
     @SuppressWarnings("unchecked")
-    public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable) {
+    public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable, int notificationId) {
         try {
             Dialog resolveDialog = new Dialog(activity);
             resolveDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -416,6 +417,7 @@ public class Helper {
                     issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
 
                     IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.icon_issues);
+                    issueTask.setId(notificationId);
                     issueTask.execute(issue).get();
                     resolveDialog.dismiss();
                     runnable.run();

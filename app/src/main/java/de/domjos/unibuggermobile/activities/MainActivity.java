@@ -97,7 +97,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Settings settings;
     private SearchView cmdSearch;
     private Toolbar toolbar;
-    private int page, currentNumberOfItems;
+    private int page, currentNumberOfItems, notId;
     private long maximum;
 
     private static final int RELOAD_PROJECTS = 98;
@@ -113,6 +113,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.page = 1;
         this.maximum = -1L;
         this.currentNumberOfItems = -1;
+        this.notId = -1;
     }
 
     @Override
@@ -327,7 +328,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     boolean show = settings.showNotifications();
                     Object pid = settings.getCurrentProjectId();
 
-                    Helper.showTagDialog(act, bugService, show, pid, objectList);
+                    Helper.showTagDialog(act, bugService, show, pid, objectList, notId);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                 }
@@ -361,7 +362,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             boolean show = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
             BaseDescriptionObject currentObject = lvMainIssues.getAdapter().getObject();
             IssueTask issueTask = new IssueTask(MainActivity.this, this.bugService, pid, false, true, show, R.drawable.icon_issues);
+            issueTask.setId(notId);
             Issue issue = issueTask.execute(((Issue)currentObject.getObject()).getId()).get().get(0);
+            this.notId = issueTask.getId();
 
             switch (item.getItemId()) {
                 case R.id.ctxSolve:
@@ -414,7 +417,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     }
 
                     if (!statusArray.isEmpty()) {
-                        Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload);
+                        Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
                     }
                     break;
                 case R.id.ctxClone:
@@ -429,7 +432,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
                         ((Relationship) issue.getRelations().get(i)).setId(null);
                     }
-                    new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues).execute(issue).get();
+                    IssueTask task = new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues);
+                    task.setId(notId);
+                    task.execute(issue).get();
+                    this.notId = task.getId();
                     reload();
                     break;
                 case R.id.ctxShowAttachment:
@@ -570,6 +576,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 }
 
                                 IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
+                                listIssueTask.setId(notId);
                                 listIssueTask.after(new AbstractTask.PostExecuteListener<List<Issue>>() {
                                     @Override
                                     public void onPostExecute(List<Issue> issues) {
@@ -602,6 +609,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                     }
                                 });
                                 listIssueTask.execute(0);
+                                this.notId = listIssueTask.getId();
                             }
                         }
                     }
@@ -650,7 +658,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.clear();
             this.projectList.add(new Project());
 
-            List<Project> projects = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects).execute(0).get();
+            ProjectTask task = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+            task.setId(this.notId);
+            List<Project> projects = task.execute(0).get();
+            this.notId = task.getId();
             if (projects != null) {
                 for (Project project : projects) {
                     this.projectList.add(project);

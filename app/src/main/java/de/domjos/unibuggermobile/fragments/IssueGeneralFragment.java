@@ -148,10 +148,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 if (this.getActivity() != null) {
                     boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
                     UserTask userTask = new UserTask(this.getActivity(), this.bugService, this.pid, false, show, R.drawable.icon_users);
+                    userTask.setId(this.notificationId);
                     List<User> users = userTask.execute(0).get();
                     users.add(0, new User());
 
                     LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Tags);
+                    loaderTask.setId(this.notificationId);
                     Object result = loaderTask.execute(this.pid).get();
                     if (result instanceof List) {
                         List lst = (List) result;
@@ -163,6 +165,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     }
 
                     loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Profiles);
+                    loaderTask.setId(this.notificationId);
                     List<String> platform = new LinkedList<>();
                     List<String> os = new LinkedList<>();
                     List<String> build = new LinkedList<>();
@@ -586,6 +589,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
                 LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Categories);
+                loaderTask.setId(this.notificationId);
                 Object categoriesObjectList = loaderTask.execute(this.pid).get();
                 if (categoriesObjectList instanceof List) {
                     List lst = (List) categoriesObjectList;
@@ -608,7 +612,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
             arrayAdapter.add("");
             try {
                 if (this.bugService != null) {
-                    List<Version> versions = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.icon_versions).execute(0).get();
+                    VersionTask versionTask = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.icon_versions);
+                    versionTask.setId(this.notificationId);
+                    List<Version> versions = versionTask.execute(0).get();
                     for (Version version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }

@@ -24,6 +24,11 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.customwidgets.utils.Validator;
 
 public abstract class AbstractFragment extends Fragment {
+    protected int notificationId;
+
+    public void setNotificationId(int notificationId) {
+        this.notificationId = notificationId;
+    }
 
     public abstract void setObject(DescriptionObject descriptionObject);
 

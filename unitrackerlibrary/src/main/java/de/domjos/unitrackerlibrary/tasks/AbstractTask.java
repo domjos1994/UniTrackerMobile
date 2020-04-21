@@ -20,6 +20,7 @@ package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 
 import java.lang.ref.WeakReference;
@@ -32,7 +33,7 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
     private WeakReference<Context> weakReference;
     protected final IBugService bugService;
     private final int icon;
-    private int id;
+    private int id = -1;
     private final String title, content;
     private boolean showNotifications;
     private PostExecuteListener postExecuteListener;
@@ -47,12 +48,15 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
         this.showNotifications = showNotifications;
     }
 
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         if (this.showNotifications) {
-            this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon);
+            if(this.id == -1) {
+                this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon);
+            } else {
+                this.id = MessageHelper.startProgressNotification((Activity) this.getContext(), this.title, this.content, this.icon, this.id);
+            }
         }
         this.before();
     }
@@ -79,6 +83,14 @@ public abstract class AbstractTask<Params, Progress, Result> extends AsyncTask<P
 
     void printException(Exception ex) {
         ((Activity) this.getContext()).runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getContext()));
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     protected abstract void before();

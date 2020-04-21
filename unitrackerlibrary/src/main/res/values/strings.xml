@@ -23,16 +23,16 @@
     <string name="task_project_content">Update Projects…</string>
 
     <string name="task_version_list_title">Versions</string>
-    <string name="task_version_content">Update Version…</string>
+    <string name="task_version_content">Update Versions…</string>
 
     <string name="task_issues_list_title">Bugs</string>
-    <string name="task_issue_content">Update Bug …</string>
+    <string name="task_issue_content">Update Bugs…</string>
 
     <string name="task_field_list_title">Felder</string>
-    <string name="task_field_content">Update fields…</string>
+    <string name="task_field_content">Update Fields…</string>
 
     <string name="task_user_list_title">User</string>
-    <string name="task_user_content">Update user…</string>
+    <string name="task_user_content">Update User…</string>
 
     <string name="task_search_title">Search</string>
     <string name="task_search_content">Search is running…</string>

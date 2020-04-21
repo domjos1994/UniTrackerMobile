@@ -145,6 +145,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                 if (this.issue.getCustomFields().isEmpty()) {
                     try {
                         FieldTask fieldTask = new FieldTask(getActivity(), Helper.getCurrentBugService(getContext()), pid, false, false, R.drawable.icon_custom_fields);
+                        fieldTask.setId(this.notificationId);
                         List<CustomField> customFields = fieldTask.execute(0).get();
                         for (CustomField customField : customFields) {
                             this.issue.getCustomFields().put(customField, "");

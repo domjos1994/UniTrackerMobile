@@ -127,6 +127,16 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.general.setPid(pid);
     }
 
+    public void setNotificationId(int notificationId) {
+        this.general.setNotificationId(notificationId);
+        this.descriptions.setNotificationId(notificationId);
+        this.notes.setNotificationId(notificationId);
+        this.attachments.setNotificationId(notificationId);
+        this.relation.setNotificationId(notificationId);
+        this.custom.setNotificationId(notificationId);
+        this.history.setNotificationId(notificationId);
+    }
+
     public void manageControls(boolean editMode) {
         this.general.manageControls(editMode);
         this.descriptions.manageControls(editMode);
