@@ -580,12 +580,8 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         } else {
             action = "mc_issue_add";
             request = new SoapObject(super.soapPath, action);
-            request.addProperty("id", 0);
         }
         SoapObject issueObject = new SoapObject(NAMESPACE, "IssueData");
-        if (action.equals("mc_issue_add")) {
-            issueObject.addProperty("id", 0);
-        }
         issueObject.addProperty("category", issue.getCategory());
         issueObject.addProperty("summary", issue.getTitle());
         issueObject.addProperty("description", issue.getDescription());
@@ -693,60 +689,78 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             issueObject.addProperty("tags", tagVector);
         }
 
-        request.addProperty("issue", issueObject);
-        Object object = this.executeAction(request, action, true);
-        object = this.getResult(object);
+        Object object = null;
+        try {
+            request.addProperty("issue", issueObject);
+            object = this.executeAction(request, action, true);
+            object = this.getResult(object);
+        } catch (Exception ignored) {}
 
-        long id;
+        long id = 0;
         if (issue.getId() != null) {
             id = Long.parseLong(String.valueOf(issue.getId()));
         } else {
-            id = Long.parseLong(String.valueOf(object));
-        }
-
-        Issue<Long> oldIssue = this.getIssue(id, project_id);
-        List<Note<Long>> oldNotes = oldIssue.getNotes();
-        List<Attachment<Long>> oldAttachments = oldIssue.getAttachments();
-
-        for (Note<Long> oldNote : oldNotes) {
-            boolean available = false;
-            for (Note note : issue.getNotes()) {
-                if (oldNote.getId().equals(note.getId())) {
-                    available = true;
-                    break;
+            if(object != null) {
+                id = Long.parseLong(String.valueOf(object));
+            } else {
+                List<Issue<Long>> issues = this.getIssues(project_id);
+                for(Issue<Long> tmp : issues) {
+                    if(tmp.getTitle().equals(issue.getTitle())) {
+                        id = tmp.getId();
+                        break;
+                    }
                 }
-            }
-            if (!available) {
-                this.deleteNote(oldNote.getId(), id, project_id);
-            }
-        }
-
-        if (!issue.getNotes().isEmpty()) {
-            for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
-                if(descriptionObject instanceof Note) {
-                    Note<Long> note = (Note<Long>) descriptionObject;
-                    this.insertOrUpdateNote(note, id, project_id);
+                if(id == 0) {
+                    return;
                 }
             }
         }
 
-        for (Attachment<Long> oldAttachment : oldAttachments) {
-            this.deleteAttachment(oldAttachment.getId(), id, project_id);
-        }
+        if(id != 0) {
+            Issue<Long> oldIssue = this.getIssue(id, project_id);
+            List<Note<Long>> oldNotes = oldIssue.getNotes();
+            List<Attachment<Long>> oldAttachments = oldIssue.getAttachments();
 
-        if (!issue.getAttachments().isEmpty()) {
-            for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
-                if(descriptionObject instanceof Attachment) {
-                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
-                    this.insertOrUpdateAttachment(attachment, id, project_id);
+            for (Note<Long> oldNote : oldNotes) {
+                boolean available = false;
+                for (Note note : issue.getNotes()) {
+                    if (oldNote.getId().equals(note.getId())) {
+                        available = true;
+                        break;
+                    }
+                }
+                if (!available) {
+                    this.deleteNote(oldNote.getId(), id, project_id);
                 }
             }
-        }
 
-        if(!issue.getRelations().isEmpty()) {
-            for(Relationship<Long> relationship : issue.getRelations()) {
-                if(issue.getId()!=null) {
-                    this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+            if (!issue.getNotes().isEmpty()) {
+                for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
+                    if(descriptionObject instanceof Note) {
+                        Note<Long> note = (Note<Long>) descriptionObject;
+                        this.insertOrUpdateNote(note, id, project_id);
+                    }
+                }
+            }
+
+            for (Attachment<Long> oldAttachment : oldAttachments) {
+                this.deleteAttachment(oldAttachment.getId(), id, project_id);
+            }
+
+            if (!issue.getAttachments().isEmpty()) {
+                for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
+                    if(descriptionObject instanceof Attachment) {
+                        Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                        this.insertOrUpdateAttachment(attachment, id, project_id);
+                    }
+                }
+            }
+
+            if(!issue.getRelations().isEmpty()) {
+                for(Relationship<Long> relationship : issue.getRelations()) {
+                    if(issue.getId()!=null) {
+                        this.insertOrUpdateBugRelations(relationship, Long.parseLong(String.valueOf(issue.getId())), project_id);
+                    }
                 }
             }
         }
@@ -819,10 +833,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
     @Override
     public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-        SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
-        deleteRequest.addProperty("issue_attachment_id", id);
-        Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
-        this.getResult(deleteObject);
+        if(id != 0) {
+            SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
+            deleteRequest.addProperty("issue_attachment_id", id);
+            Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
+            this.getResult(deleteObject);
+        }
     }
 
     @Override
