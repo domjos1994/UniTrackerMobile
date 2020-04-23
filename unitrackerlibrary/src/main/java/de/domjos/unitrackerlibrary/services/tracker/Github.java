@@ -27,14 +27,12 @@ import org.json.JSONObject;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.GithubPermissions;
-import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -45,7 +43,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     private String username;
 
     public Github(Authentication authentication) {
-        super(authentication, new GithubTokenProvider(authentication));
+        super(authentication);
         this.authentication = authentication;
 
         if(this.authentication.getHints().containsKey("userName")) {

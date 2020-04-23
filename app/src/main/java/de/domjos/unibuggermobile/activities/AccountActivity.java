@@ -45,7 +45,6 @@ import java.util.List;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.services.authentication.GithubTokenProvider;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -278,8 +277,8 @@ public final class AccountActivity extends AbstractActivity {
                                     try {
                                         if (!chkAccountGuest.isChecked()) {
                                             if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
-                                                GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
-                                                currentAccount.setAPIKey(githubTokenProvider.refreshToken());
+                                                // GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
+                                                // currentAccount.setAPIKey(githubTokenProvider.refreshToken());
                                             }
                                         }
                                         IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());

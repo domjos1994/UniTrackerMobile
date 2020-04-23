@@ -1,1 +1,3 @@
-- update app
+- cancellable Tasks
+- solved bugs in diagrams
+- solve attachment-issue
