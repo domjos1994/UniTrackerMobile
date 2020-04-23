@@ -19,7 +19,6 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.text.InputType;
@@ -42,12 +41,12 @@ import java.util.Date;
 import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
@@ -291,22 +290,19 @@ public final class ProjectActivity extends AbstractActivity {
                 ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
-                task.after(new AbstractTask.PostExecuteListener<List<Project>>() {
-                    @Override
-                    public void onPostExecute(List<Project> projects) {
-                        for (Project project : projects) {
-                            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                            baseDescriptionObject.setObject(project);
-                            baseDescriptionObject.setTitle(project.getTitle());
-                            baseDescriptionObject.setDescription(project.getDescription());
-                            try {
-                                baseDescriptionObject = new DownloadTask(ProjectActivity.this).execute(baseDescriptionObject, project).get();
-                            } catch (Exception ignored) {}
-                            subProjects.add(baseDescriptionObject.getTitle());
-                            lvProjects.getAdapter().add(baseDescriptionObject);
-                        }
-                        txtProjectsSubProject.setAdapter(subProjects);
+                task.after((AbstractTask.PostExecuteListener<List<Project>>) projects -> {
+                    for (Project project : projects) {
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        baseDescriptionObject.setObject(project);
+                        baseDescriptionObject.setTitle(project.getTitle());
+                        baseDescriptionObject.setDescription(project.getDescription());
+                        try {
+                            baseDescriptionObject = new DownloadTask(ProjectActivity.this).execute(baseDescriptionObject, project).get();
+                        } catch (Exception ignored) {}
+                        subProjects.add(baseDescriptionObject.getTitle());
+                        lvProjects.getAdapter().add(baseDescriptionObject);
                     }
+                    txtProjectsSubProject.setAdapter(subProjects);
                 });
                 task.execute(0);
             }

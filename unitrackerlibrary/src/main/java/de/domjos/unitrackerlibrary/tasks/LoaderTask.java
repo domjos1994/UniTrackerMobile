@@ -23,17 +23,12 @@ import android.app.Activity;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 
-public final class LoaderTask extends AbstractTask<Object, Void, Object> {
+public final class LoaderTask extends CustomAbstractTask<Object, Void, Object> {
     private Type type;
 
     public LoaderTask(Activity activity, IBugService bugService, boolean showNotifications, Type type) {
         super(activity, bugService, R.string.task_loader_title, R.string.task_loader_content, showNotifications, R.mipmap.ic_launcher_round);
         this.type = type;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

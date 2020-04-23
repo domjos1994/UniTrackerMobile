@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.widget.ProgressBar;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,28 +35,14 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.customwidgets.utils.ConvertHelper;
 
-public final class LocalSyncTask extends AbstractTask<Void, Integer, String> {
+public final class LocalSyncTask extends CustomProgressBarTask<Void, String> {
     private String path;
     private Object pid;
-    private final WeakReference<ProgressBar> progressBar;
-    private int max = 0;
 
     public LocalSyncTask(Activity activity, IBugService bugService, boolean showNotifications, String path, Object pid, ProgressBar pbProcess) {
-        super(activity, bugService, R.string.task_local_title, R.string.task_local_content, showNotifications, R.mipmap.ic_launcher_round);
+        super(activity, bugService, R.string.task_local_title, R.string.task_local_content, showNotifications, R.mipmap.ic_launcher_round, pbProcess);
         this.path = path;
         this.pid = pid;
-        this.progressBar = new WeakReference<>(pbProcess);
-    }
-
-    @Override
-    public final void onProgressUpdate(Integer... progress) {
-        int percentage = (int) (100.0 / this.max * progress[0]);
-        this.progressBar.get().setProgress(percentage);
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

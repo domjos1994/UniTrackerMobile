@@ -16,8 +16,8 @@
  *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-ext.propVersion = 23
-ext.propVersionCode = "0.3.alpha.2"
+ext.propVersion = 24
+ext.propVersionCode = "0.3.alpha.3"
 
 ext.propJavaVersion = "8"
 
@@ -25,7 +25,7 @@ ext.propCompVersion = 29
 ext.propMinVersion = 20
 ext.propAndroidVersion = "1.1.0"
 
-ext.propCustomWidgetsVersion = "2.3.30"
+ext.propCustomWidgetsVersion = "3.3.3"
 
 buildscript {
     repositories {

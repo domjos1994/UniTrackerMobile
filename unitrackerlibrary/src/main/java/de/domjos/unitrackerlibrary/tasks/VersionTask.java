@@ -27,7 +27,7 @@ import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class VersionTask extends AbstractTask<Object, Void, List<Version>> {
+public final class VersionTask extends CustomAbstractTask<Object, Void, List<Version>> {
     private boolean delete;
     private Object project_id;
     private String filter;
@@ -37,11 +37,6 @@ public final class VersionTask extends AbstractTask<Object, Void, List<Version>>
         this.delete = delete;
         this.project_id = project_id;
         this.filter = filter;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
@@ -62,7 +57,9 @@ public final class VersionTask extends AbstractTask<Object, Void, List<Version>>
                         }
                     }
                 }
-                super.printMessage();
+                if(!bugService.getCurrentMessage().trim().isEmpty()) {
+                    super.printMessage(bugService.getCurrentMessage());
+                }
             }
         } catch (Exception ex) {
             super.printException(ex);

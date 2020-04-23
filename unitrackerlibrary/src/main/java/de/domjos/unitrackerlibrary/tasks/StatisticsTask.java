@@ -21,44 +21,30 @@ package de.domjos.unitrackerlibrary.tasks;
 import android.app.Activity;
 import android.widget.ProgressBar;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.model.tasks.ProgressBarTask;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
-public final class StatisticsTask extends AbstractTask<Void, Integer, Map<Authentication, Map<Project, List<Issue>>>> {
+public final class StatisticsTask extends ProgressBarTask<Void, Map<Authentication, Map<Project, List<Issue>>>> {
     private List<IBugService> bugServices;
-    private final WeakReference<ProgressBar> progressBar;
-    private int max = 0;
     private Update update;
 
     public StatisticsTask(Activity activity, List<IBugService> bugServices, boolean showNotifications, int icon, ProgressBar progressBar) {
-        super(activity, null, R.string.task_statistics_title, R.string.task_statistics_content, showNotifications, icon);
+        super(activity, R.string.task_statistics_title, R.string.task_statistics_content, showNotifications, icon, progressBar);
 
-        this.progressBar = new WeakReference<>(progressBar);
         this.bugServices = bugServices;
     }
 
     public void setOnUpdate(Update update) {
         this.update = update;
-    }
-
-    @Override
-    protected void before() {
-
-    }
-
-    @Override
-    protected void onProgressUpdate(Integer... values) {
-        int percentage = (int) (100.0 / this.max * values[0]);
-        this.progressBar.get().setProgress(percentage);
     }
 
     @Override

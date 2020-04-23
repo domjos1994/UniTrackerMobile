@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.widgets.calendar.WidgetCalendar;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -46,7 +47,7 @@ public final class CalendarTask extends AbstractTask<Void, Map.Entry<Integer, Li
     private int max, projectIcon, versionIcon, issueIcon;
 
     public CalendarTask(Activity activity, boolean showNotifications, int icon, ProgressBar progressBar, TextView lbl, WidgetCalendar calendar, List<IBugService<?>> bugServices) {
-        super(activity, null, R.string.task_loader_title, R.string.task_loader_content, showNotifications, icon);
+        super(activity, R.string.task_loader_title, R.string.task_loader_content, showNotifications, icon);
 
         this.progressBar = new WeakReference<>(progressBar);
         this.lbl = new WeakReference<>(lbl);
@@ -78,11 +79,6 @@ public final class CalendarTask extends AbstractTask<Void, Map.Entry<Integer, Li
         }
         this.calendar.get().invalidate();
         this.calendar.get().reload();
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

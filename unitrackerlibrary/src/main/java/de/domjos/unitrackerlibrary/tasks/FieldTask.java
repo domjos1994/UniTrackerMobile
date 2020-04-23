@@ -27,7 +27,7 @@ import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
 
-public final class FieldTask extends AbstractTask<Object, Void, List<CustomField>> {
+public final class FieldTask extends CustomAbstractTask<Object, Void, List<CustomField>> {
     private Object project_id;
     private boolean delete;
 
@@ -35,11 +35,6 @@ public final class FieldTask extends AbstractTask<Object, Void, List<CustomField
         super(activity, bugService, R.string.task_field_list_title, R.string.task_field_content, showNotifications, icon);
         this.project_id = project_id;
         this.delete = delete;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
