@@ -1,3 +1,2 @@
-- cancellable Tasks
-- solved bugs in diagrams
-- solve attachment-issue
+- closable Tasks
+- better diagrams
