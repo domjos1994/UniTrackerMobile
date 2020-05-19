@@ -27,17 +27,12 @@ import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 
-public final class ProjectTask extends AbstractTask<Object, Void, List<Project>> {
+public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Project>> {
     private boolean delete;
 
     public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
         this.delete = delete;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override
@@ -56,7 +51,9 @@ public final class ProjectTask extends AbstractTask<Object, Void, List<Project>>
                     }
                 }
             }
-            super.printMessage();
+            if(!bugService.getCurrentMessage().trim().isEmpty()) {
+                super.printMessage(bugService.getCurrentMessage());
+            }
         } catch (Exception ex) {
             super.printException(ex);
         }

@@ -48,6 +48,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Note;
@@ -64,7 +65,6 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
@@ -577,34 +577,31 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
                                 IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
                                 listIssueTask.setId(notId);
-                                listIssueTask.after(new AbstractTask.PostExecuteListener<List<Issue>>() {
-                                    @Override
-                                    public void onPostExecute(List<Issue> issues) {
-                                        lvMainIssues.getAdapter().clear();
-                                        for (Issue issue : issues) {
-                                            if (issue.getTitle().contains(search)) {
-                                                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                                                baseDescriptionObject.setObject(issue);
-                                                String title;
-                                                if(MainActivity.GLOBALS.getSettings(MainActivity.this).isShowID()) {
-                                                    title = issue.getId() + ": " + issue.getTitle();
-                                                } else {
-                                                    title = issue.getTitle();
-                                                }
-                                                baseDescriptionObject.setTitle(title);
-                                                baseDescriptionObject.setDescription(issue.getDescription());
-                                                boolean resolved = false;
-                                                if(issue.getHints().containsKey(Issue.RESOLVED)) {
-                                                    Object resolve = issue.getHints().get(Issue.RESOLVED);
-                                                    if(resolve != null) {
-                                                        resolved = Boolean.parseBoolean(resolve.toString());
-                                                    }
-                                                }
-                                                baseDescriptionObject.setState(resolved);
-                                                lvMainIssues.getAdapter().add(baseDescriptionObject);
-                                                maximum = listIssueTask.getMaximum();
-                                                reloadStateData();
+                                listIssueTask.after((AbstractTask.PostExecuteListener<List<Issue>>) issues -> {
+                                    lvMainIssues.getAdapter().clear();
+                                    for (Issue issue : issues) {
+                                        if (issue.getTitle().contains(search)) {
+                                            BaseDescriptionObject baseDescriptionObject1 = new BaseDescriptionObject();
+                                            baseDescriptionObject1.setObject(issue);
+                                            String title;
+                                            if(MainActivity.GLOBALS.getSettings(MainActivity.this).isShowID()) {
+                                                title = issue.getId() + ": " + issue.getTitle();
+                                            } else {
+                                                title = issue.getTitle();
                                             }
+                                            baseDescriptionObject1.setTitle(title);
+                                            baseDescriptionObject1.setDescription(issue.getDescription());
+                                            boolean resolved = false;
+                                            if(issue.getHints().containsKey(Issue.RESOLVED)) {
+                                                Object resolve = issue.getHints().get(Issue.RESOLVED);
+                                                if(resolve != null) {
+                                                    resolved = Boolean.parseBoolean(resolve.toString());
+                                                }
+                                            }
+                                            baseDescriptionObject1.setState(resolved);
+                                            lvMainIssues.getAdapter().add(baseDescriptionObject1);
+                                            maximum = listIssueTask.getMaximum();
+                                            reloadStateData();
                                         }
                                     }
                                 });

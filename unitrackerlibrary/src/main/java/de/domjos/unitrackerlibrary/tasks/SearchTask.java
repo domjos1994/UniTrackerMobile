@@ -31,7 +31,7 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class SearchTask extends AbstractTask<Integer, Void, List<DescriptionObject>> {
+public final class SearchTask extends CustomAbstractTask<Integer, Void, List<DescriptionObject>> {
     private String search, projects, versions;
     private boolean summary, description;
     private final List<DescriptionObject> issues;
@@ -46,11 +46,6 @@ public final class SearchTask extends AbstractTask<Integer, Void, List<Descripti
         this.versions = versions;
         this.summary = summary;
         this.description = description;
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

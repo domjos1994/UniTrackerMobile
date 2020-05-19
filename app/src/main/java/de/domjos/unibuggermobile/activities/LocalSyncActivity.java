@@ -35,11 +35,11 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.util.ArrayList;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.LocalSyncTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
@@ -162,12 +162,9 @@ public final class LocalSyncActivity extends AbstractActivity {
             }
 
             LocalSyncTask localSyncTask = new LocalSyncTask(this.activity, bugService, this.settings.showNotifications(), this.settings.getLocalSyncPath(), pid, this.pbProcess);
-            localSyncTask.after(new AbstractTask.PostExecuteListener<String>() {
-                @Override
-                public void onPostExecute(String result) {
-                    MessageHelper.printMessage(result, R.mipmap.ic_launcher_round, LocalSyncActivity.this);
-                    reload();
-                }
+            localSyncTask.after((AbstractTask.PostExecuteListener<String>) result -> {
+                MessageHelper.printMessage(result, R.mipmap.ic_launcher_round, LocalSyncActivity.this);
+                reload();
             });
             localSyncTask.execute();
         } catch (Exception ex) {

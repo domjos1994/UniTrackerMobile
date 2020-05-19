@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -46,7 +47,6 @@ import de.domjos.unitrackerlibrary.model.Administration;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.AdministrationTask;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
@@ -316,22 +316,19 @@ public final class AdministrationActivity extends AbstractActivity {
             this.initAction(true);
             this.pbProcess.setMax(100);
             AdministrationTask administrationTask = new AdministrationTask(act, notify, debug, R.drawable.icon_administration, this.pbProcess);
-            administrationTask.after(new AbstractTask.PostExecuteListener<String>() {
-                @Override
-                public void onPostExecute(String logs) {
-                    logAdapter.clear();
-                    for (String logItem : logs.split("\n")) {
-                        logAdapter.add(logItem);
-                    }
-                    reloadAuthentications();
-
-                    String msg = getString(R.string.administration_message);
-                    String item = getResources().getStringArray(R.array.administration_data)[spData1.getSelectedItemPosition()];
-                    String action = move ? getString(R.string.administration_move) : getString(R.string.administration_copy);
-                    String message = String.format(msg, item, action);
-                    MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, ctx);
-                    initAction(false);
+            administrationTask.after((AbstractTask.PostExecuteListener<String>) logs -> {
+                logAdapter.clear();
+                for (String logItem : logs.split("\n")) {
+                    logAdapter.add(logItem);
                 }
+                reloadAuthentications();
+
+                String msg = getString(R.string.administration_message);
+                String item = getResources().getStringArray(R.array.administration_data)[spData1.getSelectedItemPosition()];
+                String action = move ? getString(R.string.administration_move) : getString(R.string.administration_copy);
+                String message = String.format(msg, item, action);
+                MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, ctx);
+                initAction(false);
             });
             administrationTask.execute(this.administration);
 

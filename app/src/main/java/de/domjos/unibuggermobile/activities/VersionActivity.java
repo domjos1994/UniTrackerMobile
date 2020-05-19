@@ -44,12 +44,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -135,12 +135,9 @@ public final class VersionActivity extends AbstractActivity {
 
                         this.pbVersion.setVisibility(View.VISIBLE);
                         ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, path.get(), this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
-                        exportTask.after(new AbstractTask.PostExecuteListener() {
-                            @Override
-                            public void onPostExecute(Object o) {
-                                pbVersion.setVisibility(View.GONE);
-                                MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
-                            }
+                        exportTask.after(o -> {
+                            pbVersion.setVisibility(View.GONE);
+                            MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
                         });
                         exportTask.execute(list);
                     }
@@ -397,12 +394,9 @@ public final class VersionActivity extends AbstractActivity {
 
                             this.pbVersion.setVisibility(View.VISIBLE);
                             ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
-                            exportTask.after(new AbstractTask.PostExecuteListener() {
-                                @Override
-                                public void onPostExecute(Object o) {
-                                    pbVersion.setVisibility(View.GONE);
-                                    MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
-                                }
+                            exportTask.after(o -> {
+                                pbVersion.setVisibility(View.GONE);
+                                MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
                             });
                             exportTask.execute(vid);
                         } else {

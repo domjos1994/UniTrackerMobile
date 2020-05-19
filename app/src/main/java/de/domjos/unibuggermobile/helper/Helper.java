@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -76,7 +77,6 @@ import de.domjos.unitrackerlibrary.services.tracker.Redmine;
 import de.domjos.unitrackerlibrary.services.tracker.SQLite;
 import de.domjos.unitrackerlibrary.services.tracker.Tuleap;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
@@ -248,12 +248,9 @@ public class Helper {
             cmbTags.setAdapter(tagAdapter);
             tagAdapter.notifyDataSetChanged();
             LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
-            loaderTask.after(new AbstractTask.PostExecuteListener<List<Tag>>() {
-                @Override
-                public void onPostExecute(List<Tag> o) {
-                    for(Tag tag : o) {
-                        tagAdapter.add(tag.getTitle());
-                    }
+            loaderTask.after((AbstractTask.PostExecuteListener<List<Tag>>) o -> {
+                for(Tag tag : o) {
+                    tagAdapter.add(tag.getTitle());
                 }
             });
             loaderTask.execute(pid);

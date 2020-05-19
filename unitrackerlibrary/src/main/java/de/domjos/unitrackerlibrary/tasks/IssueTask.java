@@ -27,7 +27,7 @@ import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 
-public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
+public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue>> {
     private boolean delete;
     private boolean oneDetailed;
     private Object project_id;
@@ -48,13 +48,6 @@ public final class IssueTask extends AbstractTask<Object, Void, List<Issue>> {
         this.page = page;
         this.filter = filter;
         this.maximum = 0;
-    }
-
-
-
-    @Override
-    protected void before() {
-
     }
 
     public long getMaximum() {

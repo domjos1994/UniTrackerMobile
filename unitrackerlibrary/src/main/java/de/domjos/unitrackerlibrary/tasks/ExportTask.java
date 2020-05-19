@@ -34,7 +34,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class ExportTask extends AbstractTask<Object, Integer, Void> {
+public final class ExportTask extends CustomProgressBarTask<Object, Void> {
     private String path, xslt;
     private TrackerXML.Type type;
     private Object project_id;
@@ -43,7 +43,7 @@ public final class ExportTask extends AbstractTask<Object, Integer, Void> {
     private WeakReference<ProgressBar> pb;
 
     public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, String xslt) {
-        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
+        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon, new ProgressBar(activity));
         this.path = path;
         this.type = type;
         this.project_id = project_id;
@@ -55,18 +55,13 @@ public final class ExportTask extends AbstractTask<Object, Integer, Void> {
     }
 
     public ExportTask(Activity activity, IBugService bugService, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, ProgressBar pb) {
-        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon);
+        super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon, pb);
         this.changelog = true;
         this.path = path;
         this.project_id = project_id;
         this.array = array;
         this.icon = appIcon;
         this.pb = new WeakReference<>(pb);
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

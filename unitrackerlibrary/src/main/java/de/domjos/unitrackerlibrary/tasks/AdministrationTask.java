@@ -21,9 +21,9 @@ package de.domjos.unitrackerlibrary.tasks;
 import android.app.Activity;
 import android.widget.ProgressBar;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
 
+import de.domjos.customwidgets.model.tasks.ProgressBarTask;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.Administration;
@@ -34,26 +34,14 @@ import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class AdministrationTask extends AbstractTask<Administration, Integer, String> {
+public final class AdministrationTask extends ProgressBarTask<Administration, String> {
     private StringBuilder message;
-    private WeakReference<ProgressBar> progressBar;
     private boolean debug;
 
     public AdministrationTask(Activity activity, boolean showNotifications, boolean debug, int icon, ProgressBar progressBar) {
-        super(activity, null, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon);
+        super(activity, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon, progressBar);
         this.message = new StringBuilder();
-        this.progressBar = new WeakReference<>(progressBar);
         this.debug = debug;
-    }
-
-    @Override
-    public final void onProgressUpdate(Integer... progress) {
-        this.progressBar.get().setProgress(progress[0]);
-    }
-
-    @Override
-    protected void before() {
-
     }
 
     @Override

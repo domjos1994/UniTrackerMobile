@@ -49,12 +49,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.unitrackerlibrary.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.tasks.StatisticsTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
@@ -285,12 +285,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.data.put(auth, data);
             reloadCharts();
         });
-        statisticsTask.after(new AbstractTask.PostExecuteListener<Map<Authentication, Map<Project, List<Issue>>>>() {
-            @Override
-            public void onPostExecute(Map<Authentication, Map<Project, List<Issue>>> result) {
-                MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this);
-            }
-        });
+        statisticsTask.after((AbstractTask.PostExecuteListener<Map<Authentication, Map<Project, List<Issue>>>>) result -> MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this));
         statisticsTask.execute();
     }
 
