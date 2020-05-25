@@ -86,7 +86,6 @@ import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 public class Helper {
     public static final List<Authentication.Tracker> disabledBugTrackers =
             Arrays.asList(
-                Authentication.Tracker.Github,
                 Authentication.Tracker.TuLeap,
                 Authentication.Tracker.AzureDevOps
             );

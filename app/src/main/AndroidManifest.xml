@@ -146,10 +146,17 @@
         <activity
             android:name="de.domjos.unibuggermobile.activities.AccountActivity"
             android:label="@string/accounts"
-            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity">
+            android:parentActivityName="de.domjos.unibuggermobile.activities.MainActivity"
+            tools:node="replace">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.domjos.unibuggermobile.activities.MainActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="app" android:host="de.domjos.unitrackermobile"/>
+            </intent-filter>
         </activity>
         <activity
             android:name="de.domjos.unibuggermobile.activities.MainActivity"

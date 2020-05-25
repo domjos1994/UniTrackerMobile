@@ -95,6 +95,10 @@ public class Authentication extends DescriptionObject<Long> {
 
     public void setTracker(Tracker tracker) {
         this.tracker = tracker;
+        if(this.tracker == Tracker.Github) {
+            this.getHints().put("publicKey", "812f07f45f6be1f81c5e");
+            this.getHints().put("secretKey", "7eb14624b5fee480687d1a160775342b5955eea1");
+        }
     }
 
     public boolean isGuest() {

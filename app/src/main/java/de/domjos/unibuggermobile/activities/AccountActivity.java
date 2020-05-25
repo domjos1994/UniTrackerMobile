@@ -38,13 +38,13 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import java.util.Arrays;
 import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.services.authentication.OAuthHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.Validator;
@@ -56,6 +56,7 @@ import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unibuggermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
+    private static Authentication authentication;
     private final static String ACCOUNTS = "accounts";
 
     private SwipeRefreshDeleteList lvAccounts;
@@ -111,6 +112,8 @@ public final class AccountActivity extends AbstractActivity {
                             txtAccountServer.setText(Authentication.Tracker.Local.name());
                             break;
                         case Github:
+                            txtAccountPassword.setVisibility(View.GONE);
+                            txtAccountAPI.setVisibility(View.GONE);
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
                             txtAccountServer.setVisibility(View.GONE);
                             txtAccountAPI.setHint(R.string.accounts_github_client_secret);
@@ -246,6 +249,25 @@ public final class AccountActivity extends AbstractActivity {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        String token = OAuthHelper.getResult(getIntent());
+        if(!token.trim().isEmpty()) {
+            if(AccountActivity.authentication != null) {
+                AccountActivity.authentication.getHints().put("token", token);
+                new Thread(() -> {
+                    try {
+                        IBugService bugService = Helper.getCurrentBugService(AccountActivity.authentication, this.getApplicationContext());
+                        bugService.testConnection();
+                        runOnUiThread(()-> MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(AccountActivity.authentication));
+                        AccountActivity.authentication = null;
+                    } catch (Exception ex) {}
+                }).start();
+            }
+        }
+    }
+
+    @Override
     protected void initControls() {
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
@@ -277,8 +299,15 @@ public final class AccountActivity extends AbstractActivity {
                                     try {
                                         if (!chkAccountGuest.isChecked()) {
                                             if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
-                                                // GithubTokenProvider githubTokenProvider = new GithubTokenProvider(currentAccount);
-                                                // currentAccount.setAPIKey(githubTokenProvider.refreshToken());
+                                                if(currentAccount.getTracker() == Authentication.Tracker.Github) {
+                                                    String clientId = currentAccount.getHints().get("publicKey");
+                                                    //String secret = currentAccount.getHints().get("secretKey");
+                                                    String token = "https://github.com/login/oauth/access_token";
+                                                    String auth = "https://github.com/login/oauth/authorize";
+
+                                                    AccountActivity.authentication = currentAccount;
+                                                    OAuthHelper.startServiceConfig(auth, token, clientId, this, currentAccount);
+                                                }
                                             }
                                         }
                                         IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
@@ -467,11 +496,13 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setTracker(this.trackerAdapter.getItem(this.cmbAccountTracker.getSelectedItemPosition()));
             this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
             //this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
-            if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
-                this.currentAccount.setCover(ConvertHelper.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
-            } else {
-                this.currentAccount.setCover(null);
-            }
+            try {
+                if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
+                    this.currentAccount.setCover(ConvertHelper.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
+                } else {
+                    this.currentAccount.setCover(null);
+                }
+            } catch (Exception ignored) {}
             if(this.currentAccount.getTracker()== Authentication.Tracker.YouTrack) {
                 String hub = this.txtAccountExtended.getText().toString();
                 if(!hub.trim().isEmpty()) {
@@ -489,6 +520,10 @@ public final class AccountActivity extends AbstractActivity {
         // reset user
         this.txtAccountUserName.setHint(R.string.accounts_user);
         this.txtAccountUserName.setVisibility(View.VISIBLE);
+
+        // reset password
+        this.txtAccountPassword.setHint(R.string.accounts_pwd);
+        this.txtAccountPassword.setVisibility(View.VISIBLE);
 
         // reset extended
         this.txtAccountExtended.setHint(R.string.accounts);

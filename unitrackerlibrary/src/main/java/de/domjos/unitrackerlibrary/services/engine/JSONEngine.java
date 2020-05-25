@@ -22,9 +22,10 @@ import org.json.JSONObject;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import de.domjos.unitrackerlibrary.services.authentication.AccessTokenProvider;
+
 import de.domjos.customwidgets.utils.ConvertHelper;
 import okhttp3.Authenticator;
 import okhttp3.Call;
@@ -46,25 +47,11 @@ public class JSONEngine {
     private OkHttpClient client;
     private String currentMessage;
     private int state;
-    private AccessTokenProvider accessTokenProvider;
     private Authenticator authenticator;
 
     public JSONEngine(Authentication authentication) {
         this.authentication = authentication;
         this.headers = new LinkedList<>();
-        this.client = this.getClient();
-        this.authenticator = null; /*(route, response) ->
-            response.request().newBuilder()
-                .header(
-                    "Authorization",
-                    Credentials.basic(this.authentication.getUserName(), this.authentication.getPassword()))
-                .build();*/
-    }
-
-    public JSONEngine(Authentication authentication, AccessTokenProvider accessTokenProvider) {
-        this.authentication = authentication;
-        this.headers = new LinkedList<>();
-        this.accessTokenProvider = accessTokenProvider;
         this.client = this.getClient();
         this.authenticator = null;
     }
@@ -305,11 +292,15 @@ public class JSONEngine {
                         return response.request().newBuilder().header("Authorization", credential).build();
                     });
                 } else {
-                    if (this.accessTokenProvider != null) {
-                        builder.authenticator((route, response) -> response.request().newBuilder().header("Authorization", this.accessTokenProvider.token()).build());
-                    } else {
-                        return this.getClient(true);
-                    }
+                    builder.authenticator((route, response) -> {
+                        String credential;
+                        if (this.authentication.getAPIKey().trim().isEmpty()) {
+                            credential = Credentials.basic(authentication.getUserName(), Objects.requireNonNull(authentication.getHints().get("token")));
+                        } else {
+                            credential = Credentials.basic(authentication.getAPIKey(), UUID.randomUUID().toString());
+                        }
+                        return response.request().newBuilder().header("Authorization", credential).build();
+                    });
                 }
             }
         }

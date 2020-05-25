@@ -60,7 +60,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$propAndroidVersion"
 
     // libraries to call the webservices of the bug-trackers
-    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.1'
     implementation 'com.google.code.ksoap2-android:ksoap2-android:3.6.4'
     implementation 'net.openid:appauth:0.7.0'
 
