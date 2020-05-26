@@ -60,6 +60,12 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         if (status == 200 || status == 201) {
             JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
             this.authentication.getHints().put("userName", jsonObject.getString("login"));
+            if(jsonObject.has("avatar_url")) {
+                if(!jsonObject.isNull("avatar_url")) {
+                    String url = jsonObject.getString("avatar_url");
+                    this.authentication.setCover(ConvertHelper.convertStringToByteArray(url));
+                }
+            }
             return jsonObject.has("plan");
         }
         return false;

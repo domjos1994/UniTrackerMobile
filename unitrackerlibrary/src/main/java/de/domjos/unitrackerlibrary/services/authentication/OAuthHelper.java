@@ -49,7 +49,7 @@ public class OAuthHelper {
 
         AuthorizationServiceConfiguration serviceConfig = new AuthorizationServiceConfiguration(Uri.parse(auth), Uri.parse(token));
         AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(serviceConfig, clientId, ResponseTypeValues.CODE, Uri.parse("app://de.domjos.unitrackermobile"));
-        AuthorizationRequest authorizationRequest = builder.setScopes("repo", "user").build();
+        AuthorizationRequest authorizationRequest = builder.setLoginHint(authentication.getUserName()).setScopes("repo", "user").build();
         AuthorizationService authorizationService = new AuthorizationService(context);
         CustomTabsIntent.Builder intentBuilder = authorizationService.createCustomTabsIntentBuilder(authorizationRequest.toUri());
         CustomTabsIntent customTabsIntent = intentBuilder.build();
