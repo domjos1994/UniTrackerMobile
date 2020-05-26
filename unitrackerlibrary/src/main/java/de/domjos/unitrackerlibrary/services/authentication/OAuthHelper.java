@@ -26,7 +26,6 @@ import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import net.openid.appauth.AuthorizationRequest;
-import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
@@ -85,7 +84,7 @@ public class OAuthHelper {
                     }
                 });
             }).start();
-            while (accessToken.get().equals("")) {}
+            while (!accessToken.get().equals("")) {}
             return accessToken.get();
         }
         return "";
