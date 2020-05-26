@@ -251,19 +251,18 @@ public final class AccountActivity extends AbstractActivity {
     @Override
     public void onResume() {
         super.onResume();
-        String token = OAuthHelper.getResult(getIntent());
-        if(!token.trim().isEmpty()) {
-            if(AccountActivity.authentication != null) {
-                AccountActivity.authentication.getHints().put("token", token);
-                new Thread(() -> {
-                    try {
-                        IBugService bugService = Helper.getCurrentBugService(AccountActivity.authentication, this.getApplicationContext());
-                        bugService.testConnection();
-                        runOnUiThread(()-> MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(AccountActivity.authentication));
-                        AccountActivity.authentication = null;
-                    } catch (Exception ex) {}
-                }).start();
-            }
+        if(AccountActivity.authentication != null) {
+            new Thread(() -> {
+                try {
+                    AccountActivity.authentication.getHints().put("token", OAuthHelper.getAccessToken(getIntent(), AccountActivity.this, AccountActivity.authentication));
+                    IBugService bugService = Helper.getCurrentBugService(AccountActivity.authentication, this.getApplicationContext());
+                    bugService.testConnection();
+                    runOnUiThread(() -> MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(AccountActivity.authentication));
+                    AccountActivity.authentication = null;
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage());
+                }
+            }).start();
         }
     }
 
@@ -300,13 +299,8 @@ public final class AccountActivity extends AbstractActivity {
                                         if (!chkAccountGuest.isChecked()) {
                                             if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
                                                 if(currentAccount.getTracker() == Authentication.Tracker.Github) {
-                                                    String clientId = currentAccount.getHints().get("publicKey");
-                                                    //String secret = currentAccount.getHints().get("secretKey");
-                                                    String token = "https://github.com/login/oauth/access_token";
-                                                    String auth = "https://github.com/login/oauth/authorize";
-
                                                     AccountActivity.authentication = currentAccount;
-                                                    OAuthHelper.startServiceConfig(auth, token, clientId, this, currentAccount);
+                                                    OAuthHelper.startServiceConfig(this, currentAccount);
                                                 }
                                             }
                                         }

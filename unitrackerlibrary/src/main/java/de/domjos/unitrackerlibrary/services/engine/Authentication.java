@@ -21,6 +21,11 @@ package de.domjos.unitrackerlibrary.services.engine;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 
 public class Authentication extends DescriptionObject<Long> {
+    public static final String PUBLIC_KEY = "publicKey";
+   public static final String SECRET_KEY = "secretKey";
+    public static final String ENDPOINT_AUTH = "endPointAuth";
+    public static final String ENDPOINT_TOKEN = "endPointToken";
+
     private String server;
     private String userName;
     private String password;
@@ -96,8 +101,10 @@ public class Authentication extends DescriptionObject<Long> {
     public void setTracker(Tracker tracker) {
         this.tracker = tracker;
         if(this.tracker == Tracker.Github) {
-            this.getHints().put("publicKey", "812f07f45f6be1f81c5e");
-            this.getHints().put("secretKey", "7eb14624b5fee480687d1a160775342b5955eea1");
+            this.getHints().put(Authentication.PUBLIC_KEY, "812f07f45f6be1f81c5e");
+            this.getHints().put(Authentication.SECRET_KEY, "7eb14624b5fee480687d1a160775342b5955eea1");
+            this.getHints().put(Authentication.ENDPOINT_AUTH, "https://github.com/login/oauth/authorize");
+            this.getHints().put(Authentication.ENDPOINT_TOKEN, "https://github.com/login/oauth/access_token");
         }
     }
 

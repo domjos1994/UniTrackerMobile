@@ -29,6 +29,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
+import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -47,6 +48,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
@@ -62,6 +64,10 @@ import de.domjos.unibuggermobile.settings.Settings;
 public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private SwipeRefreshDeleteList lvProjects;
+
+    private TableLayout tblSearch;
+    private EditText txtSearch;
+    private ImageButton cmdSearch;
 
     private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription, txtProjectWebsite;
     private EditText txtProjectIconUrl, txtProjectVersion;
@@ -87,6 +93,14 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+
+        this.cmdSearch.setOnClickListener(event -> {
+            Authentication authentication = this.bugService.getAuthentication();
+            authentication.getHints().put(SearchAll.SEARCH, this.txtSearch.getText().toString());
+            MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(authentication);
+
+            this.reload();
+        });
 
         this.lvProjects.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             if (listObject != null) {
@@ -202,6 +216,10 @@ public final class ProjectActivity extends AbstractActivity {
         });
 
         // init controls
+        this.tblSearch = this.findViewById(R.id.tblSearch);
+        this.txtSearch = this.findViewById(R.id.txtSearch);
+        this.cmdSearch = this.findViewById(R.id.cmdSearch);
+
         this.lvProjects = this.findViewById(R.id.lvProjects);
         this.txtProjectTitle = this.findViewById(R.id.txtProjectTitle);
         this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
@@ -236,6 +254,12 @@ public final class ProjectActivity extends AbstractActivity {
         this.permissions = this.bugService.getPermissions();
 
         this.updateUITrackerSpecific();
+
+        String search = "";
+        if(this.bugService.getAuthentication().getHints().containsKey(SearchAll.SEARCH)) {
+            search = this.bugService.getAuthentication().getHints().get(SearchAll.SEARCH);
+        }
+        this.txtSearch.setText(search);
     }
 
     @Override
@@ -287,7 +311,17 @@ public final class ProjectActivity extends AbstractActivity {
     protected void reload() {
         try {
             if (this.permissions.listProjects()) {
-                ProjectTask task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+                ProjectTask task;
+                if(this.tblSearch.getVisibility() == View.VISIBLE) {
+                    String search = "";
+                    if(this.bugService.getAuthentication().getHints().containsKey(SearchAll.SEARCH)) {
+                        search = this.bugService.getAuthentication().getHints().get(SearchAll.SEARCH);
+                    }
+
+                    task = new ProjectTask(search, ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+                } else {
+                    task = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+                }
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 task.after((AbstractTask.PostExecuteListener<List<Project>>) projects -> {
@@ -486,6 +520,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowProjectVersion.setVisibility(View.GONE);
         this.rowProjectPrivate.setVisibility(View.GONE);
         this.txtProjectDescription.setVisibility(View.VISIBLE);
+        this.tblSearch.setVisibility(View.GONE);
 
         if (tracker != null) {
             switch (tracker) {
@@ -515,6 +550,7 @@ public final class ProjectActivity extends AbstractActivity {
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
+                    this.tblSearch.setVisibility(View.VISIBLE);
                     break;
                 case Jira:
                     this.rowProjectIcon.setVisibility(View.VISIBLE);

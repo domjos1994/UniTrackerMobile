@@ -598,6 +598,15 @@
         <item>Closed</item>
     </array>
 
+    <array name="issues_general_status_github_values_0">
+        <item>10</item>
+        <item>offen</item>
+    </array>
+    <array name="issues_general_status_github_values_1">
+        <item>20</item>
+        <item>geschlossen</item>
+    </array>
+
 
     <array name="issues_general_resolution_values_0">
         <item>10</item>

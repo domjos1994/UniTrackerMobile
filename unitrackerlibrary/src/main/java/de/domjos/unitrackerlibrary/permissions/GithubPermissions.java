@@ -60,12 +60,12 @@ public final class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateVersions() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean deleteVersions() {
-        return false;
+        return true;
     }
 
     @Override
@@ -80,7 +80,7 @@ public final class GithubPermissions implements IFunctionImplemented {
 
     @Override
     public boolean updateIssues() {
-        return false;
+        return true;
     }
 
     @Override

@@ -27,7 +27,6 @@ import org.json.JSONObject;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -37,10 +36,11 @@ import de.domjos.unitrackerlibrary.permissions.GithubPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
 import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 
 public final class Github extends JSONEngine implements IBugService<Long> {
     private Authentication authentication;
-    private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+    public final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     private String username;
 
     public Github(Authentication authentication) {
@@ -72,8 +72,12 @@ public final class Github extends JSONEngine implements IBugService<Long> {
 
     @Override
     public List<Project<Long>> getProjects() throws Exception {
+        return this.getProjects(this.username);
+    }
+
+    public List<Project<Long>> getProjects(String name) throws Exception {
         List<Project<Long>> projects = new LinkedList<>();
-        int status = this.executeRequest("/users/" + this.username + "/repos");
+        int status = this.executeRequest("/users/" + name + "/repos");
 
         if (status == 200 || status == 201) {
             JSONArray versionArray = new JSONArray(this.getCurrentMessage());
@@ -110,6 +114,12 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     @Override
     public Project<Long> getProject(Long id) throws Exception {
         List<Project<Long>> projects = this.getProjects();
+        for (Project<Long> project : projects) {
+            if (project.getId().equals(id)) {
+                return project;
+            }
+        }
+        projects = this.getProjects(this.getAuthentication().getHints().get(SearchAll.SEARCH));
         for (Project<Long> project : projects) {
             if (project.getId().equals(id)) {
                 return project;
@@ -161,7 +171,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         List<Version<Long>> versions = new LinkedList<>();
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
-            int status = this.executeRequest("/repos/" + this.username + "/" + project.getAlias() + "/releases");
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/releases");
 
             if (status == 200 || status == 201) {
                 JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
@@ -170,7 +180,14 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                     Version<Long> version = new Version<>();
                     version.setTitle(jsonObject.getString("name"));
                     version.setDescription(jsonObject.getString("body"));
-                    version.setReleasedVersionAt(ConvertHelper.convertStringToDate(jsonObject.getString("published_at"), Github.DATE_TIME_FORMAT).getTime());
+
+
+                    if(!jsonObject.isNull("published_at")) {
+                        String dt = jsonObject.getString("published_at");
+                        if(!dt.equals("")) {
+                            version.setReleasedVersionAt(ConvertHelper.convertStringToDate(dt, Github.DATE_TIME_FORMAT).getTime());
+                        }
+                    }
                     version.setId(jsonObject.getLong("id"));
                     version.setReleasedVersion(jsonObject.getBoolean("prerelease"));
                     versions.add(version);
@@ -210,7 +227,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     public void deleteVersion(Long id, Long project_id) throws Exception {
         Project<Long> project = this.getProject(project_id);
         if (project != null) {
-            this.deleteRequest("/repos/" + this.username + "/" + project.getTitle() + "/releases/" + id);
+            this.deleteRequest("/repos/" + project.getTitle() + "/releases/" + id);
         }
     }
 
@@ -260,13 +277,15 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         List<Issue<Long>> issues = new LinkedList<>();
         Project<Long> project = this.getProject(project_id);
 
-        String filterQuery = "";
+        String filterQuery;
         if (filter != IssueFilter.all) {
             if (filter == IssueFilter.resolved) {
                 filterQuery = "?state=closed";
             } else {
                 filterQuery = "?state=open";
             }
+        } else {
+            filterQuery = "?state=all";
         }
 
         if (project != null) {
@@ -297,9 +316,14 @@ public final class Github extends JSONEngine implements IBugService<Long> {
                 issue.setId(issueObject.getLong("number"));
                 issue.setTitle(issueObject.getString("title"));
                 issue.setDescription(issueObject.getString("body"));
+
+                int state = issueObject.getString("state").equals("open") ? 10 : 20;
+                issue.setStatus(state, issueObject.getString("state"));
+
                 issue.setLastUpdated(ConvertHelper.convertStringToDate(issueObject.getString("updated_at"), Github.DATE_TIME_FORMAT));
                 issue.setSubmitDate(ConvertHelper.convertStringToDate(issueObject.getString("created_at"), Github.DATE_TIME_FORMAT));
                 issue.setHandler(this.getUser(issueObject.getJSONObject("user")));
+                issue.getNotes().addAll(this.getNotes(id, project_id));
             }
         }
         return issue;
@@ -315,7 +339,48 @@ public final class Github extends JSONEngine implements IBugService<Long> {
             JSONArray jsonArray = new JSONArray();
             jsonArray.put(this.username);
             jsonObject.put("assignees", jsonArray);
-            this.executeRequest("/repos/" + project.getTitle() + "/issues", jsonObject.toString(), "POST");
+            if(issue.getId() == null) {
+                int status = this.executeRequest("/repos/" + project.getTitle() + "/issues", jsonObject.toString(), "POST");
+                if(status == 201) {
+                    JSONObject result = new JSONObject(this.getCurrentMessage());
+                    issue.setId(result.getLong("id"));
+                }
+            } else {
+                jsonObject.put("state", issue.getStatus().getKey()==10 ? "open" : "closed");
+                this.executeRequest("/repos/" + project.getTitle() + "/issues/" + issue.getId(), jsonObject.toString(), "PATCH");
+            }
+            issue.setId(Long.parseLong(String.valueOf(issue.getId())));
+
+            Issue<Long> oldIssue = this.getIssue(issue.getId(), project_id);
+            for(Note<Long> note : oldIssue.getNotes()) {
+                boolean exists = false;
+                for(Note<Long> newNote : issue.getNotes()) {
+                    if(newNote.getId().equals(note.getId())) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if(!exists) {
+                    this.deleteNote(note.getId(), issue.getId(), project_id);
+                }
+            }
+
+            for(Note<Long> note : issue.getNotes()) {
+                boolean exists = false;
+                boolean bodyChanged = false;
+                for(Note<Long> oldNote : oldIssue.getNotes()) {
+                    if(oldNote.getId().equals(note.getId())) {
+                        exists = true;
+                        bodyChanged = !oldNote.getDescription().equals(note.getDescription());
+                        break;
+                    }
+                }
+
+                if(!exists || bodyChanged) {
+                    this.insertOrUpdateNote(note, issue.getId(), project_id);
+                }
+            }
         }
     }
 
@@ -325,18 +390,60 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Note<Long>> getNotes(Long issue_id, Long project_id) {
-        return null;
+    public List<Note<Long>> getNotes(Long issue_id, Long project_id) throws Exception {
+        List<Note<Long>> notes = new LinkedList<>();
+        Project<Long> project = this.getProject(project_id);
+
+        if (project != null) {
+            int status = this.executeRequest("/repos/" + project.getTitle() + "/issues/" + issue_id + "/comments");
+            if (status == 200 || status == 201) {
+                JSONArray noteArray = new JSONArray(this.getCurrentMessage());
+                for(int i = 0; i<=noteArray.length()-1; i++) {
+                    JSONObject noteObject = noteArray.getJSONObject(i);
+
+                    Note<Long> note  = new Note<>();
+                    note.setId(noteObject.getLong("id"));
+                    note.setDescription(noteObject.getString("body"));
+
+                    String createdAt = noteObject.getString("created_at");
+                    if(!createdAt.trim().isEmpty()) {
+                        note.setSubmitDate(ConvertHelper.convertStringToDate(createdAt, Github.DATE_TIME_FORMAT));
+                    }
+
+                    String updatedAt = noteObject.getString("updated_at");
+                    if(!updatedAt.trim().isEmpty()) {
+                        note.setSubmitDate(ConvertHelper.convertStringToDate(updatedAt, Github.DATE_TIME_FORMAT));
+                    }
+                    notes.add(note);
+                }
+            }
+        }
+        return notes;
     }
 
     @Override
-    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) {
+    public void insertOrUpdateNote(Note<Long> note, Long issue_id, Long project_id) throws Exception {
+        Project<Long> project = this.getProject(project_id);
 
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("body", note.getDescription());
+
+        if(project != null) {
+            if(note.getId() == null) {
+                this.executeRequest("/repos/" + project.getTitle() + "/issues/" + issue_id + "/comments", jsonObject.toString(), "POST");
+            } else {
+                this.executeRequest("/repos/" + project.getTitle() + "/issues/comments/" + note.getId(), jsonObject.toString(), "POST");
+            }
+        }
     }
 
     @Override
-    public void deleteNote(Long id, Long issue_id, Long project_id) {
+    public void deleteNote(Long id, Long issue_id, Long project_id) throws Exception {
+        Project<Long> project = this.getProject(project_id);
 
+        if(project != null) {
+            this.deleteRequest("/repos/" + project.getTitle() + "/issues/comments/" + id);
+        }
     }
 
     @Override
@@ -455,7 +562,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     @NonNull
     @Override
     public String toString() {
-        return this.getAuthentication().getTitle();
+        return this.authentication.getTitle();
     }
 
     private User<Long> getUser(JSONObject jsonObject) throws Exception {

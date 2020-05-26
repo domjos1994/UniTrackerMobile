@@ -26,13 +26,23 @@ import java.util.List;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 
 public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Project>> {
     private boolean delete;
+    private String search;
 
     public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
         this.delete = delete;
+        this.search = "";
+    }
+
+    public ProjectTask(String search, Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
+        super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
+        this.delete = delete;
+        this.search = search;
     }
 
     @Override
@@ -47,13 +57,18 @@ public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Pro
                     if (this.delete) {
                         super.bugService.deleteProject(super.returnTemp(project));
                     } else {
-                        result.addAll(super.bugService.getProjects());
+                        if(super.bugService.getAuthentication().getTracker() != Authentication.Tracker.Github) {
+                            result.addAll(super.bugService.getProjects());
+                        } else {
+                            if(!this.search.isEmpty()) {
+                                result.addAll(new SearchAll(super.bugService.getAuthentication()).getProjects(this.search));
+                            }
+                            result.addAll(super.bugService.getProjects());
+                        }
                     }
                 }
             }
-            if(!bugService.getCurrentMessage().trim().isEmpty()) {
-                super.printMessage(bugService.getCurrentMessage());
-            }
+            super.printResult();
         } catch (Exception ex) {
             super.printException(ex);
         }

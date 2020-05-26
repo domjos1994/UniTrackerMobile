@@ -57,9 +57,7 @@ public final class VersionTask extends CustomAbstractTask<Object, Void, List<Ver
                         }
                     }
                 }
-                if(!bugService.getCurrentMessage().trim().isEmpty()) {
-                    super.printMessage(bugService.getCurrentMessage());
-                }
+                super.printResult();
             }
         } catch (Exception ex) {
             super.printException(ex);

@@ -26,33 +26,67 @@ import android.net.Uri;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import net.openid.appauth.AuthorizationRequest;
+import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.AuthorizationService;
 import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
+import net.openid.appauth.TokenRequest;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class OAuthHelper {
     private static final int RESULT = 12345;
 
-    public static void startServiceConfig(String auth, String token, String clientId, Context context, Authentication authentication) {
+    public static void startServiceConfig(Context context, Authentication authentication) {
+        String auth = authentication.getHints().get(Authentication.ENDPOINT_AUTH);
+        String token = authentication.getHints().get(Authentication.ENDPOINT_TOKEN);
+        String clientId = Objects.requireNonNull(authentication.getHints().get(Authentication.PUBLIC_KEY));
+
         AuthorizationServiceConfiguration serviceConfig = new AuthorizationServiceConfiguration(Uri.parse(auth), Uri.parse(token));
         AuthorizationRequest.Builder builder = new AuthorizationRequest.Builder(serviceConfig, clientId, ResponseTypeValues.CODE, Uri.parse("app://de.domjos.unitrackermobile"));
-        AuthorizationRequest authorizationRequest = builder.build();
+        AuthorizationRequest authorizationRequest = builder.setScopes("repo", "user").build();
         AuthorizationService authorizationService = new AuthorizationService(context);
         CustomTabsIntent.Builder intentBuilder = authorizationService.createCustomTabsIntentBuilder(authorizationRequest.toUri());
         CustomTabsIntent customTabsIntent = intentBuilder.build();
         Intent intent = authorizationService.getAuthorizationRequestIntent(authorizationRequest, customTabsIntent);
-        intent.putExtra("name", authentication.getTitle());
-        intent.putExtra("id", authentication.getId());
         ((Activity) context).startActivityForResult(intent, OAuthHelper.RESULT);
     }
 
-    public static String getResult(Intent data) {
-        if(data != null) {
-            if(data.getData() != null) {
-                return data.getData().getQueryParameter("code");
-            }
+    public static String getAccessToken(Intent data, Context context, Authentication authentication) {
+        Uri uri = data.getData();
+
+        if(uri != null) {
+            String auth = authentication.getHints().get(Authentication.ENDPOINT_AUTH);
+            String token = authentication.getHints().get(Authentication.ENDPOINT_TOKEN);
+            String redirect = "app://de.domjos.unitrackermobile";
+            String clientSecret = Objects.requireNonNull(authentication.getHints().get(Authentication.SECRET_KEY));
+            String clientId = Objects.requireNonNull(authentication.getHints().get(Authentication.PUBLIC_KEY));
+            String state = uri.getQueryParameter("state");
+            String code = uri.getQueryParameter("code");
+
+            AuthorizationServiceConfiguration configuration = new AuthorizationServiceConfiguration(Uri.parse(auth), Uri.parse(token));
+            TokenRequest.Builder builder = new TokenRequest.Builder(configuration, clientId);
+            Map<String, String> additional = new LinkedHashMap<>();
+            additional.put("client_secret", clientSecret);
+            additional.put("state", state);
+            builder.setRedirectUri(Uri.parse(redirect)).setAuthorizationCode(code).setAdditionalParameters(additional);
+
+            AtomicReference<String> accessToken = new AtomicReference<>("");
+            new Thread(()-> {
+                AuthorizationService authorizationService = new AuthorizationService(context);
+                authorizationService.performTokenRequest(builder.build(), (response, ex) -> {
+                    if(response != null) {
+                        accessToken.set(response.accessToken);
+                    }
+                });
+            }).start();
+            while (accessToken.get().equals("")) {}
+            return accessToken.get();
         }
         return "";
     }

@@ -25,10 +25,37 @@
     tools:context=".activities.AccountActivity"
     android:background="@drawable/background">
 
+    <TableLayout
+        android:id="@+id/tblSearch"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="10">
+        <TableRow>
+            <EditText
+                android:id="@+id/txtSearch"
+                android:hint="@string/projects_user"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="9"
+                android:autofillHints="@string/projects_user"
+                android:inputType="text" />
+
+            <ImageButton
+                android:id="@+id/cmdSearch"
+                android:contentDescription="@string/projects_user"
+                android:layout_height="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:background="@null"
+                app:srcCompat="@drawable/icon_search"/>
+        </TableRow>
+    </TableLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/tblSearch"
         android:layout_above="@+id/nav_view"
         android:orientation="vertical"
         android:weightSum="20">

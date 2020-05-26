@@ -19,7 +19,6 @@
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
-import android.widget.ProgressBar;
 
 import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -47,6 +46,14 @@ public abstract class CustomAbstractTask<Params, Progress, Result> extends Abstr
                     tmp = o;
                 }
                 return tmp;
+            }
+        }
+    }
+
+    protected void printResult() {
+        if(this.bugService.getCurrentState() >= 400) {
+            if(!this.bugService.getCurrentMessage().trim().isEmpty()) {
+                super.printMessage(this.bugService.getCurrentMessage());
             }
         }
     }

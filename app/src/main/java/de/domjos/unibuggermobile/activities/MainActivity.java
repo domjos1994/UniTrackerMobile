@@ -65,6 +65,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
+import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
@@ -655,7 +656,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.projectList.clear();
             this.projectList.add(new Project());
 
-            ProjectTask task = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+            ProjectTask task;
+            if(this.bugService.getAuthentication().getHints().containsKey(SearchAll.SEARCH)) {
+                String search = this.bugService.getAuthentication().getHints().get(SearchAll.SEARCH);
+                task = new ProjectTask(search, MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+            } else {
+                task = new ProjectTask(MainActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+            }
             task.setId(this.notId);
             List<Project> projects = task.execute(0).get();
             this.notId = task.getId();
@@ -685,6 +692,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.fillFields();
         }
         if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_PROJECTS) {
+            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
             this.reloadProjects();
             this.selectProject();
         }

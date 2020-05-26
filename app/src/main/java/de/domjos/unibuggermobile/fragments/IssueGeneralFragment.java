@@ -503,6 +503,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
             case Github:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
+                this.rowIssueGeneralStatus.setVisibility(View.VISIBLE);
+                this.statusValueArray = "issues_general_status_github_values";
                 break;
             case Jira:
                 this.rowIssueGeneralDates.setVisibility(View.VISIBLE);

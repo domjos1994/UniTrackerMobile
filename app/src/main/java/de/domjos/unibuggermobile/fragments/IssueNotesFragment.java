@@ -138,7 +138,7 @@ public final class IssueNotesFragment extends AbstractFragment {
                 BaseDescriptionObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                 if (listObject != null) {
                     if (id != null) {
-                        if (id.equals(((Attachment)listObject.getObject()).getId())) {
+                        if (id.equals(((Note)listObject.getObject()).getId())) {
                             this.lvIssueNotes.getAdapter().deleteItem(i);
                             break;
                         }
@@ -171,7 +171,7 @@ public final class IssueNotesFragment extends AbstractFragment {
                 for (int i = 0; i <= this.lvIssueNotes.getAdapter().getItemCount() - 1; i++) {
                     BaseDescriptionObject listObject = this.lvIssueNotes.getAdapter().getItem(i);
                     if (listObject != null) {
-                        if (id.equals(((Attachment)listObject.getObject()).getId())) {
+                        if (id.equals(((Note)listObject.getObject()).getId())) {
                             this.lvIssueNotes.getAdapter().deleteItem(i);
                             this.lvIssueNotes.getAdapter().add(baseDescriptionObject);
                             break;

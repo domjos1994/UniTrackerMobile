@@ -47,6 +47,7 @@
     <string name="accounts_github_client_secret">Client ID and Secret(separated by |)</string>
 
     <string name="projects">Projects</string>
+    <string name="projects_user">Search for User or Organisation</string>
     <string name="projects_alias">Alias</string>
     <string name="projects_private">Private</string>
     <string name="projects_state">State</string>
