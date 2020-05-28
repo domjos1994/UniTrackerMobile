@@ -466,17 +466,17 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
-    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 
     @Override
-    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 

@@ -1,2 +1,1 @@
-- schließbare Tasks
-- bessere Diagramme
+- Github als BugTracker
