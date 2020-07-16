@@ -20,6 +20,8 @@ package de.domjos.unitrackerlibrary.services.tracker;
 
 import android.util.Base64;
 
+import androidx.annotation.NonNull;
+
 import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -973,5 +975,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     @Override
     public List<String> getEnums(String title) {
         return new LinkedList<>();
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return this.getAuthentication().getTitle();
     }
 }

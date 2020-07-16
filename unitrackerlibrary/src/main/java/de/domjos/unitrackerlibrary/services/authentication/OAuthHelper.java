@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 
 import androidx.browser.customtabs.CustomTabsIntent;
 
@@ -31,6 +32,7 @@ import net.openid.appauth.AuthorizationServiceConfiguration;
 import net.openid.appauth.ResponseTypeValues;
 import net.openid.appauth.TokenRequest;
 
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -56,7 +58,7 @@ public class OAuthHelper {
         ((Activity) context).startActivityForResult(intent, OAuthHelper.RESULT);
     }
 
-    public static String getAccessToken(Intent data, Context context, Authentication authentication) {
+    public static void getAccessToken(Intent data, Context context, Authentication authentication, Task.Saver saver) {
         Uri uri = data.getData();
 
         if(uri != null) {
@@ -75,18 +77,41 @@ public class OAuthHelper {
             additional.put("state", state);
             builder.setRedirectUri(Uri.parse(redirect)).setAuthorizationCode(code).setAdditionalParameters(additional);
 
-            AtomicReference<String> accessToken = new AtomicReference<>("");
-            new Thread(()-> {
-                AuthorizationService authorizationService = new AuthorizationService(context);
-                authorizationService.performTokenRequest(builder.build(), (response, ex) -> {
-                    if(response != null) {
-                        accessToken.set(response.accessToken);
-                    }
-                });
-            }).start();
-            while (!accessToken.get().equals("")) {}
-            return accessToken.get();
+            try {
+                Task task = new Task(context, builder, authentication, saver);
+                task.execute().get();
+            } catch (Exception ignored) {}
         }
-        return "";
     }
+
+    private static class Task extends AsyncTask<Void, Void, String> {
+        private WeakReference<Context> context;
+        private TokenRequest.Builder builder;
+        private Authentication authentication;
+        private Saver saver;
+
+        public Task(Context context, TokenRequest.Builder builder, Authentication authentication, Saver saver) {
+            this.context = new WeakReference<>(context);
+            this.builder = builder;
+            this.authentication = authentication;
+            this.saver = saver;
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            AuthorizationService authorizationService = new AuthorizationService(this.context.get());
+            authorizationService.performTokenRequest(this.builder.build(), (response, ex) -> {
+                if(response != null) {
+                    this.authentication.getHints().put("token", response.accessToken);
+                    this.saver.save(this.authentication);
+                }
+            });
+            return "";
+        }
+
+        @FunctionalInterface
+        public interface Saver {
+            void save(Authentication authentication);
+        }
+    };
 }

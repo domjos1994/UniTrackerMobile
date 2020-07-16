@@ -254,11 +254,10 @@ public final class AccountActivity extends AbstractActivity {
         if(AccountActivity.authentication != null) {
             new Thread(() -> {
                 try {
-                    AccountActivity.authentication.getHints().put("token", OAuthHelper.getAccessToken(getIntent(), AccountActivity.this, AccountActivity.authentication));
-                    IBugService bugService = Helper.getCurrentBugService(AccountActivity.authentication, this.getApplicationContext());
-                    bugService.testConnection();
-                    runOnUiThread(() -> MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(AccountActivity.authentication));
-                    AccountActivity.authentication = null;
+                    OAuthHelper.getAccessToken(getIntent(), AccountActivity.this, AccountActivity.authentication, authentication1 -> {
+                        MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(authentication1);
+                        AccountActivity.authentication = null;
+                    });
                 } catch (Exception ex) {
                     System.out.println(ex.getMessage());
                 }

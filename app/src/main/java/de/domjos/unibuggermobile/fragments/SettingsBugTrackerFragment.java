@@ -23,6 +23,7 @@ import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import de.domjos.unibuggermobile.R;
 
