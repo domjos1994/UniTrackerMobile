@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.cache.CacheGlobals;
+import de.domjos.unitrackerlibrary.cache.VersionCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
@@ -49,11 +51,18 @@ public final class VersionTask extends CustomAbstractTask<Object, Void, List<Ver
                 for (Object version : versions) {
                     if (version instanceof Version) {
                         super.bugService.insertOrUpdateVersion((Version) version, pid);
+                        CacheGlobals.reload = true;
                     } else {
                         if (this.delete) {
                             super.bugService.deleteVersion(super.returnTemp(version), pid);
+                            CacheGlobals.reload = true;
                         } else {
-                            result.addAll(super.bugService.getVersions(this.filter, pid));
+                            if(VersionCache.mustReload(bugService.getAuthentication(), pid, this.filter)) {
+                                result.addAll(super.bugService.getVersions(this.filter, pid));
+                                VersionCache.setData(result, bugService.getAuthentication(), pid, filter);
+                            } else {
+                                return VersionCache.getVersions();
+                            }
                         }
                     }
                 }

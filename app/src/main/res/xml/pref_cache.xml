@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="swtUseCache"
+        android:defaultValue="false"
+        android:title="@string/settings_cache_use"
+        android:summary="@string/settings_cache_use_summary" />
+
+    <EditTextPreference
+        android:key="txtReload"
+        android:defaultValue="@string/settings_cache_reload_default"
+        android:digits="-10123456789"
+        android:inputType="number"
+        android:title="@string/settings_cache_reload"
+        android:summary="@string/settings_cache_reload_summary" />
+
+    <SwitchPreference
+        android:key="swtReloadOnPullDown"
+        android:defaultValue="true"
+        android:title="@string/settings_cache_reload_pull_down"
+        android:summary="@string/settings_cache_reload_pull_down_summery" />
+</PreferenceScreen>

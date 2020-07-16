@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.cache.CacheGlobals;
+import de.domjos.unitrackerlibrary.cache.UserCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.User;
 
@@ -47,11 +49,18 @@ public final class UserTask extends CustomAbstractTask<Object, Void, List<User>>
                 for (Object user : objects) {
                     if (user instanceof User) {
                         super.bugService.insertOrUpdateUser((User) user, pid);
+                        CacheGlobals.reload = true;
                     } else {
                         if (this.delete) {
                             super.bugService.deleteUser(super.returnTemp(user), pid);
+                            CacheGlobals.reload = true;
                         } else {
-                            result.addAll(super.bugService.getUsers(pid));
+                            if(UserCache.mustReload(this.bugService.getAuthentication(), this.project_id)) {
+                                result.addAll(super.bugService.getUsers(pid));
+                                UserCache.setData(result, this.bugService.getAuthentication(), this.project_id);
+                            } else {
+                                return UserCache.getUsers();
+                            }
                         }
                     }
                 }

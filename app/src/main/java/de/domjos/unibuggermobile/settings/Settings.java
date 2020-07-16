@@ -154,6 +154,27 @@ public class Settings {
         }
     }
 
+    public boolean useCache() {
+        return this.userPreferences.getBoolean("swtUseCache", false);
+    }
+
+    public int getMinutesReload() {
+        String strNumber = this.userPreferences.getString("txtReload", "30");
+        try {
+            int number = Integer.parseInt(strNumber);
+            if (number < 1) {
+                return 30;
+            }
+            return number;
+        } catch (Exception ex) {
+            return 30;
+        }
+    }
+
+    public boolean pullDownReload() {
+        return this.userPreferences.getBoolean("swtReloadOnPullDown", true);
+    }
+
     public int getReload() {
         String strNumber;
         if (Helper.isInWLan(this.context)) {

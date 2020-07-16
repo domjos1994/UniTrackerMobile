@@ -50,6 +50,7 @@ import com.google.android.material.navigation.NavigationView.OnNavigationItemSel
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.cache.CacheGlobals;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.Relationship;
@@ -282,7 +283,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.lvMainIssues.setOnReloadListener(this::reload);
+        this.lvMainIssues.setOnReloadListener(() -> {
+            CacheGlobals.reload = true;
+            this.reload();
+        });
     }
 
     @Override
@@ -457,6 +461,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     private void executeOnSuccess() {
         try {
+            this.setCacheGlobals();
             this.reloadAccounts();
             this.changeAuthentication();
             this.reloadFilters();
@@ -706,6 +711,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
 
         if(resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_SETTINGS) {
+            this.setCacheGlobals();
             this.bugService = Helper.getCurrentBugService(MainActivity.this);
             this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
             this.reload();
@@ -869,5 +875,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
             }
         }
+    }
+
+    private void setCacheGlobals() {
+        CacheGlobals.useCache = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).useCache();
+        CacheGlobals.minutesToReload = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).getMinutesReload();
+        CacheGlobals.reloadOnPullDown = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).pullDownReload();
     }
 }

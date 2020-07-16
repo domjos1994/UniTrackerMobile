@@ -171,6 +171,15 @@
     <string name="settings_general_list_scroll_summary">Do you want to scroll a list item that is too long for the width of the screen?</string>
     <string name="settings_general_tutorial_title">Show tutorial again</string>
     <string name="settings_general_tutorial_summary">Would you like to show tutorial again?</string>
+    <string name="settings_cache">Cache Settings</string>
+    <string name="settings_cache_summary">Settings for the internal cache of the App</string>
+    <string name="settings_cache_use">Use Cache</string>
+    <string name="settings_cache_use_summary">Choose here whether to use the Cache or reload Data directly from Web.</string>
+    <string name="settings_cache_reload">Reload after x Minutes</string>
+    <string name="settings_cache_reload_summary">After how many Minutes should the data be reloaded by web?</string>
+    <string name="settings_cache_reload_default">30</string>
+    <string name="settings_cache_reload_pull_down">Reloading on pulling the List down</string>
+    <string name="settings_cache_reload_pull_down_summery">Reloading from web on pulling the List down</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Change the bug tracker specific settings here!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>
@@ -179,7 +188,7 @@
     <string name="settings_bug_tracker_mantis_filter">Filter benutzen?</string>
     <string name="settings_bug_tracker_mantis_filter_summary">Filter benutzen oder alle Bugs anzeigen?</string>
     <string name="settings_internet">Internet</string>
-    <string name="settings_internet_summary">Change here the settings, which concerns the synchronization with removed data!</string>
+    <string name="settings_internet_summary">Change here the settings, which concerns the synchronization with the webservice!</string>
     <string name="settings_internet_wlan_reload">"Automatically reload errors in the WLAN  "</string>
     <string name="settings_internet_wlan_reload_summary">Error Automatically reload every x seconds! (-1 to disable automatic reload) when connected to Wlan!</string>
     <string name="settings_internet_mobile_reload">Reload errors in the mobile network automatically</string>

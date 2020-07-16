@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.cache.CacheGlobals;
+import de.domjos.unitrackerlibrary.cache.IssueCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 
@@ -64,6 +66,7 @@ public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue
                     for (Object issue : issues) {
                         if (issue instanceof Issue) {
                             super.bugService.insertOrUpdateIssue((Issue) issue, super.returnTemp(this.project_id));
+                            CacheGlobals.reload = true;
                         } else {
                             if(issue instanceof Boolean) {
                                 if (this.filter.isEmpty()) {
@@ -74,16 +77,22 @@ public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue
                             } else {
                                 if (this.delete) {
                                     super.bugService.deleteIssue(super.returnTemp(issue), super.returnTemp(this.project_id));
+                                    CacheGlobals.reload = true;
                                 } else {
                                     if (this.oneDetailed) {
                                         result.add(super.bugService.getIssue(super.returnTemp(issue), super.returnTemp(this.project_id)));
                                     } else {
-                                        if (this.filter.isEmpty()) {
-                                            result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
-                                            this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), null);
+                                        if(IssueCache.mustReload(this.bugService.getAuthentication(), this.project_id, this.page, this.numberOfItems, this.filter)) {
+                                            if (this.filter.isEmpty()) {
+                                                result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems));
+                                                this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), null);
+                                            } else {
+                                                result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems, IBugService.IssueFilter.valueOf(this.filter)));
+                                                this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), IBugService.IssueFilter.valueOf(this.filter));
+                                            }
+                                            IssueCache.setData(result, this.bugService.getAuthentication(), this.project_id, this.page, this.numberOfItems, this.filter);
                                         } else {
-                                            result.addAll(super.bugService.getIssues(super.returnTemp(this.project_id), this.page, this.numberOfItems, IBugService.IssueFilter.valueOf(this.filter)));
-                                            this.maximum = super.bugService.getMaximumNumberOfIssues(super.returnTemp(this.project_id), IBugService.IssueFilter.valueOf(this.filter));
+                                            return IssueCache.getIssues();
                                         }
                                     }
                                 }

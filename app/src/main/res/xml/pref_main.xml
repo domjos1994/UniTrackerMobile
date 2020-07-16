@@ -29,6 +29,12 @@
         android:summary="@string/settings_general_summary" />
 
     <Preference
+        app:fragment="de.domjos.unibuggermobile.fragments.SettingsCacheFragment"
+        android:icon="@drawable/icon_cache"
+        android:title="@string/settings_cache"
+        android:summary="@string/settings_cache_summary" />
+
+    <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsBugTrackerFragment"
         android:icon="@drawable/icon_issues"
         android:title="@string/settings_bug_tracker"
@@ -36,7 +42,7 @@
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsInternetFragment"
-        android:icon="@drawable/icon_local_sync"
+        android:icon="@drawable/icon_web"
         android:title="@string/settings_internet"
         android:summary="@string/settings_internet_summary" />
 

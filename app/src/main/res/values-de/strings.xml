@@ -168,6 +168,15 @@
     <string name="settings_general_list_scroll_summary">Soll ein, für die Breite des Bildschirmes zu langes Listen-Element gescrollt werden?</string>
     <string name="settings_general_tutorial_title">Tutorial erneut anzeigen!</string>
     <string name="settings_general_tutorial_summary">Wollen Sie das Tutorial erneut anzeigen lassen?</string>
+    <string name="settings_cache">Cache Einstellungen</string>
+    <string name="settings_cache_summary">Einstellungen für den internen Cache der App.</string>
+    <string name="settings_cache_use">Cache benutzen</string>
+    <string name="settings_cache_use_summary">Wählen Sie hier, ob Sie den internen Cache benutzen möchten oder ob Sie alles direkt aus dem Internet laden.</string>
+    <string name="settings_cache_reload">Nach x Minuten neu laden</string>
+    <string name="settings_cache_reload_summary">Nach wie vielen Minuten sollen die Daten neu geladen werden?</string>
+    <string name="settings_cache_reload_default">30</string>
+    <string name="settings_cache_reload_pull_down">Neu laden beim nach unten ziehen</string>
+    <string name="settings_cache_reload_pull_down_summery">Daten aus dem Internet neu laden, wenn die entsprechende Liste nach unten gezogen wird.</string>
     <string name="settings_bug_tracker">Bug-Tracker</string>
     <string name="settings_bug_tracker_summary">Ändern Sie hier die Bug-Tracker spezifischen Einstellungen!</string>
     <string name="settings_bug_tracker_mantis">MantisBT</string>
@@ -176,7 +185,7 @@
     <string name="settings_bug_tracker_mantis_filter">Use Filter?</string>
     <string name="settings_bug_tracker_mantis_filter_summary">Use Filter of Mantis or show all bugs?</string>
     <string name="settings_internet">Internet</string>
-    <string name="settings_internet_summary">Ändern Sie hier die Einstellungen, welche die Synchronisation mit entfernten Daten betrifft!</string>
+    <string name="settings_internet_summary">Ändern Sie hier die Einstellungen, welche die Synchronisation mit den Daten des Webservices betrifft!</string>
     <string name="settings_internet_wlan_reload">Fehler im Wlan automatisch neu laden</string>
     <string name="settings_internet_wlan_reload_summary">Fehler Automatisch alle x Sekunden neu laden! (-1 um automisches Neu-Laden zu deaktivieren), wenn mit Wlan verbunden!</string>
     <string name="settings_internet_mobile_reload">Fehler im mobilen Netz automatisch neu laden</string>

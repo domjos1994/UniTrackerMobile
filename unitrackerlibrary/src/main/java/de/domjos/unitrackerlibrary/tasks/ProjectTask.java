@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.cache.CacheGlobals;
+import de.domjos.unitrackerlibrary.cache.ProjectCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
@@ -53,17 +55,24 @@ public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Pro
             for (Object project : projects) {
                 if (project instanceof Project) {
                     super.bugService.insertOrUpdateProject((Project) project);
+                    CacheGlobals.reload = true;
                 } else {
                     if (this.delete) {
                         super.bugService.deleteProject(super.returnTemp(project));
+                        CacheGlobals.reload = true;
                     } else {
-                        if(super.bugService.getAuthentication().getTracker() != Authentication.Tracker.Github) {
-                            result.addAll(super.bugService.getProjects());
-                        } else {
-                            if(!this.search.isEmpty()) {
-                                result.addAll(new SearchAll(super.bugService.getAuthentication()).getProjects(this.search));
+                        if(ProjectCache.mustReload(super.bugService.getAuthentication())) {
+                            if(super.bugService.getAuthentication().getTracker() != Authentication.Tracker.Github) {
+                                result.addAll(super.bugService.getProjects());
+                            } else {
+                                if(!this.search.isEmpty()) {
+                                    result.addAll(new SearchAll(super.bugService.getAuthentication()).getProjects(this.search));
+                                }
+                                result.addAll(super.bugService.getProjects());
                             }
-                            result.addAll(super.bugService.getProjects());
+                            ProjectCache.setData(result, super.bugService.getAuthentication());
+                        } else {
+                            return ProjectCache.getProjects();
                         }
                     }
                 }
