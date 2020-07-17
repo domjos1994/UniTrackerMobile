@@ -46,12 +46,12 @@ import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class DiagramHelper {
     private final Activity activity;
-    private Map<Authentication, Map<Project, List<Issue>>> data;
+    private Map<Authentication, Map<Project<?>, List<Issue<?>>>> data;
     private List<Authentication> authentications;
     private TimeSpan timeSpan;
     private int year, month;
 
-    public DiagramHelper(Map<Authentication, Map<Project, List<Issue>>> data, Activity activity) {
+    public DiagramHelper(Map<Authentication, Map<Project<?>, List<Issue<?>>>> data, Activity activity) {
         this.data = data;
         this.activity = activity;
         this.timeSpan = TimeSpan.None;
@@ -136,10 +136,10 @@ public class DiagramHelper {
     private void createProjectBarData(BarChart barChart) {
         Random generator = new Random();
         BarData barData = new BarData();
-        Map<Integer, Project> tmp = new LinkedHashMap<>();
+        Map<Integer, Project<?>> tmp = new LinkedHashMap<>();
         int i = 0;
 
-        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+        for (Map.Entry<Authentication, Map<Project<?>, List<Issue<?>>>> accounts : this.data.entrySet()) {
             boolean goOn = false;
             if (this.authentications.isEmpty()) {
                 goOn = true;
@@ -158,12 +158,12 @@ public class DiagramHelper {
 
             if (goOn) {
                 List<BarEntry> barEntries = new LinkedList<>();
-                for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
+                for (Map.Entry<Project<?>, List<Issue<?>>> projects : accounts.getValue().entrySet()) {
                     if (!projects.getValue().isEmpty()) {
                         int counter = 0;
                         switch (this.timeSpan) {
                             case Year:
-                                for (Issue issue : projects.getValue()) {
+                                for (Issue<?> issue : projects.getValue()) {
                                     Calendar calendar = Calendar.getInstance();
                                     calendar.setTime(issue.getLastUpdated());
                                     if (this.year == calendar.get(Calendar.YEAR)) {
@@ -172,7 +172,7 @@ public class DiagramHelper {
                                 }
                                 break;
                             case Month:
-                                for (Issue issue : projects.getValue()) {
+                                for (Issue<?> issue : projects.getValue()) {
                                     Calendar calendar = Calendar.getInstance();
                                     calendar.setTime(issue.getLastUpdated());
                                     if (this.year == calendar.get(Calendar.YEAR) && this.month - 1 == calendar.get(Calendar.MONTH)) {
@@ -201,7 +201,7 @@ public class DiagramHelper {
         axis.setTypeface(Typeface.DEFAULT);
         axis.setGranularity(1f);
         axis.setValueFormatter((value, axis1) -> {
-            Project project = tmp.get((int) value);
+            Project<?> project = tmp.get((int) value);
             return project == null ? "" : project.getTitle();
         });
 
@@ -215,7 +215,7 @@ public class DiagramHelper {
         Map<Integer, Integer> mp = new LinkedHashMap<>();
         int i = 0, current;
 
-        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+        for (Map.Entry<Authentication, Map<Project<?>, List<Issue<?>>>> accounts : this.data.entrySet()) {
             boolean goOn = false;
             if (this.authentications.isEmpty()) {
                 goOn = true;
@@ -233,9 +233,9 @@ public class DiagramHelper {
             }
 
             if(goOn) {
-                for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
+                for (Map.Entry<Project<?>, List<Issue<?>>> projects : accounts.getValue().entrySet()) {
                     mp.clear();
-                    for(Issue issue : projects.getValue()) {
+                    for(Issue<?> issue : projects.getValue()) {
 
                         Calendar calendar = Calendar.getInstance();
                         if(issue.getLastUpdated() != null) {
@@ -326,7 +326,7 @@ public class DiagramHelper {
         Map<Integer, Integer> mp = new LinkedHashMap<>();
         int i = 0, current;
 
-        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+        for (Map.Entry<Authentication, Map<Project<?>, List<Issue<?>>>> accounts : this.data.entrySet()) {
             boolean goOn = false;
             if (this.authentications.isEmpty()) {
                 goOn = true;
@@ -344,9 +344,9 @@ public class DiagramHelper {
             }
 
             if(goOn) {
-                for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
+                for (Map.Entry<Project<?>, List<Issue<?>>> projects : accounts.getValue().entrySet()) {
                     mp.clear();
-                    for(Issue issue : projects.getValue()) {
+                    for(Issue<?> issue : projects.getValue()) {
 
                         Calendar calendar = Calendar.getInstance();
                         if(issue.getLastUpdated() != null) {
@@ -435,7 +435,7 @@ public class DiagramHelper {
         Random generator = new Random();
         LineData lineData = new LineData();
 
-        for (Map.Entry<Authentication, Map<Project, List<Issue>>> accounts : this.data.entrySet()) {
+        for (Map.Entry<Authentication, Map<Project<?>, List<Issue<?>>>> accounts : this.data.entrySet()) {
             boolean goOn = false;
             if (this.authentications.isEmpty()) {
                 goOn = true;
@@ -461,8 +461,8 @@ public class DiagramHelper {
                 switch (this.timeSpan) {
                     case Year:
                         for (int i = 1; i <= 12; i++) {
-                            for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
-                                for (Issue issue : projects.getValue()) {
+                            for (Map.Entry<Project<?>, List<Issue<?>>> projects : accounts.getValue().entrySet()) {
+                                for (Issue<?> issue : projects.getValue()) {
                                     Calendar updated = Calendar.getInstance();
                                     updated.setTime(issue.getLastUpdated());
 
@@ -487,8 +487,8 @@ public class DiagramHelper {
                     case Month:
                         for (int i = 1; i <= ts.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
                             entries.add(new Entry(i, 0));
-                            for (Map.Entry<Project, List<Issue>> projects : accounts.getValue().entrySet()) {
-                                for (Issue issue : projects.getValue()) {
+                            for (Map.Entry<Project<?>, List<Issue<?>>> projects : accounts.getValue().entrySet()) {
+                                for (Issue<?> issue : projects.getValue()) {
                                     Calendar updated = Calendar.getInstance();
                                     updated.setTime(issue.getLastUpdated());
 

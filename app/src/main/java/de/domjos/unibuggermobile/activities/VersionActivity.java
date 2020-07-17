@@ -44,7 +44,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -71,10 +70,10 @@ public final class VersionActivity extends AbstractActivity {
     private TableRow rowVersionReleased, rowVersionDeprecated, rowVersionReleasedAt;
     private LinearLayout rowVersionFilter;
 
-    private IBugService bugService;
+    private IBugService<?> bugService;
     private IFunctionImplemented permissions;
     private Object currentProject;
-    private Version currentVersion;
+    private Version<?> currentVersion;
 
     private Validator versionValidator;
     private Settings settings;
@@ -103,14 +102,14 @@ public final class VersionActivity extends AbstractActivity {
 
         this.lvVersions.setOnDeleteListener(listObject -> {
             try {
-                new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.icon_versions).execute(((Version)listObject.getObject()).getId()).get();
+                new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.icon_versions).execute(((Version<?>)listObject.getObject()).getId()).get();
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
             }
         });
 
         this.lvVersions.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
-            currentVersion = (Version) listObject.getObject();
+            currentVersion = (Version<?>) listObject.getObject();
             objectToControls();
             manageControls(false, false, true);
         });
@@ -255,7 +254,7 @@ public final class VersionActivity extends AbstractActivity {
                         }
                     }
                     VersionTask versionTask = new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), filterAction, R.drawable.icon_versions);
-                    for (Version version : versionTask.execute(0).get()) {
+                    for (Version<?> version : versionTask.execute(0).get()) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(version);
                         baseDescriptionObject.setTitle(version.getTitle());
@@ -288,7 +287,7 @@ public final class VersionActivity extends AbstractActivity {
         this.chkVersionDeprecated.setEnabled(editMode);
 
         if (reset) {
-            this.currentVersion = new Version();
+            this.currentVersion = new Version<>();
             this.objectToControls();
         }
     }

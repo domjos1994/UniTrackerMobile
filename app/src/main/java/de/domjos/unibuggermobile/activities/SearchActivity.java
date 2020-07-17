@@ -52,7 +52,7 @@ public final class SearchActivity extends AbstractActivity {
     private EditText txtSearch;
     private CheckBox chkSearchSummary, chkSearchDescription;
     private MultiAutoCompleteTextView txtSearchProjects, txtSearchVersions;
-    private List<IBugService> bugServices;
+    private List<IBugService<?>> bugServices;
 
     public SearchActivity() {
         super(R.layout.search_activity);
@@ -67,16 +67,16 @@ public final class SearchActivity extends AbstractActivity {
 
         this.lvSearchResults.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener)  listObject -> {
             if (listObject != null) {
-                for (IBugService bugService : bugServices) {
-                    Object title = ((DescriptionObject) listObject.getObject()).getHints().get("title");
+                for (IBugService<?> bugService : bugServices) {
+                    Object title = ((DescriptionObject<?>) listObject.getObject()).getHints().get("title");
                     if (title != null) {
                         if (bugService.getAuthentication().getTitle().trim().equals(title.toString().trim())) {
                             MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentAuthentication(bugService.getAuthentication());
-                            Object project = ((DescriptionObject) listObject.getObject()).getHints().get("project");
+                            Object project = ((DescriptionObject<?>) listObject.getObject()).getHints().get("project");
                             if (project != null) {
                                 MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(project.toString());
                                 Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                                intent.putExtra("id", ((DescriptionObject)listObject.getObject()).getId().toString());
+                                intent.putExtra("id", ((DescriptionObject<?>)listObject.getObject()).getId().toString());
                                 intent.putExtra("pid", project.toString());
                                 startActivity(intent);
                             }
@@ -118,7 +118,7 @@ public final class SearchActivity extends AbstractActivity {
                             MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
                             R.drawable.icon_search
                     );
-            for (DescriptionObject descriptionObject : searchTask.execute(R.drawable.icon_search).get()) {
+            for (DescriptionObject<?> descriptionObject : searchTask.execute(R.drawable.icon_search).get()) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setObject(descriptionObject);
                 baseDescriptionObject.setDescription(descriptionObject.getDescription());
@@ -153,9 +153,9 @@ public final class SearchActivity extends AbstractActivity {
             try {
                 ArrayAdapter<String> projects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-                    IBugService bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
+                    IBugService<?> bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
                     for (Object object : bugService.getProjects()) {
-                        projects.add(((Project) object).getTitle());
+                        projects.add(((Project<?>) object).getTitle());
                     }
                     this.bugServices.add(bugService);
                 }
@@ -172,24 +172,24 @@ public final class SearchActivity extends AbstractActivity {
                 ArrayAdapter<String> versions = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 if (!this.txtSearchProjects.getText().toString().trim().isEmpty()) {
                     List<String> projects = new LinkedList<>(Arrays.asList(this.txtSearchProjects.getText().toString().split(",")));
-                    for (IBugService bugService : this.bugServices) {
+                    for (IBugService<?> bugService : this.bugServices) {
                         for (Object object : bugService.getProjects()) {
-                            Project project = (Project) object;
+                            Project<?> project = (Project<?>) object;
                             for (String title : projects) {
                                 if (project.getTitle().equals(title.trim())) {
                                     for (Object objVersion : project.getVersions()) {
-                                        versions.add(((Version) objVersion).getTitle());
+                                        versions.add(((Version<?>) objVersion).getTitle());
                                     }
                                 }
                             }
                         }
                     }
                 } else {
-                    for (IBugService bugService : this.bugServices) {
+                    for (IBugService<?> bugService : this.bugServices) {
                         for (Object object : bugService.getProjects()) {
-                            Project project = (Project) object;
+                            Project<?> project = (Project<?>) object;
                             for (Object objVersion : project.getVersions()) {
-                                versions.add(((Version) objVersion).getTitle());
+                                versions.add(((Version<?>) objVersion).getTitle());
                             }
                         }
                     }

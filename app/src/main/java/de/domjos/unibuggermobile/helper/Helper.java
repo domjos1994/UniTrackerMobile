@@ -126,12 +126,12 @@ public class Helper {
         }
     }
 
-    public static IBugService getCurrentBugService(Context context) {
+    public static IBugService<?> getCurrentBugService(Context context) {
         return Helper.getCurrentBugService(MainActivity.GLOBALS.getSettings(context).getCurrentAuthentication(), context);
     }
 
-    public static IBugService getCurrentBugService(Authentication authentication, Context context) {
-        IBugService bugService = null;
+    public static IBugService<?> getCurrentBugService(Authentication authentication, Context context) {
+        IBugService<?> bugService = null;
         try {
             if (authentication != null) {
                 switch (authentication.getTracker()) {
@@ -233,7 +233,7 @@ public class Helper {
         }
     }
 
-    public static void showTagDialog(Activity activity, IBugService bugService, boolean show, Object pid, List<BaseDescriptionObject> objects, int notificationId) {
+    public static void showTagDialog(Activity activity, IBugService<?> bugService, boolean show, Object pid, List<BaseDescriptionObject> objects, int notificationId) {
         try {
             Dialog tagDialog = new Dialog(activity);
             tagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -247,8 +247,8 @@ public class Helper {
             cmbTags.setAdapter(tagAdapter);
             tagAdapter.notifyDataSetChanged();
             LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
-            loaderTask.after((AbstractTask.PostExecuteListener<List<Tag>>) o -> {
-                for(Tag tag : o) {
+            loaderTask.after((AbstractTask.PostExecuteListener<List<Tag<?>>>) o -> {
+                for(Tag<?> tag : o) {
                     tagAdapter.add(tag.getTitle());
                 }
             });
@@ -273,7 +273,7 @@ public class Helper {
                     for(BaseDescriptionObject listObject : objects) {
                         IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.icon_issues);
                         issueTask.setId(notificationId);
-                        List<Issue> issues = issueTask.execute(((Issue)listObject.getObject()).getId()).get();
+                        List<Issue<?>> issues = issueTask.execute(((Issue<?>)listObject.getObject()).getId()).get();
 
                         if(issues!=null) {
                             if(!issues.isEmpty()) {
@@ -383,8 +383,7 @@ public class Helper {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public static void showResolveDialog(Activity activity, String array, int position, Issue issue, IBugService bugService, Object pid, boolean show, Runnable runnable, int notificationId) {
+    public static void showResolveDialog(Activity activity, String array, int position, Issue<?> issue, IBugService<?> bugService, Object pid, boolean show, Runnable runnable, int notificationId) {
         try {
             Dialog resolveDialog = new Dialog(activity);
             resolveDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -404,11 +403,11 @@ public class Helper {
                 try {
                     String noteContent = txtDescription.getText().toString();
                     if (!noteContent.isEmpty()) {
-                        Note note = new Note();
+                        Note<?> note = new Note<>();
                         note.setDescription(noteContent);
                         note.setTitle(noteContent);
                         note.setState(10, "öffentlich");
-                        issue.getNotes().add(note);
+                        issue.getNotes().add((Note) note);
                     }
                     issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
 
@@ -528,7 +527,7 @@ public class Helper {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment attachment) {
+    private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment<?> attachment) {
         if (attachment.getContentType().toLowerCase().contains("image") ||
                 attachment.getFilename().toLowerCase().endsWith("png") ||
                 attachment.getFilename().toLowerCase().endsWith("jpg") ||

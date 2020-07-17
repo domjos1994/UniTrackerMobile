@@ -34,11 +34,11 @@ import java.util.List;
 
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 
-public class SuggestionAdapter extends ArrayAdapter<DescriptionObject> {
+public class SuggestionAdapter extends ArrayAdapter<DescriptionObject<?>> {
     private Context context;
-    private List<DescriptionObject> values;
+    private List<DescriptionObject<?>> values;
 
-    public SuggestionAdapter(@NonNull Context context, List<DescriptionObject> values) {
+    public SuggestionAdapter(@NonNull Context context, List<DescriptionObject<?>> values) {
         super(context, android.R.layout.simple_list_item_1);
         this.context = context;
         this.values = values;
@@ -53,7 +53,7 @@ public class SuggestionAdapter extends ArrayAdapter<DescriptionObject> {
                 LayoutInflater inflater = ((Activity) context).getLayoutInflater();
                 view = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
             }
-            DescriptionObject descriptionObject = this.getItem(position);
+            DescriptionObject<?> descriptionObject = this.getItem(position);
             if(descriptionObject != null) {
                 TextView name = view.findViewById(android.R.id.text1);
                 name.setText(descriptionObject.getDescription());
@@ -73,14 +73,14 @@ public class SuggestionAdapter extends ArrayAdapter<DescriptionObject> {
     private Filter nameFilter = new Filter() {
         @Override
         public CharSequence convertResultToString(Object resultValue) {
-            return ((DescriptionObject) resultValue).getTitle();
+            return ((DescriptionObject<?>) resultValue).getTitle();
         }
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<DescriptionObject> descriptionObjects = new LinkedList<>();
+            List<DescriptionObject<?>> descriptionObjects = new LinkedList<>();
             for(int i = 0; i<=SuggestionAdapter.this.values.size()-1; i++) {
-                DescriptionObject descriptionObject = SuggestionAdapter.this.values.get(i);
+                DescriptionObject<?> descriptionObject = SuggestionAdapter.this.values.get(i);
                 if(descriptionObject!=null) {
                     if(constraint != null && descriptionObject.getTitle()!=null) {
                         if(descriptionObject.getTitle().contains(constraint)) {
@@ -97,10 +97,10 @@ public class SuggestionAdapter extends ArrayAdapter<DescriptionObject> {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            List<DescriptionObject> filterList = (LinkedList) results.values;
+            List<DescriptionObject<?>> filterList = (LinkedList) results.values;
             if (results != null && results.count > 0) {
                 clear();
-                for (DescriptionObject descriptionObject : filterList) {
+                for (DescriptionObject<?> descriptionObject : filterList) {
                     add(descriptionObject);
                     notifyDataSetChanged();
                 }

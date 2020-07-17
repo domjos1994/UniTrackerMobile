@@ -94,10 +94,10 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.spIssueNotesView = this.root.findViewById(R.id.spIssueNotesView);
 
         if(this.getContext()!=null) {
-            List<User> users = new LinkedList<>();
-            List<Issue> issues = new LinkedList<>();
+            List<User<?>> users = new LinkedList<>();
+            List<Issue<?>> issues = new LinkedList<>();
             try {
-                IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                IBugService<?> bugService = Helper.getCurrentBugService(this.getActivity());
                 Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 

@@ -81,9 +81,9 @@ public final class ProjectActivity extends AbstractActivity {
     private TableRow rowProjectState, rowSubProjects, rowTimestamps, rowProjectAlias, rowProjectWebsite;
     private TableRow rowProjectEnabled, rowProjectIcon, rowProjectVersion, rowProjectPrivate;
 
-    private IBugService bugService;
+    private IBugService<?> bugService;
     private IFunctionImplemented permissions;
-    private Project currentProject;
+    private Project<?> currentProject;
     private Validator projectValidator;
     private Settings settings;
 
@@ -104,7 +104,7 @@ public final class ProjectActivity extends AbstractActivity {
 
         this.lvProjects.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             if (listObject != null) {
-                currentProject = (Project) listObject.getObject();
+                currentProject = (Project<?>) listObject.getObject();
                 objectToControls();
                 manageControls(false, false, true);
             }
@@ -119,7 +119,7 @@ public final class ProjectActivity extends AbstractActivity {
                     builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
                         try {
                             task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.icon_projects);
-                            task[0].execute(((Project)listObject.getObject()).getId()).get();
+                            task[0].execute(((Project<?>)listObject.getObject()).getId()).get();
                             if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
                                 MessageHelper.printMessage(bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, getApplicationContext());
                             } else {
@@ -302,7 +302,7 @@ public final class ProjectActivity extends AbstractActivity {
         this.txtProjectIconUrl.setEnabled(editMode);
 
         if (reset) {
-            this.currentProject = new Project();
+            this.currentProject = new Project<>();
             this.objectToControls();
         }
     }
@@ -324,8 +324,8 @@ public final class ProjectActivity extends AbstractActivity {
                 }
                 this.lvProjects.getAdapter().clear();
                 ArrayAdapter<String> subProjects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
-                task.after((AbstractTask.PostExecuteListener<List<Project>>) projects -> {
-                    for (Project project : projects) {
+                task.after((AbstractTask.PostExecuteListener<List<Project<?>>>) projects -> {
+                    for (Project<?> project : projects) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(project);
                         baseDescriptionObject.setTitle(project.getTitle());
@@ -355,7 +355,7 @@ public final class ProjectActivity extends AbstractActivity {
         @Override
         protected BaseDescriptionObject doInBackground(Object... voids) {
             BaseDescriptionObject baseDescriptionObject = (BaseDescriptionObject) voids[0];
-            Project project = (Project) voids[1];
+            Project<?> project = (Project<?>) voids[1];
 
             try {
                 baseDescriptionObject.setCover(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
@@ -408,7 +408,7 @@ public final class ProjectActivity extends AbstractActivity {
             this.txtProjectsSubProject.setText("");
             for (Object project : this.currentProject.getSubProjects()) {
                 if (project instanceof Project) {
-                    builder.append(((Project) project).getTitle()).append(",");
+                    builder.append(((Project<?>) project).getTitle()).append(",");
                 }
             }
             this.txtProjectsSubProject.setText(builder.toString());
@@ -435,9 +435,9 @@ public final class ProjectActivity extends AbstractActivity {
                         BaseDescriptionObject object = this.lvProjects.getAdapter().getItem(i);
                         if (object != null) {
                             if (text.equals(object.getTitle())) {
-                                Project project = new Project();
+                                Project project = new Project<>();
                                 project.setTitle(text);
-                                project.setId(((Project)object.getObject()).getId());
+                                project.setId(((Project<?>)object.getObject()).getId());
                                 this.currentProject.getSubProjects().add(project);
                                 break;
                             }
@@ -450,9 +450,9 @@ public final class ProjectActivity extends AbstractActivity {
                     BaseDescriptionObject object = this.lvProjects.getAdapter().getItem(i);
                     if (object != null) {
                         if (text.equals(object.getTitle())) {
-                            Project project = new Project();
+                            Project project = new Project<>();
                             project.setTitle(text);
-                            project.setId(((Project)object.getObject()).getId());
+                            project.setId(((Project<?>)object.getObject()).getId());
                             this.currentProject.getSubProjects().add(project);
                             break;
                         }

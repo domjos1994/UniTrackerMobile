@@ -73,7 +73,7 @@ public final class StatisticsActivity extends AbstractActivity {
     private Spinner spStatisticsDiagram;
     private ArrayAdapter<Authentication> bugTrackerAdapter;
 
-    private Map<Authentication, Map<Project, List<Issue>>> data;
+    private Map<Authentication, Map<Project<?>, List<Issue<?>>>> data;
     private List<Chart<?>> charts;
 
     public StatisticsActivity() {
@@ -262,7 +262,7 @@ public final class StatisticsActivity extends AbstractActivity {
 
 
     private void initData() {
-        List<IBugService> bugServices = new LinkedList<>();
+        List<IBugService<?>> bugServices = new LinkedList<>();
         if (this.spStatisticsBugTracker.getSelectedItem() != null) {
             Authentication selectedItem = (Authentication) this.spStatisticsBugTracker.getSelectedItem();
             if (selectedItem.getId() == null) {
@@ -285,7 +285,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.data.put(auth, data);
             reloadCharts();
         });
-        statisticsTask.after((AbstractTask.PostExecuteListener<Map<Authentication, Map<Project, List<Issue>>>>) result -> MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this));
+        statisticsTask.after((AbstractTask.PostExecuteListener<Map<Authentication, Map<Project<?>, List<Issue<?>>>>>) result -> MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this));
         statisticsTask.execute();
     }
 

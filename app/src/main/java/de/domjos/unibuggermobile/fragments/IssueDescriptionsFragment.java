@@ -53,7 +53,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     private TableRow rowIssueDescriptionsSteps, rowIssueDescriptionsAdditional;
 
     private View root;
-    private Issue issue;
+    private Issue<?> issue;
     private boolean editMode;
 
     @Override
@@ -73,10 +73,10 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         this.txtIssueDescriptionsAdditional = this.root.findViewById(R.id.txtIssueDescriptionsAdditional);
 
         if(this.getContext()!=null) {
-            List<User> users = new LinkedList<>();
-            List<Issue> issues = new LinkedList<>();
+            List<User<?>> users = new LinkedList<>();
+            List<Issue<?>> issues = new LinkedList<>();
             try {
-                IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                IBugService<?> bugService = Helper.getCurrentBugService(this.getActivity());
                 Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 
@@ -112,16 +112,16 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         return this.root;
     }
 
-    static SuggestionAdapter fillAdapter(List<User> users, List<Issue> issues, Activity activity) {
-        List<DescriptionObject> descriptionObjects = new LinkedList<>();
-        for(User user : users) {
-            DescriptionObject descriptionObject = new DescriptionObject();
+    static SuggestionAdapter fillAdapter(List<User<?>> users, List<Issue<?>> issues, Activity activity) {
+        List<DescriptionObject<?>> descriptionObjects = new LinkedList<>();
+        for(User<?> user : users) {
+            DescriptionObject<?> descriptionObject = new DescriptionObject<>();
             descriptionObject.setTitle("@" + user.getTitle());
             descriptionObject.setDescription(user.getRealName());
             descriptionObjects.add(descriptionObject);
         }
-        for(Issue issue : issues) {
-            DescriptionObject descriptionObject = new DescriptionObject();
+        for(Issue<?> issue : issues) {
+            DescriptionObject<?> descriptionObject = new DescriptionObject<>();
             descriptionObject.setTitle("#" + issue.getId());
             descriptionObject.setDescription(issue.getTitle());
             descriptionObjects.add(descriptionObject);

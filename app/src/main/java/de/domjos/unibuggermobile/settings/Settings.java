@@ -74,11 +74,11 @@ public class Settings {
         editor.apply();
     }
 
-    public Project getCurrentProject(Activity activity, IBugService bugService) {
+    public Project<?> getCurrentProject(Activity activity, IBugService<?> bugService) {
         try {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (!title.isEmpty()) {
-                List<Project> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.icon_projects).execute(title).get();
+                List<Project<?>> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.icon_projects).execute(title).get();
                 if (projects.size() >= 1) {
                     return projects.get(0);
                 }
@@ -145,10 +145,7 @@ public class Settings {
         String strNumber = this.userPreferences.getString("txtNumberOfItems", "50");
         try {
             int number = Integer.parseInt(strNumber);
-            if (number < -1) {
-                return -1;
-            }
-            return number;
+            return Math.max(number, -1);
         } catch (Exception ex) {
             return -1;
         }
@@ -184,10 +181,7 @@ public class Settings {
         }
         try {
             int number = Integer.parseInt(strNumber);
-            if (number < -1) {
-                return -1;
-            }
-            return number;
+            return Math.max(number, -1);
         } catch (Exception ex) {
             return -1;
         }

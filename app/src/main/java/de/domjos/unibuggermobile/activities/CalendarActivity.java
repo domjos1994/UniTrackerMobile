@@ -93,7 +93,7 @@ public final class CalendarActivity extends AbstractActivity {
             List<Authentication> accounts = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
             List<IBugService<?>> bugServices = new LinkedList<>();
             for(Authentication account : accounts) {
-                IBugService bugService = Helper.getCurrentBugService(account, this.getApplicationContext());
+                IBugService<?> bugService = Helper.getCurrentBugService(account, this.getApplicationContext());
                 bugServices.add(bugService);
             }
 

@@ -61,11 +61,11 @@ public final class AdministrationActivity extends AbstractActivity {
     private Button cmdCopy, cmdMove;
     private Spinner spBugTracker1, spBugTracker2, spProject1, spProject2, spData1, spDataItem1;
     private ArrayAdapter<Authentication> bugTrackerAdapter1, bugTrackerAdapter2;
-    private ArrayAdapter<Project> projectAdapter1, projectAdapter2;
-    private ArrayAdapter<DescriptionObject> dataItemAdapter1;
+    private ArrayAdapter<Project<?>> projectAdapter1, projectAdapter2;
+    private ArrayAdapter<DescriptionObject<?>> dataItemAdapter1;
     private ArrayAdapter<String> dataAdapter1;
     private CheckBox chkWithIssues, chkAddToProject;
-    private IBugService bugService1, bugService2;
+    private IBugService<?> bugService1, bugService2;
     private ProgressBar pbProcess;
 
     private ArrayAdapter<String> logAdapter;
@@ -92,7 +92,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     boolean showData = false;
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications(), R.drawable.icon_projects);
                     for (Object object : projectTask.execute(0L).get()) {
-                        projectAdapter1.add((Project) object);
+                        projectAdapter1.add((Project<?>) object);
                         showData = true;
                     }
 
@@ -120,7 +120,7 @@ public final class AdministrationActivity extends AbstractActivity {
 
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications(), R.drawable.icon_projects);
                     for (Object object : projectTask.execute(0L).get()) {
-                        projectAdapter2.add((Project) object);
+                        projectAdapter2.add((Project<?>) object);
                     }
                     checkPermissions();
                 } catch (Exception ex) {
@@ -244,7 +244,7 @@ public final class AdministrationActivity extends AbstractActivity {
     private void reloadData1(int data, int projectPosition) {
         try {
             boolean notify = this.settings.showNotifications();
-            Project project1 = this.projectAdapter1.getItem(projectPosition);
+            Project<?> project1 = this.projectAdapter1.getItem(projectPosition);
             if (project1 != null) {
                 this.dataItemAdapter1.clear();
                 switch (data) {
@@ -252,7 +252,7 @@ public final class AdministrationActivity extends AbstractActivity {
                         ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, this.bugService1, false, notify, R.drawable.icon_projects);
                         this.dataItemAdapter1.addAll(projectTask.execute(0L).get());
                         for (int i = 0; i <= dataItemAdapter1.getCount() - 1; i++) {
-                            DescriptionObject descriptionObject = dataItemAdapter1.getItem(i);
+                            DescriptionObject<?> descriptionObject = dataItemAdapter1.getItem(i);
                             if (descriptionObject != null) {
                                 if (descriptionObject.getId().equals(project1.getId())) {
                                     spDataItem1.setSelection(i);
@@ -282,14 +282,14 @@ public final class AdministrationActivity extends AbstractActivity {
             boolean notify = this.settings.showNotifications();
             boolean debug = this.settings.isDebugMode();
 
-            Project project2;
+            Project<?> project2;
             if (this.spProject2.getSelectedItemPosition() != -1) {
                 project2 = this.projectAdapter2.getItem(this.spProject2.getSelectedItemPosition());
             } else {
-                project2 = new Project();
+                project2 = new Project<>();
             }
-            Project project1 = this.projectAdapter1.getItem(this.spProject1.getSelectedItemPosition());
-            DescriptionObject dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
+            Project<?> project1 = this.projectAdapter1.getItem(this.spProject1.getSelectedItemPosition());
+            DescriptionObject<?> dataItem1 = this.dataItemAdapter1.getItem(this.spDataItem1.getSelectedItemPosition());
             int dataPosition = this.spData1.getSelectedItemPosition();
 
             this.administration.setAdminType(move ? Administration.AdminType.move : Administration.AdminType.copy);
@@ -337,7 +337,7 @@ public final class AdministrationActivity extends AbstractActivity {
         }
     }
 
-    private Map<String, Map<String, Long>> getArrays(IBugService bugService) {
+    private Map<String, Map<String, Long>> getArrays(IBugService<?> bugService) {
         Map<String, Map<String, Long>> arrays = new LinkedHashMap<>();
         List<String> types = Arrays.asList("view", "reproducibility", "severity", "priority", "status", "resolution");
 

@@ -52,7 +52,7 @@ public final class LocalSyncActivity extends AbstractActivity {
     private ExpandableListView expLvLocalSync;
     private Spinner spLocalSyncBugTracker, spLocalSyncProjects;
     private ArrayAdapter<Authentication> bugTrackerArrayAdapter;
-    private ArrayAdapter<Project> projectArrayAdapter;
+    private ArrayAdapter<Project<?>> projectArrayAdapter;
     private Settings settings;
     private Activity activity;
 
@@ -152,10 +152,10 @@ public final class LocalSyncActivity extends AbstractActivity {
 
     private void sync() {
         try {
-            IBugService bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(this.spLocalSyncBugTracker.getSelectedItemPosition()), this.activity);
+            IBugService<?> bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(this.spLocalSyncBugTracker.getSelectedItemPosition()), this.activity);
             Object pid = null;
             if (this.spLocalSyncProjects.getSelectedItem() != null) {
-                Project project = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
+                Project<?> project = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
                 if (project != null) {
                     pid = project.getId();
                 }
@@ -175,10 +175,10 @@ public final class LocalSyncActivity extends AbstractActivity {
     private void reloadProjects(int position) throws Exception {
         this.projectArrayAdapter.clear();
         if (position != -1) {
-            this.projectArrayAdapter.add(new Project());
-            IBugService bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(position), getApplicationContext());
+            this.projectArrayAdapter.add(new Project<>());
+            IBugService<?> bugService = Helper.getCurrentBugService(this.bugTrackerArrayAdapter.getItem(position), getApplicationContext());
             ProjectTask projectTask = new ProjectTask(activity, bugService, false, settings.showNotifications(), R.drawable.icon_projects);
-            for (Project project : projectTask.execute(0).get()) {
+            for (Project<?> project : projectTask.execute(0).get()) {
                 this.projectArrayAdapter.add(project);
             }
         }
@@ -206,7 +206,7 @@ public final class LocalSyncActivity extends AbstractActivity {
             if (this.spLocalSyncProjects.getSelectedItemPosition() == -1) {
                 return;
             }
-            Project pro = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
+            Project<?> pro = this.projectArrayAdapter.getItem(this.spLocalSyncProjects.getSelectedItemPosition());
             if (pro == null) {
                 return;
             } else {

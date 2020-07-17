@@ -25,6 +25,46 @@
     <string name="pwd_password2">Confirm Password</string>
     <string name="pwd_submit">Confirm Entry</string>
 
+    <string name="about">About the App</string>
+    <string name="about_content">
+        <![CDATA[
+            <h1>UniTrackerMobile</h1>
+            <h2>General Data</h2>
+            <p>
+                Version: %s<br/>
+                License: GPL V3<br/>
+                Website: https://unitrackermobile.de
+            </p>
+            <h2>Libraries</h2>
+            <ul>
+                <li>KSoap2</li>
+                <li>OkHttp3</li>
+                <li>AppAuth</li>
+                <li>iTextG</li>
+                <li>SQLCipher</li>
+                <li>Android-FilePicker</li>
+                <li>Spotlight</li>
+                <li>MPAndroidChart</li>
+                <li>Github-API</li>
+            </ul>
+            <h2>Copyright</h2>
+            <p>
+                UniTrackerMobile is free software: you can redistribute it and/or modify
+                it under the terms of the GNU General Public License as published by
+                the Free Software Foundation, either version 3 of the License, or
+                (at your option) any later version.<br/><br/>
+
+                UniTrackerMobile is distributed in the hope that it will be useful,
+                but WITHOUT ANY WARRANTY; without even the implied warranty of
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.<br/><br/>
+
+                You should have received a copy of the GNU General Public License
+                along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+            </p>
+        ]]>
+    </string>
+
     <string name="accounts">Accounts</string>
     <string name="accounts_cover" translatable="false">Cover</string>
     <string name="accounts_noAccount">No Account</string>

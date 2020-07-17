@@ -149,7 +149,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
                     UserTask userTask = new UserTask(this.getActivity(), this.bugService, this.pid, false, show, R.drawable.icon_users);
                     userTask.setId(this.notificationId);
-                    List<User> users = userTask.execute(0).get();
+                    List<User<?>> users = userTask.execute(0).get();
                     users.add(0, new User());
 
                     LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Tags);
@@ -616,8 +616,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 if (this.bugService != null) {
                     VersionTask versionTask = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.icon_versions);
                     versionTask.setId(this.notificationId);
-                    List<Version> versions = versionTask.execute(0).get();
-                    for (Version version : versions) {
+                    List<Version<?>> versions = versionTask.execute(0).get();
+                    for (Version<?> version : versions) {
                         arrayAdapter.add(version.getTitle());
                     }
                 }

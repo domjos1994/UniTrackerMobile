@@ -26,4 +26,10 @@
             - kleinere Fehler und Unschönheiten beheben
         ]]>
     </string>
+    <string name="whats_new_1.1">
+        <![CDATA[
+            - Github als BugTracker<br/>
+            - Cache Daten
+        ]]>
+    </string>
 </resources>

@@ -52,10 +52,10 @@ public final class FieldActivity extends AbstractActivity {
     private CheckBox chkFieldNullable;
     private ArrayAdapter<CustomField.Type> fieldTypeAdapter;
 
-    private IBugService bugService;
+    private IBugService<?> bugService;
     private IFunctionImplemented permissions;
-    private Project currentProject;
-    private CustomField currentField;
+    private Project<?> currentProject;
+    private CustomField<?> currentField;
 
     private Validator fieldValidator;
     private Settings settings;
@@ -68,7 +68,7 @@ public final class FieldActivity extends AbstractActivity {
     protected void initActions() {
         this.lvFields.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             if (listObject != null) {
-                currentField = (CustomField) listObject.getObject();
+                currentField = (CustomField<?>) listObject.getObject();
                 manageControls(false, false, true);
                 objectToControls();
             }
@@ -76,7 +76,7 @@ public final class FieldActivity extends AbstractActivity {
 
         this.lvFields.setOnDeleteListener(listObject -> {
             try {
-                new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_custom_fields).execute(((CustomField)listObject.getObject()).getId()).get();
+                new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_custom_fields).execute(((CustomField<?>)listObject.getObject()).getId()).get();
                 manageControls(false, true, false);
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
@@ -92,7 +92,7 @@ public final class FieldActivity extends AbstractActivity {
             this.lvFields.getAdapter().clear();
             if (this.permissions.listCustomFields()) {
                 if(this.currentProject!=null) {
-                    for (CustomField customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(0).get()) {
+                    for (CustomField<?> customField : new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(0).get()) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(customField);
                         baseDescriptionObject.setTitle(customField.getTitle());
@@ -188,7 +188,7 @@ public final class FieldActivity extends AbstractActivity {
         this.chkFieldNullable.setEnabled(editMode);
 
         if (reset) {
-            this.currentField = new CustomField();
+            this.currentField = new CustomField<>();
             this.objectToControls();
         }
     }

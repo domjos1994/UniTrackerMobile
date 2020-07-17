@@ -303,7 +303,7 @@ public final class AccountActivity extends AbstractActivity {
                                                 }
                                             }
                                         }
-                                        IBugService bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+                                        IBugService<?> bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
                                         if (chkAccountGuest.isChecked() || bugService.testConnection()) {
                                             AccountActivity.this.runOnUiThread(() -> {
                                                 MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);

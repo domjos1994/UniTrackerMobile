@@ -65,8 +65,8 @@ public final class ExportActivity extends AbstractActivity {
     private Spinner spBugTracker, spProjects, spData, spExportPath;
     private CheckBox chkShowBackground, chkShowIcon, chkCopyExampleData;
     private ArrayAdapter<String> dataAdapter;
-    private ArrayAdapter<IBugService> bugTrackerAdapter;
-    private ArrayAdapter<Project> projectAdapter;
+    private ArrayAdapter<IBugService<?>> bugTrackerAdapter;
+    private ArrayAdapter<Project<?>> projectAdapter;
     private Settings settings;
     private TableLayout tblControls;
 
@@ -104,9 +104,9 @@ public final class ExportActivity extends AbstractActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 try {
                     projectAdapter.clear();
-                    IBugService bugService = bugTrackerAdapter.getItem(position);
+                    IBugService<?> bugService = bugTrackerAdapter.getItem(position);
                     ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, settings.showNotifications(), R.drawable.icon_projects);
-                    List<Project> projects = projectTask.execute(0).get();
+                    List<Project<?>> projects = projectTask.execute(0).get();
                     projectAdapter.addAll(projects);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, ExportActivity.this);
@@ -158,8 +158,8 @@ public final class ExportActivity extends AbstractActivity {
         this.cmdExport.setOnClickListener(v -> {
             try {
                 boolean notify = this.settings.showNotifications();
-                IBugService bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
-                Project project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
+                IBugService<?> bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
+                Project<?> project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
                 TrackerXML.Type type = TrackerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
                 String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
@@ -186,19 +186,19 @@ public final class ExportActivity extends AbstractActivity {
                     switch (type) {
                         case Projects:
                             ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, notify, R.drawable.icon_projects);
-                            for (Project projects : projectTask.execute(0).get()) {
+                            for (Project<?> projects : projectTask.execute(0).get()) {
                                 objects.add(projects.getId());
                             }
                             break;
                         case Issues:
                             IssueTask issueTask = new IssueTask(ExportActivity.this, bugService, project.getId(), false, false, notify, R.drawable.icon_issues);
-                            for (Issue issue : issueTask.execute(0).get()) {
+                            for (Issue<?> issue : issueTask.execute(0).get()) {
                                 objects.add(issue.getId());
                             }
                             break;
                         case CustomFields:
                             FieldTask fieldTask = new FieldTask(ExportActivity.this, bugService, project.getId(), false, notify, R.drawable.icon_custom_fields);
-                            for (CustomField customField : fieldTask.execute(0).get()) {
+                            for (CustomField<?> customField : fieldTask.execute(0).get()) {
                                 objects.add(customField.getId());
                             }
                             break;
@@ -273,7 +273,7 @@ public final class ExportActivity extends AbstractActivity {
 
     private void loadData() {
         for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            IBugService bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
+            IBugService<?> bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
             this.bugTrackerAdapter.add(bugService);
         }
 

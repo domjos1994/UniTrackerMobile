@@ -50,7 +50,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
     private ImageButton cmdIssuesRelationsAdd, cmdIssuesRelationsEdit, cmdIssuesRelationsDelete, cmdIssuesRelationsCancel, cmdIssuesRelationsSave;
     private AutoCompleteTextView txtIssuesRelationsIssues;
     private Spinner spIssuesRelationsType;
-    private ArrayAdapter<Issue> issuesAdapter;
+    private ArrayAdapter<Issue<?>> issuesAdapter;
     private IBugService bugService;
     private ArrayAdapter<String> relationTypeAdapter;
     private Relationship currentEntry;
@@ -83,9 +83,9 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
 
         if(this.getContext()!=null) {
-            List<Issue> issues = new LinkedList<>();
+            List<Issue<?>> issues = new LinkedList<>();
             try {
-                IBugService bugService = Helper.getCurrentBugService(this.getActivity());
+                IBugService<?> bugService = Helper.getCurrentBugService(this.getActivity());
                 Object pid = MainActivity.GLOBALS.getSettings(this.getActivity()).getCurrentProjectId();
                 boolean show = MainActivity.GLOBALS.getSettings(this.getActivity()).showNotifications();
 
@@ -101,12 +101,12 @@ public final class IssueRelationsFragment extends AbstractFragment {
         }
 
         this.lvIssuesRelations.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
-            currentEntry = (Relationship) listObject.getObject();
+            currentEntry = (Relationship<?>) listObject.getObject();
             manageRelationControls(false, false, true);
         });
 
         this.lvIssuesRelations.setOnDeleteListener(listObject -> {
-            currentEntry = (Relationship) listObject.getObject();
+            currentEntry = (Relationship<?>) listObject.getObject();
             delete();
         });
 
@@ -127,9 +127,9 @@ public final class IssueRelationsFragment extends AbstractFragment {
         this.cmdIssuesRelationsCancel.setOnClickListener(v -> this.manageRelationControls(false, true, false));
 
         this.cmdIssuesRelationsSave.setOnClickListener(v -> {
-            Issue issue = null;
+            Issue<?> issue = null;
             for(int i = 0; i<=this.issuesAdapter.getCount()-1; i++) {
-                Issue tmp = this.issuesAdapter.getItem(i);
+                Issue<?> tmp = this.issuesAdapter.getItem(i);
                 if(tmp!=null) {
                     if(tmp.getTitle().equals(this.txtIssuesRelationsIssues.getText().toString().trim())) {
                         issue = tmp;
@@ -140,7 +140,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
             int index = -1;
             for(int i = 0; i<=this.lvIssuesRelations.getAdapter().getItemCount()-1; i++) {
-                Object id = ((Relationship)this.lvIssuesRelations.getAdapter().getItem(i).getObject()).getId();
+                Object id = ((Relationship<?>)this.lvIssuesRelations.getAdapter().getItem(i).getObject()).getId();
                 Object entryId = currentEntry.getId();
                 if(id != null && entryId != null) {
                     if(entryId.toString().equals(id.toString())) {
@@ -151,7 +151,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
             }
 
             if(issue != null) {
-                Relationship relationship = new Relationship();
+                Relationship relationship = new Relationship<>();
                 if(index != -1) {
                     relationship.setId(((Relationship)this.lvIssuesRelations.getAdapter().getItem(index).getObject()).getId());
                 }

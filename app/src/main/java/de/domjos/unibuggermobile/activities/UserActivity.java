@@ -44,10 +44,10 @@ public final class UserActivity extends AbstractActivity {
     private EditText txtUserPassword, txtUserPasswordRepeat;
     private EditText txtUserName, txtUserFullName, txtUserEmail;
 
-    private IBugService bugService;
+    private IBugService<?> bugService;
     private IFunctionImplemented permissions;
-    private Project currentProject;
-    private User currentUser;
+    private Project<?> currentProject;
+    private User<?> currentUser;
 
     private Validator userValidator;
     private Settings settings;
@@ -61,7 +61,7 @@ public final class UserActivity extends AbstractActivity {
         this.lvUsers.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             if (listObject != null) {
                 if (listObject.getObject() instanceof User) {
-                    currentUser = (User) listObject.getObject();
+                    currentUser = (User<?>) listObject.getObject();
                     objectToControls();
                     manageControls(false, false, true);
                 }
@@ -73,7 +73,7 @@ public final class UserActivity extends AbstractActivity {
         this.lvUsers.setOnDeleteListener(listObject -> {
             if(bugService.getPermissions().deleteUsers()) {
                 try {
-                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_users).execute(((User)listObject.getObject()).getId()).get();
+                    new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_users).execute(((User<?>)listObject.getObject()).getId()).get();
                     manageControls(false, true, false);
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
@@ -88,7 +88,7 @@ public final class UserActivity extends AbstractActivity {
             this.lvUsers.getAdapter().clear();
             if (this.currentProject != null) {
                 if (this.permissions.listUsers()) {
-                    for (User user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_users).execute(0).get()) {
+                    for (User<?> user : new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_users).execute(0).get()) {
                         BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                         baseDescriptionObject.setObject(user);
                         baseDescriptionObject.setTitle(user.getTitle());
@@ -183,7 +183,7 @@ public final class UserActivity extends AbstractActivity {
         this.txtUserPasswordRepeat.setEnabled(editMode);
 
         if (reset) {
-            this.currentUser = new User();
+            this.currentUser = new User<>();
             this.objectToControls();
         }
     }

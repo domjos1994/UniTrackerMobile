@@ -82,14 +82,13 @@ public final class IssueCustomFragment extends AbstractFragment {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
 
         if (this.root != null) {
             for (View view : this.views) {
                 for (Object key : this.issue.getCustomFields().keySet()) {
-                    CustomField customField = (CustomField) key;
+                    CustomField<?> customField = (CustomField<?>) key;
                     boolean isTheId = false;
 
                     if (String.valueOf(view.getId()).equals(String.valueOf(customField.getId()))) {
@@ -146,16 +145,16 @@ public final class IssueCustomFragment extends AbstractFragment {
                     try {
                         FieldTask fieldTask = new FieldTask(getActivity(), Helper.getCurrentBugService(getContext()), pid, false, false, R.drawable.icon_custom_fields);
                         fieldTask.setId(this.notificationId);
-                        List<CustomField> customFields = fieldTask.execute(0).get();
-                        for (CustomField customField : customFields) {
+                        List<CustomField<?>> customFields = fieldTask.execute(0).get();
+                        for (CustomField<?> customField : customFields) {
                             this.issue.getCustomFields().put(customField, "");
                         }
                     } catch (Exception ignored) {
                     }
                 }
                 for (Object object : this.issue.getCustomFields().entrySet()) {
-                    Map.Entry entry = (Map.Entry) object;
-                    CustomField customField = (CustomField) entry.getKey();
+                    Map.Entry<?, ?> entry = (Map.Entry) object;
+                    CustomField<?> customField = (CustomField<?>) entry.getKey();
                     String value = (String) entry.getValue();
 
                     LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 10);

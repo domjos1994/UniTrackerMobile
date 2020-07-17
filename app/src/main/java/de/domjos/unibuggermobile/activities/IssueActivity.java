@@ -45,8 +45,8 @@ public final class IssueActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private PagerAdapter pagerAdapter;
     private String id, pid;
-    private Issue issue;
-    private IBugService bugService;
+    private Issue<?> issue;
+    private IBugService<?> bugService;
     private Settings settings;
 
     public IssueActivity() {
@@ -58,7 +58,6 @@ public final class IssueActivity extends AbstractActivity {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void initControls() {
         int notificationId = 0;
         try {
@@ -69,14 +68,14 @@ public final class IssueActivity extends AbstractActivity {
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
             if (this.id.equals("")) {
                 IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
-                List<Issue> issues = task.execute(0).get();
+                List<Issue<?>> issues = task.execute(0).get();
                 notificationId = task.getId();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
                 }
             } else {
                 IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
-                List<Issue> issues = task.execute(this.id).get();
+                List<Issue<?>> issues = task.execute(this.id).get();
                 notificationId = task.getId();
                 if (issues.size() >= 1) {
                     this.issue = issues.get(0);
@@ -84,7 +83,7 @@ public final class IssueActivity extends AbstractActivity {
             }
 
             if (this.issue == null) {
-                this.issue = new Issue();
+                this.issue = new Issue<>();
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, IssueActivity.this);
@@ -106,12 +105,12 @@ public final class IssueActivity extends AbstractActivity {
                 case R.id.navSave:
                     try {
                         if (this.pagerAdapter.validate()) {
-                            this.issue = (Issue) this.pagerAdapter.getObject();
-                            this.issue.setId(this.id.equals("") ? null : this.id);
+                            this.issue = (Issue<?>) this.pagerAdapter.getObject();
+                            ((Issue)this.issue).setId(this.id.equals("") ? null : this.id);
                             VersionTask versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
-                            List<Version> versions = versionTask.execute(0).get();
+                            List<Version<?>> versions = versionTask.execute(0).get();
                             boolean exists1 = false, exists2 = false, exists3 = false;
-                            for(Version version : versions) {
+                            for(Version<?> version : versions) {
                                 if(version.getTitle().trim().equals(issue.getVersion())) {
                                     exists1 = true;
                                 }
@@ -126,21 +125,21 @@ public final class IssueActivity extends AbstractActivity {
                             if(!exists1) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
                                 versionTask.setId(finalNotificationId);
-                                Version current = new Version();
+                                Version<?> current = new Version<>();
                                 current.setTitle(issue.getVersion());
                                 versionTask.execute(current).get();
                             }
                             if(!exists2) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
                                 versionTask.setId(finalNotificationId);
-                                Version current = new Version();
+                                Version<?> current = new Version<>();
                                 current.setTitle(issue.getFixedInVersion());
                                 versionTask.execute(current).get();
                             }
                             if(!exists3) {
                                 versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
                                 versionTask.setId(finalNotificationId);
-                                Version current = new Version();
+                                Version<?> current = new Version<>();
                                 current.setTitle(issue.getTargetVersion());
                                 versionTask.execute(current).get();
                             }
