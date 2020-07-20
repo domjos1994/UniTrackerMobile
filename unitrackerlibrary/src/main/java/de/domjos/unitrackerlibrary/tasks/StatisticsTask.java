@@ -33,11 +33,11 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
-public final class StatisticsTask extends ProgressBarTask<Void, Map<Authentication, Map<Project, List<Issue>>>> {
-    private List<IBugService> bugServices;
+public final class StatisticsTask extends ProgressBarTask<Void, Map<Authentication, Map<Project<?>, List<Issue<?>>>>> {
+    private List<IBugService<?>> bugServices;
     private Update update;
 
-    public StatisticsTask(Activity activity, List<IBugService> bugServices, boolean showNotifications, int icon, ProgressBar progressBar) {
+    public StatisticsTask(Activity activity, List<IBugService<?>> bugServices, boolean showNotifications, int icon, ProgressBar progressBar) {
         super(activity, R.string.task_statistics_title, R.string.task_statistics_content, showNotifications, icon, progressBar);
 
         this.bugServices = bugServices;
@@ -48,19 +48,18 @@ public final class StatisticsTask extends ProgressBarTask<Void, Map<Authenticati
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Map<Authentication, Map<Project, List<Issue>>> doInBackground(Void... voids) {
-        Map<Authentication, Map<Project, List<Issue>>> data = new LinkedHashMap<>();
+    protected Map<Authentication, Map<Project<?>, List<Issue<?>>>> doInBackground(Void... voids) {
+        Map<Authentication, Map<Project<?>, List<Issue<?>>>> data = new LinkedHashMap<>();
         try {
             for (IBugService bugService : this.bugServices) {
-                Map<Project, List<Issue>> projectMap = new LinkedHashMap<>();
-                List<Project> projects = bugService.getProjects();
-                for (Project project : projects) {
-                    List<Issue> currentIssues = new LinkedList<>();
-                    List<Issue> issues = bugService.getIssues(project.getId());
+                Map<Project<?>, List<Issue<?>>> projectMap = new LinkedHashMap<>();
+                List<Project<?>> projects = bugService.getProjects();
+                for (Project<?> project : projects) {
+                    List<Issue<?>> currentIssues = new LinkedList<>();
+                    List<Issue<?>> issues = bugService.getIssues(project.getId());
                     this.max = issues.size();
                     int counter = 0;
-                    for (Issue issue : issues) {
+                    for (Issue<?> issue : issues) {
                         try {
                             if (issue.getLastUpdated() == null || issue.getHandler() == null) {
                                 currentIssues.add(bugService.getIssue(issue.getId(), project.getId()));
@@ -87,6 +86,6 @@ public final class StatisticsTask extends ProgressBarTask<Void, Map<Authenticati
 
     @FunctionalInterface
     public interface Update {
-        void onUpdate(Authentication authentication, Map<Project, List<Issue>> data);
+        void onUpdate(Authentication authentication, Map<Project<?>, List<Issue<?>>> data);
     }
 }

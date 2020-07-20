@@ -27,11 +27,11 @@ import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
 
-public final class FieldTask extends CustomAbstractTask<Object, Void, List<CustomField>> {
+public final class FieldTask extends CustomAbstractTask<Object, Void, List<CustomField<?>>> {
     private Object project_id;
     private boolean delete;
 
-    public FieldTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
+    public FieldTask(Activity activity, IBugService<?> bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_field_list_title, R.string.task_field_content, showNotifications, icon);
         this.project_id = project_id;
         this.delete = delete;
@@ -39,12 +39,12 @@ public final class FieldTask extends CustomAbstractTask<Object, Void, List<Custo
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<CustomField> doInBackground(Object... customFields) {
-        List<CustomField> result = new LinkedList<>();
+    protected List<CustomField<?>> doInBackground(Object... customFields) {
+        List<CustomField<?>> result = new LinkedList<>();
         try {
             for (Object customField : customFields) {
                 if (customField instanceof CustomField) {
-                    super.bugService.insertOrUpdateCustomField((CustomField) customField, this.project_id);
+                    super.bugService.insertOrUpdateCustomField((CustomField<?>) customField, this.project_id);
                 } else {
                     if (this.delete) {
                         super.bugService.deleteCustomField(super.returnTemp(customField), this.project_id);

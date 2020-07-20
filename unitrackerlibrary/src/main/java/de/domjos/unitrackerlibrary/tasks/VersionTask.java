@@ -29,12 +29,12 @@ import de.domjos.unitrackerlibrary.cache.VersionCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class VersionTask extends CustomAbstractTask<Object, Void, List<Version>> {
+public final class VersionTask extends CustomAbstractTask<Object, Void, List<Version<?>>> {
     private boolean delete;
     private Object project_id;
     private String filter;
 
-    public VersionTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, String filter, int icon) {
+    public VersionTask(Activity activity, IBugService<?> bugService, Object project_id, boolean delete, boolean showNotifications, String filter, int icon) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications, icon);
         this.delete = delete;
         this.project_id = project_id;
@@ -43,14 +43,14 @@ public final class VersionTask extends CustomAbstractTask<Object, Void, List<Ver
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<Version> doInBackground(Object... versions) {
-        List<Version> result = new LinkedList<>();
+    protected List<Version<?>> doInBackground(Object... versions) {
+        List<Version<?>> result = new LinkedList<>();
         try {
             Object pid = super.returnTemp(this.project_id);
             if (pid != null) {
                 for (Object version : versions) {
                     if (version instanceof Version) {
-                        super.bugService.insertOrUpdateVersion((Version) version, pid);
+                        super.bugService.insertOrUpdateVersion((Version<?>) version, pid);
                         CacheGlobals.reload = true;
                     } else {
                         if (this.delete) {

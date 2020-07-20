@@ -29,11 +29,11 @@ import de.domjos.unitrackerlibrary.cache.UserCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.User;
 
-public final class UserTask extends CustomAbstractTask<Object, Void, List<User>> {
+public final class UserTask extends CustomAbstractTask<Object, Void, List<User<?>>> {
     private Object project_id;
     private boolean delete;
 
-    public UserTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
+    public UserTask(Activity activity, IBugService<?> bugService, Object project_id, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_user_list_title, R.string.task_user_content, showNotifications, icon);
         this.project_id = project_id;
         this.delete = delete;
@@ -41,14 +41,14 @@ public final class UserTask extends CustomAbstractTask<Object, Void, List<User>>
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<User> doInBackground(Object... objects) {
-        List<User> result = new LinkedList<>();
+    protected List<User<?>> doInBackground(Object... objects) {
+        List<User<?>> result = new LinkedList<>();
         try {
             Object pid = this.returnTemp(this.project_id);
             if (pid != null) {
                 for (Object user : objects) {
                     if (user instanceof User) {
-                        super.bugService.insertOrUpdateUser((User) user, pid);
+                        super.bugService.insertOrUpdateUser((User<?>) user, pid);
                         CacheGlobals.reload = true;
                     } else {
                         if (this.delete) {

@@ -9,14 +9,14 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class IssueCache {
-    private static List<Issue> issues = new LinkedList<>();
+    private static List<Issue<?>> issues = new LinkedList<>();
     private static Authentication currentAuth;
     private static Object currentProjectId;
     private static Calendar calendar;
     private static int page, numberOfItems;
     private static String filter = "";
 
-    public static List<Issue> getIssues() {
+    public static List<Issue<?>> getIssues() {
         return IssueCache.issues;
     }
 
@@ -51,7 +51,7 @@ public class IssueCache {
         return true;
     }
 
-    public static void setData(List<Issue> issue, Authentication authentication, Object projectId, int page, int numberOfItems, String filter) {
+    public static void setData(List<Issue<?>> issue, Authentication authentication, Object projectId, int page, int numberOfItems, String filter) {
         IssueCache.issues = issue;
         IssueCache.currentAuth = authentication;
         IssueCache.currentProjectId = projectId;

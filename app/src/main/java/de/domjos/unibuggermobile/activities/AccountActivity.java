@@ -82,6 +82,7 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
+        IntentHelper.loadAd(this);
 
         this.lvAccounts.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());

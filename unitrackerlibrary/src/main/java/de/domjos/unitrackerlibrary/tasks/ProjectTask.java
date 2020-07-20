@@ -31,17 +31,17 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 
-public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Project>> {
+public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Project<?>>> {
     private boolean delete;
     private String search;
 
-    public ProjectTask(Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
+    public ProjectTask(Activity activity, IBugService<?> bugService, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
         this.delete = delete;
         this.search = "";
     }
 
-    public ProjectTask(String search, Activity activity, IBugService bugService, boolean delete, boolean showNotifications, int icon) {
+    public ProjectTask(String search, Activity activity, IBugService<?> bugService, boolean delete, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_project_list_title, R.string.task_project_content, showNotifications, icon);
         this.delete = delete;
         this.search = search;
@@ -49,12 +49,12 @@ public final class ProjectTask extends CustomAbstractTask<Object, Void, List<Pro
 
     @Override
     @SuppressWarnings("unchecked")
-    protected List<Project> doInBackground(Object... projects) {
-        List<Project> result = new LinkedList<>();
+    protected List<Project<?>> doInBackground(Object... projects) {
+        List<Project<?>> result = new LinkedList<>();
         try {
             for (Object project : projects) {
                 if (project instanceof Project) {
-                    super.bugService.insertOrUpdateProject((Project) project);
+                    super.bugService.insertOrUpdateProject((Project<?>) project);
                     CacheGlobals.reload = true;
                 } else {
                     if (this.delete) {

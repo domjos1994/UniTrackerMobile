@@ -29,7 +29,7 @@ import de.domjos.unitrackerlibrary.cache.IssueCache;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 
-public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue>> {
+public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue<?>>> {
     private boolean delete;
     private boolean oneDetailed;
     private Object project_id;
@@ -37,11 +37,11 @@ public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue
     private String filter;
     private long maximum;
 
-    public IssueTask(Activity activity, IBugService bugService, Object project_id, boolean delete, boolean oneDetailed, boolean showNotifications, int icon) {
+    public IssueTask(Activity activity, IBugService<?> bugService, Object project_id, boolean delete, boolean oneDetailed, boolean showNotifications, int icon) {
         this(activity, bugService, project_id, 1, -1, "", delete, oneDetailed, showNotifications, icon);
     }
 
-    public IssueTask(Activity activity, IBugService bugService, Object project_id, int page, int numberOfItems, String filter, boolean delete, boolean oneDetailed, boolean showNotifications, int icon) {
+    public IssueTask(Activity activity, IBugService<?> bugService, Object project_id, int page, int numberOfItems, String filter, boolean delete, boolean oneDetailed, boolean showNotifications, int icon) {
         super(activity, bugService, R.string.task_version_list_title, R.string.task_version_content, showNotifications, icon);
         this.delete = delete;
         this.oneDetailed = oneDetailed;
@@ -58,14 +58,14 @@ public final class IssueTask extends CustomAbstractTask<Object, Void, List<Issue
 
     @Override
     @SuppressWarnings({"unchecked", "CatchMayIgnoreException"})
-    protected List<Issue> doInBackground(Object... issues) {
-        List<Issue> result = new LinkedList<>();
+    protected List<Issue<?>> doInBackground(Object... issues) {
+        List<Issue<?>> result = new LinkedList<>();
         try {
             if (this.project_id != null) {
                 if (!this.project_id.equals("null")) {
                     for (Object issue : issues) {
                         if (issue instanceof Issue) {
-                            super.bugService.insertOrUpdateIssue((Issue) issue, super.returnTemp(this.project_id));
+                            super.bugService.insertOrUpdateIssue((Issue<?>) issue, super.returnTemp(this.project_id));
                             CacheGlobals.reload = true;
                         } else {
                             if(issue instanceof Boolean) {

@@ -9,11 +9,11 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class ProjectCache {
-    private static List<Project> projects = new LinkedList<>();
+    private static List<Project<?>> projects = new LinkedList<>();
     private static Authentication currentAuth;
     private static Calendar calendar;
 
-    public static List<Project> getProjects() {
+    public static List<Project<?>> getProjects() {
         return ProjectCache.projects;
     }
 
@@ -34,7 +34,7 @@ public class ProjectCache {
         return CacheGlobals.timesUp(ProjectCache.calendar);
     }
 
-    public static void setData(List<Project> projects, Authentication authentication) {
+    public static void setData(List<Project<?>> projects, Authentication authentication) {
         ProjectCache.projects = projects;
         ProjectCache.currentAuth = authentication;
         ProjectCache.calendar = GregorianCalendar.getInstance();

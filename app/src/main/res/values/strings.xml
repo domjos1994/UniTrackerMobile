@@ -387,4 +387,7 @@
     <string name="messages_issues_with_max">%s - %s from %s</string>
 
     <string name="messages_no_item">No Entry available!</string>
+
+    <string name="ad_mob_key" translatable="false">ca-app-pub-4983888966373182~7705161676</string>
+    <string name="ad_mob_key_testing" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

@@ -31,13 +31,13 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
-public final class SearchTask extends CustomAbstractTask<Integer, Void, List<DescriptionObject>> {
+public final class SearchTask extends CustomAbstractTask<Integer, Void, List<DescriptionObject<?>>> {
     private String search, projects, versions;
     private boolean summary, description;
-    private final List<DescriptionObject> issues;
-    private final List<IBugService> bugServices;
+    private final List<DescriptionObject<?>> issues;
+    private final List<IBugService<?>> bugServices;
 
-    public SearchTask(Activity activity, String search, boolean summary, boolean description, String projects, String versions, List<IBugService> bugServices, boolean notify, int icon) {
+    public SearchTask(Activity activity, String search, boolean summary, boolean description, String projects, String versions, List<IBugService<?>> bugServices, boolean notify, int icon) {
         super(activity, bugServices.get(0), R.string.task_search_title, R.string.task_search_content, notify, icon);
         this.issues = new LinkedList<>();
         this.bugServices = bugServices;
@@ -49,16 +49,15 @@ public final class SearchTask extends CustomAbstractTask<Integer, Void, List<Des
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected List<DescriptionObject> doInBackground(Integer... issues) {
+    protected List<DescriptionObject<?>> doInBackground(Integer... issues) {
         try {
             List<String> projects = new LinkedList<>(Arrays.asList(this.projects.split(",")));
             List<String> versions = new LinkedList<>(Arrays.asList(this.versions.split(",")));
 
 
-            for (IBugService service : this.bugServices) {
+            for (IBugService<?> service : this.bugServices) {
                 for (Object object : service.getProjects()) {
-                    Project project = (Project) object;
+                    Project<?> project = (Project<?>) object;
 
                     boolean contains = false;
                     if (!this.projects.trim().isEmpty()) {
@@ -67,7 +66,7 @@ public final class SearchTask extends CustomAbstractTask<Integer, Void, List<Des
                                 if (!this.versions.trim().isEmpty()) {
                                     for (String strVersion : versions) {
                                         for (Object objVersion : project.getVersions()) {
-                                            if (((Version) objVersion).getTitle().equals(strVersion.trim())) {
+                                            if (((Version<?>) objVersion).getTitle().equals(strVersion.trim())) {
                                                 contains = true;
                                             }
                                         }
@@ -82,8 +81,8 @@ public final class SearchTask extends CustomAbstractTask<Integer, Void, List<Des
                     }
 
                     if (contains) {
-                        for (Object objIssue : service.getIssues(project.getId())) {
-                            Issue issue = (Issue) objIssue;
+                        for (Object objIssue : ((IBugService)service).getIssues(project.getId())) {
+                            Issue<?> issue = (Issue<?>) objIssue;
                             boolean searchSuccess = false;
 
                             if (summary) {
