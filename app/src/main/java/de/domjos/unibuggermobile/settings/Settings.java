@@ -237,4 +237,19 @@ public class Settings {
         path = path.replace(":", "");
         return path;
     }
+
+    public boolean showAd() {
+        int intentChanges = this.preferences.getInt("showAd", 0);
+        if(intentChanges == 2) {
+            SharedPreferences.Editor editor = this.preferences.edit();
+            editor.putInt("showAd", 0);
+            editor.apply();
+            return true;
+        } else {
+            SharedPreferences.Editor editor = this.preferences.edit();
+            editor.putInt("showAd", ++intentChanges);
+            editor.apply();
+            return false;
+        }
+    }
 }

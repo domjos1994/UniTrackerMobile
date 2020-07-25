@@ -82,7 +82,6 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        IntentHelper.loadAd(this);
 
         this.lvAccounts.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
             this.txtAccountPassword.setTransformationMethod(new PasswordTransformationMethod());
@@ -370,6 +369,11 @@ public final class AccountActivity extends AbstractActivity {
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
 
+        if(this.getIntent() != null) {
+            if(!this.getIntent().hasExtra(OnBoardingHelper.ON_BOARDING)) {
+                IntentHelper.loadAd(this);
+            }
+        }
         OnBoardingHelper.tutorialStep2(AccountActivity.this, () -> this.manageControls(true, true, false), this.findViewById(R.id.tblControls));
     }
 

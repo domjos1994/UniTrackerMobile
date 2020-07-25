@@ -39,7 +39,7 @@ import de.domjos.unibuggermobile.activities.AccountActivity;
 import de.domjos.unibuggermobile.activities.MainActivity;
 
 public class OnBoardingHelper {
-    private static final String ON_BOARDING = "onBoarding";
+    public static final String ON_BOARDING = "onBoarding";
     private static final int ON_BOARDING_ID = 145;
     private static boolean secondSteps;
 

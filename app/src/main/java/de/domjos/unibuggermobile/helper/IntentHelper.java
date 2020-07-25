@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.provider.FileProvider;
 
 import static android.app.Activity.RESULT_OK;
@@ -75,16 +76,18 @@ public class IntentHelper {
     }
 
     public static void loadAd(Context context) {
-        InterstitialAd interstitialAd = new InterstitialAd(context);
-        interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
-        // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
-        interstitialAd.loadAd(new AdRequest.Builder().build());
-        interstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                interstitialAd.show();
-            }
-        });
+        if(MainActivity.GLOBALS.getSettings(context).showAd()) {
+            InterstitialAd interstitialAd = new InterstitialAd(context);
+            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
+            // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
+            interstitialAd.loadAd(new AdRequest.Builder().build());
+            interstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    interstitialAd.show();
+                }
+            });
+        }
     }
 
     private static File saveFile(byte[] bytes, Activity activity) throws Exception {
