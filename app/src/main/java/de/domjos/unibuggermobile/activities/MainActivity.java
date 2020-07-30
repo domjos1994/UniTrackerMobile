@@ -44,8 +44,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
@@ -627,6 +625,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+        }
+
+        if(this.lvMainIssues.getAdapter().getItemCount() == 1) {
+            BaseDescriptionObject baseDescriptionObject = this.lvMainIssues.getAdapter().getItem(0);
+            if(baseDescriptionObject.getTitle().equals(this.getString(R.string.task_loader_title))) {
+                this.lvMainIssues.getAdapter().clear();
+            }
         }
     }
 

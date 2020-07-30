@@ -248,8 +248,10 @@ public class Helper {
             tagAdapter.notifyDataSetChanged();
             LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
             loaderTask.after((AbstractTask.PostExecuteListener<List<Tag<?>>>) o -> {
-                for(Tag<?> tag : o) {
-                    tagAdapter.add(tag.getTitle());
+                if(o != null) {
+                    for(Tag<?> tag : o) {
+                        tagAdapter.add(tag.getTitle());
+                    }
                 }
             });
             loaderTask.execute(pid);
