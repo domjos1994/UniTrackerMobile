@@ -106,24 +106,28 @@ public final class SearchActivity extends AbstractActivity {
 
     private void search() {
         try {
-            SearchTask searchTask =
-                    new SearchTask(
-                            SearchActivity.this,
-                            this.txtSearch.getText().toString(),
-                            this.chkSearchSummary.isChecked(),
-                            this.chkSearchDescription.isChecked(),
-                            this.txtSearchProjects.getText().toString(),
-                            this.txtSearchVersions.getText().toString(),
-                            this.bugServices,
-                            MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
-                            R.drawable.icon_search
-                    );
-            for (DescriptionObject<?> descriptionObject : searchTask.execute(R.drawable.icon_search).get()) {
-                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                baseDescriptionObject.setObject(descriptionObject);
-                baseDescriptionObject.setDescription(descriptionObject.getDescription());
-                baseDescriptionObject.setTitle(descriptionObject.getTitle());
-                this.lvSearchResults.getAdapter().add(baseDescriptionObject);
+            if(this.bugServices != null) {
+                if(!this.bugServices.isEmpty()) {
+                    SearchTask searchTask =
+                            new SearchTask(
+                                    SearchActivity.this,
+                                    this.txtSearch.getText().toString(),
+                                    this.chkSearchSummary.isChecked(),
+                                    this.chkSearchDescription.isChecked(),
+                                    this.txtSearchProjects.getText().toString(),
+                                    this.txtSearchVersions.getText().toString(),
+                                    this.bugServices,
+                                    MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications(),
+                                    R.drawable.icon_search
+                            );
+                    for (DescriptionObject<?> descriptionObject : searchTask.execute(R.drawable.icon_search).get()) {
+                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                        baseDescriptionObject.setObject(descriptionObject);
+                        baseDescriptionObject.setDescription(descriptionObject.getDescription());
+                        baseDescriptionObject.setTitle(descriptionObject.getTitle());
+                        this.lvSearchResults.getAdapter().add(baseDescriptionObject);
+                    }
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, SearchActivity.this);
