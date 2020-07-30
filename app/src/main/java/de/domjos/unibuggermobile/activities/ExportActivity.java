@@ -272,9 +272,12 @@ public final class ExportActivity extends AbstractActivity {
     }
 
     private void loadData() {
-        for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
-            IBugService<?> bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
-            this.bugTrackerAdapter.add(bugService);
+        List<Authentication> accounts = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("");
+        if(accounts != null) {
+            for (Authentication authentication : accounts) {
+                IBugService<?> bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
+                this.bugTrackerAdapter.add(bugService);
+            }
         }
 
         for (TrackerXML.Type type : TrackerXML.Type.values()) {
