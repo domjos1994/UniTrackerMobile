@@ -34,6 +34,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 
@@ -65,6 +66,7 @@ public final class AccountActivity extends AbstractActivity {
     private ArrayAdapter<Authentication.Auth> authAdapter;
     private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
+    private ImageView ivAccountServer;
     private AutoCompleteTextView txtAccountTitle;
     private CheckBox chkAccountGuest;
     private ImageButton cmdAccountImageGallery;
@@ -116,6 +118,7 @@ public final class AccountActivity extends AbstractActivity {
                             txtAccountAPI.setVisibility(View.GONE);
                             txtAccountServer.setText(getString(R.string.accounts_github_server));
                             txtAccountServer.setVisibility(View.GONE);
+                            ivAccountServer.setVisibility(View.GONE);
                             txtAccountAPI.setHint(R.string.accounts_github_client_secret);
                             break;
                         case Bugzilla:
@@ -164,14 +167,27 @@ public final class AccountActivity extends AbstractActivity {
 
         this.cmdAccountImageGallery.setOnClickListener(v -> IntentHelper.openGalleryIntent(AccountActivity.this));
 
-        this.txtAccountImageURL.addTextChangedListener(new TextWatcher() {
+        this.txtAccountServer.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void afterTextChanged(Editable editable) {
+                if(editable.toString().trim().equals(Authentication.Tracker.Local.name()) || editable.toString().trim().startsWith("https://")) {
+                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_close));
+                } else {
+                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_open));
+                }
             }
+        });
+
+        this.txtAccountImageURL.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -359,6 +375,7 @@ public final class AccountActivity extends AbstractActivity {
         List<Authentication.Tracker> ls = Arrays.asList(Authentication.Tracker.values());
         this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_dropdown_item_1line, ls));
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
+        this.ivAccountServer = this.findViewById(R.id.ivAccountServer);
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
         this.txtAccountAPI = this.findViewById(R.id.txtAccountAPI);
@@ -428,6 +445,7 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.setEnabled(!editMode);
         this.txtAccountTitle.setEnabled(editMode);
         this.txtAccountServer.setEnabled(editMode);
+        this.ivAccountServer.setEnabled(editMode);
         this.txtAccountUserName.setEnabled(editMode);
         this.txtAccountPassword.setEnabled(editMode);
         this.txtAccountAPI.setEnabled(editMode);
@@ -514,6 +532,8 @@ public final class AccountActivity extends AbstractActivity {
         // reset server
         this.txtAccountServer.setVisibility(View.VISIBLE);
         this.txtAccountServer.setText("");
+        this.ivAccountServer.setVisibility(View.VISIBLE);
+        this.ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_lock_open));
 
         // reset user
         this.txtAccountUserName.setHint(R.string.accounts_user);
