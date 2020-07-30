@@ -196,10 +196,12 @@ public final class IssueActivity extends AbstractActivity {
         boolean isVisible = this.navigationView.getMenu().getItem(1).isVisible();
         boolean canUpdate = iFunctionImplemented.updateIssues();
         boolean canAdd = iFunctionImplemented.addIssues();
-        if (this.issue.getId() == null) {
-            this.navigationView.setVisibility(canAdd ? View.VISIBLE : View.GONE);
-        } else {
-            this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);
+        if(this.issue != null) {
+            if (this.issue.getId() == null) {
+                this.navigationView.setVisibility(canAdd ? View.VISIBLE : View.GONE);
+            } else {
+                this.navigationView.setVisibility(canUpdate ? View.VISIBLE : View.GONE);
+            }
         }
 
         this.navigationView.getMenu().getItem(1).setEnabled(!editMode);

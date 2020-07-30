@@ -42,14 +42,14 @@ public final class LoaderTask extends CustomAbstractTask<Object, Void, Object> {
                 switch (type) {
                     case Categories:
                         if (id != null) {
-                            return super.bugService.getCategories(id);
+                            return super.bugService.getCategories(super.returnTemp(id));
                         }
                         break;
                     case Profiles:
                         return super.bugService.getProfiles();
                     case Tags:
-                        if (id != null) {
-                            return super.bugService.getTags(id);
+                        if (id != null && !id.equals("null")) {
+                            return super.bugService.getTags(super.returnTemp(id));
                         }
                         break;
                 }
