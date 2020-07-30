@@ -63,7 +63,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
-                    android:text="@string/projects" />
+                    android:text="@string/projects"
+                    android:labelFor="@+id/spMainProjects"/>
                 <TextView
                     android:layout_width="1dp"
                     android:layout_height="match_parent"
@@ -73,7 +74,8 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_margin="1dp"
-                    android:text="@string/filter" />
+                    android:text="@string/filter"
+                    android:labelFor="@+id/spMainFilters" />
             </TableRow>
             <TextView
                 android:layout_width="match_parent"
@@ -128,7 +130,8 @@
             android:layout_margin="10dp"
             android:layout_gravity="end"
             android:layout_alignEnd="@+id/footer"
-            android:layout_above="@+id/footer" />
+            android:layout_above="@+id/footer"
+            android:contentDescription="@string/sys_add"/>
 
         <LinearLayout
             android:id="@+id/footer"
