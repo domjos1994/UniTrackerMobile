@@ -18,11 +18,11 @@
   -->
 
 <resources>
-    <array name="issues_general_view_values_0">
+    <array name="issues_general_view_state_values_0">
         <item>10</item>
         <item>public</item>
     </array>
-    <array name="issues_general_view_values_1">
+    <array name="issues_general_view_state_values_1">
         <item>50</item>
         <item>private</item>
     </array>

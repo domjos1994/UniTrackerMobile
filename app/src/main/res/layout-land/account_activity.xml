@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C)  2019-2020 Domjos
+  ~  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+  ~
+  ~  UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  UniTrackerMobile is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.AccountActivity"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/nav_view"
+        android:orientation="horizontal"
+        android:weightSum="20">
+
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            android:id="@+id/lvAccounts"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:padding="5dp"
+            app:itemIcon="@drawable/icon_accounts"
+            app:listItemBackground="@drawable/background_controls_2"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_selected"
+            app:listItemForeground="@android:color/black"/>
+
+        <ScrollView
+            android:id="@+id/tblControls"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:background="@drawable/background_controls_1"
+            android:padding="5dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="10">
+                <TableRow>
+                    <AutoCompleteTextView
+                        android:id="@+id/txtAccountTitle"
+                        android:inputType="text"
+                        android:hint="@string/general_title"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill"
+                        android:popupBackground="@color/colorAccent" />
+                </TableRow>
+
+                <TableRow>
+                    <TextView
+                        android:text="@string/accounts_tracker"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="@dimen/min_height"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/header_text_size"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/cmbAccountTracker"
+                        android:layout_weight="5"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"/>
+
+                    <CheckBox
+                        android:id="@+id/chkAccountGuest"
+                        android:layout_weight="3"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"
+                        android:text="@string/accounts_guest" />
+                </TableRow>
+
+                <TableRow android:id="@+id/rowAuthentication">
+                    <TextView
+                        android:text="@string/accounts_auth"
+                        android:layout_width="0dp"
+                        android:layout_weight="4"
+                        android:layout_height="@dimen/min_height"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/header_text_size"
+                        android:textStyle="bold" />
+
+                    <Spinner
+                        android:id="@+id/cmbAccountAuthentication"
+                        android:layout_weight="6"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"/>
+                </TableRow>
+
+                <TableRow>
+                    <EditText
+                        android:id="@+id/txtAccountServer"
+                        android:inputType="textUri"
+                        android:hint="@string/accounts_server"
+                        android:layout_weight="9"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill"/>
+                    <ImageView
+                        android:id="@+id/ivAccountServer"
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        app:srcCompat="@drawable/icon_lock_open"
+                        android:contentDescription="@string/accounts_server"
+                        android:scaleType="fitCenter"/>
+                </TableRow>
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtAccountUserName"
+                        android:inputType="text"
+                        android:hint="@string/accounts_user"
+                        android:layout_weight="5"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+
+                    <EditText
+                        android:id="@+id/txtAccountPassword"
+                        android:inputType="textPassword"
+                        android:hint="@string/accounts_pwd"
+                        android:layout_weight="5"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtAccountAPI"
+                        android:inputType="text"
+                        android:hint="@string/accounts_api"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow android:layout_height="48dp">
+
+                    <EditText
+                            android:id="@+id/txtAccountImageURL"
+                            android:inputType="textUri"
+                            android:hint="@string/accounts_image_url"
+                            android:layout_weight="8"
+                            android:layout_width="0dp"
+                            tools:ignore="Autofill"/>
+
+                    <ImageButton
+                            android:id="@+id/cmdAccountImageGallery"
+                            android:contentDescription="@string/accounts_image_gallery"
+                            app:srcCompat="@drawable/icon_images"
+                            android:layout_height="48dp"
+                            android:layout_width="0dp"
+                            android:layout_weight="2"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtAccountExtended"
+                        android:inputType="text"
+                        android:hint="@string/accounts"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtAccountDescription"
+                        android:inputType="textMultiLine"
+                        android:hint="@string/general_description"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+            </TableLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/nav_controls"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

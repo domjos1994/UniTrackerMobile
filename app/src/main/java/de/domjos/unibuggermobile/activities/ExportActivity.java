@@ -187,19 +187,20 @@ public final class ExportActivity extends AbstractActivity {
                         case Projects:
                             ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, notify, R.drawable.icon_projects);
                             for (Project<?> projects : projectTask.execute(0).get()) {
-                                objects.add(projects.getId());
+                                objects.add(projects);
                             }
                             break;
                         case Issues:
                             IssueTask issueTask = new IssueTask(ExportActivity.this, bugService, project.getId(), false, false, notify, R.drawable.icon_issues);
                             for (Issue<?> issue : issueTask.execute(0).get()) {
-                                objects.add(issue.getId());
+                                IssueTask loading = new IssueTask(ExportActivity.this, bugService, project.getId(), false, true, notify, R.drawable.icon);
+                                objects.add(loading.execute(issue.getId()).get());
                             }
                             break;
                         case CustomFields:
                             FieldTask fieldTask = new FieldTask(ExportActivity.this, bugService, project.getId(), false, notify, R.drawable.icon_custom_fields);
                             for (CustomField<?> customField : fieldTask.execute(0).get()) {
-                                objects.add(customField.getId());
+                                objects.add(customField);
                             }
                             break;
                     }

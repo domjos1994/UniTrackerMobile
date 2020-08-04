@@ -36,7 +36,7 @@ import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unibuggermobile.helper.ArrayHelper;
+import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.customwidgets.utils.Validator;
 

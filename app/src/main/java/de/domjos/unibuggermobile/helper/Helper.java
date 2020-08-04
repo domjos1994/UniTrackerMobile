@@ -64,6 +64,7 @@ import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.Tag;
+import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.AzureDevOps;
 import de.domjos.unitrackerlibrary.services.tracker.Backlog;

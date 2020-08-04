@@ -36,7 +36,6 @@ import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.issues.User;
@@ -49,7 +48,7 @@ import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.SuggestionAdapter;
 import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unibuggermobile.helper.ArrayHelper;
+import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.customwidgets.utils.Validator;
 

@@ -51,10 +51,9 @@ import com.google.android.material.navigation.NavigationView.OnNavigationItemSel
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unitrackerlibrary.cache.CacheGlobals;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
-import de.domjos.unitrackerlibrary.model.issues.Note;
-import de.domjos.unitrackerlibrary.model.issues.Relationship;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.LinkedList;
@@ -74,7 +73,7 @@ import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.unibuggermobile.helper.ArrayHelper;
+import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
@@ -429,13 +428,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     issue.setId(null);
                     issue.setTitle(issue.getTitle() + " - Copy");
                     for(int i = 0; i<=issue.getAttachments().size() - 1; i++) {
-                        ((Attachment<?>) issue.getAttachments().get(i)).setId(null);
+                        issue.getAttachments().get(i).setId(null);
                     }
                     for(int i = 0; i<=issue.getNotes().size() - 1; i++) {
-                        ((Note<?>) issue.getNotes().get(i)).setId(null);
+                        issue.getNotes().get(i).setId(null);
                     }
                     for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
-                        ((Relationship<?>) issue.getRelations().get(i)).setId(null);
+                        issue.getRelations().get(i).setId(null);
                     }
                     IssueTask task = new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues);
                     task.setId(notId);
@@ -487,6 +486,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             if(this.firstLogIn) {
                 Helper.showWhatsNewDialog(this);
+            } else {
+                IntentHelper.loadAd(this.getApplicationContext());
             }
             OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
         } catch (Exception ex) {
