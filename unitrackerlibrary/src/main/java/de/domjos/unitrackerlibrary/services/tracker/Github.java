@@ -18,6 +18,8 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import de.domjos.unitrackerlibrary.model.issues.*;
@@ -27,6 +29,7 @@ import org.json.JSONObject;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -561,7 +564,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getEnums(String title) {
+    public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
 

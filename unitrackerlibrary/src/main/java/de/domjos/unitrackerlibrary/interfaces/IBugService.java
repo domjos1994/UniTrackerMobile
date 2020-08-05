@@ -18,6 +18,8 @@
 
 package de.domjos.unitrackerlibrary.interfaces;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -358,10 +360,10 @@ public interface IBugService<T> {
 
     /**
      * Returns a List of Enum-Items by Title
-     * @param title the Title
+     * @param type the type
      * @return List of Enum-Items
      */
-    List<String> getEnums(String title) throws Exception;
+    Map<String, String> getEnums(Type type, Context context) throws Exception;
 
     /**
      * Converts Object to String
@@ -375,5 +377,15 @@ public interface IBugService<T> {
         all,
         resolved,
         unresolved
+    }
+
+    enum Type {
+        view_state,
+        reproducibility,
+        severity,
+        priority,
+        status,
+        resolution,
+        relation
     }
 }

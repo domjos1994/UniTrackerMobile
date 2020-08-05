@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -1023,7 +1024,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public List<String> getEnums(String title) {
+    public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
 

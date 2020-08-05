@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
@@ -973,8 +974,8 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getEnums(String title) {
-        return new LinkedList<>();
+    public Map<String, String> getEnums(Type type, Context context)  {
+        return new LinkedHashMap<>();
     }
 
     @NonNull

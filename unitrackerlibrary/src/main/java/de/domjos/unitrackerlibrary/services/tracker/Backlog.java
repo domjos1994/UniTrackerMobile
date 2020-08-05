@@ -18,6 +18,8 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
+
 import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -802,7 +804,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getEnums(String title) {
+    public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
 

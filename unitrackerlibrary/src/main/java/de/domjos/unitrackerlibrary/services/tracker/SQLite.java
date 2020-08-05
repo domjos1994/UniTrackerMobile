@@ -894,7 +894,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public List<String> getEnums(String title) {
+    public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
 

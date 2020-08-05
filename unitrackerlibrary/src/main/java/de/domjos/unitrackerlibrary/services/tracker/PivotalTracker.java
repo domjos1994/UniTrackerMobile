@@ -18,7 +18,11 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
+
 import de.domjos.unitrackerlibrary.model.issues.*;
+
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -333,6 +337,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                 for (Note<Long> newNote : issue.getNotes()) {
                     if (oldNote.getId().equals(newNote.getId())) {
                         exists = true;
+                        break;
                     }
                 }
                 if (!exists) {
@@ -409,17 +414,17 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     }
 
     @Override
-    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) throws Exception {
+    public List<Relationship<Long>> getBugRelations(Long issue_id, Long project_id) {
         return null;
     }
 
     @Override
-    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void insertOrUpdateBugRelations(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 
     @Override
-    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) throws Exception {
+    public void deleteBugRelation(Relationship<Long> relationship, Long issue_id, Long project_id) {
 
     }
 
@@ -584,7 +589,13 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     }
 
     @Override
-    public List<String> getEnums(String title) {
-        return new LinkedList<>();
+    public Map<String, String> getEnums(Type type, Context context)  {
+        return new LinkedHashMap<>();
+    }
+
+    @NotNull
+    @Override
+    public String toString() {
+        return this.authentication.getTitle();
     }
 }

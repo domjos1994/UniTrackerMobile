@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -894,7 +895,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getEnums(String title) {
+    public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
 

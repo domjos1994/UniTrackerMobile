@@ -16,8 +16,8 @@
  *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-ext.propVersion = 28
-ext.propVersionCode = "1.1.alpha.2"
+ext.propVersion = 29
+ext.propVersionCode = "1.1"
 
 ext.propJavaVersion = "8"
 
@@ -33,7 +33,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
 }
 

@@ -29,7 +29,8 @@
     <string name="whats_new_1.1">
         <![CDATA[
             - Github als BugTracker<br/>
-            - Cache Daten
+            - Cache Daten<br/>
+            - besseres Design
         ]]>
     </string>
 </resources>

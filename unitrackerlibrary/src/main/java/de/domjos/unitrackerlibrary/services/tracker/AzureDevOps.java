@@ -18,6 +18,7 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
 import android.util.Base64;
 
 import org.jetbrains.annotations.NotNull;
@@ -28,6 +29,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -279,7 +281,7 @@ public final class AzureDevOps extends JSONEngine implements IBugService<String>
     }
 
     @Override
-    public List<String> getEnums(String title) throws Exception {
+    public Map<String, String> getEnums(Type type, Context context) throws Exception {
         return null;
     }
 }

@@ -74,7 +74,7 @@ final class ObjectPDF {
         pdfDocument.close();
     }
 
-    static void createChangeLog(List<Issue> issues, String path, byte[] array, byte[] icon, Version version) throws Exception {
+    static void createChangeLog(List<Issue> issues, String path, byte[] array, byte[] icon, Version<?> version) throws Exception {
         Map<String, Font> fonts  = new LinkedHashMap<>();
         fonts.put(H1, new Font(Font.FontFamily.HELVETICA, 18, Font.BOLDITALIC, BaseColor.BLACK));
         fonts.put(H2, new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.BLACK));
@@ -91,12 +91,12 @@ final class ObjectPDF {
     }
 
 
-    private static void saveChangeLogToPDF(List<Issue> issues, Document pdfDocument, Map<String, Font> fonts, Version version) throws Exception {
+    private static void saveChangeLogToPDF(List<Issue> issues, Document pdfDocument, Map<String, Font> fonts, Version<?> version) throws Exception {
         pdfDocument.add(ObjectPDF.addTitle("Changelog of " + version.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
         pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
         List<List<Map.Entry<String, BaseColor>>> bugTable = new LinkedList<>();
-        for(Issue issue : issues) {
+        for(Issue<?> issue : issues) {
             if(issue.getFixedInVersion().trim().equals(version.getTitle().trim())) {
                 ObjectPDF.addRowToTable(String.valueOf(issue.getId()), issue.getTitle(), false, bugTable);
             }
@@ -106,7 +106,7 @@ final class ObjectPDF {
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {
         if(object instanceof Project) {
-            Project project = (Project) object;
+            Project<?> project = (Project<?>) object;
             pdfDocument.add(ObjectPDF.addTitle(project.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -128,7 +128,7 @@ final class ObjectPDF {
                 List<String> header = Arrays.asList("Title", "Description", "Released", "Obsolete");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : project.getVersions()) {
-                    Version version = (Version) obj;
+                    Version<?> version = (Version<?>) obj;
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
                     mp.add(new AbstractMap.SimpleEntry<>(version.getTitle(), BaseColor.LIGHT_GRAY));
                     mp.add(new AbstractMap.SimpleEntry<>(version.getDescription(), BaseColor.LIGHT_GRAY));
@@ -139,7 +139,7 @@ final class ObjectPDF {
                 pdfDocument.add(ObjectPDF.addTable(header, null, cells));
             }
         } else if(object instanceof Issue) {
-            Issue issue = (Issue) object;
+            Issue<?> issue = (Issue<?>) object;
             pdfDocument.add(ObjectPDF.addTitle(issue.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -174,7 +174,7 @@ final class ObjectPDF {
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : issue.getNotes()) {
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
-                    Note note = (Note) obj;
+                    Note<?> note = (Note<?>) obj;
                     mp.add(new AbstractMap.SimpleEntry<>(note.getTitle(), BaseColor.LIGHT_GRAY));
                     mp.add(new AbstractMap.SimpleEntry<>(note.getDescription(), BaseColor.LIGHT_GRAY));
                     cells.add(mp);
@@ -190,9 +190,9 @@ final class ObjectPDF {
                 List<String> headers = Arrays.asList("Title", "Type", "Value");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
                 for(Object obj : issue.getCustomFields().entrySet()) {
-                    Map.Entry entry = (Map.Entry) obj;
+                    Map.Entry<?, ?> entry = (Map.Entry<?, ?>) obj;
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
-                    CustomField customField = (CustomField) entry.getKey();
+                    CustomField<?> customField = (CustomField<?>) entry.getKey();
 
                     mp.add(new AbstractMap.SimpleEntry<>(customField.getTitle(), BaseColor.LIGHT_GRAY));
                     mp.add(new AbstractMap.SimpleEntry<>(customField.getType().name(), BaseColor.LIGHT_GRAY));
@@ -202,7 +202,7 @@ final class ObjectPDF {
                 pdfDocument.add(ObjectPDF.addTable(headers, new float[]{20f, 20f, 60f}, cells));
             }
         } else if(object instanceof CustomField) {
-            CustomField customField = (CustomField) object;
+            CustomField<?> customField = (CustomField<?>) object;
             pdfDocument.add(ObjectPDF.addTitle(customField.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -221,7 +221,7 @@ final class ObjectPDF {
         if(isDate) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.GERMAN);
             if(value instanceof Long) {
-                Long item = (Long) value;
+                long item = (Long) value;
                 if(item != 0) {
                     Date dt = new Date();
                     dt.setTime(item);

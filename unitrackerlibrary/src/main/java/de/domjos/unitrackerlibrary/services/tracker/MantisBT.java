@@ -18,6 +18,8 @@
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import de.domjos.unitrackerlibrary.model.issues.*;
@@ -34,6 +36,7 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.MantisBTPermissions;
+import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.SoapEngine;
 import de.domjos.customwidgets.utils.ConvertHelper;
@@ -90,7 +93,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_projects_get_user_accessible", true);
         Object result = this.getResult(object);
         if (object instanceof Vector) {
-            Vector vector = (Vector) result;
+            Vector<?> vector = (Vector<?>) result;
             if (vector != null) {
                 for (int i = 0; i <= vector.size() - 1; i++) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
@@ -234,7 +237,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             return vector.size();
         }
         return 0;
@@ -272,12 +275,12 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         request.addProperty("page_number", page);
         request.addProperty("per_page", numberOfItems);
 
-        List<String> enumView = this.getEnums("view_states");
-        List<String> enumStatus = this.getEnums("status");
+        Map<String, String> enumView = this.getEnums(Type.view_state, null);
+        Map<String, String> enumStatus = this.getEnums(Type.status, null);
         Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
             for (int i = 0; i <= vector.size() - 1; i++) {
                 if (vector.get(i) instanceof SoapObject) {
@@ -303,11 +306,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                         dt = sdf.parse(soapObject.getPropertyAsString("last_updated"));
                     }
 
-                    for (String enumViewItem : enumView) {
-                        String[] spl = enumViewItem.split(":");
-
-                        if (view.equals(spl[0])) {
-                            view = spl[1].trim();
+                    for (Map.Entry<String, String> entry : enumView.entrySet()) {
+                        if (view.equals(entry.getKey())) {
+                            view = entry.getValue().trim();
                             break;
                         }
                     }
@@ -331,11 +332,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                         continue;
                     }
 
-                    for (String enumStatusItem : enumStatus) {
-                        String[] spl = enumStatusItem.split(":");
-
-                        if (status.equals(spl[0])) {
-                            status = spl[1].trim();
+                    for (Map.Entry<String, String> entry : enumStatus.entrySet()) {
+                        if (status.equals(entry.getKey())) {
+                            status = entry.getValue().trim();
                             break;
                         }
                     }
@@ -464,7 +463,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
                     if (soapObject.hasProperty("notes")) {
                         if (soapObject.getProperty("notes") instanceof Vector) {
-                            Vector vector = (Vector) soapObject.getProperty("notes");
+                            Vector<?> vector = (Vector<?>) soapObject.getProperty("notes");
                             for (int i = 0; i <= vector.size() - 1; i++) {
                                 if (vector.get(i) instanceof SoapObject) {
                                     SoapObject noteObject = (SoapObject) vector.get(i);
@@ -494,7 +493,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
                     if (soapObject.hasProperty("attachments")) {
                         if (soapObject.getProperty("attachments") instanceof Vector) {
-                            Vector vector = (Vector) soapObject.getProperty("attachments");
+                            Vector<?> vector = (Vector<?>) soapObject.getProperty("attachments");
                             for (int i = 0; i <= vector.size() - 1; i++) {
                                 if (vector.get(i) instanceof SoapObject) {
                                     SoapObject attachmentObject = (SoapObject) vector.get(i);
@@ -523,7 +522,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     if (soapObject.hasProperty("custom_fields")) {
                         SoapObject projectObject = (SoapObject) soapObject.getProperty("project");
                         List<CustomField<Long>> customFields = this.getCustomFields(Long.parseLong(projectObject.getPropertyAsString("id")));
-                        Vector vector = (Vector) soapObject.getProperty("custom_fields");
+                        Vector<?> vector = (Vector<?>) soapObject.getProperty("custom_fields");
                         for (int i = 0; i <= vector.size() - 1; i++) {
                             SoapObject fieldObject = (SoapObject) vector.get(i);
                             SoapObject fieldData = (SoapObject) fieldObject.getProperty("field");
@@ -540,7 +539,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     }
 
                     if (soapObject.hasProperty("tags")) {
-                        Vector vector = (Vector) soapObject.getProperty("tags");
+                        Vector<?> vector = (Vector<?>) soapObject.getProperty("tags");
                         for (int i = 0; i <= vector.size() - 1; i++) {
                             issue.setTags(issue.getTags() + ((SoapObject) vector.get(i)).getPropertyAsString("name") + ", ");
                         }
@@ -548,7 +547,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
                     if(showRelations) {
                         if(soapObject.hasProperty("relationships")) {
-                            Vector vector = (Vector) soapObject.getProperty("relationships");
+                            Vector<?> vector = (Vector<?>) soapObject.getProperty("relationships");
                             for(int i = 0; i<= vector.size() - 1; i++) {
                                 SoapObject obj = (SoapObject) vector.get(i);
                                 SoapObject typeObject = (SoapObject)obj.getProperty("type");
@@ -675,7 +674,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             for (String strTag : issue.getTags().split(",")) {
                 if(!strTag.trim().isEmpty()) {
                     if(!tags.isEmpty()) {
-                        for (Tag tag : tags) {
+                        for (Tag<Long> tag : tags) {
                             if (strTag.trim().equals(tag.getTitle())) {
                                 SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
                                 tagObject.addProperty("id", tag.getId());
@@ -723,7 +722,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
             for (Note<Long> oldNote : oldNotes) {
                 boolean available = false;
-                for (Note note : issue.getNotes()) {
+                for (Note<Long> note : issue.getNotes()) {
                     if (oldNote.getId().equals(note.getId())) {
                         available = true;
                         break;
@@ -883,7 +882,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_project_get_users", true);
         object = this.getResult(object);
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject soapObject = (SoapObject) vector.get(i);
                 User<Long> user = new User<>();
@@ -923,7 +922,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
 
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 Object field = vector.get(i);
                 if (field instanceof SoapObject) {
@@ -967,7 +966,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
         SoapObject soapObject = (SoapObject) object;
         if(soapObject!=null) {
-            Vector vector = (Vector) soapObject.getProperty("results");
+            Vector<?> vector = (Vector<?>) soapObject.getProperty("results");
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject tagObject = (SoapObject) vector.get(i);
                 Tag<Long> tag = new Tag<>();
@@ -991,7 +990,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
 
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject soapObject = (SoapObject) vector.get(i);
                 History<Long> history = new History<>();
@@ -1024,7 +1023,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         if (object instanceof SoapObject) {
             SoapObject resultObject = (SoapObject) object;
             if (resultObject.getProperty("results") instanceof Vector) {
-                Vector vector = (Vector) resultObject.getProperty("results");
+                Vector<?> vector = (Vector<?>) resultObject.getProperty("results");
                 for (int i = 0; i <= vector.size() - 1; i++) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
                     Profile<Long> profile = new Profile<>();
@@ -1048,7 +1047,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         object = this.getResult(object);
 
         if (object instanceof Vector) {
-            Vector vector = (Vector) object;
+            Vector<?> vector = (Vector<?>) object;
             for (int i = 0; i <= vector.size() - 1; i++) {
                 Object obj = vector.get(i);
                 if (obj instanceof String) {
@@ -1081,18 +1080,31 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public List<String> getEnums(String title) throws Exception {
-        List<String> lsEnum = new LinkedList<>();
-        String action = "mc_enum_" + title;
-        SoapObject request = new SoapObject(super.soapPath, action);
-        Object object = this.executeAction(request, action, true);
-        object = this.getResult(object);
+    public Map<String, String> getEnums(Type type, Context context) {
+        Map<String, String> lsEnum = new LinkedHashMap<>();
+        try {
+            String action;
+            if(type.name().endsWith("y")) {
+                action = "mc_enum_" + type.name().replace("y", "ies");
+            } else if(!type.name().endsWith("s")) {
+                action = "mc_enum_" + type.name() + "s";
+            } else {
+                action = "mc_enum_" + type.name();
+            }
+            SoapObject request = new SoapObject(super.soapPath, action);
+            Object object = this.executeAction(request, action, true);
+            object = this.getResult(object);
 
-        if (object instanceof Vector) {
-            Vector vector = (Vector) object;
-            for (int i = 0; i <= vector.size() - 1; i++) {
-                SoapObject soapObject = (SoapObject) vector.get(i);
-                lsEnum.add(String.format("%s:%s", soapObject.getPropertyAsString("id"), soapObject.getPropertyAsString("name")));
+            if (object instanceof Vector) {
+                Vector<?> vector = (Vector<?>) object;
+                for (int i = 0; i <= vector.size() - 1; i++) {
+                    SoapObject soapObject = (SoapObject) vector.get(i);
+                    lsEnum.put(soapObject.getPropertyAsString("id"), soapObject.getPropertyAsString("name"));
+                }
+            }
+        } catch (Exception ex) {
+            if(context != null) {
+                return ArrayHelper.getEnums(context, type, this);
             }
         }
 
@@ -1135,7 +1147,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         project.setStatus(name, id);
 
         if (soapObject.hasProperty("subprojects")) {
-            Vector vector = (Vector) soapObject.getProperty("subprojects");
+            Vector<?> vector = (Vector<?>) soapObject.getProperty("subprojects");
 
             for (int i = 0; i <= vector.size() - 1; i++) {
                 project.getSubProjects().add(new Project<>());
@@ -1184,7 +1196,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, action, true);
         Object result = this.getResult(object);
         if (object instanceof Vector) {
-            Vector vector = (Vector) result;
+            Vector<?> vector = (Vector<?>) result;
             if(vector != null) {
                 for (int i = 0; i <= vector.size() - 1; i++) {
                     SoapObject soapObject = (SoapObject) vector.get(i);

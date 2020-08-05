@@ -54,8 +54,13 @@ public class SoapEngine {
         HttpTransportSE transportSE = this.getHttpTransportSE();
         // initialize MarshalBase for sending files
         new MarshalBase64().register(envelope);
-        transportSE.call(this.soapPath + "/" + action, envelope);
-        return envelope.getResponse();
+        try {
+            transportSE.call(this.soapPath + "/" + action, envelope);
+            return envelope.getResponse();
+        } catch (Exception ex) {
+            return null;
+        }
+
     }
 
     protected boolean isWSDLAvailable() {
