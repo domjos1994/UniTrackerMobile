@@ -85,7 +85,7 @@ dependencies {
     implementation "com.google.android.material:material:$propAndroidVersion"
 
     // external libraries
-    implementation 'net.zetetic:android-database-sqlcipher:4.3.0@aar'
+    implementation 'net.zetetic:android-database-sqlcipher:4.4.0'
     implementation 'com.github.angads25:filepicker:1.1.1'
     implementation 'com.github.takusemba:spotlight:1.8.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'

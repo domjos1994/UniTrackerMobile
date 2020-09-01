@@ -38,7 +38,7 @@ buildscript {
 }
 
 def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(new File(projectDir, "../Libraries/customwidgets/github.properties")))
+githubProperties.load(new FileInputStream(new File(projectDir, "../Libraries/customwidgets/credentials/github.properties")))
 
 allprojects {
     repositories {
