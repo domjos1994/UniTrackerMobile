@@ -77,7 +77,6 @@ import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
-import de.domjos.unibuggermobile.spotlight.OnBoardingHelper;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
@@ -99,7 +98,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private IFunctionImplemented permissions;
     private Settings settings;
     private SearchView cmdSearch;
-    private Toolbar toolbar;
     private int page, currentNumberOfItems, notId;
     private long maximum;
 
@@ -165,8 +163,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 changeAuthentication();
                 fillFields();
                 reload();
-
-                OnBoardingHelper.tutorialStep5(MainActivity.this, spMainProjects, drawerLayout, navigationView);
             }
 
             @Override
@@ -295,8 +291,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         try {
             SQLiteDatabase.loadLibs(this);
             // init Toolbar
-            this.toolbar = this.findViewById(R.id.toolbar);
-            this.setSupportActionBar(this.toolbar);
+            Toolbar toolbar = this.findViewById(R.id.toolbar);
+            this.setSupportActionBar(toolbar);
 
             // init Drawer-Layout
             this.drawerLayout = this.findViewById(R.id.drawer_layout);
@@ -489,7 +485,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 IntentHelper.loadAd(this.getApplicationContext());
             }
-            OnBoardingHelper.startTutorial(this.firstLogIn, MainActivity.this, this.toolbar, this.drawerLayout, this.navigationView, this.ivMainCover);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
@@ -730,8 +725,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reload();
             this.changePagination();
         }
-
-        OnBoardingHelper.tutorialStep4(resultCode, requestCode, MainActivity.this, this.spMainAccounts, this::reloadAccounts);
     }
 
     private void changePagination() {

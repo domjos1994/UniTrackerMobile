@@ -38,6 +38,8 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 
+import androidx.core.content.res.ResourcesCompat;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +56,6 @@ import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
-import de.domjos.unibuggermobile.spotlight.OnBoardingHelper;
 
 public final class AccountActivity extends AbstractActivity {
     private static Authentication authentication;
@@ -326,7 +327,6 @@ public final class AccountActivity extends AbstractActivity {
                                                 MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
                                                 this.manageControls(false, true, false);
                                                 this.reload();
-                                                OnBoardingHelper.tutorialStep3(AccountActivity.this);
                                             });
                                         } else {
                                             AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
@@ -386,12 +386,7 @@ public final class AccountActivity extends AbstractActivity {
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
 
-        if(this.getIntent() != null) {
-            if(!this.getIntent().hasExtra(OnBoardingHelper.ON_BOARDING)) {
-                IntentHelper.loadAd(this);
-            }
-        }
-        OnBoardingHelper.tutorialStep2(AccountActivity.this, () -> this.manageControls(true, true, false), this.findViewById(R.id.tblControls));
+        IntentHelper.loadAd(this);
     }
 
     private void fillAuthByTracker(Authentication.Tracker tracker) {
@@ -489,7 +484,7 @@ public final class AccountActivity extends AbstractActivity {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(this.currentAccount.getCover(), 0, this.currentAccount.getCover().length);
                 this.cmdAccountImageGallery.setImageBitmap(bitmap);
             } else {
-                this.cmdAccountImageGallery.setImageDrawable(this.getResources().getDrawable(R.drawable.icon_accounts));
+                this.cmdAccountImageGallery.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon_accounts, this.getTheme()));
             }
 
             if(this.currentAccount.getTracker() == Authentication.Tracker.YouTrack) {

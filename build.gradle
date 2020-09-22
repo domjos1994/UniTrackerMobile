@@ -16,16 +16,21 @@
  *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
+// app-versions
 ext.propVersion = 29
 ext.propVersionCode = "1.1"
 
+// java-level
 ext.propJavaVersion = "8"
 
+// android-versions
 ext.propCompVersion = 29
 ext.propMinVersion = 20
-ext.propAndroidVersion = "1.1.0"
 
-ext.propCustomWidgetsVersion = "3.4.0"
+// libraries
+ext.propAndPreferences = "1.1.1"
+ext.propAndAppCompat = "1.2.0"
+ext.propCustomWidgetsVersion = "3.5.0"
 
 buildscript {
     repositories {
@@ -37,23 +42,12 @@ buildscript {
     }
 }
 
-def githubProperties = new Properties()
-githubProperties.load(new FileInputStream(new File(projectDir, "../Libraries/customwidgets/github.properties")))
-
 allprojects {
     repositories {
         google()
         jcenter()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/domjos1994/Customwidgets")
-            credentials {
-                username = githubProperties['gpr.usr']
-                password = githubProperties['gpr.key']
-            }
-        }
     }
 }
 
