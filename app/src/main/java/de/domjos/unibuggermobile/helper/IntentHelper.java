@@ -78,7 +78,7 @@ public class IntentHelper {
     public static void loadAd(Context context) {
         if(MainActivity.GLOBALS.getSettings(context).showAd()) {
             InterstitialAd interstitialAd = new InterstitialAd(context);
-            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
+            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
             // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
             interstitialAd.loadAd(new AdRequest.Builder().build());
             interstitialAd.setAdListener(new AdListener() {
