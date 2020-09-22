@@ -52,11 +52,6 @@ The Application uses iTextG developed by iText.<br/>
 The Library is licensed under the Apache GNU Affero General Public License version 3.<br/>
 A copy of the License is in the License-Folder.
 
-### Spotlight
-The Application uses Spotlight developed by TakuSemba.<br/>
-The Library is licensed under the Apache License version 2.<br/>
-A copy of the License is in the License-Folder.
-
 ### MPAndroidChart
 The Application uses MPAndroidChart developed by PhilJay.<br/>
 The Library is licensed under the Apache License version 2.<br/>
