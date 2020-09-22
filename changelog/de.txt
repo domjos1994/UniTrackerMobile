@@ -1,3 +1,0 @@
-- Github als BugTracker
-- Cache Daten
-- besseres Design
