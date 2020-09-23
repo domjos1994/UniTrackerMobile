@@ -577,7 +577,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
         }
 
         this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));
-        this.spIssueGeneralView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
+        this.spIssueGeneralView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_state_values"));
         this.spIssueGeneralResolution.setAdapter(Helper.setAdapter(this.getContext(), this.resolutionValueArray));
         this.spIssueGeneralStatus.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
         this.spIssueGeneralReproducibility.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_reproducibility_values"));
