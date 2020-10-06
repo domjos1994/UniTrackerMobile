@@ -36,9 +36,11 @@ import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.helper.SpinnerItem;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -260,6 +262,13 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.issue = (Issue) descriptionObject;
     }
 
+    private SpinnerItem getData(Spinner spinner) {
+        if(spinner.getSelectedItem() instanceof SpinnerItem) {
+            return (SpinnerItem) spinner.getSelectedItem();
+        }
+        return new SpinnerItem(0, "");
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
@@ -268,14 +277,14 @@ public final class IssueGeneralFragment extends AbstractFragment {
         if (this.root != null) {
             issue.setTitle(this.txtIssueGeneralSummary.getText().toString());
             issue.setCategory(this.txtIssueGeneralCategory.getText().toString());
-            issue.setState(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralView, "issues_general_view_values"), this.spIssueGeneralView.getSelectedItem().toString());
+            issue.setState(this.getData(this.spIssueGeneralView).getId(), this.getData(this.spIssueGeneralView).getItem());
             if (this.rowIssueGeneralSeverity.getVisibility() == View.VISIBLE) {
-                issue.setSeverity(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, this.severityValueArray), this.spIssueGeneralSeverity.getSelectedItem().toString());
+                issue.setSeverity(this.getData(this.spIssueGeneralSeverity).getId(), this.getData(this.spIssueGeneralSeverity).getItem());
             }
-            issue.setReproducibility(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralSeverity, "issues_general_reproducibility_values"), this.spIssueGeneralReproducibility.getSelectedItem().toString());
-            issue.setPriority(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralPriority, this.priorityValueArray), this.getValuesFromSpinner(this.spIssueGeneralPriority));
-            issue.setStatus(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralStatus, this.statusValueArray), this.getValuesFromSpinner(this.spIssueGeneralStatus));
-            issue.setResolution(ArrayHelper.getIdOfEnum(this.getContext(), this.spIssueGeneralResolution, this.resolutionValueArray), this.getValuesFromSpinner(this.spIssueGeneralResolution));
+            issue.setReproducibility(this.getData(this.spIssueGeneralReproducibility).getId(), this.getData(this.spIssueGeneralReproducibility).getItem());
+            issue.setPriority(this.getData(this.spIssueGeneralPriority).getId(), this.getData(this.spIssueGeneralPriority).getItem());
+            issue.setStatus(this.getData(this.spIssueGeneralStatus).getId(), this.getData(this.spIssueGeneralStatus).getItem());
+            issue.setResolution(this.getData(this.spIssueGeneralResolution).getId(), this.getData(this.spIssueGeneralResolution).getItem());
             issue.setVersion(this.txtIssueGeneralVersion.getText().toString());
             issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
             issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
@@ -299,13 +308,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
             }
         }
         return issue;
-    }
-
-    private String getValuesFromSpinner(Spinner spinner) {
-        if(spinner.getSelectedItem()!=null) {
-            return spinner.getSelectedItem().toString();
-        }
-        return "";
     }
 
     @Override

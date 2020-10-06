@@ -53,6 +53,7 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
@@ -187,10 +188,15 @@ public class Helper {
         return bugService;
     }
 
-    public static ArrayAdapter<String> setAdapter(Context context, String key) {
+    public static ArrayAdapter<SpinnerItem> setAdapter(Context context, String key) {
         if (context != null) {
             int spItem = R.layout.spinner_item;
-            return new ArrayAdapter<>(context, spItem, ArrayHelper.getValues(context, key));
+            ArrayAdapter<SpinnerItem> adapter = new ArrayAdapter<>(context, spItem);
+            Map<String, String> data = ArrayHelper.getMap(context, key);
+            for(Map.Entry<String, String> entry : data.entrySet()) {
+                adapter.add(new SpinnerItem(Integer.parseInt(entry.getKey()), entry.getValue()));
+            }
+            return adapter;
         }
         return null;
     }

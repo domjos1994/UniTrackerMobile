@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 
@@ -42,6 +43,18 @@ public class ArrayHelper {
             List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
             for (int i = 0; i <= typedArrays.size() - 1; i++) {
                 values.add(typedArrays.get(i).getString(1));
+            }
+        } catch (Exception ignored) {}
+        return values;
+    }
+
+    @SuppressLint("ResourceType")
+    public static Map<String, String> getMap(Context context, String key) {
+        Map<String, String> values = new LinkedHashMap<>();
+        try {
+            List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
+            for (int i = 0; i <= typedArrays.size() - 1; i++) {
+                values.put(typedArrays.get(i).getString(0), typedArrays.get(i).getString(1));
             }
         } catch (Exception ignored) {}
         return values;
@@ -65,7 +78,9 @@ public class ArrayHelper {
                 TypedArray typedArray = typedArrays.get(i);
                 values.put(typedArray.getString(0), typedArray.getString(1));
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ex) {
+            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
+        }
         return values;
     }
 
