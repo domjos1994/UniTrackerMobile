@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C)  2019-2020 Domjos
+  ~  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+  ~
+  ~  UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  UniTrackerMobile is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.UserActivity"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/nav_view"
+        android:orientation="horizontal"
+        android:weightSum="20">
+
+        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            android:id="@+id/lvFields"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:padding="5dp"
+            app:itemIcon="@drawable/icon_custom_fields"
+            app:listItemBackground="@drawable/background_controls_2"
+            app:selectedListItemBackground="@drawable/background_selected"
+            app:listItemDivider="@drawable/background_selected"
+            app:listItemForeground="@android:color/black"/>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="10"
+            android:background="@drawable/background_controls_1"
+            android:padding="5dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="10">
+
+                <TableRow>
+                    <EditText
+                        android:id="@+id/txtFieldTitle"
+                        android:hint="@string/general_title"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:text="@string/fields_type"
+                        android:layout_weight="3"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:textSize="@dimen/header_text_size"
+                        android:textStyle="bold"/>
+
+                    <Spinner
+                        android:id="@+id/cmbFieldType"
+                        android:layout_weight="7"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"/>
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtFieldDefault"
+                        android:hint="@string/fields_default"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <EditText
+                        android:id="@+id/txtFieldPossibleValues"
+                        android:hint="@string/fields_possible_values"
+                        android:layout_weight="10"
+                        android:inputType="text"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+
+                <TableRow>
+
+                    <CheckBox
+                        android:id="@+id/chkFieldNullable"
+                        android:text="@string/fields_nullable"
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        tools:ignore="Autofill" />
+                </TableRow>
+            </TableLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/nav_controls"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

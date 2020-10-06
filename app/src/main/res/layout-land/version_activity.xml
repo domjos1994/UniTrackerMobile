@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (C)  2019-2020 Domjos
+  ~  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+  ~
+  ~  UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~  it under the terms of the GNU General Public License as published by
+  ~  the Free Software Foundation, either version 3 of the License, or
+  ~  (at your option) any later version.
+  ~
+  ~  UniTrackerMobile is distributed in the hope that it will be useful,
+  ~  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~  GNU General Public License for more details.
+  ~
+  ~  You should have received a copy of the GNU General Public License
+  ~  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.VersionActivity"
+    android:background="@drawable/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/nav_view"
+        android:orientation="vertical"
+        android:weightSum="20">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/rowVersionFilter"
+            android:weightSum="10">
+
+            <TextView
+                android:layout_weight="3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/versions_filter" />
+
+            <Spinner
+                android:id="@+id/spVersionFilter"
+                android:entries="@array/versions_filer"
+                android:layout_weight="7"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <de.domjos.customwidgets.widgets.SplitPaneLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            app:splitterBackground="@color/divider">
+            <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+                android:id="@+id/lvVersions"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="5dp"
+                app:itemIcon="@drawable/icon_versions"
+                app:listItemBackground="@drawable/background_controls_2"
+                app:selectedListItemBackground="@drawable/background_selected"
+                app:listItemDivider="@drawable/background_selected"
+                app:listItemForeground="@android:color/black"
+                app:listItemBackgroundStatePositive="@drawable/background_positive"/>
+
+            <ScrollView
+                android:id="@+id/viewControls"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background_controls_1"
+                android:padding="5dp">
+
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:weightSum="10">
+
+                    <ProgressBar
+                        android:id="@+id/pbVersion"
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dp"
+                        android:layout_weight="10"
+                        style="@android:style/Widget.ProgressBar.Horizontal"/>
+
+                    <TableRow>
+
+                        <EditText
+                            android:id="@+id/txtVersionTitle"
+                            android:inputType="text"
+                            android:hint="@string/general_title"
+                            android:layout_weight="10"
+                            android:layout_width="0dp"
+                            tools:ignore="Autofill" />
+                    </TableRow>
+
+                    <TableRow android:id="@+id/rowVersionReleased">
+
+                        <CheckBox
+                            android:id="@+id/chkVersionReleased"
+                            android:text="@string/versions_released"
+                            android:layout_weight="10"
+                            android:layout_width="0dp" />
+                    </TableRow>
+
+                    <TableRow android:id="@+id/rowVersionDeprecated">
+
+                        <CheckBox
+                            android:id="@+id/chkVersionDeprecated"
+                            android:text="@string/versions_deprecated"
+                            android:layout_weight="10"
+                            android:layout_width="0dp" />
+                    </TableRow>
+
+                    <TableRow android:id="@+id/rowVersionReleasedAt">
+
+                        <de.domjos.unibuggermobile.custom.DatePickerField
+                            android:id="@+id/txtVersionReleasedAt"
+                            android:hint="@string/versions_releasedAt"
+                            android:layout_weight="10"
+                            android:layout_width="0dp"
+                            tools:ignore="Autofill" />
+                    </TableRow>
+
+                    <TableRow>
+
+                        <EditText
+                            android:id="@+id/txtVersionDescription"
+                            android:inputType="textMultiLine"
+                            android:hint="@string/general_description"
+                            android:layout_weight="10"
+                            android:layout_width="0dp"
+                            tools:ignore="Autofill" />
+                    </TableRow>
+                </TableLayout>
+            </ScrollView>
+        </de.domjos.customwidgets.widgets.SplitPaneLayout>
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="0dp"
+        android:background="?android:attr/windowBackground"
+        app:menu="@menu/nav_controls"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
