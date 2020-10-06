@@ -845,4 +845,9 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
         }
         return id;
     }
+
+    @Override
+    public List<History<Long>> getNews() {
+        return new LinkedList<>();
+    }
 }

@@ -1337,4 +1337,9 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         }
         return null;
     }
+
+    @Override
+    public List<History<String>> getNews() {
+        return new LinkedList<>();
+    }
 }

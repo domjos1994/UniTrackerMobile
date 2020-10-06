@@ -195,4 +195,9 @@ public final class SQLitePermissions implements IFunctionImplemented {
     public boolean listProfiles() {
         return true;
     }
+
+    @Override
+    public boolean news() {
+        return true;
+    }
 }

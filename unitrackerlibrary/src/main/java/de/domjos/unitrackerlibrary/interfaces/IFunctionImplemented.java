@@ -237,4 +237,10 @@ public interface IFunctionImplemented {
      * @return Permission
      */
     boolean listProfiles();
+
+    /**
+     * Permission to show news
+     * @return Permission
+     */
+    boolean news();
 }

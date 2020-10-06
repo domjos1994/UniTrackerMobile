@@ -956,4 +956,42 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         }
         return project;
     }
+
+    @Override
+    public List<History<Long>> getNews() throws Exception {
+        List<History<Long>> histories = new LinkedList<>();
+        int status = this.executeRequest("/news.json");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONArray jsonArray = jsonObject.getJSONArray("news");
+            for(int i = 0; i<=jsonArray.length()-1; i++) {
+                JSONObject newsObject = jsonArray.getJSONObject(i);
+                History<Long> history = new History<>();
+                history.setProject(this.getProject(newsObject));
+                history.setTitle(newsObject.getString("title"));
+                String summary = newsObject.getString("summary");
+                if(summary.trim().isEmpty()) {
+                    history.setDescription(newsObject.getString("description"));
+                } else {
+                    history.setDescription(summary);
+                }
+                histories.add(history);
+            }
+        }
+        return histories;
+    }
+
+    private Project<Long> getProject(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("project")) {
+                JSONObject projectObject = jsonObject.getJSONObject("project");
+                if(projectObject.has("name")) {
+                    Project<Long> project = new Project<>();
+                    project.setTitle(projectObject.getString("name"));
+                    return project;
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
 }

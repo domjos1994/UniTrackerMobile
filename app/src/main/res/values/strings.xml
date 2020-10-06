@@ -320,6 +320,11 @@
     <string name="calendar_version">Version</string>
     <string name="calendar_issue">Issue</string>
 
+    <string name="news">News</string>
+    <string name="news_description">Name: %s, Date: %s</string>
+    <string name="news_created">%s created!</string>
+    <string name="news_deleted">%s deleted!</string>
+
     <string name="filter">Filter</string>
     <string-array name="filter_view">
         <item />

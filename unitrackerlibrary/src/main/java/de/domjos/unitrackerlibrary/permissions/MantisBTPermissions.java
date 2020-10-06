@@ -197,4 +197,9 @@ public final class MantisBTPermissions implements IFunctionImplemented {
     public boolean listProfiles() {
         return !this.authentication.isGuest();
     }
+
+    @Override
+    public boolean news() {
+        return false;
+    }
 }

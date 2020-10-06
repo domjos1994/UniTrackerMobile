@@ -598,4 +598,67 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
     public String toString() {
         return this.authentication.getTitle();
     }
+
+    @Override
+    public List<History<Long>> getNews() throws Exception {
+        List<History<Long>> histories = new LinkedList<>();
+        int status = this.executeRequest("/services/v5/my/activity");
+        if(status == 200 || status == 201) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for(int i = 0; i<=jsonArray.length()-1; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                History<Long> history = new History<>();
+                history.setTime(this.getTime(jsonObject));
+                history.setProject(this.getProject(jsonObject));
+                history.setTitle(this.getTitle(jsonObject));
+                history.setDescription(jsonObject.getString("message"));
+                histories.add(history);
+            }
+        }
+        return histories;
+    }
+
+    private long getTime(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("occurred_at")) {
+                String date = jsonObject.getString("occurred_at");
+                Date dt = ConvertHelper.convertStringToDate(date, PivotalTracker.DATE_FORMAT);
+                if(dt != null) {
+                    return dt.getTime();
+                }
+            }
+        } catch (Exception ignored) {}
+        return 0;
+    }
+
+    private Project<Long> getProject(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("project")) {
+                JSONObject projectObject = jsonObject.getJSONObject("project");
+                if(projectObject.has("name")) {
+                    Project<Long> project = new Project<>();
+                    project.setTitle(projectObject.getString("name"));
+                    return project;
+                }
+            }
+        } catch (Exception ignored) {}
+        return null;
+    }
+
+    private String getTitle(JSONObject jsonObject) {
+        try {
+            StringBuilder title = new StringBuilder();
+            if(jsonObject.has("primary_resources")) {
+                JSONArray jsonArray = jsonObject.getJSONArray("primary_resources");
+                for(int i = 0; i<=jsonArray.length()-1; i++) {
+                    JSONObject itemObject = jsonArray.getJSONObject(i);
+                    if(itemObject.has("name")) {
+                        title.append(itemObject.getString("name")).append(", ");
+                    }
+                }
+            }
+            return (title.toString() + "))").replace(", ))", "").trim();
+        } catch (Exception ignored) {}
+        return "";
+    }
 }

@@ -190,4 +190,9 @@ public final class NOPERMISSION implements IFunctionImplemented {
     public boolean listProfiles() {
         return false;
     }
+
+    @Override
+    public boolean news() {
+        return false;
+    }
 }

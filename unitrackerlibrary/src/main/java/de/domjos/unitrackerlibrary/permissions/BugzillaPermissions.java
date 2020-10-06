@@ -197,4 +197,9 @@ public final class BugzillaPermissions implements IFunctionImplemented {
     public boolean listProfiles() {
         return true;
     }
+
+    @Override
+    public boolean news() {
+        return false;
+    }
 }

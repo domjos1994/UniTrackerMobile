@@ -12,34 +12,44 @@
 
     <application
         android:name="androidx.multidex.MultiDexApplication"
-        android:configChanges="orientation|screenSize"
         android:allowBackup="false"
+        android:configChanges="orientation|screenSize"
         android:hardwareAccelerated="true"
-        android:largeHeap="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="q">
+        <activity
+            android:name=".activities.NewsActivity"
+            android:label="@string/news"
+            android:parentActivityName=".activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MainActivity" />
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-4983888966373182~7705161676"/>
+            android:value="ca-app-pub-4983888966373182~7705161676" />
+
         <activity
             android:name=".activities.InfoActivity"
-            android:label="@string/about"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:parentActivityName=".activities.MainActivity">
+            android:label="@string/about"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.domjos.unibuggermobile.activities.MainActivity" />
         </activity>
         <activity
             android:name=".activities.CalendarActivity"
-            android:label="@string/calendar"
             android:configChanges="orientation|screenSize"
+            android:label="@string/calendar"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -47,8 +57,8 @@
         </activity>
         <activity
             android:name=".activities.StatisticsActivity"
-            android:label="@string/statistics"
             android:configChanges="orientation|screenSize"
+            android:label="@string/statistics"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -56,8 +66,8 @@
         </activity>
         <activity
             android:name=".activities.LocalSyncActivity"
-            android:label="@string/local_sync"
             android:configChanges="orientation|screenSize"
+            android:label="@string/local_sync"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -65,8 +75,8 @@
         </activity>
         <activity
             android:name=".activities.HelpActivity"
-            android:label="@string/help"
             android:configChanges="orientation|screenSize"
+            android:label="@string/help"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
@@ -75,8 +85,8 @@
         </activity>
         <activity
             android:name=".activities.ExportActivity"
-            android:label="@string/export"
             android:configChanges="orientation|screenSize"
+            android:label="@string/export"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -84,8 +94,8 @@
         </activity>
         <activity
             android:name=".activities.SearchActivity"
-            android:label="@string/search"
             android:configChanges="orientation|screenSize"
+            android:label="@string/search"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -93,8 +103,8 @@
         </activity>
         <activity
             android:name=".activities.AdministrationActivity"
-            android:label="@string/administration"
             android:configChanges="orientation|screenSize"
+            android:label="@string/administration"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -102,8 +112,8 @@
         </activity>
         <activity
             android:name=".activities.FieldActivity"
-            android:label="@string/fields"
             android:configChanges="orientation|screenSize"
+            android:label="@string/fields"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -111,8 +121,8 @@
         </activity>
         <activity
             android:name=".activities.UserActivity"
-            android:label="@string/users"
             android:configChanges="orientation|screenSize"
+            android:label="@string/users"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -120,8 +130,8 @@
         </activity>
         <activity
             android:name=".activities.SettingsActivity"
-            android:label="@string/settings"
             android:configChanges="orientation|screenSize"
+            android:label="@string/settings"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -129,8 +139,8 @@
         </activity>
         <activity
             android:name=".activities.IssueActivity"
-            android:label="@string/issues"
             android:configChanges="orientation|screenSize"
+            android:label="@string/issues"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -138,8 +148,8 @@
         </activity>
         <activity
             android:name=".activities.VersionActivity"
-            android:label="@string/versions"
             android:configChanges="orientation|screenSize"
+            android:label="@string/versions"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -147,8 +157,8 @@
         </activity>
         <activity
             android:name=".activities.ProjectActivity"
-            android:label="@string/projects"
             android:configChanges="orientation|screenSize"
+            android:label="@string/projects"
             android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -156,8 +166,8 @@
         </activity>
         <activity
             android:name=".activities.AccountActivity"
-            android:label="@string/accounts"
             android:configChanges="orientation|screenSize"
+            android:label="@string/accounts"
             android:parentActivityName=".activities.MainActivity"
             tools:node="replace">
             <meta-data
@@ -177,8 +187,8 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/app_name"
             android:configChanges="orientation|screenSize"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

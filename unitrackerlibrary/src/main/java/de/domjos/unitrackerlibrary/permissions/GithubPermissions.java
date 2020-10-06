@@ -197,4 +197,9 @@ public final class GithubPermissions implements IFunctionImplemented {
     public boolean listProfiles() {
         return false;
     }
+
+    @Override
+    public boolean news() {
+        return false;
+    }
 }

@@ -366,6 +366,12 @@ public interface IBugService<T> {
     Map<String, String> getEnums(Type type, Context context) throws Exception;
 
     /**
+     * Returns a List of News
+     * @return List of News
+     */
+    List<History<T>> getNews() throws Exception;
+
+    /**
      * Converts Object to String
      * @return the String
      */

@@ -580,4 +580,9 @@ public final class Github extends JSONEngine implements IBugService<Long> {
         user.setTitle(jsonObject.getString("login"));
         return user;
     }
+
+    @Override
+    public List<History<Long>> getNews() {
+        return new LinkedList<>();
+    }
 }

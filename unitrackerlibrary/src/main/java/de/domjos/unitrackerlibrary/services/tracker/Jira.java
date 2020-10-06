@@ -978,6 +978,11 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         return new LinkedHashMap<>();
     }
 
+    @Override
+    public List<History<Long>> getNews() {
+        return new LinkedList<>();
+    }
+
     @NonNull
     @Override
     public String toString() {

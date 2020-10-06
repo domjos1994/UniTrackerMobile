@@ -528,11 +528,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } else {
                 this.cmdIssuesAdd.hide();
             }
+            this.navigationView.getMenu().findItem(R.id.navNews).setVisible(this.permissions.news());
             this.navigationView.getMenu().findItem(R.id.navProjects).setVisible((this.permissions.addProjects() || this.permissions.updateProjects() || this.permissions.deleteProjects()));
             this.navigationView.getMenu().findItem(R.id.navVersions).setVisible((this.permissions.addVersions() || this.permissions.updateVersions() || this.permissions.deleteVersions()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
             this.navigationView.getMenu().findItem(R.id.navUsers).setVisible((this.permissions.addUsers() || this.permissions.updateUsers() || this.permissions.deleteUsers()));
             this.navigationView.getMenu().findItem(R.id.navFields).setVisible((this.permissions.addCustomFields() || this.permissions.updateCustomFields() || this.permissions.deleteCustomFields()) && this.spMainProjects.getSelectedItem() != null && this.spMainProjects.getSelectedItemPosition() != 0);
         } else {
+            this.navigationView.getMenu().findItem(R.id.navNews).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navProjects).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navVersions).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navUsers).setVisible(false);
@@ -784,6 +786,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         Intent intent;
         int reload = 0;
         switch (item.getItemId()) {
+            case R.id.navNews:
+                intent = new Intent(this.getApplicationContext(), NewsActivity.class);
+                break;
             case R.id.navProjects:
                 intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
                 reload = MainActivity.RELOAD_PROJECTS;

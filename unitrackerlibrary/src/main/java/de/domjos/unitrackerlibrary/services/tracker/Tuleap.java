@@ -282,4 +282,9 @@ public final class Tuleap extends JSONEngine implements IBugService<Long> {
     public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
+
+    @Override
+    public List<History<Long>> getNews() {
+        return new LinkedList<>();
+    }
 }

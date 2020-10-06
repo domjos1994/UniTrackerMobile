@@ -1217,4 +1217,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         }
         return versions;
     }
+
+    @Override
+    public List<History<Long>> getNews() {
+        return new LinkedList<>();
+    }
 }

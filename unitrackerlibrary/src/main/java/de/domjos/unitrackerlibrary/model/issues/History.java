@@ -19,6 +19,8 @@
 package de.domjos.unitrackerlibrary.model.issues;
 
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
+import de.domjos.unitrackerlibrary.model.projects.Project;
+import de.domjos.unitrackerlibrary.model.projects.Version;
 
 public class History<T> extends DescriptionObject<T> {
     private String field;
@@ -26,6 +28,9 @@ public class History<T> extends DescriptionObject<T> {
     private String oldValue;
     private long time;
     private String user;
+    private Project<T> project;
+    private Version<T> version;
+    private Issue<T> issue;
 
     public History() {
         super();
@@ -35,6 +40,9 @@ public class History<T> extends DescriptionObject<T> {
         this.time = 0L;
         this.user = "";
         this.field = "";
+        this.project = null;
+        this.version = null;
+        this.issue = null;
     }
 
     public String getNewValue() {
@@ -75,5 +83,29 @@ public class History<T> extends DescriptionObject<T> {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public Project<T> getProject() {
+        return this.project;
+    }
+
+    public void setProject(Project<T> project) {
+        this.project = project;
+    }
+
+    public Version<T> getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(Version<T> version) {
+        this.version = version;
+    }
+
+    public Issue<T> getIssue() {
+        return this.issue;
+    }
+
+    public void setIssue(Issue<T> issue) {
+        this.issue = issue;
     }
 }

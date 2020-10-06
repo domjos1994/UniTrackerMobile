@@ -284,4 +284,9 @@ public final class AzureDevOps extends JSONEngine implements IBugService<String>
     public Map<String, String> getEnums(Type type, Context context) throws Exception {
         return null;
     }
+
+    @Override
+    public List<History<String>> getNews() {
+        return new LinkedList<>();
+    }
 }

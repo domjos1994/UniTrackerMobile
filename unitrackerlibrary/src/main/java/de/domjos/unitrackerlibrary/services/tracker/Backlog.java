@@ -19,7 +19,9 @@
 package de.domjos.unitrackerlibrary.services.tracker;
 
 import android.content.Context;
+import android.widget.ProgressBar;
 
+import de.domjos.customwidgets.model.tasks.ProgressBarTask;
 import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -849,5 +851,115 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
         }
 
         return id;
+    }
+
+    @Override
+    public List<History<Long>> getNews() throws Exception {
+        List<History<Long>> histories = new LinkedList<>();
+        int status = this.executeRequest("/api/v2/space/activities?" + this.authParams);
+        if(status <= 200) {
+            JSONArray jsonArray = new JSONArray(this.getCurrentMessage());
+            for(int i = 0; i<=jsonArray.length()-1; i++) {
+                JSONObject historyObject = jsonArray.getJSONObject(i);
+                int type = historyObject.getInt("type");
+                if(type == 11 || type == 12 || type == 13 || type == 18 || type == 19 || type == 20 || type == 21) {
+                    continue;
+                }
+                History<Long> history = new History<>();
+                history.setProject(this.getProjectFromNews(historyObject));
+                if(type == 22 || type == 23 || type == 24) {
+                    history.setVersion(this.getVersionFromNews(historyObject));
+                } else {
+                    history.setIssue(this.getIssueFromNews(historyObject));
+                }
+                history.setTime(this.getTimeFromNews(historyObject));
+                JSONObject contentObject = historyObject.getJSONObject("content");
+                if(contentObject.has("changes")) {
+                    JSONArray changesArray = contentObject.getJSONArray("changes");
+                    for(int changeCounter = 0; changeCounter<=changesArray.length()-1; changeCounter++) {
+                        JSONObject changeObject = changesArray.getJSONObject(changeCounter);
+                        history.setField(changeObject.getString("field"));
+                        history.setOldValue(changeObject.getString("old_value").isEmpty() ? "''": changeObject.getString("old_value"));
+                        history.setNewValue(changeObject.getString("new_value").isEmpty() ? "''": changeObject.getString("new_value"));
+                        histories.add(history);
+                    }
+                } else {
+                    if(type == 1 || type == 22) {
+                        if(contentObject.has("summary")) {
+                            history.setField("summary");
+                            history.setOldValue("");
+                            history.setNewValue(contentObject.getString("summary"));
+                            histories.add(history);
+                        } else if(contentObject.has("name")) {
+                            history.setField("name");
+                            history.setOldValue("");
+                            history.setNewValue(contentObject.getString("name"));
+                            histories.add(history);
+                        }
+                    }
+                    if(type == 4 || type == 24) {
+                        if(contentObject.has("summary")) {
+                            history.setField("summary");
+                            history.setNewValue("");
+                            history.setOldValue(contentObject.getString("summary"));
+                            histories.add(history);
+                        } else if(contentObject.has("name")) {
+                            history.setField("name");
+                            history.setNewValue("");
+                            history.setOldValue(contentObject.getString("name"));
+                            histories.add(history);
+                        }
+                    }
+                }
+            }
+        }
+        return histories;
+    }
+
+    private long getTimeFromNews(JSONObject jsonObject) {
+        try {
+            if(jsonObject.has("created")) {
+                String date = jsonObject.getString("created");
+                Date dt = ConvertHelper.convertStringToDate(date, Backlog.DATE_TIME_FORMAT);
+                return dt.getTime();
+            }
+        } catch (Exception ignored) {}
+        return 0;
+    }
+
+    private Project<Long> getProjectFromNews(JSONObject jsonObject) throws Exception {
+        if(jsonObject.has("project")) {
+            JSONObject projectObject = jsonObject.getJSONObject("project");
+            if(projectObject.has("name")) {
+                Project<Long> project = new Project<>();
+                project.setTitle(projectObject.getString("name"));
+                return project;
+            }
+        }
+        return null;
+    }
+
+    private Issue<Long> getIssueFromNews(JSONObject jsonObject) throws Exception {
+        if(jsonObject.has("content")) {
+            JSONObject projectObject = jsonObject.getJSONObject("content");
+            if(projectObject.has("summary")) {
+                Issue<Long> issue = new Issue<>();
+                issue.setTitle(projectObject.getString("summary"));
+                return issue;
+            }
+        }
+        return null;
+    }
+
+    private Version<Long> getVersionFromNews(JSONObject jsonObject) throws Exception {
+        if(jsonObject.has("content")) {
+            JSONObject projectObject = jsonObject.getJSONObject("content");
+            if(projectObject.has("name")) {
+                Version<Long> version = new Version<>();
+                version.setTitle(projectObject.getString("name"));
+                return version;
+            }
+        }
+        return null;
     }
 }

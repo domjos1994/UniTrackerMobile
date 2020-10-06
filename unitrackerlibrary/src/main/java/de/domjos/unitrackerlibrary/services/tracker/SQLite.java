@@ -1032,4 +1032,30 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
         in_s.read(b);
         return new String(b);
     }
+
+    @Override
+    public List<History<Long>> getNews() {
+        List<History<Long>> historyItems = new LinkedList<>();
+        List<Project<Long>> projects = this.getProjects();
+        for(Project<Long> project : projects) {
+            List<Issue<Long>> issues = this.getIssues(project.getId());
+            for(Issue<Long> issue : issues) {
+                SQLiteDatabase db = this.getReadableDatabase();
+                Cursor cursor = db.rawQuery("SELECT * FROM history WHERE issue=?", new String[]{String.valueOf(issue.getId())});
+                while (cursor.moveToNext()) {
+                    History<Long> history = new History<>();
+                    history.setField(this.getString(cursor, "field"));
+                    history.setOldValue(this.getString(cursor, "oldVal"));
+                    history.setNewValue(this.getString(cursor, "newVal"));
+                    history.setUser("");
+                    history.setTime(this.getLong(cursor, "timestamp"));
+                    history.setIssue(issue);
+                    history.setProject(project);
+                    historyItems.add(history);
+                }
+                cursor.close();
+            }
+        }
+        return historyItems;
+    }
 }

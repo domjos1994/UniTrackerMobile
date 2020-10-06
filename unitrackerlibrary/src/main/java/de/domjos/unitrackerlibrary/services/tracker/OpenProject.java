@@ -769,4 +769,23 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
     public Map<String, String> getEnums(Type type, Context context)  {
         return null;
     }
+
+    @Override
+    public List<History<Long>> getNews() throws Exception {
+        List<History<Long>> histories = new LinkedList<>();
+        int status = this.executeRequest("/api/v3/news");
+        if (status == 200 || status == 201) {
+            JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
+            JSONObject embedded = jsonObject.getJSONObject("_embedded");
+            JSONArray elements = embedded.getJSONArray("elements");
+            for(int i = 0; i<=elements.length()-1; i++) {
+                JSONObject elementObject = elements.getJSONObject(i);
+                History<Long> history = new History<>();
+                history.setTitle(elementObject.getString("title"));
+                history.setDescription(elementObject.getString("summary"));
+                histories.add(history);
+            }
+        }
+        return histories;
+    }
 }

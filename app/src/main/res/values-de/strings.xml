@@ -317,6 +317,11 @@
     <string name="calendar_version">Version</string>
     <string name="calendar_issue">Fehler</string>
 
+    <string name="news">Neuigkeiten</string>
+    <string name="news_description">Name: %s, Datum: %s</string>
+    <string name="news_created">%s erstellt!</string>
+    <string name="news_deleted">%s gelöscht!</string>
+
     <string name="filter">Filter</string>
     <string-array name="filter_view">
         <item />
