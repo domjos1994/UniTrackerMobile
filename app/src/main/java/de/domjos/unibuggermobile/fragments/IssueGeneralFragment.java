@@ -36,10 +36,10 @@ import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.custom.DatePickerField;
 import de.domjos.unibuggermobile.helper.SpinnerItem;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -64,7 +64,8 @@ import de.domjos.customwidgets.utils.Validator;
  * A placeholder fragment containing a simple view.
  */
 public final class IssueGeneralFragment extends AbstractFragment {
-    private EditText txtIssueGeneralSummary, txtIssueGeneralDueDate;
+    private EditText txtIssueGeneralSummary;
+    private DatePickerField txtIssueGeneralDueDate;
     private TextView txtIssueGeneralSubmitted, txtIssueGeneralUpdated;
     private AutoCompleteTextView txtIssueGeneralCategory, txtIssueGeneralVersion,
             txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion,

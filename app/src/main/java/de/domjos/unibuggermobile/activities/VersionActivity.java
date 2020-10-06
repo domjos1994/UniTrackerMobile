@@ -45,6 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unibuggermobile.custom.DatePickerField;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Version;
@@ -63,7 +64,8 @@ public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
     private SwipeRefreshDeleteList lvVersions;
-    private EditText txtVersionTitle, txtVersionDescription, txtVersionReleasedAt;
+    private EditText txtVersionTitle, txtVersionDescription;
+    private DatePickerField txtVersionReleasedAt;
     private ProgressBar pbVersion;
     private CheckBox chkVersionReleased, chkVersionDeprecated;
     private Spinner spVersionFilter;
@@ -212,6 +214,7 @@ public final class VersionActivity extends AbstractActivity {
         this.txtVersionTitle = this.findViewById(R.id.txtVersionTitle);
         this.txtVersionDescription = this.findViewById(R.id.txtVersionDescription);
         this.txtVersionReleasedAt = this.findViewById(R.id.txtVersionReleasedAt);
+        this.txtVersionReleasedAt.setTimePicker(true);
         this.chkVersionReleased = this.findViewById(R.id.chkVersionReleased);
         this.chkVersionDeprecated = this.findViewById(R.id.chkVersionDeprecated);
         this.spVersionFilter = this.findViewById(R.id.spVersionFilter);

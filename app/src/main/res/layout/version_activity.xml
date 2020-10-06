@@ -121,13 +121,11 @@
 
                 <TableRow android:id="@+id/rowVersionReleasedAt">
 
-                    <EditText
+                    <de.domjos.unibuggermobile.custom.DatePickerField
                         android:id="@+id/txtVersionReleasedAt"
-                        android:inputType="datetime"
                         android:hint="@string/versions_releasedAt"
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        android:digits="0123456789 .:-"
                         tools:ignore="Autofill" />
                 </TableRow>
 
