@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background">
+
+    <TextView
+        android:id="@+id/lblTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/app_name"
+        android:textSize="20sp"
+        android:textColor="@color/textColorPrimary"
+        android:textStyle="bold"
+        android:background="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+    
+    <ProgressBar
+        android:id="@+id/pbProcess"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:indeterminate="false"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/lblPercentage"
+        app:layout_constraintTop_toBottomOf="@+id/lblTitle"
+        style="?android:attr/progressBarStyleHorizontal"/>
+
+    <TextView
+        android:id="@+id/lblPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:text="@string/app_name"
+        android:textSize="12sp"
+        android:textColor="@color/textColorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblTitle"/>
+
+
+    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        android:id="@+id/lvIssues"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pbProcess"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:listItemBackground="@drawable/background_controls_2"
+        app:listItemBackgroundStatePositive="@drawable/background_positive"
+        app:itemIcon="@drawable/icon_issues"
+        app:readOnly="true"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

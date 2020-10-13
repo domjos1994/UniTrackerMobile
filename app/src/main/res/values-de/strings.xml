@@ -124,6 +124,8 @@
     <string name="versions_menu_changelog_dir">Wählen Sie ein Verzeichnis, um den Changelog zu speichern!</string>
     <string name="versions_menu_changelog_no_selected">Keine Version ausgewählt!</string>
     <string name="versions_menu_changelog_created">Changelog wurde erfolgreich erstellt!</string>
+    <string name="versions_menu_changelog_show">Changelog anzeigen</string>
+    <string name="versions_menu_roadmap_show">Roadmap anzeigen</string>
 
     <string name="users">Benutzer</string>
     <string name="users_login">Login-Name</string>
@@ -385,8 +387,8 @@
     <string name="messages_tutorial_new_account_hamburger2">Öffnen Sie die Toolbar!</string>
     <string name="messages_tutorial_new_account_choose">Wählen Sie nun den zuvor angelegten Account aus!</string>
     <string name="messages_tutorial_new_account_project">Wählen Sie ein Projekt aus, in dem Sie arbeiten möchten!</string>
-    <string name="messages_issues">%s - %s</string>
-    <string name="messages_issues_with_max">%s - %s von %s</string>
+    <string name="messages_issues">%d - %d</string>
+    <string name="messages_issues_with_max">%d - %d von %d</string>
 
     <string name="messages_no_item">Kein Eintrag vorhanden!</string>
 </resources>

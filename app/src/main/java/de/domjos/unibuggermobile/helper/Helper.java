@@ -28,6 +28,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -39,14 +40,17 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.*;
 
+import androidx.annotation.DrawableRes;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -436,7 +440,7 @@ public class Helper {
         }
     }
 
-    public static void showAttachmentDialog(Activity activity, List<Attachment> attachments) {
+    public static void showAttachmentDialog(Activity activity, List<Attachment<?>> attachments) {
         try {
             AtomicInteger id = new AtomicInteger();
             Dialog attachmentDialog = new Dialog(activity);
@@ -502,12 +506,11 @@ public class Helper {
         dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
         dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
         dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        dialogProperties.extensions = extensions;
         if(selectDir) {
             dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
-            dialogProperties.extensions = extensions;
         } else {
             dialogProperties.selection_type = DialogConfigs.FILE_SELECT;
-            dialogProperties.extensions = extensions;
         }
 
         FilePickerDialog dialog = new FilePickerDialog(activity, dialogProperties);
@@ -535,6 +538,18 @@ public class Helper {
         return "";
     }
 
+    public static byte[] getBytesFromIcon(Context context, @DrawableRes int res) {
+        Bitmap bitmap;
+        BitmapDrawable drawable = ((BitmapDrawable) ResourcesCompat.getDrawable(context.getResources(), res, context.getTheme()));
+        if(drawable != null) {
+            bitmap = drawable.getBitmap();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            return stream.toByteArray();
+        }
+        return null;
+    }
+
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment<?> attachment) {
         if (attachment.getContentType().toLowerCase().contains("image") ||
@@ -547,7 +562,7 @@ public class Helper {
             Bitmap bitmap = BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length);
             iv.setImageBitmap(bitmap);
         } else {
-            iv.setImageDrawable(activity.getResources().getDrawable(R.drawable.icon_download));
+            iv.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.icon_download, activity.getTheme()));
         }
 
         iv.setOnClickListener(v -> {

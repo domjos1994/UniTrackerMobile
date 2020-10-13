@@ -442,11 +442,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (issue != null) {
                         if (issue.getAttachments() != null) {
                             if (!issue.getAttachments().isEmpty()) {
-                                List<Attachment> attachments = new LinkedList<>();
-                                for(Attachment<?> attachment : issue.getAttachments()) {
-                                    attachments.add(attachment);
-                                }
-
+                                List<Attachment<?>> attachments = new LinkedList<>(issue.getAttachments());
                                 Helper.showAttachmentDialog(MainActivity.this, attachments);
                             }
                         }
@@ -638,13 +634,13 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         this.currentNumberOfItems = this.lvMainIssues.getAdapter().getItemCount() <= this.settings.getNumberOfItems() ? (this.page - 1) * this.settings.getNumberOfItems() + this.lvMainIssues.getAdapter().getItemCount() : this.page * this.settings.getNumberOfItems();
         if(this.currentNumberOfItems==this.maximum) {
             if(this.currentNumberOfItems!=-1) {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(this.currentNumberOfItems)));
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), min, this.currentNumberOfItems));
             }
         } else {
             if(this.currentNumberOfItems!=-1) {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), String.valueOf(min), String.valueOf(this.currentNumberOfItems), String.valueOf(this.maximum)));
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues_with_max), min, this.currentNumberOfItems, this.maximum));
             } else {
-                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), String.valueOf(min), String.valueOf(this.maximum)));
+                this.lblItems.setText(String.format(this.getString(R.string.messages_issues), min, this.maximum));
             }
         }
         this.lvMainIssues.getAdapter().notifyDataSetChanged();

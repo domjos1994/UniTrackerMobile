@@ -39,10 +39,10 @@ public class InfoActivity extends AbstractActivity {
     @Override
     protected void initControls() {
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         this.setSupportActionBar(toolbar);
 
-        CollapsingToolbarLayout toolBarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
+        CollapsingToolbarLayout toolBarLayout = findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());
 
         boolean about = false;

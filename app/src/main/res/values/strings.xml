@@ -127,6 +127,8 @@
     <string name="versions_menu_changelog_dir">Select directory to save Changelog!</string>
     <string name="versions_menu_changelog_no_selected">No Version selected!</string>
     <string name="versions_menu_changelog_created">Changelog was created successfully!</string>
+    <string name="versions_menu_changelog_show">Show Changelog</string>
+    <string name="versions_menu_roadmap_show">Show Roadmap</string>
 
     <string name="users">User</string>
     <string name="users_login">Login-Name</string>
@@ -388,8 +390,8 @@
     <string name="messages_tutorial_new_account_hamburger2">Open the toolbar!</string>
     <string name="messages_tutorial_new_account_choose">Now select the previously created account!</string>
     <string name="messages_tutorial_new_account_project">"Select a project in which you would like to work!  "</string>
-    <string name="messages_issues">%s - %s</string>
-    <string name="messages_issues_with_max">%s - %s from %s</string>
+    <string name="messages_issues">%d - %d</string>
+    <string name="messages_issues_with_max">%d - %d from %d</string>
 
     <string name="messages_no_item">No Entry available!</string>
 

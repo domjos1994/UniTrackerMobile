@@ -19,8 +19,6 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,11 +31,11 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,6 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unibuggermobile.custom.DatePickerField;
+import de.domjos.unibuggermobile.dialogs.RoadMapDialog;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Version;
@@ -93,14 +92,10 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.icon = this.getBytes();
+        this.icon = Helper.getBytesFromIcon(this, R.drawable.icon);
         this.act = VersionActivity.this;
         this.notification = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            this.bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(VersionActivity.this.getDrawable(R.drawable.background)));
-        } else {
-            this.bg = ConvertHelper.convertDrawableToByteArray(VersionActivity.this.getResources().getDrawable(R.drawable.background));
-        }
+        this.bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.background)));
 
         this.lvVersions.setOnDeleteListener(listObject -> {
             try {
@@ -385,44 +380,43 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.menChangelog) {
-            FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
-            dialog.setDialogSelectionListener(files -> {
-                try {
-                    if(files != null) {
-                        if (this.currentVersion != null) {
-                            Object vid = this.currentVersion.getId();
-                            Object pid = this.currentProject;
+        RoadMapDialog roadMapDialog;
+        switch (item.getItemId()) {
+            case R.id.menChangelog:
+                FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
+                dialog.setDialogSelectionListener(files -> {
+                    try {
+                        if(files != null) {
+                            if (this.currentVersion != null) {
+                                Object vid = this.currentVersion.getId();
+                                Object pid = this.currentProject;
 
-                            this.pbVersion.setVisibility(View.VISIBLE);
-                            ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
-                            exportTask.after(o -> {
-                                pbVersion.setVisibility(View.GONE);
-                                MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
-                            });
-                            exportTask.execute(vid);
-                        } else {
-                            MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
+                                this.pbVersion.setVisibility(View.VISIBLE);
+                                ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
+                                exportTask.after(o -> {
+                                    pbVersion.setVisibility(View.GONE);
+                                    MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
+                                });
+                                exportTask.execute(vid);
+                            } else {
+                                MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
+                            }
                         }
+                    } catch (Exception ex) {
+                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
                     }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
-                }
-            });
-            dialog.show();
+                });
+                dialog.show();
+                break;
+            case R.id.menShowChangelog:
+                roadMapDialog = RoadMapDialog.newInstance(false, this.currentProject, this.currentVersion.getId());
+                roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
+                break;
+            case R.id.menShowRoadMap:
+                roadMapDialog = RoadMapDialog.newInstance(true, this.currentProject, this.currentVersion.getId());
+                roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
+                break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private byte[] getBytes() {
-        Bitmap bitmap;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.icon, this.getTheme())).getBitmap();
-        } else {
-            bitmap = ((BitmapDrawable) this.getResources().getDrawable(R.drawable.icon)).getBitmap();
-        }
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        return stream.toByteArray();
     }
 }

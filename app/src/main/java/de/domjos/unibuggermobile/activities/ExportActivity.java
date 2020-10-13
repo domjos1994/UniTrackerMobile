@@ -32,6 +32,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
+
 import com.github.angads25.filepicker.view.FilePickerDialog;
 
 import java.io.File;
@@ -40,11 +42,11 @@ import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.export.TrackerXML;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.issues.CustomField;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
@@ -167,10 +169,10 @@ public final class ExportActivity extends AbstractActivity {
                     byte[] background = null, icon = null;
 
                     if(this.chkShowBackground.isChecked()) {
-                        background = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.background));
+                        background = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ResourcesCompat.getDrawable(this.getResources(), R.drawable.background, this.getTheme())));
                     }
                     if(this.chkShowIcon.isChecked()) {
-                        icon = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.icon));
+                        icon = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon, this.getTheme())));
                     }
 
 
@@ -186,9 +188,7 @@ public final class ExportActivity extends AbstractActivity {
                     switch (type) {
                         case Projects:
                             ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, notify, R.drawable.icon_projects);
-                            for (Project<?> projects : projectTask.execute(0).get()) {
-                                objects.add(projects);
-                            }
+                            objects.addAll(projectTask.execute(0).get());
                             break;
                         case Issues:
                             IssueTask issueTask = new IssueTask(ExportActivity.this, bugService, project.getId(), false, false, notify, R.drawable.icon_issues);
@@ -199,9 +199,7 @@ public final class ExportActivity extends AbstractActivity {
                             break;
                         case CustomFields:
                             FieldTask fieldTask = new FieldTask(ExportActivity.this, bugService, project.getId(), false, notify, R.drawable.icon_custom_fields);
-                            for (CustomField<?> customField : fieldTask.execute(0).get()) {
-                                objects.add(customField);
-                            }
+                            objects.addAll(fieldTask.execute(0).get());
                             break;
                     }
                     exportTask.execute(objects.toArray()).get();
