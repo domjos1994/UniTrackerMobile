@@ -17,8 +17,8 @@
  */
 
 // app-versions
-ext.propVersion = 30
-ext.propVersionCode = "1.2"
+ext.propVersion = 31
+ext.propVersionCode = "1.3"
 
 // java-level
 ext.propJavaVersion = "8"
