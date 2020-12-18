@@ -171,15 +171,15 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     }
 
     @Override
-    public Validator initValidator() {
+    protected Validator initValidator() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-        Validator validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
             if (authentication.getTracker() != Authentication.Tracker.Bugzilla) {
-                validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
+                this.validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
             }
         }
-        return validator;
+        return this.validator;
     }
 
     @Override

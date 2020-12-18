@@ -405,17 +405,17 @@ public final class IssueGeneralFragment extends AbstractFragment {
     }
 
     @Override
-    public Validator initValidator() {
+    protected Validator initValidator() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
-        Validator validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
-            validator.addEmptyValidator(this.txtIssueGeneralSummary);
+            this.validator.addEmptyValidator(this.txtIssueGeneralSummary);
 
             if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
-                validator.addEmptyValidator(this.txtIssueGeneralCategory);
+                this.validator.addEmptyValidator(this.txtIssueGeneralCategory);
             }
         }
-        return validator;
+        return this.validator;
     }
 
     @Override

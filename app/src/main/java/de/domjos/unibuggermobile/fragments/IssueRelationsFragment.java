@@ -231,7 +231,8 @@ public final class IssueRelationsFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        return this.validator;
     }
 
     @Override
@@ -294,7 +295,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
                         Object obj = this.returnTemp(MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentProjectId());
                         this.bugService.deleteBugRelation(this.currentEntry, this.issue.getId(), obj);
                     }  catch (Exception ex) {
-                        Objects.requireNonNull(getActivity()).runOnUiThread(()-> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
+                        requireActivity().runOnUiThread(()-> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
                     }
                 }).start();
             }

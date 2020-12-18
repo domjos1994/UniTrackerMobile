@@ -146,8 +146,9 @@ public final class IssueHistoryFragment extends AbstractFragment {
     }
 
     @Override
-    public Validator initValidator() {
-        return new Validator(getContext(), R.mipmap.ic_launcher_round);
+    protected Validator initValidator() {
+        this.validator =  new Validator(getContext(), R.mipmap.ic_launcher_round);
+        return this.validator;
     }
 
     @Override

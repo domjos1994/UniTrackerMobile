@@ -168,30 +168,30 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     public boolean validate() {
-        return this.general.initValidator().getState() && this.descriptions.initValidator().getState()
-                && this.attachments.initValidator().getState() && this.relation.initValidator().getState()
-                && this.notes.initValidator().getState() && this.history.initValidator().getState();
+        return this.general.getValidator().getState() && this.descriptions.getValidator().getState()
+                && this.attachments.getValidator().getState() && this.relation.getValidator().getState()
+                && this.notes.getValidator().getState() && this.history.getValidator().getState();
     }
 
     public String getResult() {
         StringBuilder result = new StringBuilder();
-        if(!this.general.initValidator().getState()) {
-            result.append(this.general.initValidator().getResult()).append("\n");
+        if(!this.general.getValidator().getState()) {
+            result.append(this.general.getValidator().getResult()).append("\n");
         }
-        if(!this.descriptions.initValidator().getState()) {
-            result.append(this.descriptions.initValidator().getResult()).append("\n");
+        if(!this.descriptions.getValidator().getState()) {
+            result.append(this.descriptions.getValidator().getResult()).append("\n");
         }
-        if(!this.attachments.initValidator().getState()) {
-            result.append(this.attachments.initValidator().getResult()).append("\n");
+        if(!this.attachments.getValidator().getState()) {
+            result.append(this.attachments.getValidator().getResult()).append("\n");
         }
-        if(!this.notes.initValidator().getState()) {
-            result.append(this.notes.initValidator().getResult()).append("\n");
+        if(!this.notes.getValidator().getState()) {
+            result.append(this.notes.getValidator().getResult()).append("\n");
         }
-        if(!this.relation.initValidator().getState()) {
-            result.append(this.relation.initValidator().getResult()).append("\n");
+        if(!this.relation.getValidator().getState()) {
+            result.append(this.relation.getValidator().getResult()).append("\n");
         }
-        if(!this.history.initValidator().getState()) {
-            result.append(this.history.initValidator().getResult()).append("\n");
+        if(!this.history.getValidator().getState()) {
+            result.append(this.history.getValidator().getResult()).append("\n");
         }
         return result.toString();
     }

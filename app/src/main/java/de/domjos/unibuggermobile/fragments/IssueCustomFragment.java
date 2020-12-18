@@ -335,8 +335,9 @@ public final class IssueCustomFragment extends AbstractFragment {
     }
 
     @Override
-    public Validator initValidator() {
-        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+    protected Validator initValidator() {
+        this.validator =  new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        return this.validator;
     }
 
     @Override

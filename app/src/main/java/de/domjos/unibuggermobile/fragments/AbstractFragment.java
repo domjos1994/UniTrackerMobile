@@ -25,6 +25,7 @@ import de.domjos.customwidgets.utils.Validator;
 
 public abstract class AbstractFragment extends Fragment {
     protected int notificationId;
+    protected Validator validator = null;
 
     public void setNotificationId(int notificationId) {
         this.notificationId = notificationId;
@@ -38,7 +39,14 @@ public abstract class AbstractFragment extends Fragment {
 
     protected abstract void initData();
 
-    public abstract Validator initValidator();
+    public Validator getValidator() {
+        if(this.validator == null) {
+            this.initValidator();
+        }
+        return this.validator;
+    }
+
+    protected abstract Validator initValidator();
 
     public abstract void updateUITrackerSpecific();
 

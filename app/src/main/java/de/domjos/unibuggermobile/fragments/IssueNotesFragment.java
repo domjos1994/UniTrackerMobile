@@ -237,7 +237,8 @@ public final class IssueNotesFragment extends AbstractFragment {
 
     @Override
     public Validator initValidator() {
-        return new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
+        return this.validator;
     }
 
     @Override
