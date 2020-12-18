@@ -131,12 +131,12 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
 
     @Override
     public void setObject(DescriptionObject descriptionObject) {
-        this.issue = (Issue) descriptionObject;
+        this.issue = (Issue<?>) descriptionObject;
     }
 
     @Override
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
-        Issue issue = (Issue) descriptionObject;
+        Issue<?> issue = (Issue<?>) descriptionObject;
 
         if (this.root != null) {
             issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());

@@ -66,20 +66,16 @@ public final class IssueActivity extends AbstractActivity {
             this.id = intent.getStringExtra("id");
             this.pid = intent.getStringExtra("pid");
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
+            IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
+            List<Issue<?>> issues;
             if (this.id.equals("")) {
-                IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
-                List<Issue<?>> issues = task.execute(0).get();
-                notificationId = task.getId();
-                if (issues.size() >= 1) {
-                    this.issue = issues.get(0);
-                }
+                issues = task.execute(0).get();
             } else {
-                IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
-                List<Issue<?>> issues = task.execute(this.id).get();
-                notificationId = task.getId();
-                if (issues.size() >= 1) {
-                    this.issue = issues.get(0);
-                }
+                issues = task.execute(this.id).get();
+            }
+            notificationId = task.getId();
+            if (issues.size() >= 1) {
+                this.issue = issues.get(0);
             }
 
             if (this.issue == null) {

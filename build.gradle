@@ -30,7 +30,7 @@ ext.propMinVersion = 20
 // libraries
 ext.propAndPreferences = "1.1.1"
 ext.propAndAppCompat = "1.2.0"
-ext.propCustomWidgetsVersion = "3.5.0"
+ext.propCustomWidgetsVersion = "3.5.1"
 
 buildscript {
     repositories {
