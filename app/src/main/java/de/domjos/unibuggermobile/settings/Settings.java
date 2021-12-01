@@ -41,9 +41,9 @@ public class Settings {
     private static final String PROJECT = "current_project";
     private static final String FILTER = "current_filter";
 
-    private Context context;
-    private SharedPreferences preferences;
-    private SharedPreferences userPreferences;
+    private final Context context;
+    private final SharedPreferences preferences;
+    private final SharedPreferences userPreferences;
 
     public Settings(Context context) {
         this.preferences = context.getSharedPreferences(context.getPackageName(), MODE_PRIVATE);
@@ -219,16 +219,6 @@ public class Settings {
         return this.userPreferences.getBoolean("swtBugTrackerMantisFilter", false);
     }
 
-    public boolean isShowTutorial() {
-        boolean show = this.userPreferences.getBoolean("swtShowTutorialAgain", false);
-        if(show) {
-            SharedPreferences.Editor editor = this.userPreferences.edit();
-            editor.putBoolean("swtShowTutorialAgain", false);
-            editor.apply();
-        }
-        return show;
-    }
-
     public String getLocalSyncPath() {
         String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
         if (path.equals("")) {
@@ -240,13 +230,12 @@ public class Settings {
 
     public boolean showAd() {
         int intentChanges = this.preferences.getInt("showAd", 0);
+        SharedPreferences.Editor editor = this.preferences.edit();
         if(intentChanges == 2) {
-            SharedPreferences.Editor editor = this.preferences.edit();
             editor.putInt("showAd", 0);
             editor.apply();
             return true;
         } else {
-            SharedPreferences.Editor editor = this.preferences.edit();
             editor.putInt("showAd", ++intentChanges);
             editor.apply();
             return false;

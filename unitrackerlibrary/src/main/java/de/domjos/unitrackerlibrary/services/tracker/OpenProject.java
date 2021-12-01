@@ -594,7 +594,7 @@ public final class OpenProject extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) throws Exception {
         this.deleteRequest("/api/v3/attachments/" + id);
     }
 

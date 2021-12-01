@@ -589,7 +589,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     }
 
     @Override
-    public void deleteAttachment(String id, String issue_id, String project_id) throws Exception {
+    public void deleteAttachment(Object id, String issue_id, String project_id) throws Exception {
         this.deleteRequest("/api/issues/" + issue_id + "/attachments/" + id);
     }
 

@@ -30,10 +30,12 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -57,10 +59,10 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssueAttachments;
     private ImageButton cmdIssueAttachmentAdd;
     private ImageButton cmdIssueAttachmentPhoto;
-    private IBugService bugService;
+    private IBugService<?> bugService;
 
     private View root;
-    private Issue issue;
+    private Issue<?> issue;
     private boolean editMode;
 
     private final static int PICKFILE_REQUEST_CODE = 99, PHOTO_GALLERY = 100;
@@ -87,7 +89,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 if (listObject != null) {
                     if (getContext() != null) {
                         if(listObject.getObject() instanceof Attachment) {
-                            Attachment attachment = (Attachment) listObject.getObject();
+                            Attachment<?> attachment = (Attachment<?>) listObject.getObject();
                             IntentHelper.saveAndOpenFile(attachment.getContent(), getActivity());
                         }
                     }
@@ -100,7 +102,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.lvIssueAttachments.setOnDeleteListener(listObject ->  {
             for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
                 BaseDescriptionObject current = lvIssueAttachments.getAdapter().getItem(i);
-                if (((Attachment)current.getObject()).getId() == ((Attachment)listObject.getObject()).getId()) {
+                if (((Attachment<?>)current.getObject()).getId() == ((Attachment<?>)listObject.getObject()).getId()) {
                     lvIssueAttachments.getAdapter().deleteItem(i);
                 }
             }
@@ -125,15 +127,14 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         try {
             if(getActivity()!=null) {
                 BaseDescriptionObject listObject = this.lvIssueAttachments.getAdapter().getObject();
-                Object id = ((Attachment)listObject.getObject()).getId();
+                Object id = ((Attachment<?>)listObject.getObject()).getId();
                 new Thread(()->{
                     try {
-                        bugService.deleteAttachment(id, null, null);
+                        this.bugService.deleteAttachment(id, null, null);
                         getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
                     } catch (Exception ex) {
                         getActivity().runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity()));
@@ -185,7 +186,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                     if (getContext() != null) {
                         InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
                         if (imageStream != null) {
-                            Attachment attachment = new Attachment();
+                            Attachment<?> attachment = new Attachment<>();
                             attachment.setDownloadUrl(imageUri.getPath());
                             attachment.setFilename(this.getFileName(imageUri));
                             attachment.setContentType(data.getType());
@@ -203,7 +204,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 if (data != null) {
                     if (data.getData() != null) {
                         if (this.getContext() != null) {
-                            Attachment attachment = new Attachment();
+                            Attachment<?> attachment = new Attachment<>();
                             attachment.setDownloadUrl(data.getData().getPath());
                             attachment.setFilename(this.getFileName(data.getData()));
 
@@ -245,20 +246,19 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
 
     @Override
     public void setObject(DescriptionObject descriptionObject) {
-        this.issue = (Issue) descriptionObject;
+        this.issue = (Issue<?>) descriptionObject;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
-        Issue issue = (Issue) descriptionObject;
+        Issue<?> issue = (Issue<?>) descriptionObject;
 
         if (this.root != null) {
             issue.getAttachments().clear();
             for (int i = 0; i <= lvIssueAttachments.getAdapter().getItemCount() - 1; i++) {
                 BaseDescriptionObject ls = lvIssueAttachments.getAdapter().getItem(i);
                 if (ls != null) {
-                    issue.getAttachments().add(ls.getObject());
+                    issue.getAttachments().add((Attachment) ls.getObject());
                 }
             }
         }
@@ -280,7 +280,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     protected void initData() {
         this.lvIssueAttachments.getAdapter().clear();
         for (Object obj : this.issue.getAttachments()) {
-            Attachment attachment = (Attachment) obj;
+            Attachment<?> attachment = (Attachment<?>) obj;
 
             BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
             baseDescriptionObject.setObject(attachment);
@@ -292,7 +292,16 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                 content = attachment.getContent();
             } else {
                 try {
-                    content = ConvertHelper.convertDrawableToByteArray(this.getResources().getDrawable(R.drawable.icon_issues_attachments));
+                    content = ConvertHelper.convertDrawableToByteArray(
+                        Objects.requireNonNull(
+                            ResourcesCompat.getDrawable(
+                                this.getResources(),
+                                R.drawable.icon_issues_attachments,
+                                requireContext().getTheme()
+                            )
+                        )
+                    );
+
                 } catch (Exception ex) {
                     this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
                     continue;

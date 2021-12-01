@@ -46,7 +46,7 @@ import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
 public class DiagramHelper {
     private final Activity activity;
-    private Map<Authentication, Map<Project<?>, List<Issue<?>>>> data;
+    private final Map<Authentication, Map<Project<?>, List<Issue<?>>>> data;
     private List<Authentication> authentications;
     private TimeSpan timeSpan;
     private int year, month;

@@ -217,7 +217,7 @@ public interface IBugService<T> {
      * @param issue_id the ID of the Issue
      * @param project_id the ID of the Project
      */
-    void deleteAttachment(T id, T issue_id, T project_id) throws Exception;
+    void deleteAttachment(Object id, T issue_id, T project_id) throws Exception;
 
 
     /**

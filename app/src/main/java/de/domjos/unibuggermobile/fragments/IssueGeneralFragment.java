@@ -279,7 +279,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     @Override
     @SuppressWarnings("unchecked")
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
-        Issue issue = (Issue) descriptionObject;
+        this.issue = (Issue) descriptionObject;
 
         if (this.root != null) {
             issue.setTitle(this.txtIssueGeneralSummary.getText().toString());

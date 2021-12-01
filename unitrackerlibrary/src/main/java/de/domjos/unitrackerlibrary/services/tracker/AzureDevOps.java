@@ -21,12 +21,9 @@ package de.domjos.unitrackerlibrary.services.tracker;
 import android.content.Context;
 import android.util.Base64;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -191,7 +188,7 @@ public final class AzureDevOps extends JSONEngine implements IBugService<String>
     }
 
     @Override
-    public void deleteAttachment(String id, String issue_id, String project_id) throws Exception {
+    public void deleteAttachment(Object id, String issue_id, String project_id) throws Exception {
 
     }
 

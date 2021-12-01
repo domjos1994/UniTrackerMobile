@@ -465,7 +465,7 @@ public final class Github extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) {
     }
 
     @Override

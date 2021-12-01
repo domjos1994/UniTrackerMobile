@@ -19,9 +19,7 @@
 package de.domjos.unitrackerlibrary.services.tracker;
 
 import android.content.Context;
-import android.widget.ProgressBar;
 
-import de.domjos.customwidgets.model.tasks.ProgressBarTask;
 import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -546,7 +544,7 @@ public final class Backlog extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) throws Exception {
         this.deleteRequest("/api/v2/issues/" + issue_id + "/attachments/" + id + "?" + this.authParams);
     }
 

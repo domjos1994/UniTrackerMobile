@@ -639,7 +639,7 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) {
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) {
         this.getWritableDatabase().execSQL("DELETE FROM attachments WHERE id=" + id);
     }
 

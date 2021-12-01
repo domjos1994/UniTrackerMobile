@@ -307,6 +307,7 @@ public class Helper {
         }
     }
 
+    @SuppressWarnings("BusyWait")
     public static void showPasswordDialog(Activity activity, boolean firstLogin, boolean changePassword, Runnable successRunnable) {
         try {
             Dialog pwdDialog = new Dialog(activity);
