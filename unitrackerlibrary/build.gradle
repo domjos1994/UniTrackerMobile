@@ -25,8 +25,6 @@ android {
     defaultConfig {
         minSdkVersion propMinVersion
         targetSdkVersion propCompVersion
-        versionCode propVersion
-        versionName propVersionCode
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -43,10 +41,13 @@ android {
         targetCompatibility = propJavaVersion
         sourceCompatibility = propJavaVersion
     }
-
     packagingOptions {
-        exclude '**/KXmlParser.class'
+        resources {
+            excludes += ['**/KXmlParser.class']
+        }
     }
+
+    namespace 'de.domjos.unitrackerlibrary'
 }
 
 dependencies {

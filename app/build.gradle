@@ -50,10 +50,13 @@ android {
         targetCompatibility = propJavaVersion
         sourceCompatibility = propJavaVersion
     }
-
     packagingOptions {
-        exclude '**/JavaMethod.class'
+        resources {
+            excludes += ['**/JavaMethod.class']
+        }
     }
+
+    namespace 'de.domjos.unibuggermobile'
 }
 
 repositories {
