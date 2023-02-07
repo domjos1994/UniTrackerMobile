@@ -39,7 +39,7 @@ import de.domjos.unibuggermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
     static final String NO_PASS = "noPassword";
-    private Context context;
+    private final Context context;
     private String password;
     private Crypto crypto;
 
@@ -75,7 +75,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         this.initDatabase(db);
         this.updateDatabase(db);
 
-        this.addColumnIfNotExists(db, "accounts", "authentication", Types.VARCHAR, 50, Authentication.Auth.Basic.name(), true);
+        this.addColumnIfNotExists(db, Authentication.Auth.Basic.name());
     }
 
     private SQLiteDatabase getReadableDatabase() {
@@ -222,18 +222,6 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         }
     }
 
-    boolean duplicated(String table, String column, String value, String where) {
-        boolean duplicated = false;
-        SQLiteDatabase db = this.getReadableDatabase();
-        where = where.trim().isEmpty() ? "" : " AND " + where;
-        Cursor cursor = db.rawQuery((String.format("SELECT %s FROM %s WHERE %s=?", column, table, column) + where), new String[]{value});
-        while (cursor.moveToNext()) {
-            duplicated = true;
-        }
-        cursor.close();
-        return duplicated;
-    }
-
     public void delete(String table, String column, Object value) {
         if (value == null) {
             this.getWritableDatabase().execSQL("DELETE FROM " + table);
@@ -278,14 +266,14 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         }
     }
 
-    private void addColumnIfNotExists(SQLiteDatabase db, String table, String column, int type, int length, String defaultValue, boolean notNull) {
+    private void addColumnIfNotExists(SQLiteDatabase db, String defaultValue) {
         try {
-            if(this.columnNotExists(db, table, column)) {
+            if(this.columnNotExists(db)) {
                 Map<Integer, String> types = this.getAllJdbcTypeNames();
-                String typeString = types.get(type);
+                String typeString = types.get(Types.VARCHAR);
                 if(typeString!=null) {
                     if(typeString.equalsIgnoreCase("varchar")) {
-                        typeString += "(" + length + ")";
+                        typeString += "(" + 50 + ")";
                     }
                 } else {
                     return;
@@ -297,11 +285,9 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                         typeString += " DEFAULT ''";
                     }
                 }
-                if(notNull) {
-                    typeString += " NOT NULL";
-                }
+                typeString += " NOT NULL";
 
-                db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", table, column, typeString));
+                db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", "accounts", "authentication", typeString));
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
@@ -319,11 +305,11 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         return result;
     }
 
-    private boolean columnNotExists(SQLiteDatabase db, String table, String column) {
+    private boolean columnNotExists(SQLiteDatabase db) {
         boolean exists = false;
-        Cursor cursor = db.rawQuery("PRAGMA table_info(" + table + ")", null);
+        Cursor cursor = db.rawQuery("PRAGMA table_info(" + "accounts" + ")", null);
         while (cursor.moveToNext()) {
-            if(cursor.getString(1).equals(column)) {
+            if(cursor.getString(1).equals("authentication")) {
                 exists = true;
                 break;
             }

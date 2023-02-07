@@ -541,7 +541,7 @@ public final class Bugzilla extends JSONEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) throws Exception {
         this.deleteRequest("/rest/bug/attachment/" + id + "?" + this.loginParams);
     }
 

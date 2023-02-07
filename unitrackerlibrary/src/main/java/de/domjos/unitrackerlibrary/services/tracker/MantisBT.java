@@ -831,12 +831,22 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     @Override
-    public void deleteAttachment(Long id, Long issue_id, Long project_id) throws Exception {
-        if(id != 0) {
-            SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
-            deleteRequest.addProperty("issue_attachment_id", id);
-            Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
-            this.getResult(deleteObject);
+    public void deleteAttachment(Object id, Long issue_id, Long project_id) throws Exception {
+        if(id instanceof Integer) {
+            int intId = (int) id;
+            if(intId != 0) {
+                SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
+                deleteRequest.addProperty("issue_attachment_id", id);
+                Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
+                this.getResult(deleteObject);
+            }
+        } else {
+            if(id != null) {
+                SoapObject deleteRequest = new SoapObject(super.soapPath, "mc_issue_attachment_delete");
+                deleteRequest.addProperty("issue_attachment_id", id);
+                Object deleteObject = this.executeAction(deleteRequest, "mc_issue_attachment_delete", true);
+                this.getResult(deleteObject);
+            }
         }
     }
 
