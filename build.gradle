@@ -28,8 +28,8 @@ ext.propCompVersion = 34
 ext.propMinVersion = 26
 
 // libraries
-ext.propAndPreferences = "1.1.1"
-ext.propAndAppCompat = "1.2.0"
+ext.propAndPreferences = "1.2.1"
+ext.propAndAppCompat = "1.7.0"
 ext.propCustomWidgetsVersion = "3.5.1"
 
 buildscript {

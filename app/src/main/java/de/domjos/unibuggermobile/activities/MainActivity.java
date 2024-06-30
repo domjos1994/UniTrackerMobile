@@ -44,7 +44,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
@@ -350,7 +349,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
             this.firstLogIn = this.settings.isFirstLogin(false);
-            MobileAds.initialize(this, initializationStatus -> Helper.showPasswordDialog(MainActivity.this, this.firstLogIn, false, this::executeOnSuccess));
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
@@ -476,8 +474,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
             if(this.firstLogIn) {
                 Helper.showWhatsNewDialog(this);
-            } else {
-                IntentHelper.loadAd(this.getApplicationContext());
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);

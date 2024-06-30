@@ -379,8 +379,6 @@ public final class AccountActivity extends AbstractActivity {
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
         this.txtAccountServer.setText(Authentication.Tracker.Local.name());
-
-        IntentHelper.loadAd(this);
     }
 
     private void fillAuthByTracker(Authentication.Tracker tracker) {

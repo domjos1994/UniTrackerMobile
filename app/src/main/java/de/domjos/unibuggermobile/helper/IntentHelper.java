@@ -25,10 +25,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -73,21 +69,6 @@ public class IntentHelper {
         intent.setDataAndType(uri, mimeType);
         intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         activity.startActivity(intent);
-    }
-
-    public static void loadAd(Context context) {
-        if(MainActivity.GLOBALS.getSettings(context).showAd()) {
-            InterstitialAd interstitialAd = new InterstitialAd(context);
-            interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key_testing));
-            // ToDo replace with interstitialAd.setAdUnitId(context.getString(R.string.ad_mob_key));
-            interstitialAd.loadAd(new AdRequest.Builder().build());
-            interstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    interstitialAd.show();
-                }
-            });
-        }
     }
 
     private static File saveFile(byte[] bytes, Activity activity) throws Exception {
