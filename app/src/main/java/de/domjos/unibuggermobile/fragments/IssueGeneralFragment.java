@@ -20,8 +20,6 @@ package de.domjos.unibuggermobile.fragments;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -242,10 +240,6 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.txtIssueGeneralFixedInVersion = this.root.findViewById(R.id.txtIssueGeneralFixedInVersion);
         this.cmdIssueGeneralSummaryToDescription = this.root.findViewById(R.id.cmdIssueGeneralSummaryToDescription);
 
-        this.txtIssueGeneralPlatform.addTextChangedListener(this.initTextWatcher());
-        this.txtIssueGeneralBuild.addTextChangedListener(this.initTextWatcher());
-        this.txtIssueGeneralOs.addTextChangedListener(this.initTextWatcher());
-
         this.initVersions();
 
         this.updateUITrackerSpecific();
@@ -394,22 +388,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
             }
 
             this.cmdIssueGeneralSmartPhone.setOnClickListener(v -> {
-                String os = this.txtIssueGeneralOs.getText().toString().trim();
-                String build = this.txtIssueGeneralBuild.getText().toString().trim();
-                String platform = this.txtIssueGeneralPlatform.getText().toString().trim();
+                String smartPhone = "SmartPhone";
+                String android = "Android";
 
-                if(!os.isEmpty() || !build.isEmpty() || !platform.isEmpty()) {
-                    this.txtIssueGeneralPlatform.setText("");
-                    this.txtIssueGeneralOs.setText("");
-                    this.txtIssueGeneralBuild.setText("");
-                } else {
-                    String smartPhone = "SmartPhone";
-                    String android = "Android";
-
-                    this.txtIssueGeneralPlatform.setText(smartPhone);
-                    this.txtIssueGeneralOs.setText(android);
-                    this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
-                }
+                this.txtIssueGeneralPlatform.setText(smartPhone);
+                this.txtIssueGeneralOs.setText(android);
+                this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
             });
 
             this.cmdIssueGeneralSummaryToDescription.setOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.txtIssueGeneralSummary.getText().toString()));
@@ -647,32 +631,5 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralTargetVersion.setAdapter(arrayAdapter);
             this.txtIssueGeneralFixedInVersion.setAdapter(arrayAdapter);
         }
-    }
-
-    private void checkProfile() {
-        String os = this.txtIssueGeneralOs.getText().toString().trim();
-        String build = this.txtIssueGeneralBuild.getText().toString().trim();
-        String platform = this.txtIssueGeneralPlatform.getText().toString().trim();
-
-        if(!os.isEmpty() || !build.isEmpty() || !platform.isEmpty()) {
-            this.cmdIssueGeneralSmartPhone.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.requireActivity(), R.drawable.ic_delete_black_24dp));
-        } else {
-            this.cmdIssueGeneralSmartPhone.setImageDrawable(ConvertHelper.convertResourcesToDrawable(this.requireActivity(), R.drawable.icon_issues_general_profile));
-        }
-    }
-
-    private TextWatcher initTextWatcher() {
-        return new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                checkProfile();
-            }
-        };
     }
 }

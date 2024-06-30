@@ -167,39 +167,33 @@ public final class VersionActivity extends AbstractActivity {
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navAdd:
-                    this.manageControls(true, true, false);
-                    break;
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navDelete:
-                    try {
-                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion.getId()).get();
+            if(menuItem.getItemId() == R.id.navAdd) {
+                this.manageControls(true, true, false);
+            } else if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navDelete) {
+                try {
+                    new VersionTask(VersionActivity.this, this.bugService, this.currentProject, true, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion.getId()).get();
+                    this.reload();
+                    this.manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                }
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.manageControls(false, true, false);
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.versionValidator.getState()) {
+                        this.controlsToObject();
+                        new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion).get();
                         this.reload();
                         this.manageControls(false, true, false);
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                    } else {
+                        super.createSnackBar(this.versionValidator.getResult());
                     }
-                    break;
-                case R.id.navCancel:
-                    this.manageControls(false, true, false);
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.versionValidator.getState()) {
-                            this.controlsToObject();
-                            new VersionTask(VersionActivity.this, this.bugService, this.currentProject, false, this.settings.showNotifications(), "", R.drawable.icon_versions).execute(this.currentVersion).get();
-                            this.reload();
-                            this.manageControls(false, true, false);
-                        } else {
-                            super.createSnackBar(this.versionValidator.getResult());
-                        }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
-                    }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                }
             }
             return true;
         });
@@ -381,41 +375,37 @@ public final class VersionActivity extends AbstractActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         RoadMapDialog roadMapDialog;
-        switch (item.getItemId()) {
-            case R.id.menChangelog:
-                FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
-                dialog.setDialogSelectionListener(files -> {
-                    try {
-                        if(files != null) {
-                            if (this.currentVersion != null) {
-                                Object vid = this.currentVersion.getId();
-                                Object pid = this.currentProject;
+        if(item.getItemId() == R.id.menChangelog) {
+            FilePickerDialog dialog = Helper.initFilePickerDialog(VersionActivity.this, true, null, this.getString(R.string.versions_menu_changelog_dir));
+            dialog.setDialogSelectionListener(files -> {
+                try {
+                    if(files != null) {
+                        if (this.currentVersion != null) {
+                            Object vid = this.currentVersion.getId();
+                            Object pid = this.currentProject;
 
-                                this.pbVersion.setVisibility(View.VISIBLE);
-                                ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
-                                exportTask.after(o -> {
-                                    pbVersion.setVisibility(View.GONE);
-                                    MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
-                                });
-                                exportTask.execute(vid);
-                            } else {
-                                MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
-                            }
+                            this.pbVersion.setVisibility(View.VISIBLE);
+                            ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
+                            exportTask.after(o -> {
+                                pbVersion.setVisibility(View.GONE);
+                                MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
+                            });
+                            exportTask.execute(vid);
+                        } else {
+                            MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
                     }
-                });
-                dialog.show();
-                break;
-            case R.id.menShowChangelog:
-                roadMapDialog = RoadMapDialog.newInstance(false, this.currentProject, this.currentVersion.getId());
-                roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
-                break;
-            case R.id.menShowRoadMap:
-                roadMapDialog = RoadMapDialog.newInstance(true, this.currentProject, this.currentVersion.getId());
-                roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
-                break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                }
+            });
+            dialog.show();
+        } else if(item.getItemId() == R.id.menShowChangelog) {
+            roadMapDialog = RoadMapDialog.newInstance(false, this.currentProject, this.currentVersion.getId());
+            roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
+        } else if(item.getItemId() == R.id.menShowRoadMap) {
+            roadMapDialog = RoadMapDialog.newInstance(true, this.currentProject, this.currentVersion.getId());
+            roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
         }
         return super.onOptionsItemSelected(item);
     }

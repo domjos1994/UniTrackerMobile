@@ -113,39 +113,33 @@ public final class FieldActivity extends AbstractActivity {
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navAdd:
-                    this.manageControls(true, true, false);
-                    break;
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navDelete:
-                    try {
-                        new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField.getId()).get();
+            if(menuItem.getItemId() == R.id.navAdd) {
+                this.manageControls(true, true, false);
+            } else if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navDelete) {
+                try {
+                    new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField.getId()).get();
+                    this.reload();
+                    this.manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                }
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.manageControls(false, true, false);
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.fieldValidator.getState()) {
+                        this.controlsToObject();
+                        new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField).get();
                         this.reload();
                         this.manageControls(false, true, false);
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                    } else {
+                        super.createSnackBar(this.fieldValidator.getResult());
                     }
-                    break;
-                case R.id.navCancel:
-                    this.manageControls(false, true, false);
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.fieldValidator.getState()) {
-                            this.controlsToObject();
-                            new FieldTask(FieldActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_custom_fields).execute(this.currentField).get();
-                            this.reload();
-                            this.manageControls(false, true, false);
-                        } else {
-                            super.createSnackBar(this.fieldValidator.getResult());
-                        }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
-                    }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                }
             }
             return true;
         });

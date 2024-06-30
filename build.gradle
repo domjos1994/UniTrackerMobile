@@ -17,15 +17,15 @@
  */
 
 // app-versions
-ext.propVersion = 31
-ext.propVersionCode = "1.3"
+ext.propVersion = 32
+ext.propVersionCode = "1.4"
 
 // java-level
-ext.propJavaVersion = "8"
+ext.propJavaVersion = "17"
 
 // android-versions
-ext.propCompVersion = 29
-ext.propMinVersion = 20
+ext.propCompVersion = 34
+ext.propMinVersion = 26
 
 // libraries
 ext.propAndPreferences = "1.1.1"
@@ -35,27 +35,26 @@ ext.propCustomWidgetsVersion = "3.5.1"
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath 'com.android.tools.build:gradle:8.5.0'
     }
 }
 
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/ksoap2-android-releases/' }
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }
 
-task customZip(type: Zip) {
+tasks.register('customZip', Zip) {
     clean
     from '.'
     include 'build.gradle'
@@ -73,7 +72,7 @@ task customZip(type: Zip) {
     destinationDirectory = file(rootProject.rootDir)
 }
 
-task archiveReleases(type: Copy) {
+tasks.register('archiveReleases', Copy) {
     def appPath = projectDir.toString() + "/app"
     def releasePath = appPath + "/release"
     def apkDebugPath = appPath + "/build/outputs/apk/debug"
@@ -86,10 +85,10 @@ task archiveReleases(type: Copy) {
     // generate path
     def release
     def type
-    if(propVersionCode.contains(".beta")) {
+    if (propVersionCode.contains(".beta")) {
         release = propVersionCode.split("\\.beta")[0].trim()
         type = "beta/"
-    } else if(propVersionCode.contains(".alpha")) {
+    } else if (propVersionCode.contains(".alpha")) {
         release = propVersionCode.split("\\.alpha")[0].trim()
         type = "alpha/"
     } else {

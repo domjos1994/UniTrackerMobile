@@ -397,4 +397,6 @@
 
     <string name="ad_mob_key" translatable="false">ca-app-pub-4983888966373182/5163399444</string>
     <string name="ad_mob_key_testing" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+
+    <string name="task_loader_title" translatable="false">Loading-Task</string>
 </resources>

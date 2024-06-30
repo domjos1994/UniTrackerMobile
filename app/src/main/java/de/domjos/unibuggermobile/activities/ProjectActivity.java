@@ -159,58 +159,52 @@ public final class ProjectActivity extends AbstractActivity {
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
             final ProjectTask[] task = new ProjectTask[1];
-            switch (menuItem.getItemId()) {
-                case R.id.navAdd:
-                    this.manageControls(true, true, false);
-                    break;
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navDelete:
-                    try {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
-                        builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
-                        builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
-                            try {
-                                task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications(), R.drawable.icon_projects);
-                                task[0].execute(this.currentProject.getId()).get();
-                                if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
-                                    MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
-                                } else {
-                                    this.reload();
-                                    this.manageControls(false, false, false);
-                                }
-                            } catch (Exception ex) {
-                                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
-                            }
-                        });
-                        builder.create().show();
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
-                    }
-                    break;
-                case R.id.navCancel:
-                    this.manageControls(false, false, false);
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.projectValidator.getState()) {
-                            this.controlsToObject();
-                            task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
-                            task[0].execute(this.currentProject).get();
-                            if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+            if(menuItem.getItemId() == R.id.navAdd) {
+                this.manageControls(true, true, false);
+            } else if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navDelete) {
+                try {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(ProjectActivity.this);
+                    builder.setTitle(R.string.sys_delete).setMessage(R.string.projects_msg);
+                    builder.setPositiveButton(R.string.projects_msg_positive, (dialog, which) -> {
+                        try {
+                            task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications(), R.drawable.icon_projects);
+                            task[0].execute(this.currentProject.getId()).get();
+                            if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
                                 MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
                             } else {
                                 this.reload();
                                 this.manageControls(false, false, false);
                             }
-                        } else {
-                            super.createSnackBar(this.projectValidator.getResult());
+                        } catch (Exception ex) {
+                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                    });
+                    builder.create().show();
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                }
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.manageControls(false, false, false);
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.projectValidator.getState()) {
+                        this.controlsToObject();
+                        task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
+                        task[0].execute(this.currentProject).get();
+                        if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
+                            MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                        } else {
+                            this.reload();
+                            this.manageControls(false, false, false);
+                        }
+                    } else {
+                        super.createSnackBar(this.projectValidator.getResult());
                     }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                }
             }
             return true;
         });

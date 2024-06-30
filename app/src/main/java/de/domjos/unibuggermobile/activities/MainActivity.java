@@ -18,6 +18,7 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -355,6 +356,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         try {
@@ -366,88 +368,84 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Issue<?> issue = issueTask.execute(((Issue<?>)currentObject.getObject()).getId()).get().get(0);
             this.notId = issueTask.getId();
 
-            switch (item.getItemId()) {
-                case R.id.ctxSolve:
-                    String statusArray = "";
-                    int position = -1;
-                    Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
-                    switch (authentication.getTracker()) {
-                        case MantisBT:
-                            position = 5;
-                            statusArray = "issues_general_status_mantisbt_values";
-                            List<String> items = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_values");
-                            int id = ArrayHelper.getIdOfEnum(MainActivity.this, 5, "issues_general_resolution_values");
-                            issue.setResolution(id, items.get(5));
-                            break;
-                        case YouTrack:
-                            statusArray = "issues_general_status_youtrack_values";
-                            position = 7;
-                            break;
-                        case RedMine:
-                            statusArray = "issues_general_status_redmine_values";
-                            position = 2;
-                            break;
-                        case Bugzilla:
-                            statusArray = "issues_general_status_bugzilla_values";
-                            position = 2;
-                            List<String> resItems = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_bugzilla_values");
-                            int resId = ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_bugzilla_values");
-                            issue.setResolution(resId, resItems.get(1));
-                            break;
-                        case Jira:
-                            statusArray = "issues_general_status_jira_values";
-                            position = 2;
-                            break;
-                        case PivotalTracker:
-                            statusArray = "issues_general_status_pivotal_values";
-                            position = 2;
-                            break;
-                        case OpenProject:
-                            statusArray = "issues_general_status_openproject_values";
-                            position = 12;
-                            break;
-                        case Backlog:
-                            statusArray = "issues_general_status_backlog_values";
-                            position = 2;
-                            break;
-                        case Local:
-                            statusArray = "issues_general_status_mantisbt_values";
-                            position = 5;
-                            break;
-                    }
+            if(item.getItemId() == R.id.ctxSolve) {
+                String statusArray = "";
+                int position = -1;
+                Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
+                switch (authentication.getTracker()) {
+                    case MantisBT:
+                        position = 5;
+                        statusArray = "issues_general_status_mantisbt_values";
+                        List<String> items = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_values");
+                        int id = ArrayHelper.getIdOfEnum(MainActivity.this, 5, "issues_general_resolution_values");
+                        issue.setResolution(id, items.get(5));
+                        break;
+                    case YouTrack:
+                        statusArray = "issues_general_status_youtrack_values";
+                        position = 7;
+                        break;
+                    case RedMine:
+                        statusArray = "issues_general_status_redmine_values";
+                        position = 2;
+                        break;
+                    case Bugzilla:
+                        statusArray = "issues_general_status_bugzilla_values";
+                        position = 2;
+                        List<String> resItems = ArrayHelper.getValues(MainActivity.this, "issues_general_resolution_bugzilla_values");
+                        int resId = ArrayHelper.getIdOfEnum(MainActivity.this, 1, "issues_general_resolution_bugzilla_values");
+                        issue.setResolution(resId, resItems.get(1));
+                        break;
+                    case Jira:
+                        statusArray = "issues_general_status_jira_values";
+                        position = 2;
+                        break;
+                    case PivotalTracker:
+                        statusArray = "issues_general_status_pivotal_values";
+                        position = 2;
+                        break;
+                    case OpenProject:
+                        statusArray = "issues_general_status_openproject_values";
+                        position = 12;
+                        break;
+                    case Backlog:
+                        statusArray = "issues_general_status_backlog_values";
+                        position = 2;
+                        break;
+                    case Local:
+                        statusArray = "issues_general_status_mantisbt_values";
+                        position = 5;
+                        break;
+                }
 
-                    if (!statusArray.isEmpty()) {
-                        Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
-                    }
-                    break;
-                case R.id.ctxClone:
-                    issue.setId(null);
-                    issue.setTitle(issue.getTitle() + " - Copy");
-                    for(int i = 0; i<=issue.getAttachments().size() - 1; i++) {
-                        issue.getAttachments().get(i).setId(null);
-                    }
-                    for(int i = 0; i<=issue.getNotes().size() - 1; i++) {
-                        issue.getNotes().get(i).setId(null);
-                    }
-                    for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
-                        issue.getRelations().get(i).setId(null);
-                    }
-                    IssueTask task = new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues);
-                    task.setId(notId);
-                    task.execute(issue).get();
-                    this.notId = task.getId();
-                    reload();
-                    break;
-                case R.id.ctxShowAttachment:
-                    if (issue != null) {
-                        if (issue.getAttachments() != null) {
-                            if (!issue.getAttachments().isEmpty()) {
-                                List<Attachment<?>> attachments = new LinkedList<>(issue.getAttachments());
-                                Helper.showAttachmentDialog(MainActivity.this, attachments);
-                            }
+                if (!statusArray.isEmpty()) {
+                    Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
+                }
+            } else if(item.getItemId() == R.id.ctxClone) {
+                issue.setId(null);
+                issue.setTitle(issue.getTitle() + " - Copy");
+                for(int i = 0; i<=issue.getAttachments().size() - 1; i++) {
+                    issue.getAttachments().get(i).setId(null);
+                }
+                for(int i = 0; i<=issue.getNotes().size() - 1; i++) {
+                    issue.getNotes().get(i).setId(null);
+                }
+                for(int i = 0; i<=issue.getRelations().size() - 1; i++) {
+                    issue.getRelations().get(i).setId(null);
+                }
+                IssueTask task = new IssueTask(MainActivity.this, this.bugService, pid, false, false, show, R.drawable.icon_issues);
+                task.setId(notId);
+                task.execute(issue).get();
+                this.notId = task.getId();
+                reload();
+            } else if(item.getItemId() == R.id.ctxShowAttachment) {
+                if (issue != null) {
+                    if (issue.getAttachments() != null) {
+                        if (!issue.getAttachments().isEmpty()) {
+                            List<Attachment<?>> attachments = new LinkedList<>(issue.getAttachments());
+                            Helper.showAttachmentDialog(MainActivity.this, attachments);
                         }
                     }
-                    break;
+                }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
@@ -550,7 +548,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (!MainActivity.GLOBALS.getPassword().isEmpty()) {
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setTitle(this.getString(R.string.task_loader_title));
-                baseDescriptionObject.setDescription(this.getString(R.string.task_loader_content));
+                baseDescriptionObject.setDescription(this.getString(R.string.task_loader_title));
                 this.lvMainIssues.getAdapter().clear();
                 this.lvMainIssues.getAdapter().add(baseDescriptionObject);
                 this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
@@ -753,73 +751,50 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.menSettings:
-                intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-                break;
-            case R.id.menHelp:
-                intent = new Intent(this.getApplicationContext(), HelpActivity.class);
-                break;
-            case R.id.menAbout:
-                intent = new Intent(this.getApplicationContext(), InfoActivity.class);
-                intent.putExtra(InfoActivity.CONTENT, String.format(this.getString(R.string.about_content), Helper.getVersion(this.getApplicationContext())));
-                intent.putExtra(InfoActivity.ABOUT, true);
-                break;
-            default:
-                intent = null;
+        Intent intent = null;
+        if(item.getItemId() == R.id.menSettings) {
+            intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+        } else if(item.getItemId() == R.id.menHelp) {
+            intent = new Intent(this.getApplicationContext(), HelpActivity.class);
+        } else if(item.getItemId() == R.id.menAbout) {
+            intent = new Intent(this.getApplicationContext(), InfoActivity.class);
+            intent.putExtra(InfoActivity.CONTENT, String.format(this.getString(R.string.about_content), Helper.getVersion(this.getApplicationContext())));
+            intent.putExtra(InfoActivity.ABOUT, true);
         }
-
         if (intent != null) {
             startActivityForResult(intent, MainActivity.RELOAD_SETTINGS);
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        Intent intent;
+        Intent intent = null;
         int reload = 0;
-        switch (item.getItemId()) {
-            case R.id.navNews:
-                intent = new Intent(this.getApplicationContext(), NewsActivity.class);
-                break;
-            case R.id.navProjects:
-                intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
-                reload = MainActivity.RELOAD_PROJECTS;
-                break;
-            case R.id.navVersions:
-                intent = new Intent(this.getApplicationContext(), VersionActivity.class);
-                break;
-            case R.id.navUsers:
-                intent = new Intent(this.getApplicationContext(), UserActivity.class);
-                break;
-            case R.id.navFields:
-                intent = new Intent(this.getApplicationContext(), FieldActivity.class);
-                break;
-            case R.id.navStatistics:
-                intent = new Intent(this.getApplicationContext(), StatisticsActivity.class);
-                break;
-            case R.id.navAdministration:
-                intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
-                reload = MainActivity.RELOAD_PROJECTS;
-                break;
-            case R.id.navLocalSync:
-                intent = new Intent(this.getApplicationContext(), LocalSyncActivity.class);
-                break;
-            case R.id.navExtendedSearch:
-                intent = new Intent(this.getApplicationContext(), SearchActivity.class);
-                break;
-            case R.id.navCalendar:
-                intent = new Intent(this.getApplicationContext(), CalendarActivity.class);
-                break;
-            case R.id.navExport:
-                intent = new Intent(this.getApplicationContext(), ExportActivity.class);
-                break;
-            default:
-                intent = null;
-                break;
+        if(item.getItemId() == R.id.navNews) {
+            intent = new Intent(this.getApplicationContext(), NewsActivity.class);
+        } else if(item.getItemId() == R.id.navProjects) {
+            intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
+            reload = MainActivity.RELOAD_PROJECTS;
+        } else if(item.getItemId() == R.id.navVersions) {
+            intent = new Intent(this.getApplicationContext(), VersionActivity.class);
+        } else if(item.getItemId() == R.id.navUsers) {
+            intent = new Intent(this.getApplicationContext(), UserActivity.class);
+        } else if(item.getItemId() == R.id.navFields) {
+            intent = new Intent(this.getApplicationContext(), FieldActivity.class);
+        } else if(item.getItemId() == R.id.navStatistics) {
+            intent = new Intent(this.getApplicationContext(), StatisticsActivity.class);
+        } else if(item.getItemId() == R.id.navAdministration) {
+            intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
+            reload = MainActivity.RELOAD_PROJECTS;
+        } else if(item.getItemId() == R.id.navLocalSync) {
+            intent = new Intent(this.getApplicationContext(), LocalSyncActivity.class);
+        } else if(item.getItemId() == R.id.navExtendedSearch) {
+            intent = new Intent(this.getApplicationContext(), SearchActivity.class);
+        } else if(item.getItemId() == R.id.navCalendar) {
+            intent = new Intent(this.getApplicationContext(), CalendarActivity.class);
+        } else if(item.getItemId() == R.id.navExport) {
+            intent = new Intent(this.getApplicationContext(), ExportActivity.class);
         }
 
         if (intent != null) {

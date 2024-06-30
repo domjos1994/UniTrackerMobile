@@ -90,69 +90,65 @@ public final class IssueActivity extends AbstractActivity {
         this.hideFieldsOfNavView();
         int finalNotificationId = notificationId;
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navCancel:
-                    this.setResult(RESULT_OK);
-                    this.finish();
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.pagerAdapter.validate()) {
-                            this.issue = (Issue<?>) this.pagerAdapter.getObject();
-                            ((Issue)this.issue).setId(this.id.equals("") ? null : this.id);
-                            VersionTask versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
-                            List<Version<?>> versions = versionTask.execute(0).get();
-                            boolean exists1 = false, exists2 = false, exists3 = false;
-                            for(Version<?> version : versions) {
-                                if(version.getTitle().trim().equals(issue.getVersion())) {
-                                    exists1 = true;
-                                }
-                                if(version.getTitle().trim().equals(issue.getFixedInVersion())) {
-                                    exists2 = true;
-                                }
-                                if(version.getTitle().trim().equals(issue.getTargetVersion())) {
-                                    exists3 = true;
-                                }
+            if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.setResult(RESULT_OK);
+                this.finish();
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.pagerAdapter.validate()) {
+                        this.issue = (Issue<?>) this.pagerAdapter.getObject();
+                        ((Issue)this.issue).setId(this.id.equals("") ? null : this.id);
+                        VersionTask versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                        List<Version<?>> versions = versionTask.execute(0).get();
+                        boolean exists1 = false, exists2 = false, exists3 = false;
+                        for(Version<?> version : versions) {
+                            if(version.getTitle().trim().equals(issue.getVersion())) {
+                                exists1 = true;
                             }
-
-                            if(!exists1) {
-                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
-                                versionTask.setId(finalNotificationId);
-                                Version<?> current = new Version<>();
-                                current.setTitle(issue.getVersion());
-                                versionTask.execute(current).get();
+                            if(version.getTitle().trim().equals(issue.getFixedInVersion())) {
+                                exists2 = true;
                             }
-                            if(!exists2) {
-                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
-                                versionTask.setId(finalNotificationId);
-                                Version<?> current = new Version<>();
-                                current.setTitle(issue.getFixedInVersion());
-                                versionTask.execute(current).get();
+                            if(version.getTitle().trim().equals(issue.getTargetVersion())) {
+                                exists3 = true;
                             }
-                            if(!exists3) {
-                                versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
-                                versionTask.setId(finalNotificationId);
-                                Version<?> current = new Version<>();
-                                current.setTitle(issue.getTargetVersion());
-                                versionTask.execute(current).get();
-                            }
-
-                            IssueTask issueTask = new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
-                            issueTask.setId(finalNotificationId);
-                            issueTask.execute(this.issue).get();
-                            this.manageControls(false, true, false);
-                            this.setResult(RESULT_OK);
-                            this.finish();
-                        } else {
-                            super.createSnackBar(this.pagerAdapter.getResult());
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+
+                        if(!exists1) {
+                            versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                            versionTask.setId(finalNotificationId);
+                            Version<?> current = new Version<>();
+                            current.setTitle(issue.getVersion());
+                            versionTask.execute(current).get();
+                        }
+                        if(!exists2) {
+                            versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                            versionTask.setId(finalNotificationId);
+                            Version<?> current = new Version<>();
+                            current.setTitle(issue.getFixedInVersion());
+                            versionTask.execute(current).get();
+                        }
+                        if(!exists3) {
+                            versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
+                            versionTask.setId(finalNotificationId);
+                            Version<?> current = new Version<>();
+                            current.setTitle(issue.getTargetVersion());
+                            versionTask.execute(current).get();
+                        }
+
+                        IssueTask issueTask = new IssueTask(IssueActivity.this, this.bugService, pid, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
+                        issueTask.setId(finalNotificationId);
+                        issueTask.execute(this.issue).get();
+                        this.manageControls(false, true, false);
+                        this.setResult(RESULT_OK);
+                        this.finish();
+                    } else {
+                        super.createSnackBar(this.pagerAdapter.getResult());
                     }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                }
             }
             return false;
         });

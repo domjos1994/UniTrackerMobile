@@ -109,39 +109,33 @@ public final class UserActivity extends AbstractActivity {
         // init Navigation-View
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navAdd:
-                    this.manageControls(true, true, false);
-                    break;
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navDelete:
-                    try {
-                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.icon_users).execute(this.currentUser.getId()).get();
+            if(menuItem.getItemId() == R.id.navAdd) {
+                this.manageControls(true, true, false);
+            } else if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navDelete) {
+                try {
+                    new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), true, this.settings.showNotifications(), R.drawable.icon_users).execute(this.currentUser.getId()).get();
+                    this.reload();
+                    this.manageControls(false, true, false);
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                }
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.manageControls(false, true, false);
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.userValidator.getState()) {
+                        this.controlsToObject();
+                        new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_users).execute(this.currentUser).get();
                         this.reload();
                         this.manageControls(false, true, false);
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                    } else {
+                        super.createSnackBar(this.userValidator.getResult());
                     }
-                    break;
-                case R.id.navCancel:
-                    this.manageControls(false, true, false);
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.userValidator.getState()) {
-                            this.controlsToObject();
-                            new UserTask(UserActivity.this, this.bugService, this.currentProject.getId(), false, this.settings.showNotifications(), R.drawable.icon_users).execute(this.currentUser).get();
-                            this.reload();
-                            this.manageControls(false, true, false);
-                        } else {
-                            super.createSnackBar(this.userValidator.getResult());
-                        }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
-                    }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                }
             }
             return true;
         });

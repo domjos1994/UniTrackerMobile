@@ -286,73 +286,67 @@ public final class AccountActivity extends AbstractActivity {
     protected void initControls() {
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
-            switch (menuItem.getItemId()) {
-                case R.id.navAdd:
-                    this.manageControls(true, true, false);
-                    break;
-                case R.id.navEdit:
-                    this.manageControls(true, false, false);
-                    break;
-                case R.id.navDelete:
-                    MainActivity.GLOBALS.getSqLiteGeneral().delete(AccountActivity.ACCOUNTS, "ID", this.currentAccount.getId());
-                    this.manageControls(false, true, false);
-                    this.reload();
-                    break;
-                case R.id.navCancel:
-                    this.manageControls(false, true, false);
-                    break;
-                case R.id.navSave:
-                    try {
-                        if (this.accountValidator.getState()) {
-                            this.controlsToObject();
-                            if(this.accountValidator.checkDuplicatedEntry(this.currentAccount.getTitle(), this.currentAccount.getId(), this.lvAccounts.getAdapter().getList())) {
-                                if (currentAccount.getTracker() == Authentication.Tracker.Github) {
-                                    currentAccount.setAuthentication(Authentication.Auth.OAUTH);
-                                }
+            if(menuItem.getItemId() == R.id.navAdd) {
+                this.manageControls(true, true, false);
+            } else if(menuItem.getItemId() == R.id.navEdit) {
+                this.manageControls(true, false, false);
+            } else if(menuItem.getItemId() == R.id.navDelete) {
+                MainActivity.GLOBALS.getSqLiteGeneral().delete(AccountActivity.ACCOUNTS, "ID", this.currentAccount.getId());
+                this.manageControls(false, true, false);
+                this.reload();
+            } else if(menuItem.getItemId() == R.id.navCancel) {
+                this.manageControls(false, true, false);
+            } else if(menuItem.getItemId() == R.id.navSave) {
+                try {
+                    if (this.accountValidator.getState()) {
+                        this.controlsToObject();
+                        if(this.accountValidator.checkDuplicatedEntry(this.currentAccount.getTitle(), this.currentAccount.getId(), this.lvAccounts.getAdapter().getList())) {
+                            if (currentAccount.getTracker() == Authentication.Tracker.Github) {
+                                currentAccount.setAuthentication(Authentication.Auth.OAUTH);
+                            }
 
-                                new Thread(() -> {
-                                    try {
-                                        if (!chkAccountGuest.isChecked()) {
-                                            if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
-                                                if(currentAccount.getTracker() == Authentication.Tracker.Github) {
-                                                    AccountActivity.authentication = currentAccount;
-                                                    OAuthHelper.startServiceConfig(this, currentAccount);
-                                                }
-                                            }
-                                        }
-                                        IBugService<?> bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
-                                        if (chkAccountGuest.isChecked() || bugService.testConnection()) {
-                                            AccountActivity.this.runOnUiThread(() -> {
-                                                MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);
-                                                MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
-                                                this.manageControls(false, true, false);
-                                                this.reload();
-                                            });
-                                        } else {
-                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
-                                        }
-                                    } catch (Exception ex) {
-                                        Log.v("Exception", ex.toString());
-                                        String msg = ex.getMessage();
-                                        if (msg != null) {
-                                            if (msg.contains("PHP SOAP")) {
-                                                AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round, AccountActivity.this));
-                                            } else {
-                                                AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this));
+                            new Thread(() -> {
+                                try {
+                                    if (!chkAccountGuest.isChecked()) {
+                                        if (currentAccount.getAuthentication() == Authentication.Auth.OAUTH && this.txtAccountAPI.getText().toString().isEmpty()) {
+                                            if(currentAccount.getTracker() == Authentication.Tracker.Github) {
+                                                AccountActivity.authentication = currentAccount;
+                                                OAuthHelper.startServiceConfig(this, currentAccount);
                                             }
                                         }
                                     }
-                                }).start();
-                            } else {
-                                super.createSnackBar(this.accountValidator.getResult());
-                            }
+                                    IBugService<?> bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
+                                    if (chkAccountGuest.isChecked() || bugService.testConnection()) {
+                                        AccountActivity.this.runOnUiThread(() -> {
+                                            MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);
+                                            MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
+                                            this.manageControls(false, true, false);
+                                            this.reload();
+                                        });
+                                    } else {
+                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                    }
+                                } catch (Exception ex) {
+                                    Log.v("Exception", ex.toString());
+                                    String msg = ex.getMessage();
+                                    if (msg != null) {
+                                        if (msg.contains("PHP SOAP")) {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                        } else {
+                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this));
+                                        }
+                                    }
+                                }
+                            }).start();
                         } else {
                             super.createSnackBar(this.accountValidator.getResult());
                         }
-                    } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this);
+                    } else {
+                        super.createSnackBar(this.accountValidator.getResult());
                     }
-                    break;
+                } catch (Exception ex) {
+                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this);
+                }
             }
             return false;
         });
