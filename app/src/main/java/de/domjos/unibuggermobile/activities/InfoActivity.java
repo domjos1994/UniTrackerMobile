@@ -8,7 +8,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.appcompat.widget.Toolbar;
 
-import android.os.Build;
 import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
@@ -59,11 +58,7 @@ public class InfoActivity extends AbstractActivity {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ((TextView) this.findViewById(R.id.lblContent)).setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
-        } else {
-            ((TextView) this.findViewById(R.id.lblContent)).setText(Html.fromHtml(content));
-        }
+        ((TextView) this.findViewById(R.id.lblContent)).setText(Html.fromHtml(content, Html.FROM_HTML_MODE_LEGACY));
         this.floatingActionButton = this.findViewById(R.id.fab);
         this.floatingActionButton.setVisibility(about ? View.VISIBLE : View.GONE);
     }

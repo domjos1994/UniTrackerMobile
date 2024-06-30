@@ -285,7 +285,7 @@ public final class AccountActivity extends AbstractActivity {
     @Override
     protected void initControls() {
         this.navigationView = this.findViewById(R.id.nav_view);
-        this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
+        this.navigationView.setOnItemSelectedListener(menuItem -> {
             if(menuItem.getItemId() == R.id.navAdd) {
                 this.manageControls(true, true, false);
             } else if(menuItem.getItemId() == R.id.navEdit) {

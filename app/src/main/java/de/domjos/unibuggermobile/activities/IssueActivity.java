@@ -68,13 +68,13 @@ public final class IssueActivity extends AbstractActivity {
             this.bugService = Helper.getCurrentBugService(IssueActivity.this);
             IssueTask task = new IssueTask(IssueActivity.this, this.bugService, this.pid, false, true, this.settings.showNotifications(), R.drawable.icon_issues);
             List<Issue<?>> issues;
-            if (this.id.equals("")) {
+            if (this.id.isEmpty()) {
                 issues = task.execute(0).get();
             } else {
                 issues = task.execute(this.id).get();
             }
             notificationId = task.getId();
-            if (issues.size() >= 1) {
+            if (!issues.isEmpty()) {
                 this.issue = issues.get(0);
             }
 
@@ -89,7 +89,7 @@ public final class IssueActivity extends AbstractActivity {
         this.navigationView = this.findViewById(R.id.nav_view);
         this.hideFieldsOfNavView();
         int finalNotificationId = notificationId;
-        this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
+        this.navigationView.setOnItemSelectedListener(menuItem -> {
             if(menuItem.getItemId() == R.id.navEdit) {
                 this.manageControls(true, false, false);
             } else if(menuItem.getItemId() == R.id.navCancel) {
@@ -99,7 +99,7 @@ public final class IssueActivity extends AbstractActivity {
                 try {
                     if (this.pagerAdapter.validate()) {
                         this.issue = (Issue<?>) this.pagerAdapter.getObject();
-                        ((Issue)this.issue).setId(this.id.equals("") ? null : this.id);
+                        ((Issue)this.issue).setId(this.id.isEmpty() ? null : this.id);
                         VersionTask versionTask = new VersionTask(IssueActivity.this, this.bugService, pid, false, this.settings.showNotifications(), "versions", R.drawable.icon_issues);
                         List<Version<?>> versions = versionTask.execute(0).get();
                         boolean exists1 = false, exists2 = false, exists3 = false;
@@ -207,7 +207,7 @@ public final class IssueActivity extends AbstractActivity {
         this.navigationView.getMenu().getItem(0).setVisible(false);
         this.navigationView.getMenu().getItem(2).setVisible(false);
         if(this.id != null) {
-            this.navigationView.getMenu().getItem(1).setVisible(!this.id.equals(""));
+            this.navigationView.getMenu().getItem(1).setVisible(!this.id.isEmpty());
         }
     }
 }

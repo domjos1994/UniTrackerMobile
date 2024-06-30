@@ -91,8 +91,8 @@ public final class AdministrationActivity extends AbstractActivity {
 
                     boolean showData = false;
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications(), R.drawable.icon_projects);
-                    for (Object object : projectTask.execute(0L).get()) {
-                        projectAdapter1.add((Project<?>) object);
+                    for (Project<?> object : projectTask.execute(0L).get()) {
+                        projectAdapter1.add(object);
                         showData = true;
                     }
 
@@ -119,8 +119,8 @@ public final class AdministrationActivity extends AbstractActivity {
                     bugService2 = Helper.getCurrentBugService(authentication, ctx);
 
                     ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications(), R.drawable.icon_projects);
-                    for (Object object : projectTask.execute(0L).get()) {
-                        projectAdapter2.add((Project<?>) object);
+                    for (Project<?> object : projectTask.execute(0L).get()) {
+                        projectAdapter2.add(object);
                     }
                     checkPermissions();
                 } catch (Exception ex) {

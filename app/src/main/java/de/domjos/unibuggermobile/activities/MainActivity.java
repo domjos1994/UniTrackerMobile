@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,6 +37,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
@@ -51,7 +51,6 @@ import com.google.android.material.navigation.NavigationView.OnNavigationItemSel
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.model.tasks.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unitrackerlibrary.cache.CacheGlobals;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -804,7 +803,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private void fillFields() {
         Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
-            if (authentication.getServer().equals("")) {
+            if (authentication.getServer().isEmpty()) {
                 ivMainCover.setImageDrawable(this.getDrawable());
                 lblAccountTitle.setText(R.string.accounts_noAccount);
                 lblMainCommand.setText(R.string.accounts_add);
@@ -839,13 +838,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
-    @SuppressWarnings("deprecation")
     private Drawable getDrawable() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            return getDrawable(R.drawable.icon_accounts);
-        } else {
-            return getResources().getDrawable(R.drawable.icon_accounts);
-        }
+        return AppCompatResources.getDrawable(getApplicationContext(), R.drawable.icon_accounts);
     }
 
     private void selectProject() {
