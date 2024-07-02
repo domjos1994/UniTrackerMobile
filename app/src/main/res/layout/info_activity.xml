@@ -73,8 +73,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
+        android:contentDescription="@string/info_content"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
-        app:srcCompat="@drawable/icon_help"/>
+        app:srcCompat="@drawable/icon_back"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

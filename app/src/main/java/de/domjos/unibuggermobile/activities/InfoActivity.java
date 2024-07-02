@@ -18,9 +18,6 @@
 
 package de.domjos.unibuggermobile.activities;
 
-import android.content.Intent;
-import android.net.Uri;
-
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -33,11 +30,10 @@ import android.widget.TextView;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unibuggermobile.R;
 
-public class InfoActivity extends AbstractActivity {
+public final class InfoActivity extends AbstractActivity {
     public final static String TITLE = "title";
     public final static String CONTENT = "content";
     public final static String ABOUT = "about";
-    private final static String HELP_URL = "https://domjos.de/kontakt.html";
 
     private FloatingActionButton floatingActionButton;
 
@@ -47,10 +43,7 @@ public class InfoActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.floatingActionButton.setOnClickListener(view -> {
-            Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(InfoActivity.HELP_URL));
-            startActivity(browser);
-        });
+        this.floatingActionButton.setOnClickListener(view -> finish());
     }
 
     @Override
