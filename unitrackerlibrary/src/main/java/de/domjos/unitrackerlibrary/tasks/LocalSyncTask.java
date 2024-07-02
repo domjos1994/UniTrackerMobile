@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.tasks;
@@ -35,8 +35,9 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.customwidgets.utils.ConvertHelper;
 
+/** @noinspection rawtypes*/
 public final class LocalSyncTask extends CustomProgressBarTask<Void, String> {
-    private String path;
+    private final String path;
     private Object pid;
 
     public LocalSyncTask(Activity activity, IBugService bugService, boolean showNotifications, String path, Object pid, ProgressBar pbProcess) {

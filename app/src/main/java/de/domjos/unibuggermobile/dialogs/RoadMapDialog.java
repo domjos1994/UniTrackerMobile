@@ -21,7 +21,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.R;

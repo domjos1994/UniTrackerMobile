@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
@@ -44,11 +44,11 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.AzureDevOpsPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 import kotlin.text.Charsets;
 
 public final class AzureDevOps extends JSONEngine implements IBugService<String> {
-    private Authentication authentication;
+    private final Authentication authentication;
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:SS'Z'";
 
     public AzureDevOps(Authentication authentication) {
@@ -60,7 +60,7 @@ public final class AzureDevOps extends JSONEngine implements IBugService<String>
     public boolean testConnection() {
         try {
             List<Project<String>> projects = this.getProjects();
-            if(projects!=null) {
+            if(projects.isEmpty()) {
                 return true;
             }
         } catch (Exception ignored) {}

@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
@@ -35,6 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -45,8 +46,9 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.YoutrackPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
+/** @noinspection rawtypes*/
 public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String PROJECT_FIELDS = "shortName,description,name,archived,id,leader,iconUrl";
     private final static String VERSION_FIELDS = "id,name,values(id,name,description,released,releaseDate,archived)";
@@ -57,7 +59,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     private final static String USER_FIELDS = "id,login,fullName,email";
     private final static String DATE_TIME_FIELD = "dd-MM-yyyy HH:mm:ss";
 
-    private Authentication authentication;
+    private final Authentication authentication;
     private final String hubPart;
 
     public YouTrack(Authentication authentication) {
@@ -123,11 +125,10 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         String url, method;
         if (project.getId() != null) {
             url = "/api/admin/projects/" + project.getId() + "?fields=" + YouTrack.PROJECT_FIELDS;
-            method = "POST";
         } else {
             url = "/api/admin/projects?fields=" + YouTrack.PROJECT_FIELDS;
-            method = "POST";
         }
+        method = "POST";
         JSONObject jsonObject = new JSONObject();
         if (project.getAlias().trim().isEmpty()) {
             project.setAlias(project.getTitle().replace(" ", "_").toLowerCase().replace("-", "_"));
@@ -319,7 +320,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
     public Issue<String> getIssue(String id, String project_id) throws Exception {
         Issue<String> issue = new Issue<>();
         if (id != null) {
-            if (!id.equals("")) {
+            if (!id.isEmpty()) {
                 int status = this.executeRequest("/api/issues/" + id + "?fields=" + YouTrack.ISSUE_FIELDS);
                 if (status == 200 || status == 201) {
                     JSONObject jsonObject = new JSONObject(this.getCurrentMessage());
@@ -670,21 +671,13 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", relationship.getIssue().getId());
 
-        String type = "";
-        switch (relationship.getType().getValue()) {
-            case 0:
-                type = "relates to";
-                break;
-            case 1:
-                type = "is required for";
-                break;
-            case 2:
-                type = "is duplicated by";
-                break;
-            case 3:
-                type = "parent for";
-                break;
-        }
+        String type = switch (relationship.getType().getValue()) {
+            case 0 -> "relates to";
+            case 1 -> "is required for";
+            case 2 -> "is duplicated by";
+            case 3 -> "parent for";
+            default -> "";
+        };
 
         this.executeRequest("/api/issues/" + issue_id + "/links/" + this.getTypeEnum(issue_id).get(type) + "/issues?fields=id", jsonObject.toString(), "POST");
     }
@@ -1055,7 +1048,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
         JSONArray customFieldsArray = new JSONArray();
         for (Map.Entry<CustomField<String>, String> entry : issue.getCustomFields().entrySet()) {
             if(entry.getValue()!=null) {
-                if(!entry.getValue().equals("") || !entry.getValue().equals("null")) {
+                if(!entry.getValue().isEmpty() || !entry.getValue().equals("null")) {
                     if (entry.getValue().trim().equals(entry.getKey().getDefaultValue().trim())) {
                         continue;
                     }
@@ -1097,11 +1090,7 @@ public final class YouTrack extends JSONEngine implements IBugService<String> {
                                     valueObject.put("name", "");
                                     customFieldObject.put("value", this.convertVersionToArray(valueObject, entry.getKey().getDefaultValue(), project_id));
                                 } else {
-                                    if (valueObject != null) {
-                                        customFieldObject.put("value", valueObject);
-                                    } else {
-                                        customFieldObject.put("value", JSONObject.NULL);
-                                    }
+                                    customFieldObject.put("value", Objects.requireNonNullElse(valueObject, JSONObject.NULL));
                                 }
                             } else {
                                 customFieldObject.put("value", JSONObject.NULL);

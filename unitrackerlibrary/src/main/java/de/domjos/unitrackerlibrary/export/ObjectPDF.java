@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.export;
@@ -50,6 +50,7 @@ import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
+/** @noinspection rawtypes*/
 final class ObjectPDF {
     private static final String H1 = "H1", H2 = "H2", H3 = "H3", BODY = "Body";
 
@@ -105,8 +106,7 @@ final class ObjectPDF {
     }
 
     private static void saveElementToPDF(Object object, Document pdfDocument, Map<String, Font> fonts) throws Exception {
-        if(object instanceof Project) {
-            Project<?> project = (Project<?>) object;
+        if(object instanceof Project<?> project) {
             pdfDocument.add(ObjectPDF.addTitle(project.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -127,19 +127,17 @@ final class ObjectPDF {
                 pdfDocument.add(ObjectPDF.addEmptyLine(1));
                 List<String> header = Arrays.asList("Title", "Description", "Released", "Obsolete");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for(Object obj : project.getVersions()) {
-                    Version<?> version = (Version<?>) obj;
+                for(Version<?> obj : project.getVersions()) {
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
-                    mp.add(new AbstractMap.SimpleEntry<>(version.getTitle(), BaseColor.LIGHT_GRAY));
-                    mp.add(new AbstractMap.SimpleEntry<>(version.getDescription(), BaseColor.LIGHT_GRAY));
-                    mp.add(new AbstractMap.SimpleEntry<>(String.valueOf(version.isReleasedVersion()), BaseColor.LIGHT_GRAY));
-                    mp.add(new AbstractMap.SimpleEntry<>(String.valueOf(version.isDeprecatedVersion()), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(obj.getTitle(), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(obj.getDescription(), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(String.valueOf(obj.isReleasedVersion()), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(String.valueOf(obj.isDeprecatedVersion()), BaseColor.LIGHT_GRAY));
                     cells.add(mp);
                 }
                 pdfDocument.add(ObjectPDF.addTable(header, null, cells));
             }
-        } else if(object instanceof Issue) {
-            Issue<?> issue = (Issue<?>) object;
+        } else if(object instanceof Issue<?> issue) {
             pdfDocument.add(ObjectPDF.addTitle(issue.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -172,11 +170,10 @@ final class ObjectPDF {
 
                 List<String> headers = Arrays.asList("Title", "Description");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for(Object obj : issue.getNotes()) {
+                for(Note<?> obj : issue.getNotes()) {
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
-                    Note<?> note = (Note<?>) obj;
-                    mp.add(new AbstractMap.SimpleEntry<>(note.getTitle(), BaseColor.LIGHT_GRAY));
-                    mp.add(new AbstractMap.SimpleEntry<>(note.getDescription(), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(obj.getTitle(), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(obj.getDescription(), BaseColor.LIGHT_GRAY));
                     cells.add(mp);
                 }
 
@@ -189,20 +186,18 @@ final class ObjectPDF {
 
                 List<String> headers = Arrays.asList("Title", "Type", "Value");
                 List<List<Map.Entry<String, BaseColor>>> cells = new LinkedList<>();
-                for(Object obj : issue.getCustomFields().entrySet()) {
-                    Map.Entry<?, ?> entry = (Map.Entry<?, ?>) obj;
+                for(Map.Entry<?, ?> obj : issue.getCustomFields().entrySet()) {
                     List<Map.Entry<String, BaseColor>> mp = new LinkedList<>();
-                    CustomField<?> customField = (CustomField<?>) entry.getKey();
+                    CustomField<?> customField = (CustomField<?>) obj.getKey();
 
                     mp.add(new AbstractMap.SimpleEntry<>(customField.getTitle(), BaseColor.LIGHT_GRAY));
                     mp.add(new AbstractMap.SimpleEntry<>(customField.getType().name(), BaseColor.LIGHT_GRAY));
-                    mp.add(new AbstractMap.SimpleEntry<>(entry.getValue().toString(), BaseColor.LIGHT_GRAY));
+                    mp.add(new AbstractMap.SimpleEntry<>(obj.getValue().toString(), BaseColor.LIGHT_GRAY));
                     cells.add(mp);
                 }
                 pdfDocument.add(ObjectPDF.addTable(headers, new float[]{20f, 20f, 60f}, cells));
             }
-        } else if(object instanceof CustomField) {
-            CustomField<?> customField = (CustomField<?>) object;
+        } else if(object instanceof CustomField<?> customField) {
             pdfDocument.add(ObjectPDF.addTitle(customField.getTitle(), fonts.get(H1), Paragraph.ALIGN_CENTER));
             pdfDocument.add(ObjectPDF.addEmptyLine(3));
 
@@ -227,15 +222,13 @@ final class ObjectPDF {
                     dt.setTime(item);
                     bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(sdf.format(dt), BaseColor.LIGHT_GRAY)));
                 }
-            } else if(value instanceof Date) {
-                Date dt = (Date) value;
+            } else if(value instanceof Date dt) {
                 bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(sdf.format(dt), BaseColor.LIGHT_GRAY)));
             }
         } else {
             if(value instanceof Integer || value instanceof Long || value instanceof Boolean) {
                 bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(String.valueOf(value), BaseColor.LIGHT_GRAY)));
-            } else if(value instanceof String) {
-                String item = (String) value;
+            } else if(value instanceof String item) {
                 if(!item.trim().isEmpty()) {
                     bugTable.add(Arrays.asList(new AbstractMap.SimpleEntry<>(label, BaseColor.GRAY), new AbstractMap.SimpleEntry<>(item, BaseColor.LIGHT_GRAY)));
                 }
@@ -275,7 +268,7 @@ final class ObjectPDF {
                 table.addCell(cell);
             }
         } else {
-            if(cells.size()!=0) {
+            if(!cells.isEmpty()) {
                 table = new PdfPTable(cells.get(0).size());
             } else {
                 table = new PdfPTable(1);
@@ -303,8 +296,9 @@ final class ObjectPDF {
     }
 
     static class PDFPageEvent extends PdfPageEventHelper {
-        private int maxPage;
-        private byte[] background, icon;
+        private final int maxPage;
+        private final byte[] background;
+        private final byte[] icon;
 
         PDFPageEvent(int maxPage, byte[] bg, byte[] icon) {
             this.maxPage = maxPage;

@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 
 import de.domjos.unitrackerlibrary.model.issues.*;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URL;
@@ -39,13 +40,13 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.JiraPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 public final class Jira extends JSONEngine implements IBugService<Long> {
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private final static String DATE_FORMAT = "yyyy-MM-dd";
-    private Authentication authentication;
-    private Map<Long, User<Long>> map;
+    private final Authentication authentication;
+    private final Map<Long, User<Long>> map;
 
     public Jira(Authentication authentication) {
         super(authentication);
@@ -114,14 +115,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
 
     @Override
     public Long insertOrUpdateProject(Project<Long> project) throws Exception {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("key", project.getAlias().toUpperCase());
-        jsonObject.put("name", project.getTitle());
-        jsonObject.put("description", project.getDescription());
-        jsonObject.put("url", project.getWebsite());
-        jsonObject.put("lead", this.authentication.getUserName());
-        jsonObject.put("projectTypeKey", "software");
-        jsonObject.put("projectTemplateKey", "com.pyxis.greenhopper.jira:basic-software-development-template");
+        JSONObject jsonObject = getJsonObject(project);
 
         int status;
         if (project.getId() != null) {
@@ -136,6 +130,18 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         }
 
         return null;
+    }
+
+    private @NonNull JSONObject getJsonObject(Project<Long> project) throws JSONException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("key", project.getAlias().toUpperCase());
+        jsonObject.put("name", project.getTitle());
+        jsonObject.put("description", project.getDescription());
+        jsonObject.put("url", project.getWebsite());
+        jsonObject.put("lead", this.authentication.getUserName());
+        jsonObject.put("projectTypeKey", "software");
+        jsonObject.put("projectTemplateKey", "com.pyxis.greenhopper.jira:basic-software-development-template");
+        return jsonObject;
     }
 
     @Override
@@ -441,6 +447,9 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         return "";
     }
 
+    /** @noinspection RedundantOperationOnEmptyContainer
+     * ToDo Check it
+     * */
     private List<CustomField<Long>> getEnabledCustomFields(Object id) throws Exception {
         List<CustomField<Long>> customFields = new LinkedList<>();
 
@@ -584,8 +593,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             }
 
             for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
-                if(descriptionObject instanceof Note) {
-                    Note<Long> note = (Note<Long>) descriptionObject;
+                if(descriptionObject instanceof Note<Long> note) {
                     this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
             }
@@ -596,8 +604,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
             }
 
             for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
-                if(descriptionObject instanceof Attachment) {
-                    Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                if(descriptionObject instanceof Attachment<Long> attachment) {
                     attachment.setId(null);
                     this.insertOrUpdateAttachment(attachment, Long.parseLong(String.valueOf(issue.getId())), project_id);
                 }
@@ -734,6 +741,15 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         JSONObject jsonObject = new JSONObject();
         JSONObject updateObject = new JSONObject();
         JSONArray linkArray = new JSONArray();
+        JSONObject linkObject = getJsonObject(relationship);
+        linkArray.put(linkObject);
+        updateObject.put("issuelinks", linkArray);
+        jsonObject.put("update", updateObject);
+
+        this.executeRequest("/rest/api/2/issue/" + issue_id, jsonObject.toString(), "PUT");
+    }
+
+    private static @NonNull JSONObject getJsonObject(Relationship<Long> relationship) throws JSONException {
         JSONObject linkObject = new JSONObject();
         JSONObject addObject = new JSONObject();
         JSONObject typeObject = new JSONObject();
@@ -744,11 +760,7 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
         addObject.put("type", typeObject);
         addObject.put("outwardIssue", issueObject);
         linkObject.put("add", addObject);
-        linkArray.put(linkObject);
-        updateObject.put("issuelinks", linkArray);
-        jsonObject.put("update", updateObject);
-
-        this.executeRequest("/rest/api/2/issue/" + issue_id, jsonObject.toString(), "PUT");
+        return linkObject;
     }
 
     private void addIssueLinkFieldIfNotAdded() throws Exception {
@@ -864,28 +876,25 @@ public final class Jira extends JSONEngine implements IBugService<Long> {
 
                         if(fieldObject.getString("id").equals(customField.getHints().get("id"))) {
                             JSONObject schemaObject = fieldObject.getJSONObject("schema");
-                            switch (schemaObject.getString("type").toLowerCase()) {
-                                case "string":
+                            hasAvailableDataType = switch (schemaObject.getString("type").toLowerCase()) {
+                                case "string" -> {
                                     customField.setType(CustomField.Type.TEXT);
-                                    hasAvailableDataType = true;
-                                    break;
-                                case "number":
+                                    yield true;
+                                }
+                                case "number" -> {
                                     customField.setType(CustomField.Type.NUMBER);
-                                    hasAvailableDataType = true;
-                                    break;
-                                case "datetime":
-                                case "date":
+                                    yield true;
+                                }
+                                case "datetime", "date" -> {
                                     customField.setType(CustomField.Type.DATE);
-                                    hasAvailableDataType = true;
-                                    break;
-                                case "array":
+                                    yield true;
+                                }
+                                case "array" -> {
                                     customField.setType(CustomField.Type.MULTI_SELECT_LIST);
-                                    hasAvailableDataType = true;
-                                    break;
-                                default:
-                                    hasAvailableDataType = false;
-                                    break;
-                            }
+                                    yield true;
+                                }
+                                default -> false;
+                            };
                             break;
                         }
                     }

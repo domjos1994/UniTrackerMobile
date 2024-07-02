@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.tasks;
@@ -21,6 +21,8 @@ package de.domjos.unitrackerlibrary.tasks;
 import android.app.Activity;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 import java.util.AbstractMap;
@@ -30,7 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.widgets.calendar.WidgetCalendar;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -39,6 +41,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
+/** @noinspection rawtypes*/
 public final class CalendarTask extends AbstractTask<Void, Map.Entry<Integer, List<TrackerEvent>>, Void> {
     private final WeakReference<ProgressBar> progressBar;
     private final WeakReference<TextView> lbl;
@@ -63,7 +66,7 @@ public final class CalendarTask extends AbstractTask<Void, Map.Entry<Integer, Li
 
     @SafeVarargs
     @Override
-    protected final void onProgressUpdate(Map.Entry<Integer, List<TrackerEvent>>... values) {
+    protected final void onProgressUpdate(@NonNull Map.Entry<Integer, List<TrackerEvent>>... values) {
         int percentage = (int) (100.0 / max * values[0].getKey());
         this.progressBar.get().setProgress(percentage);
 

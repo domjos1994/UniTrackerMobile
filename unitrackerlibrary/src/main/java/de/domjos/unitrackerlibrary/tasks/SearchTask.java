@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.tasks;
@@ -31,9 +31,10 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
+/** @noinspection unchecked, rawtypes */
 public final class SearchTask extends CustomAbstractTask<Integer, Void, List<DescriptionObject<?>>> {
-    private String search, projects, versions;
-    private boolean summary, description;
+    private final String search, projects, versions;
+    private final boolean summary, description;
     private final List<DescriptionObject<?>> issues;
     private final List<IBugService<?>> bugServices;
 
@@ -56,50 +57,19 @@ public final class SearchTask extends CustomAbstractTask<Integer, Void, List<Des
 
 
             for (IBugService<?> service : this.bugServices) {
-                for (Object object : service.getProjects()) {
-                    Project<?> project = (Project<?>) object;
+                for (Project<?> object : service.getProjects()) {
 
-                    boolean contains = false;
-                    if (!this.projects.trim().isEmpty()) {
-                        for (String strProject : projects) {
-                            if (project.getTitle().equals(strProject.trim())) {
-                                if (!this.versions.trim().isEmpty()) {
-                                    for (String strVersion : versions) {
-                                        for (Object objVersion : project.getVersions()) {
-                                            if (((Version<?>) objVersion).getTitle().equals(strVersion.trim())) {
-                                                contains = true;
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    contains = true;
-                                }
-                            }
-                        }
-                    } else {
-                        contains = true;
-                    }
+                    boolean contains = isContains(object, projects, versions);
 
                     if (contains) {
-                        for (Object objIssue : ((IBugService)service).getIssues(project.getId())) {
+                        for (Object objIssue : ((IBugService)service).getIssues(object.getId())) {
                             Issue<?> issue = (Issue<?>) objIssue;
-                            boolean searchSuccess = false;
-
-                            if (summary) {
-                                if (issue.getTitle().contains(search)) {
-                                    searchSuccess = true;
-                                }
-                            }
-                            if (description) {
-                                if (issue.getDescription().contains(search)) {
-                                    searchSuccess = true;
-                                }
-                            }
+                            boolean searchSuccess = isSearchSuccess(issue);
 
                             if (searchSuccess) {
                                 issue.setDescription(service.getAuthentication().getTracker().name());
                                 issue.getHints().put("title", service.getAuthentication().getTitle());
-                                issue.getHints().put("project", project.getId().toString());
+                                issue.getHints().put("project", object.getId().toString());
                                 this.issues.add(issue);
                             }
                         }
@@ -111,5 +81,45 @@ public final class SearchTask extends CustomAbstractTask<Integer, Void, List<Des
             this.printException(ex);
         }
         return this.issues;
+    }
+
+    private boolean isContains(Project<?> object, List<String> projects, List<String> versions) {
+        boolean contains = false;
+        if (!this.projects.trim().isEmpty()) {
+            for (String strProject : projects) {
+                if (object.getTitle().equals(strProject.trim())) {
+                    if (!this.versions.trim().isEmpty()) {
+                        for (String strVersion : versions) {
+                            for (Version<?> objVersion : object.getVersions()) {
+                                if (objVersion.getTitle().equals(strVersion.trim())) {
+                                    contains = true;
+                                }
+                            }
+                        }
+                    } else {
+                        contains = true;
+                    }
+                }
+            }
+        } else {
+            contains = true;
+        }
+        return contains;
+    }
+
+    private boolean isSearchSuccess(Issue<?> issue) {
+        boolean searchSuccess = false;
+
+        if (summary) {
+            if (issue.getTitle().contains(search)) {
+                searchSuccess = true;
+            }
+        }
+        if (description) {
+            if (issue.getDescription().contains(search)) {
+                searchSuccess = true;
+            }
+        }
+        return searchSuccess;
     }
 }

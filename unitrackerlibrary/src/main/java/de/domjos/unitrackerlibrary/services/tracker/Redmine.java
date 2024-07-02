@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
@@ -38,10 +38,10 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.RedminePermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 public final class Redmine extends JSONEngine implements IBugService<Long> {
-    private Authentication authentication;
+    private final Authentication authentication;
     private final static String DATE_FORMAT = "yyyy-MM-dd";
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
@@ -321,7 +321,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
                         String name = statusObject.getString("name");
 
                         issue.getHints().put("status", name);
-                        issue.getHints().put(Issue.RESOLVED, String.valueOf(name.toLowerCase().equals("closed") || name.toLowerCase().equals("resolved")));
+                        issue.getHints().put(Issue.RESOLVED, String.valueOf(name.equalsIgnoreCase("closed") || name.equalsIgnoreCase("resolved")));
                     }
                 }
                 issues.add(issue);
@@ -494,13 +494,13 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         if (issue.getHandler() != null) {
             issueObject.put("assigned_to_id", issue.getHandler().getId());
         }
-        if (!issue.getCategory().equals("")) {
+        if (!issue.getCategory().isEmpty()) {
             issueObject.put("category_id", this.getCategoryId(issue.getCategory(), project_id));
         }
         if (issue.getDueDate() != null) {
             issueObject.put("due_date", new SimpleDateFormat(Redmine.DATE_FORMAT, Locale.GERMAN).format(issue.getDueDate()));
         }
-        if (!issue.getTargetVersion().equals("")) {
+        if (!issue.getTargetVersion().isEmpty()) {
             List<Version<Long>> versions = this.getVersions("", project_id);
             for (Version<Long> version : versions) {
                 if (version.getTitle().equals(issue.getTargetVersion())) {
@@ -544,8 +544,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
         if (issue.getId() != null) {
             if (!issue.getNotes().isEmpty()) {
                 for (DescriptionObject<Long>  descriptionObject : issue.getNotes()) {
-                    if (descriptionObject instanceof Note) {
-                        Note<Long> note = (Note<Long>) descriptionObject;
+                    if (descriptionObject instanceof Note<Long> note) {
                         if (note.getId() == null) {
                             JSONObject jsonObject = new JSONObject();
                             JSONObject issueNoteObject = new JSONObject();
@@ -559,8 +558,7 @@ public final class Redmine extends JSONEngine implements IBugService<Long> {
 
             if (!issue.getAttachments().isEmpty()) {
                 for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
-                    if (descriptionObject instanceof Attachment) {
-                        Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    if (descriptionObject instanceof Attachment<Long> attachment) {
                         if (attachment.getId() == null) {
                             attachment.setFilename(attachment.getFilename().replace(":", "_").replace("/", "_"));
                             status = this.executeRequest("/uploads.json?filename=" + attachment.getFilename(), attachment.getContent(), "POST");

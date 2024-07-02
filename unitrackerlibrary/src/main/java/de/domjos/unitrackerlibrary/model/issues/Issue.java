@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.model.issues;
@@ -38,15 +38,15 @@ public class Issue<T> extends DescriptionObject<T> {
     private String version;
     private String fixedInVersion;
     private String targetVersion;
-    private List<Note<T>> notes;
-    private List<Attachment<T>> attachments;
-    private Map<CustomField<T>, String> customFields;
+    private final List<Note<T>> notes;
+    private final List<Attachment<T>> attachments;
+    private final Map<CustomField<T>, String> customFields;
     private User<T> handler;
     private Profile<T> profile;
     private String tags;
     private String stepsToReproduce;
     private String additionalInformation;
-    private List<Relationship<T>> relations;
+    private final List<Relationship<T>> relations;
 
     public Issue() {
         super();
@@ -232,9 +232,5 @@ public class Issue<T> extends DescriptionObject<T> {
 
     public List<Relationship<T>> getRelations() {
         return relations;
-    }
-
-    public void setRelations(List<Relationship<T>>relations) {
-        this.relations = relations;
     }
 }

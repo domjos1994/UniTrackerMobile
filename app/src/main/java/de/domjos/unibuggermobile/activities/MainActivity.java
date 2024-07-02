@@ -49,7 +49,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.cache.CacheGlobals;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
@@ -64,7 +64,7 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
-import de.domjos.unitrackerlibrary.permissions.NOPERMISSION;
+import de.domjos.unitrackerlibrary.permissions.NoPermission;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
@@ -348,6 +348,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
             this.firstLogIn = this.settings.isFirstLogin(false);
+            Helper.showPasswordDialog(this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
@@ -504,7 +505,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         if (authentication != null) {
 
             if (authentication.getServer().equals("")) {
-                this.permissions = new NOPERMISSION();
+                this.permissions = new NoPermission();
             } else {
                 this.permissions = this.bugService.getPermissions();
             }
@@ -528,7 +529,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.navigationView.getMenu().findItem(R.id.navVersions).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navUsers).setVisible(false);
             this.navigationView.getMenu().findItem(R.id.navFields).setVisible(false);
-            this.permissions = new NOPERMISSION();
+            this.permissions = new NoPermission();
         }
     }
 

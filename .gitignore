@@ -8,3 +8,4 @@
 /.idea/*
 release
 local.properties
+*.hprof

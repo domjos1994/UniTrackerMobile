@@ -1,29 +1,31 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -36,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -47,10 +48,12 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.SQLitePermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
+/** @noinspection rawtypes*/
+@SuppressLint("Range")
 public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> {
-    private Context context;
-    private int id;
-    private Authentication authentication;
+    private final Context context;
+    private final int id;
+    private final Authentication authentication;
 
     public SQLite(Context context, int id, Authentication authentication) {
         super(context, "uniBugger.db", null, id);
@@ -61,13 +64,21 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        this.initDatabase(sqLiteDatabase);
+        try {
+            this.initDatabase(sqLiteDatabase);
+        } catch (Exception ex) {
+            Log.e("SQLite-Error", ex.getLocalizedMessage(), ex);
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        this.initDatabase(sqLiteDatabase);
-        this.updateDatabase(sqLiteDatabase);
+        try {
+            this.initDatabase(sqLiteDatabase);
+            this.updateDatabase(sqLiteDatabase);
+        } catch (Exception ex) {
+            Log.e("SQLite-Error", ex.getLocalizedMessage(), ex);
+        }
     }
 
     @Override
@@ -969,25 +980,17 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
                 );
     }
 
-    private void initDatabase(SQLiteDatabase db) {
-        try {
-            String queries = this.readStringFromRaw(R.raw.init_tracker, context);
-            for (String query : queries.split(";")) {
-                db.execSQL(query.trim());
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+    private void initDatabase(SQLiteDatabase db) throws Exception {
+        String queries = this.readStringFromRaw(R.raw.init_tracker, context);
+        for (String query : queries.split(";")) {
+            db.execSQL(query.trim());
         }
     }
 
-    private void updateDatabase(SQLiteDatabase db) {
-        try {
-            String queries = this.readStringFromRaw(R.raw.update_tracker, context);
-            for (String query : queries.split(";")) {
-                db.execSQL(query.trim());
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+    private void updateDatabase(SQLiteDatabase db) throws Exception {
+        String queries = this.readStringFromRaw(R.raw.update_tracker, context);
+        for (String query : queries.split(";")) {
+            db.execSQL(query.trim());
         }
     }
 
@@ -1026,11 +1029,12 @@ public final class SQLite extends SQLiteOpenHelper implements IBugService<Long> 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
-        InputStream in_s = res.openRawResource(rawID);
+        try(InputStream in_s = res.openRawResource(rawID)) {
 
-        byte[] b = new byte[in_s.available()];
-        in_s.read(b);
-        return new String(b);
+            byte[] b = new byte[in_s.available()];
+            in_s.read(b);
+            return new String(b);
+        }
     }
 
     @Override

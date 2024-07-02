@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
@@ -39,7 +39,7 @@ import de.domjos.unitrackerlibrary.permissions.MantisBTPermissions;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.SoapEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 import static org.ksoap2.serialization.MarshalHashtable.NAMESPACE;
 
@@ -47,9 +47,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     private final static String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
     private String currentMessage;
     private final String LIST_ISSUE_ACTION;
-    private Authentication authentication;
+    private final Authentication authentication;
     private int state;
-    private boolean showSub, showFilter;
+    private final boolean showSub;
+    private final boolean showFilter;
 
     public MantisBT(Authentication authentication, boolean showSub, boolean showFilter) {
         super(authentication, "/api/soap/mantisconnect.php");
@@ -236,8 +237,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         request.addProperty("per_page", -1);
         Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             return vector.size();
         }
         return 0;
@@ -279,12 +279,10 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Map<String, String> enumStatus = this.getEnums(Type.status, null);
         Object object = this.executeAction(request, this.LIST_ISSUE_ACTION, true);
         object = this.getResult(object);
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             SimpleDateFormat sdf = new SimpleDateFormat(MantisBT.DATE_TIME_FORMAT, Locale.GERMAN);
             for (int i = 0; i <= vector.size() - 1; i++) {
-                if (vector.get(i) instanceof SoapObject) {
-                    SoapObject soapObject = (SoapObject) vector.get(i);
+                if (vector.get(i) instanceof SoapObject soapObject) {
                     String id = soapObject.getPropertyAsString("id");
 
                     if (!this.showSub) {
@@ -366,8 +364,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 request.addProperty("issue_id", Integer.parseInt(String.valueOf(id)));
                 Object object = this.executeAction(request, "mc_issue_get", true);
                 object = this.getResult(object);
-                if (object instanceof SoapObject) {
-                    SoapObject soapObject = (SoapObject) object;
+                if (object instanceof SoapObject soapObject) {
                     issue.setTitle(soapObject.getPropertyAsString("summary"));
                     issue.setDescription(soapObject.getPropertyAsString("description"));
                     issue.setCategory(soapObject.getPropertyAsString("category"));
@@ -462,11 +459,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     }
 
                     if (soapObject.hasProperty("notes")) {
-                        if (soapObject.getProperty("notes") instanceof Vector) {
-                            Vector<?> vector = (Vector<?>) soapObject.getProperty("notes");
+                        if (soapObject.getProperty("notes") instanceof Vector<?> vector) {
                             for (int i = 0; i <= vector.size() - 1; i++) {
-                                if (vector.get(i) instanceof SoapObject) {
-                                    SoapObject noteObject = (SoapObject) vector.get(i);
+                                if (vector.get(i) instanceof SoapObject noteObject) {
                                     Note<Long> note = new Note<>();
                                     note.setId(Long.parseLong(noteObject.getPropertyAsString("id")));
                                     note.setDescription(noteObject.getPropertyAsString("text"));
@@ -492,11 +487,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                     }
 
                     if (soapObject.hasProperty("attachments")) {
-                        if (soapObject.getProperty("attachments") instanceof Vector) {
-                            Vector<?> vector = (Vector<?>) soapObject.getProperty("attachments");
+                        if (soapObject.getProperty("attachments") instanceof Vector<?> vector) {
                             for (int i = 0; i <= vector.size() - 1; i++) {
-                                if (vector.get(i) instanceof SoapObject) {
-                                    SoapObject attachmentObject = (SoapObject) vector.get(i);
+                                if (vector.get(i) instanceof SoapObject attachmentObject) {
                                     Attachment<Long> attachment = new Attachment<>();
                                     attachment.setId(Long.parseLong(attachmentObject.getPropertyAsString("id")));
                                     attachment.setFilename(attachmentObject.getPropertyAsString("filename"));
@@ -591,13 +584,13 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             issueObject.addProperty("due_date", sdf.format(issue.getDueDate()));
         }
 
-        if (!issue.getVersion().equals("")) {
+        if (!issue.getVersion().isEmpty()) {
             issueObject.addProperty("version", issue.getVersion());
         }
-        if (!issue.getFixedInVersion().equals("")) {
+        if (!issue.getFixedInVersion().isEmpty()) {
             issueObject.addProperty("fixed_in_version", issue.getFixedInVersion());
         }
-        if (!issue.getTargetVersion().equals("")) {
+        if (!issue.getTargetVersion().isEmpty()) {
             issueObject.addProperty("target_version", issue.getTargetVersion());
         }
 
@@ -670,21 +663,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
         if (!issue.getTags().isEmpty()) {
             List<Tag<Long>> tags = this.getTags(project_id);
-            Vector<SoapObject> tagVector = new Vector<>();
-            for (String strTag : issue.getTags().split(",")) {
-                if(!strTag.trim().isEmpty()) {
-                    if(!tags.isEmpty()) {
-                        for (Tag<Long> tag : tags) {
-                            if (strTag.trim().equals(tag.getTitle())) {
-                                SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
-                                tagObject.addProperty("id", tag.getId());
-                                tagObject.addProperty("name", tag.getTitle());
-                                tagVector.add(tagObject);
-                            }
-                        }
-                    }
-                }
-            }
+            Vector<SoapObject> tagVector = getSoapObjects(issue, tags);
             issueObject.addProperty("tags", tagVector);
         }
 
@@ -734,10 +713,9 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             }
 
             if (!issue.getNotes().isEmpty()) {
-                for (DescriptionObject<Long> descriptionObject : issue.getNotes()) {
-                    if(descriptionObject instanceof Note) {
-                        Note<Long> note = (Note<Long>) descriptionObject;
-                        this.insertOrUpdateNote(note, id, project_id);
+                for (Note<Long> descriptionObject : issue.getNotes()) {
+                    if(descriptionObject != null) {
+                        this.insertOrUpdateNote(descriptionObject, id, project_id);
                     }
                 }
             }
@@ -748,8 +726,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
 
             if (!issue.getAttachments().isEmpty()) {
                 for (DescriptionObject<Long> descriptionObject : issue.getAttachments()) {
-                    if(descriptionObject instanceof Attachment) {
-                        Attachment<Long> attachment = (Attachment<Long>) descriptionObject;
+                    if(descriptionObject instanceof Attachment<Long> attachment) {
                         this.insertOrUpdateAttachment(attachment, id, project_id);
                     }
                 }
@@ -763,6 +740,25 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
                 }
             }
         }
+    }
+
+    private static @NonNull Vector<SoapObject> getSoapObjects(Issue<Long> issue, List<Tag<Long>> tags) {
+        Vector<SoapObject> tagVector = new Vector<>();
+        for (String strTag : issue.getTags().split(",")) {
+            if(!strTag.trim().isEmpty()) {
+                if(!tags.isEmpty()) {
+                    for (Tag<Long> tag : tags) {
+                        if (strTag.trim().equals(tag.getTitle())) {
+                            SoapObject tagObject = new SoapObject(NAMESPACE, "ObjectRef");
+                            tagObject.addProperty("id", tag.getId());
+                            tagObject.addProperty("name", tag.getTitle());
+                            tagVector.add(tagObject);
+                        }
+                    }
+                }
+            }
+        }
+        return tagVector;
     }
 
     @Override
@@ -790,6 +786,13 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             noteRequestObject = new SoapObject(super.soapPath, noteAction);
             noteRequestObject.addProperty("issue_id", issue_id);
         }
+        SoapObject noteObject = getSoapObject(note);
+        noteRequestObject.addProperty("note", noteObject);
+        Object noteResult = this.executeAction(noteRequestObject, noteAction, true);
+        this.getResult(noteResult);
+    }
+
+    private static @NonNull SoapObject getSoapObject(Note<Long> note) {
         SoapObject noteObject = new SoapObject(NAMESPACE, "IssueNoteData");
         if (note.getId() != null) {
             noteObject.addProperty("id", note.getId());
@@ -800,9 +803,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         viewNoteObject.addProperty("id", note.getState().getKey());
         viewNoteObject.addProperty("name", note.getState().getValue());
         noteObject.addProperty("view_state", viewNoteObject);
-        noteRequestObject.addProperty("note", noteObject);
-        Object noteResult = this.executeAction(noteRequestObject, noteAction, true);
-        this.getResult(noteResult);
+        return noteObject;
     }
 
     @Override
@@ -891,8 +892,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         request.addProperty("access", 25);
         Object object = this.executeAction(request, "mc_project_get_users", true);
         object = this.getResult(object);
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject soapObject = (SoapObject) vector.get(i);
                 User<Long> user = new User<>();
@@ -931,13 +931,11 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_project_get_custom_fields", true);
         object = this.getResult(object);
 
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             for (int i = 0; i <= vector.size() - 1; i++) {
                 Object field = vector.get(i);
-                if (field instanceof SoapObject) {
+                if (field instanceof SoapObject fieldObject) {
                     CustomField<Long> customField = new CustomField<>();
-                    SoapObject fieldObject = (SoapObject) field;
                     SoapObject fld = (SoapObject) fieldObject.getProperty("field");
                     customField.setId(Long.parseLong(fld.getPropertyAsString("id")));
                     customField.setTitle(fld.getPropertyAsString("name"));
@@ -999,8 +997,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_issue_get_history", true);
         object = this.getResult(object);
 
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             for (int i = 0; i <= vector.size() - 1; i++) {
                 SoapObject soapObject = (SoapObject) vector.get(i);
                 History<Long> history = new History<>();
@@ -1030,10 +1027,8 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_user_profiles_get_all", true);
         object = this.getResult(object);
 
-        if (object instanceof SoapObject) {
-            SoapObject resultObject = (SoapObject) object;
-            if (resultObject.getProperty("results") instanceof Vector) {
-                Vector<?> vector = (Vector<?>) resultObject.getProperty("results");
+        if (object instanceof SoapObject resultObject) {
+            if (resultObject.getProperty("results") instanceof Vector<?> vector) {
                 for (int i = 0; i <= vector.size() - 1; i++) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
                     Profile<Long> profile = new Profile<>();
@@ -1056,8 +1051,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
         Object object = this.executeAction(request, "mc_project_get_categories", true);
         object = this.getResult(object);
 
-        if (object instanceof Vector) {
-            Vector<?> vector = (Vector<?>) object;
+        if (object instanceof Vector<?> vector) {
             for (int i = 0; i <= vector.size() - 1; i++) {
                 Object obj = vector.get(i);
                 if (obj instanceof String) {
@@ -1105,8 +1099,7 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
             Object object = this.executeAction(request, action, true);
             object = this.getResult(object);
 
-            if (object instanceof Vector) {
-                Vector<?> vector = (Vector<?>) object;
+            if (object instanceof Vector<?> vector) {
                 for (int i = 0; i <= vector.size() - 1; i++) {
                     SoapObject soapObject = (SoapObject) vector.get(i);
                     lsEnum.put(soapObject.getPropertyAsString("id"), soapObject.getPropertyAsString("name"));
@@ -1128,10 +1121,8 @@ public final class MantisBT extends SoapEngine implements IBugService<Long> {
     }
 
     private Object getResult(Object object) {
-        if (object instanceof SoapFault) {
-            SoapFault soapFault = (SoapFault) object;
+        if (object instanceof SoapFault soapFault) {
             this.currentMessage = soapFault.faultstring;
-            this.currentMessage = soapFault.faultcode;
             return null;
         }
         return object;

@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.engine;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 import okhttp3.Authenticator;
 import okhttp3.Call;
 import okhttp3.ConnectionPool;
@@ -39,14 +39,14 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 public class JSONEngine {
-    private Authentication authentication;
+    private final Authentication authentication;
     private final List<String> headers;
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
     private static final MediaType OctetStream = MediaType.get("application/octet-stream");
-    private OkHttpClient client;
+    private final OkHttpClient client;
     private String currentMessage;
     private int state;
-    private Authenticator authenticator;
+    private final Authenticator authenticator;
 
     public JSONEngine(Authentication authentication) {
         this.authentication = authentication;
@@ -83,7 +83,24 @@ public class JSONEngine {
     public int executeRequest(String path) throws Exception {
         try {
             Call call = this.initAuthentication(path);
-            Response response = call.execute();
+            try (Response response = call.execute()) {
+                this.state = response.code();
+
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+                }
+                return this.state;
+            }
+        } catch (OutOfMemoryError ex) {
+            this.currentMessage = ex.getLocalizedMessage();
+            return 500;
+        }
+    }
+
+    public int executeRequest(String path, String body, String type) throws Exception {
+        Call call = this.initAuthentication(path, body, type);
+        try(Response response = call.execute()) {
             this.state = response.code();
 
             ResponseBody responseBody = response.body();
@@ -91,53 +108,48 @@ public class JSONEngine {
                 this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
             }
             return this.state;
-        } catch (OutOfMemoryError error) {
-            this.currentMessage = "OutOfMemoryError";
-            return 404;
+        } catch (Exception ex) {
+            this.currentMessage = ex.getLocalizedMessage();
+            return 500;
         }
-    }
-
-    public int executeRequest(String path, String body, String type) throws Exception {
-        Call call = this.initAuthentication(path, body, type);
-        Response response = call.execute();
-        this.state = response.code();
-
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
-        }
-        return this.state;
     }
 
     protected int executeRequest(String path, byte[] body, String type) throws Exception {
         Call call = this.initAuthentication(path, body, type);
-        Response response = call.execute();
-        this.state = response.code();
+        try(Response response = call.execute()) {
+            this.state = response.code();
 
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            }
+            return this.state;
+        } catch (Exception ex) {
+            this.currentMessage = ex.getLocalizedMessage();
+            return 500;
         }
-        return this.state;
     }
 
     protected void deleteRequest(String path) throws Exception {
         Call call = this.delete(path);
-        Response response = call.execute();
-        this.state = response.code();
+        try(Response response = call.execute()) {
+            this.state = response.code();
 
-        ResponseBody responseBody = response.body();
-        if (responseBody != null) {
-            this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            ResponseBody responseBody = response.body();
+            if (responseBody != null) {
+                this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+            }
+        } catch(Exception ex) {
+            this.currentMessage = ex.getLocalizedMessage();
         }
     }
 
     @SuppressWarnings("SameParameterValue")
-    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String type) throws Exception {
+    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String type) {
         return this.addMultiPart(path, jsonBody, contentType, data, "attachment", type);
     }
 
-    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String filename, String type) throws Exception {
+    protected int addMultiPart(String path, String jsonBody, String contentType, byte[] data, String filename, String type) {
         if(!contentType.isEmpty()) {
             MultipartBody.Builder builder = new MultipartBody.Builder();
             builder.setType(MediaType.get("multipart/form-data"));
@@ -146,12 +158,16 @@ public class JSONEngine {
             builder.addFormDataPart("file", filename, requestBody);
 
             Call call = this.initAuthentication(path, builder.build(), type);
-            Response response = call.execute();
-            this.state = response.code();
+            try(Response response = call.execute()) {
+                this.state = response.code();
 
-            ResponseBody responseBody = response.body();
-            if (responseBody != null) {
-                this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    this.currentMessage = ConvertHelper.convertStreamToString(responseBody.byteStream());
+                }
+            } catch (Exception ex) {
+                this.currentMessage = ex.getLocalizedMessage();
+                return 500;
             }
         }
         return this.state;
@@ -189,44 +205,24 @@ public class JSONEngine {
             }
         }
 
-        Request request;
-        switch (type.toUpperCase()) {
-            case "POST":
-                request = this.initRequestBuilder(path).post(requestBody).build();
-                break;
-            case "PUT":
-                request = this.initRequestBuilder(path).put(requestBody).build();
-                break;
-            case "PATCH":
-                request = this.initRequestBuilder(path).patch(requestBody).build();
-                break;
-            case "DELETE":
-                request = this.initRequestBuilder(path).delete().build();
-                break;
-            default:
-                request = this.initRequestBuilder(path).build();
-        }
+        Request request = switch (type.toUpperCase()) {
+            case "POST" -> this.initRequestBuilder(path).post(requestBody).build();
+            case "PUT" -> this.initRequestBuilder(path).put(requestBody).build();
+            case "PATCH" -> this.initRequestBuilder(path).patch(requestBody).build();
+            case "DELETE" -> this.initRequestBuilder(path).delete().build();
+            default -> this.initRequestBuilder(path).build();
+        };
         return this.client.newCall(request);
     }
 
     private Call initAuthentication(String path, MultipartBody requestBody, String type) {
-        Request request;
-        switch (type.toUpperCase()) {
-            case "POST":
-                request = this.initRequestBuilder(path).post(requestBody).build();
-                break;
-            case "PUT":
-                request = this.initRequestBuilder(path).put(requestBody).build();
-                break;
-            case "PATCH":
-                request = this.initRequestBuilder(path).patch(requestBody).build();
-                break;
-            case "DELETE":
-                request = this.initRequestBuilder(path).delete().build();
-                break;
-            default:
-                request = this.initRequestBuilder(path).build();
-        }
+        Request request = switch (type.toUpperCase()) {
+            case "POST" -> this.initRequestBuilder(path).post(requestBody).build();
+            case "PUT" -> this.initRequestBuilder(path).put(requestBody).build();
+            case "PATCH" -> this.initRequestBuilder(path).patch(requestBody).build();
+            case "DELETE" -> this.initRequestBuilder(path).delete().build();
+            default -> this.initRequestBuilder(path).build();
+        };
         return this.client.newCall(request);
     }
 
@@ -236,23 +232,13 @@ public class JSONEngine {
             requestBody = RequestBody.create(body, OctetStream);
         }
 
-        Request request;
-        switch (type.toUpperCase()) {
-            case "POST":
-                request = this.initRequestBuilder(path).post(requestBody).build();
-                break;
-            case "PUT":
-                request = this.initRequestBuilder(path).put(requestBody).build();
-                break;
-            case "PATCH":
-                request = this.initRequestBuilder(path).patch(requestBody).build();
-                break;
-            case "DELETE":
-                request = this.initRequestBuilder(path).delete().build();
-                break;
-            default:
-                request = this.initRequestBuilder(path).build();
-        }
+        Request request = switch (type.toUpperCase()) {
+            case "POST" -> this.initRequestBuilder(path).post(requestBody).build();
+            case "PUT" -> this.initRequestBuilder(path).put(requestBody).build();
+            case "PATCH" -> this.initRequestBuilder(path).patch(requestBody).build();
+            case "DELETE" -> this.initRequestBuilder(path).delete().build();
+            default -> this.initRequestBuilder(path).build();
+        };
         return this.client.newCall(request);
     }
 

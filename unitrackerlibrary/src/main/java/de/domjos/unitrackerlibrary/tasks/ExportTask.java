@@ -1,25 +1,27 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.tasks;
 
 import android.app.Activity;
 import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
 
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
@@ -34,13 +36,16 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
+/** @noinspection rawtypes*/
 public final class ExportTask extends CustomProgressBarTask<Object, Void> {
-    private String path, xslt;
+    private final String path;
+    private String xslt;
     private TrackerXML.Type type;
-    private Object project_id;
-    private byte[] array, icon;
-    private boolean changelog;
-    private WeakReference<ProgressBar> pb;
+    private final Object project_id;
+    private final byte[] array;
+    private final byte[] icon;
+    private final boolean changelog;
+    private final WeakReference<ProgressBar> pb;
 
     public ExportTask(Activity activity, IBugService bugService, TrackerXML.Type type, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, String xslt) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon, new ProgressBar(activity));
@@ -65,7 +70,7 @@ public final class ExportTask extends CustomProgressBarTask<Object, Void> {
     }
 
     @Override
-    protected void onProgressUpdate(Integer... values) {
+    protected void onProgressUpdate(@NonNull Integer... values) {
         if(this.pb.get() != null) {
             ((Activity) super.getContext()).runOnUiThread(()->this.pb.get().setProgress(values[0]));
         }
@@ -107,8 +112,7 @@ public final class ExportTask extends CustomProgressBarTask<Object, Void> {
                 List<Version> versions = super.bugService.getVersions("versions", super.returnTemp(this.project_id));
                 int i = 1;
                 for(Object vidObject : objects) {
-                    if(vidObject instanceof List) {
-                        List vidList = (List) vidObject;
+                    if(vidObject instanceof List vidList) {
                         for(Object vid : vidList) {
                             TrackerPDF<Issue> buggerPDF = new TrackerPDF(super.bugService, this.type, this.project_id, issues, this.path, this.array, this.icon);
                             for (Version current : versions) {

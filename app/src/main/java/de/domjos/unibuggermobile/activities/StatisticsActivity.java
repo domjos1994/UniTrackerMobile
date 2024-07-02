@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import de.domjos.customwidgets.model.tasks.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;

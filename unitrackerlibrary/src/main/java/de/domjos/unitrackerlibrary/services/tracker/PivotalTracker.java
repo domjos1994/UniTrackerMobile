@@ -1,29 +1,32 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services.tracker;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import de.domjos.unitrackerlibrary.model.issues.*;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -35,11 +38,11 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.permissions.PivotalTrackerPermissions;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.engine.JSONEngine;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 public final class PivotalTracker extends JSONEngine implements IBugService<Long> {
     private final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    private Authentication authentication;
+    private final Authentication authentication;
 
     public PivotalTracker(Authentication authentication) {
         super(authentication);
@@ -283,6 +286,42 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
 
     @Override
     public void insertOrUpdateIssue(Issue<Long> issue, Long project_id) throws Exception {
+        JSONObject jsonObject = getJsonObject(issue);
+
+        int status;
+        if (issue.getId() != null) {
+            status = this.executeRequest("/services/v5/projects/" + project_id + "/stories/" + issue.getId(), jsonObject.toString(), "PUT");
+        } else {
+            status = this.executeRequest("/services/v5/projects/" + project_id + "/stories", jsonObject.toString(), "POST");
+        }
+
+        if (status == 200 || status == 201) {
+            if (issue.getId() == null) {
+                JSONObject response = new JSONObject(this.getCurrentMessage());
+                issue.setId(response.getLong("id"));
+            }
+
+            List<Note<Long>> oldNotes = this.getNotes(Long.parseLong(String.valueOf(issue.getId())), project_id);
+            for (Note<Long> oldNote : oldNotes) {
+                boolean exists = false;
+                for (Note<Long> newNote : issue.getNotes()) {
+                    if (oldNote.getId().equals(newNote.getId())) {
+                        exists = true;
+                        break;
+                    }
+                }
+                if (!exists) {
+                    this.deleteNote(oldNote.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
+                }
+            }
+
+            for (Note<Long> note : issue.getNotes()) {
+                this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
+            }
+        }
+    }
+
+    private static @NonNull JSONObject getJsonObject(Issue<Long> issue) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("kind", "history");
         jsonObject.put("name", issue.getTitle());
@@ -317,38 +356,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
             }
             jsonObject.put("labels", jsonArray);
         }
-
-        int status;
-        if (issue.getId() != null) {
-            status = this.executeRequest("/services/v5/projects/" + project_id + "/stories/" + issue.getId(), jsonObject.toString(), "PUT");
-        } else {
-            status = this.executeRequest("/services/v5/projects/" + project_id + "/stories", jsonObject.toString(), "POST");
-        }
-
-        if (status == 200 || status == 201) {
-            if (issue.getId() == null) {
-                JSONObject response = new JSONObject(this.getCurrentMessage());
-                issue.setId(response.getLong("id"));
-            }
-
-            List<Note<Long>> oldNotes = this.getNotes(Long.parseLong(String.valueOf(issue.getId())), project_id);
-            for (Note<Long> oldNote : oldNotes) {
-                boolean exists = false;
-                for (Note<Long> newNote : issue.getNotes()) {
-                    if (oldNote.getId().equals(newNote.getId())) {
-                        exists = true;
-                        break;
-                    }
-                }
-                if (!exists) {
-                    this.deleteNote(oldNote.getId(), Long.parseLong(String.valueOf(issue.getId())), project_id);
-                }
-            }
-
-            for (Note<Long> note : issue.getNotes()) {
-                this.insertOrUpdateNote(note, Long.parseLong(String.valueOf(issue.getId())), project_id);
-            }
-        }
+        return jsonObject;
     }
 
     @Override
@@ -657,7 +665,7 @@ public final class PivotalTracker extends JSONEngine implements IBugService<Long
                     }
                 }
             }
-            return (title.toString() + "))").replace(", ))", "").trim();
+            return (title + "))").replace(", ))", "").trim();
         } catch (Exception ignored) {}
         return "";
     }

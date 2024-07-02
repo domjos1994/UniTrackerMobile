@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.services;
@@ -21,6 +21,7 @@ package de.domjos.unitrackerlibrary.services;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.util.Log;
 import android.widget.Spinner;
 
 import java.lang.reflect.Field;
@@ -30,10 +31,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 
+/** @noinspection unused*/
 public class ArrayHelper {
 
     @SuppressLint("ResourceType")
@@ -64,7 +65,7 @@ public class ArrayHelper {
     public static Map<String, String> getEnums(Context context, IBugService.Type type, IBugService<?> bugService) {
         Map<String, String> values = new LinkedHashMap<>();
         try {
-            String key = "";
+            String key;
             if(type == IBugService.Type.view_state) {
                 key = "issues_general_view_state_values";
             } else if(type == IBugService.Type.reproducibility) {
@@ -79,7 +80,7 @@ public class ArrayHelper {
                 values.put(typedArray.getString(0), typedArray.getString(1));
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
+            Log.e("Error", ex.getLocalizedMessage(), ex);
         }
         return values;
     }

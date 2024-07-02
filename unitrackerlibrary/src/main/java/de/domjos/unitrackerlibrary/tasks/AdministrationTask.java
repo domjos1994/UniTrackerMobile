@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unitrackerlibrary.tasks;
@@ -23,7 +23,7 @@ import android.widget.ProgressBar;
 
 import java.util.List;
 
-import de.domjos.customwidgets.model.tasks.ProgressBarTask;
+import de.domjos.unitrackerlibrary.custom.ProgressBarTask;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.Administration;
@@ -34,9 +34,10 @@ import de.domjos.unitrackerlibrary.model.issues.Note;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 
+/** @noinspection rawtypes, unchecked , unchecked */
 public final class AdministrationTask extends ProgressBarTask<Administration, String> {
-    private StringBuilder message;
-    private boolean debug;
+    private final StringBuilder message;
+    private final boolean debug;
 
     public AdministrationTask(Activity activity, boolean showNotifications, boolean debug, int icon, ProgressBar progressBar) {
         super(activity, R.string.task_administration_title, R.string.task_administration_contet, showNotifications, icon, progressBar);
@@ -97,7 +98,7 @@ public final class AdministrationTask extends ProgressBarTask<Administration, St
                                             this.publishProgress((int) ((100.0 / max) * counter));
                                             counter++;
                                         } catch (Exception ex) {
-                                            this.message.append(ex.toString()).append("\n");
+                                            this.message.append(ex).append("\n");
                                             if(this.debug) {
                                                 StringBuilder msg = new StringBuilder();
                                                 for (StackTraceElement element : ex.getStackTrace()) {
@@ -189,7 +190,6 @@ public final class AdministrationTask extends ProgressBarTask<Administration, St
         return "";
     }
 
-    @SuppressWarnings("unchecked")
     private Object insertOrUpdateProject(Project project, Administration administration) throws Exception {
         Object id = project.getId();
         project = administration.convertProjectToValidNewProject(project);
@@ -197,10 +197,12 @@ public final class AdministrationTask extends ProgressBarTask<Administration, St
 
         Object newId = null;
         if(administration.isAddToExistingProject()) {
-            List<Project> projects = administration.getToBugService().getProjects();
-            for(Project temp : projects) {
-                if (temp.getTitle().replace("-", "").equalsIgnoreCase(project.getTitle())) {
-                    newId = temp.getId();
+            List projects = administration.getToBugService().getProjects();
+            for(Object temp : projects) {
+                if(temp instanceof Project proj) {
+                    if (proj.getTitle().replace("-", "").equalsIgnoreCase(project.getTitle())) {
+                        newId = proj.getId();
+                    }
                 }
             }
         }
