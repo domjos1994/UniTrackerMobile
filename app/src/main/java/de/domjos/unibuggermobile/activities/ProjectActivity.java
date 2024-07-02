@@ -1,26 +1,25 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -37,13 +36,13 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.lang.ref.WeakReference;
 import java.util.Date;
 import java.util.List;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.custom.AsyncTaskExecutorService;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.projects.Project;
@@ -157,7 +156,7 @@ public final class ProjectActivity extends AbstractActivity {
 
         // init bottom-navigation
         this.navigationView = this.findViewById(R.id.nav_view);
-        this.navigationView.setOnNavigationItemSelectedListener(menuItem -> {
+        this.navigationView.setOnItemSelectedListener(menuItem -> {
             final ProjectTask[] task = new ProjectTask[1];
             if(menuItem.getItemId() == R.id.navAdd) {
                 this.manageControls(true, true, false);
@@ -339,11 +338,9 @@ public final class ProjectActivity extends AbstractActivity {
         }
     }
 
-    private static class DownloadTask extends AsyncTask<Object, Void, BaseDescriptionObject> {
-        private WeakReference<Activity> activity;
-
+    private static class DownloadTask extends AsyncTaskExecutorService<Object, Void, BaseDescriptionObject> {
         DownloadTask(Activity activity) {
-            this.activity = new WeakReference<>(activity);
+            super(activity);
         }
 
         @Override
@@ -358,14 +355,19 @@ public final class ProjectActivity extends AbstractActivity {
                     if(bitmap != null) {
                         baseDescriptionObject.setCover(bitmap);
                     } else {
-                        baseDescriptionObject.setCover(ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertDrawableToByteArray(this.activity.get(), R.drawable.icon_projects)));
+                        baseDescriptionObject.setCover(ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertDrawableToByteArray(super.refActivity.get(), R.drawable.icon_projects)));
                     }
                 }
             } catch (Exception ex) {
-                this.activity.get().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.activity.get().getApplicationContext()));
+                super.refActivity.get().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, super.refActivity.get().getApplicationContext()));
             }
 
             return baseDescriptionObject;
+        }
+
+        @Override
+        protected void onPostExecute(BaseDescriptionObject baseDescriptionObject) {
+
         }
     }
 
@@ -400,9 +402,9 @@ public final class ProjectActivity extends AbstractActivity {
 
             StringBuilder builder = new StringBuilder();
             this.txtProjectsSubProject.setText("");
-            for (Object project : this.currentProject.getSubProjects()) {
-                if (project instanceof Project) {
-                    builder.append(((Project<?>) project).getTitle()).append(",");
+            for (Project<?> project : this.currentProject.getSubProjects()) {
+                if (project != null) {
+                    builder.append(project.getTitle()).append(",");
                 }
             }
             this.txtProjectsSubProject.setText(builder.toString());
@@ -410,6 +412,7 @@ public final class ProjectActivity extends AbstractActivity {
     }
 
 
+    /** @noinspection rawtypes*/
     private void controlsToObject() {
         if (this.currentProject != null) {
             this.currentProject.setTitle(this.txtProjectTitle.getText().toString());
@@ -456,7 +459,7 @@ public final class ProjectActivity extends AbstractActivity {
 
             try {
                 String state = this.convertLabelToState(this.stateAdapter.getItem(this.spProjectsState.getSelectedItemPosition()));
-                if (!state.equals("")) {
+                if (!state.isEmpty()) {
                     this.currentProject.setStatus(state.split(":")[1], Integer.parseInt(state.split(":")[0]));
                 }
             } catch (Exception ex) {

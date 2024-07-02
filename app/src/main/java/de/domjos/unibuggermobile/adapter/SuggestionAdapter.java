@@ -1,25 +1,26 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +36,8 @@ import java.util.List;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 
 public class SuggestionAdapter extends ArrayAdapter<DescriptionObject<?>> {
-    private Context context;
-    private List<DescriptionObject<?>> values;
+    private final Context context;
+    private final List<DescriptionObject<?>> values;
 
     public SuggestionAdapter(@NonNull Context context, List<DescriptionObject<?>> values) {
         super(context, android.R.layout.simple_list_item_1);
@@ -59,18 +60,20 @@ public class SuggestionAdapter extends ArrayAdapter<DescriptionObject<?>> {
                 name.setText(descriptionObject.getDescription());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("Error", e.getLocalizedMessage(), e);
         }
+        assert view != null;
         return view;
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
         return nameFilter;
     }
 
 
-    private Filter nameFilter = new Filter() {
+    private final Filter nameFilter = new Filter() {
         @Override
         public CharSequence convertResultToString(Object resultValue) {
             return ((DescriptionObject<?>) resultValue).getTitle();
@@ -95,13 +98,14 @@ public class SuggestionAdapter extends ArrayAdapter<DescriptionObject<?>> {
             return filterResults;
         }
 
+        /** @noinspection rawtypes*/
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            List<DescriptionObject<?>> filterList = (LinkedList) results.values;
-            if (results != null && results.count > 0) {
+            LinkedList filterList = (LinkedList) results.values;
+            if (results.count > 0) {
                 clear();
-                for (DescriptionObject<?> descriptionObject : filterList) {
-                    add(descriptionObject);
+                for (Object descriptionObject : filterList) {
+                    add((DescriptionObject<?>) descriptionObject);
                     notifyDataSetChanged();
                 }
             }

@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.activities;
@@ -35,6 +35,8 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -100,13 +102,45 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private int page, currentNumberOfItems, notId;
     private long maximum;
 
-    private static final int RELOAD_PROJECTS = 98;
-    private static final int RELOAD_ACCOUNTS = 99;
-    private static final int RELOAD_ISSUES = 101;
-    private static final int RELOAD_SETTINGS = 102;
-    private static final int RELOAD_FILTERS = 103;
     public static final Globals GLOBALS = new Globals();
     private boolean firstLogIn = false;
+
+    final ActivityResultLauncher<Intent> reloadAccounts = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    this.reloadAccounts();
+                    this.reloadProjects();
+                    this.fillFields();
+                }
+            });
+    final ActivityResultLauncher<Intent> reloadProjects = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
+                    this.reloadProjects();
+                    this.selectProject();
+                }
+            });
+    final ActivityResultLauncher<Intent> reloadIssues = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    this.reload();
+                }
+            });
+    final ActivityResultLauncher<Intent> reloadSettings = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    this.setCacheGlobals();
+                    this.bugService = Helper.getCurrentBugService(MainActivity.this);
+                    this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
+                    this.reload();
+                    this.changePagination();
+                }
+            });
 
     public MainActivity() {
         super(R.layout.main_activity);
@@ -121,12 +155,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
         this.navigationView.getHeaderView(0).setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
-            startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
+            this.reloadAccounts.launch(intent);
         });
 
         this.lblMainCommand.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
-            startActivityForResult(intent, MainActivity.RELOAD_ACCOUNTS);
+            this.reloadAccounts.launch(intent);
         });
 
         this.spMainAccounts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -192,7 +226,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     intent.putExtra("id", String.valueOf(((Issue<?>)listObject.getObject()).getId()));
                 }
                 intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
-                startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+                this.reloadIssues.launch(intent);
             }
         });
 
@@ -213,7 +247,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             Intent intent = new Intent(this.getApplicationContext(), IssueActivity.class);
             intent.putExtra("id", "");
             intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
-            this.startActivityForResult(intent, MainActivity.RELOAD_ISSUES);
+            this.reloadIssues.launch(intent);
         });
 
         this.spMainFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -469,7 +503,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                         }
                         runOnUiThread(() -> reload());
                     }
-                }, 0, (this.settings.getReload() * 1000));
+                }, 0, (this.settings.getReload() * 1000L));
             }
 
             if(this.firstLogIn) {
@@ -504,7 +538,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         Authentication authentication = MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentAuthentication();
         if (authentication != null) {
 
-            if (authentication.getServer().equals("")) {
+            if (authentication.getServer().isEmpty()) {
                 this.permissions = new NoPermission();
             } else {
                 this.permissions = this.bugService.getPermissions();
@@ -637,7 +671,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 this.lblItems.setText(String.format(this.getString(R.string.messages_issues), min, this.maximum));
             }
         }
-        this.lvMainIssues.getAdapter().notifyDataSetChanged();
+        this.lvMainIssues.getAdapter()
+                .notifyItemRangeChanged(0, this.lvMainIssues.getChildCount()-1);
     }
 
     private void reloadAccounts() {
@@ -688,37 +723,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ACCOUNTS) {
-            this.reloadAccounts();
-            this.reloadProjects();
-            this.fillFields();
-        }
-        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_PROJECTS) {
-            this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
-            this.reloadProjects();
-            this.selectProject();
-        }
-
-        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_ISSUES) {
-            this.reload();
-        }
-
-        if (resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_FILTERS) {
-            this.reloadFilters();
-        }
-
-        if(resultCode == RESULT_OK && requestCode == MainActivity.RELOAD_SETTINGS) {
-            this.setCacheGlobals();
-            this.bugService = Helper.getCurrentBugService(MainActivity.this);
-            this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
-            this.reload();
-            this.changePagination();
-        }
-    }
-
     private void changePagination() {
         if (this.settings.getNumberOfItems() == -1) {
             this.page = 1;
@@ -758,7 +762,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             intent.putExtra(InfoActivity.ABOUT, true);
         }
         if (intent != null) {
-            startActivityForResult(intent, MainActivity.RELOAD_SETTINGS);
+            this.reloadSettings.launch(intent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -766,12 +770,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Intent intent = null;
-        int reload = 0;
         if(item.getItemId() == R.id.navNews) {
             intent = new Intent(this.getApplicationContext(), NewsActivity.class);
         } else if(item.getItemId() == R.id.navProjects) {
             intent = new Intent(this.getApplicationContext(), ProjectActivity.class);
-            reload = MainActivity.RELOAD_PROJECTS;
+            this.reloadProjects.launch(intent);
         } else if(item.getItemId() == R.id.navVersions) {
             intent = new Intent(this.getApplicationContext(), VersionActivity.class);
         } else if(item.getItemId() == R.id.navUsers) {
@@ -782,7 +785,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             intent = new Intent(this.getApplicationContext(), StatisticsActivity.class);
         } else if(item.getItemId() == R.id.navAdministration) {
             intent = new Intent(this.getApplicationContext(), AdministrationActivity.class);
-            reload = MainActivity.RELOAD_PROJECTS;
+            this.reloadProjects.launch(intent);
         } else if(item.getItemId() == R.id.navLocalSync) {
             intent = new Intent(this.getApplicationContext(), LocalSyncActivity.class);
         } else if(item.getItemId() == R.id.navExtendedSearch) {
@@ -794,7 +797,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         }
 
         if (intent != null) {
-            startActivityForResult(intent, reload);
+            startActivity(intent);
         }
 
         this.drawerLayout.closeDrawer(GravityCompat.START);

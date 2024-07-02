@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.fragments;
@@ -44,6 +44,7 @@ import java.util.*;
 
 /**
  * A placeholder fragment containing a simple view.
+ * @noinspection rawtypes, unchecked
  */
 public final class IssueRelationsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssuesRelations;
@@ -51,11 +52,14 @@ public final class IssueRelationsFragment extends AbstractFragment {
     private AutoCompleteTextView txtIssuesRelationsIssues;
     private Spinner spIssuesRelationsType;
     private ArrayAdapter<Issue<?>> issuesAdapter;
+    /** @noinspection rawtypes*/
     private IBugService bugService;
     private ArrayAdapter<String> relationTypeAdapter;
+    /** @noinspection rawtypes*/
     private Relationship currentEntry;
 
     private View root;
+    /** @noinspection rawtypes*/
     private Issue issue;
     private boolean editMode;
     private String arrayKey;
@@ -65,6 +69,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
         super.onCreate(savedInstanceState);
     }
 
+    /** @noinspection rawtypes, unchecked , unchecked */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         this.root = inflater.inflate(R.layout.issue_fragment_relations, container, false);
@@ -153,6 +158,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
             if(issue != null) {
                 Relationship relationship = new Relationship<>();
                 if(index != -1) {
+                    //noinspection unchecked
                     relationship.setId(((Relationship)this.lvIssuesRelations.getAdapter().getItem(index).getObject()).getId());
                 }
                 relationship.setIssue(issue);
@@ -211,8 +217,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
     protected void initData() {
         this.lvIssuesRelations.getAdapter().clear();
         for(Object obj : this.issue.getRelations()) {
-            if(obj instanceof Relationship) {
-                Relationship relationship = (Relationship) obj;
+            if(obj instanceof Relationship relationship) {
 
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setObject(relationship);
@@ -293,6 +298,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 new Thread(() -> {
                     try {
                         Object obj = this.returnTemp(MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentProjectId());
+                        //noinspection unchecked
                         this.bugService.deleteBugRelation(this.currentEntry, this.issue.getId(), obj);
                     }  catch (Exception ex) {
                         requireActivity().runOnUiThread(()-> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));

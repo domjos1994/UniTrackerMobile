@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.adapter;
@@ -27,6 +27,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import java.io.File;
 import java.util.AbstractMap;
@@ -42,9 +44,9 @@ import de.domjos.unibuggermobile.provider.FileProvider;
 
 public class LocalSyncAdapter extends BaseExpandableListAdapter {
     private List<Map.Entry<String, List<String>>> content;
-    private Context context;
-    private String path;
-    private String search;
+    private final Context context;
+    private final String path;
+    private final String search;
 
     public LocalSyncAdapter(String path, Context context, String search) {
         super();
@@ -109,13 +111,13 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
         String item = this.content.get(groupPosition).getValue().get(childPosition);
         convertView.setOnClickListener(v -> {
             Uri uri;
+            File file;
             if (item.contains("issue")) {
-                File file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + item);
-                uri = FileProvider.getUriForFile(this.context, Globals.FILE_PROVIDER, file);
+                file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + item);
             } else {
-                File file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + "attachments" + File.separatorChar + item);
-                uri = FileProvider.getUriForFile(this.context, Globals.FILE_PROVIDER, file);
+                file = new File(this.path + File.separatorChar + this.content.get(groupPosition).getKey() + File.separatorChar + "attachments" + File.separatorChar + item);
             }
+            uri = FileProvider.getUriForFile(this.context, Globals.FILE_PROVIDER, file);
 
             String mimeType = this.context.getContentResolver().getType(uri);
             Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -132,9 +134,9 @@ public class LocalSyncAdapter extends BaseExpandableListAdapter {
         }
         if (ivChild != null) {
             if (item.toLowerCase().trim().contains("issue.pdf")) {
-                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.icon_issues));
+                ivChild.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.icon_issues));
             } else {
-                ivChild.setImageDrawable(this.context.getResources().getDrawable(R.drawable.icon_download));
+                ivChild.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.icon_download));
             }
         }
         return convertView;

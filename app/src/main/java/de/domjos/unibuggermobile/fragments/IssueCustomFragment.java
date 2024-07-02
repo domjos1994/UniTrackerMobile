@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.fragments;
@@ -51,6 +51,7 @@ import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.customwidgets.utils.Validator;
 
+/** @noinspection rawtypes*/
 public final class IssueCustomFragment extends AbstractFragment {
     private View root;
     private Issue issue;
@@ -81,6 +82,7 @@ public final class IssueCustomFragment extends AbstractFragment {
         this.issue = (Issue) descriptionObject;
     }
 
+    /** @noinspection unchecked*/
     @Override
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue issue = (Issue) descriptionObject;
@@ -107,8 +109,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                             if(((Spinner) view).getSelectedItem()!=null) {
                                 issue.getCustomFields().put(key, ((Spinner) view).getSelectedItem().toString());
                             }
-                        } else if (view instanceof TableRow) {
-                            TableRow tableRow = (TableRow) view;
+                        } else if (view instanceof TableRow tableRow) {
                             for (int i = 0; i <= tableRow.getChildCount() - 1; i++) {
                                 RadioButton radioButton = (RadioButton) tableRow.getChildAt(i);
                                 if (radioButton.isChecked()) {
@@ -285,17 +286,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                             Spinner spinner = new Spinner(this.getActivity());
                             layoutParams.weight = 7;
                             spinner.setLayoutParams(layoutParams);
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getActivity(), R.layout.spinner_item);
-                            if (customField.isNullable()) {
-                                if (customField.getDefaultValue() != null) {
-                                    arrayAdapter.add(customField.getDefaultValue());
-                                }
-                            }
-                            if (customField.getPossibleValues() != null) {
-                                for (String item : customField.getPossibleValues().split("\\|")) {
-                                    arrayAdapter.add(item.split(":")[0].trim());
-                                }
-                            }
+                            ArrayAdapter<String> arrayAdapter = getStringArrayAdapter(customField);
                             spinner.setAdapter(arrayAdapter);
                             arrayAdapter.notifyDataSetChanged();
                             try {
@@ -303,16 +294,7 @@ public final class IssueCustomFragment extends AbstractFragment {
                             } catch (Exception ex) {
                                 spinner.setTag(String.valueOf(customField.getId()));
                             }
-                            String selected = "";
-                            if (!value.isEmpty()) {
-                                selected = value.trim();
-                            } else {
-                                if (customField.getDefaultValue() != null) {
-                                    if (!customField.getDefaultValue().isEmpty()) {
-                                        selected = customField.getDefaultValue().trim();
-                                    }
-                                }
-                            }
+                            String selected = getString(value, customField);
 
                             if (!selected.isEmpty()) {
                                 for (int i = 0; i <= arrayAdapter.getCount() - 1; i++) {
@@ -332,6 +314,35 @@ public final class IssueCustomFragment extends AbstractFragment {
                 }
             }
         }
+    }
+
+    private static @NonNull String getString(String value, CustomField<?> customField) {
+        String selected = "";
+        if (!value.isEmpty()) {
+            selected = value.trim();
+        } else {
+            if (customField.getDefaultValue() != null) {
+                if (!customField.getDefaultValue().isEmpty()) {
+                    selected = customField.getDefaultValue().trim();
+                }
+            }
+        }
+        return selected;
+    }
+
+    private @NonNull ArrayAdapter<String> getStringArrayAdapter(CustomField<?> customField) {
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.requireActivity(), R.layout.spinner_item);
+        if (customField.isNullable()) {
+            if (customField.getDefaultValue() != null) {
+                arrayAdapter.add(customField.getDefaultValue());
+            }
+        }
+        if (customField.getPossibleValues() != null) {
+            for (String item : customField.getPossibleValues().split("\\|")) {
+                arrayAdapter.add(item.split(":")[0].trim());
+            }
+        }
+        return arrayAdapter;
     }
 
     @Override

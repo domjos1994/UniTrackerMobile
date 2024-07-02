@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.settings;
@@ -55,7 +55,7 @@ public class Settings {
         long authID = this.preferences.getLong(Settings.AUTH, 0);
         if (authID != 0) {
             List<Authentication> authentications = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID);
-            if (authentications.size() >= 1) {
+            if (!authentications.isEmpty()) {
                 return MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("ID=" + authID).get(0);
             }
         }
@@ -79,7 +79,7 @@ public class Settings {
             String title = this.preferences.getString(Settings.PROJECT, "");
             if (!title.isEmpty()) {
                 List<Project<?>> projects = new ProjectTask(activity, bugService, false, this.showNotifications(), R.drawable.icon_projects).execute(title).get();
-                if (projects.size() >= 1) {
+                if (!projects.isEmpty()) {
                     return projects.get(0);
                 }
             }
@@ -221,24 +221,10 @@ public class Settings {
 
     public String getLocalSyncPath() {
         String path = this.userPreferences.getString("swtSyncPath", this.context.getFilesDir().getAbsolutePath());
-        if (path.equals("")) {
+        if (path.isEmpty()) {
             return this.context.getFilesDir().getAbsolutePath();
         }
         path = path.replace(":", "");
         return path;
-    }
-
-    public boolean showAd() {
-        int intentChanges = this.preferences.getInt("showAd", 0);
-        SharedPreferences.Editor editor = this.preferences.edit();
-        if(intentChanges == 2) {
-            editor.putInt("showAd", 0);
-            editor.apply();
-            return true;
-        } else {
-            editor.putInt("showAd", ++intentChanges);
-            editor.apply();
-            return false;
-        }
     }
 }

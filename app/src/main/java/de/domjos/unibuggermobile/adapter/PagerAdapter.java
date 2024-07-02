@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.adapter;
@@ -26,10 +26,10 @@ import android.text.style.DynamicDrawableSpan;
 import android.text.style.ImageSpan;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.Lifecycle;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -42,15 +42,17 @@ import de.domjos.unibuggermobile.helper.Helper;
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
+ * @noinspection rawtypes
  */
-public class PagerAdapter extends FragmentPagerAdapter {
+public class PagerAdapter extends FragmentStateAdapter {
     private final Context context;
-    private AbstractFragment general, notes, descriptions, attachments, custom, history, relation;
-    private IBugService bugService;
+    private final AbstractFragment general, notes, descriptions, attachments, custom, history, relation;
+    private final IBugService bugService;
     private int count;
 
-    public PagerAdapter(Context context, FragmentManager fm) {
-        super(fm, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+    public PagerAdapter(Context context, FragmentManager fm, Lifecycle lifecycle) {
+        super(fm, lifecycle);
+
         this.context = context;
         this.general = new IssueGeneralFragment();
         this.notes = new IssueNotesFragment();
@@ -81,9 +83,9 @@ public class PagerAdapter extends FragmentPagerAdapter {
         }
     }
 
-    @Override
     @NonNull
-    public Fragment getItem(int position) {
+    @Override
+    public Fragment createFragment(int position) {
         switch (position) {
             case 0:
                 return this.general;
@@ -147,6 +149,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
         this.history.manageControls(editMode);
     }
 
+    /** @noinspection rawtypes*/
     public void setObject(DescriptionObject object) {
         this.general.setObject(object);
         this.descriptions.setObject(object);
@@ -242,19 +245,14 @@ public class PagerAdapter extends FragmentPagerAdapter {
         return title;
     }
 
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        Drawable drawable = null;
-
-        switch (position) {
-            case 0:
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues);
-                break;
-            case 1:
-                drawable = ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_descriptions);
-                break;
-        }
+    public CharSequence getTabTitle(int position) {
+        Drawable drawable = switch (position) {
+            case 0 ->
+                    ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues);
+            case 1 ->
+                    ConvertHelper.convertResourcesToDrawable(this.context, R.drawable.icon_issues_descriptions);
+            default -> null;
+        };
 
         int i = 2;
         if (this.bugService.getPermissions().listNotes()) {
@@ -301,7 +299,7 @@ public class PagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getItemCount() {
         return this.count;
     }
 }

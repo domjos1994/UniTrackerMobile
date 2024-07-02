@@ -1,25 +1,24 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.activities;
 
 import android.content.pm.PackageInfo;
-import android.os.Build;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
@@ -30,7 +29,6 @@ import android.widget.LinearLayout;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.text.HtmlCompat;
 
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.MantisBTSpecific.ChangeLog;
@@ -76,8 +74,7 @@ public final class HelpActivity extends AbstractActivity {
         }
 
         for (int i = 0; i <= this.pnlQuestions.getChildCount() - 1; i++) {
-            if (this.pnlQuestions.getChildAt(i) instanceof ExpandableTextView) {
-                ExpandableTextView txt = (ExpandableTextView) this.pnlQuestions.getChildAt(i);
+            if (this.pnlQuestions.getChildAt(i) instanceof ExpandableTextView txt) {
 
                 if (txt.getTitle().toLowerCase().trim().contains(search.toLowerCase().trim())) {
                     continue;
@@ -123,11 +120,7 @@ public final class HelpActivity extends AbstractActivity {
 
         try {
             String content = this.getString(R.string.help_need_help_text);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                lblNeedsHelp.setContent(Html.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                lblNeedsHelp.setContent(HtmlCompat.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", HtmlCompat.FROM_HTML_MODE_LEGACY));
-            }
+            lblNeedsHelp.setContent(Html.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
             lblNeedsHelp.getContextTextView().setMovementMethod(LinkMovementMethod.getInstance());
         } catch (Exception ignored) {
         }

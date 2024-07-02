@@ -1,24 +1,25 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.helper;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -31,7 +32,6 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -99,11 +99,11 @@ public class Helper {
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
-        InputStream in_s = res.openRawResource(rawID);
-
-        byte[] b = new byte[in_s.available()];
-        in_s.read(b);
-        return new String(b);
+        try(InputStream in_s = res.openRawResource(rawID)) {
+            byte[] b = new byte[in_s.available()];
+            in_s.read(b);
+            return new String(b);
+        }
     }
 
     static int getVersionCode(Context context) throws Exception {
@@ -140,49 +140,27 @@ public class Helper {
         IBugService<?> bugService = null;
         try {
             if (authentication != null) {
-                switch (authentication.getTracker()) {
-                    case MantisBT:
+                bugService = switch (authentication.getTracker()) {
+                    case MantisBT -> {
                         Settings settings = MainActivity.GLOBALS.getSettings(context);
-                        bugService = new MantisBT(
-                            authentication,
-                            settings.isShowMantisBugsOfSubProjects(),
-                            settings.isShowMantisFilter()
+                        yield new MantisBT(
+                                authentication,
+                                settings.isShowMantisBugsOfSubProjects(),
+                                settings.isShowMantisFilter()
                         );
-                        break;
-                    case Bugzilla:
-                        bugService = new Bugzilla(authentication);
-                        break;
-                    case YouTrack:
-                        bugService = new YouTrack(authentication);
-                        break;
-                    case RedMine:
-                        bugService = new Redmine(authentication);
-                        break;
-                    case Github:
-                        bugService = new Github(authentication);
-                        break;
-                    case Jira:
-                        bugService = new Jira(authentication);
-                        break;
-                    case PivotalTracker:
-                        bugService = new PivotalTracker(authentication);
-                        break;
-                    case OpenProject:
-                        bugService = new OpenProject(authentication);
-                        break;
-                    case Backlog:
-                        bugService = new Backlog(authentication);
-                        break;
-                    case AzureDevOps:
-                        bugService = new AzureDevOps(authentication);
-                        break;
-                    case TuLeap:
-                        bugService = new Tuleap(authentication);
-                        break;
-                    default:
-                        bugService = new SQLite(context, Helper.getVersionCode(context), authentication);
-                        break;
-                }
+                    }
+                    case Bugzilla -> new Bugzilla(authentication);
+                    case YouTrack -> new YouTrack(authentication);
+                    case RedMine -> new Redmine(authentication);
+                    case Github -> new Github(authentication);
+                    case Jira -> new Jira(authentication);
+                    case PivotalTracker -> new PivotalTracker(authentication);
+                    case OpenProject -> new OpenProject(authentication);
+                    case Backlog -> new Backlog(authentication);
+                    case AzureDevOps -> new AzureDevOps(authentication);
+                    case TuLeap -> new Tuleap(authentication);
+                    default -> new SQLite(context, Helper.getVersionCode(context), authentication);
+                };
             } else {
                 bugService = new SQLite(context, Helper.getVersionCode(context), new Authentication());
             }
@@ -230,17 +208,13 @@ public class Helper {
     }
 
     public static void isStoragePermissionGranted(Activity activity) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(activity, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Log.v("dd", "Permission is granted");
-            } else {
-
-                Log.v("dd", "Permission is revoked");
-                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
-            }
-        } else { //permission is automatically granted on sdk<23 upon installation
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
             Log.v("dd", "Permission is granted");
+        } else {
+
+            Log.v("dd", "Permission is revoked");
+            ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
         }
     }
 
@@ -397,6 +371,7 @@ public class Helper {
         }
     }
 
+    /** @noinspection unchecked, rawtypes */
     public static void showResolveDialog(Activity activity, String array, int position, Issue<?> issue, IBugService<?> bugService, Object pid, boolean show, Runnable runnable, int notificationId) {
         try {
             Dialog resolveDialog = new Dialog(activity);
@@ -421,6 +396,7 @@ public class Helper {
                         note.setDescription(noteContent);
                         note.setTitle(noteContent);
                         note.setState(10, "öffentlich");
+                        //noinspection rawtypes
                         issue.getNotes().add((Note) note);
                     }
                     issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
@@ -482,7 +458,7 @@ public class Helper {
             String content = Helper.getStringResourceByName(activity, "whats_new_" + version);
             if(!content.isEmpty()) {
                 lblTitle.setText(version);
-                lblContent.setText(Html.fromHtml(content));
+                lblContent.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_COMPACT));
 
                 Settings settings = MainActivity.GLOBALS.getSettings(activity);
 
@@ -523,6 +499,7 @@ public class Helper {
     private static String getStringResourceByName(Activity activity, String aString) {
         try {
             String packageName = activity.getPackageName();
+            @SuppressLint("DiscouragedApi")
             int resId = activity.getResources().getIdentifier(aString, "string", packageName);
             return activity.getString(resId);
         } catch (Exception ex) {

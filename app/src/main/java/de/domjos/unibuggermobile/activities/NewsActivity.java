@@ -1,3 +1,21 @@
+/*
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ *
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package de.domjos.unibuggermobile.activities;
 
 import android.graphics.Bitmap;
@@ -18,8 +36,8 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.History;
-import de.domjos.unitrackerlibrary.services.engine.Authentication;
 
+/** @noinspection rawtypes*/
 public final class NewsActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvNews;
     private IBugService bugService;
@@ -40,8 +58,10 @@ public final class NewsActivity extends AbstractActivity {
         this.lvNews.getAdapter().clear();
         new Thread(()->{
             try {
-                List<History<?>> histories = this.bugService.getNews();
-                for(History<?> history : histories) {
+                List histories = this.bugService.getNews();
+                for(Object obj : histories) {
+                    History<?> history = (History<?>) obj;
+
                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                     if(history.getTitle().trim().isEmpty()) {
                         String title;

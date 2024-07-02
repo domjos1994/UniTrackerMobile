@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.activities;
@@ -21,10 +21,11 @@ package de.domjos.unibuggermobile.activities;
 import android.content.Intent;
 import android.view.View;
 
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
@@ -41,6 +42,7 @@ import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
 
+/** @noinspection unchecked*/
 public final class IssueActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private PagerAdapter pagerAdapter;
@@ -57,6 +59,7 @@ public final class IssueActivity extends AbstractActivity {
     protected void initActions() {
     }
 
+    /** @noinspection rawtypes*/
     @Override
     protected void initControls() {
         int notificationId = 0;
@@ -154,31 +157,17 @@ public final class IssueActivity extends AbstractActivity {
         });
 
         // init View-Pager
-        this.pagerAdapter = new PagerAdapter(this, this.getSupportFragmentManager());
+        this.pagerAdapter = new PagerAdapter(this, this.getSupportFragmentManager(), this.getLifecycle());
         this.pagerAdapter.setNotificationId(notificationId);
-        ViewPager viewPager = findViewById(R.id.view_pager);
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(this.pagerAdapter);
+        viewPager.setCurrentItem(0);
         TabLayout tabs = findViewById(R.id.tabs);
-        tabs.setupWithViewPager(viewPager);
+        new TabLayoutMediator(tabs, viewPager, (tab, position) -> {
+            tab.setText(pagerAdapter.getTabTitle(position));
+        }).attach();
         this.pagerAdapter.setObject(this.issue);
         this.pagerAdapter.setPid(pid);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                IssueActivity.this.setTitle(pagerAdapter.getTitle(position));
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                IssueActivity.this.setTitle(pagerAdapter.getTitle(position));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
     }
 
 

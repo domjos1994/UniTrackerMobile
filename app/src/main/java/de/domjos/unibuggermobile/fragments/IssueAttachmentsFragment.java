@@ -1,34 +1,39 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.fragments;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -43,17 +48,16 @@ import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.customwidgets.utils.Validator;
-
-import static android.app.Activity.RESULT_OK;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 /**
  * A placeholder fragment containing a simple view.
+ * @noinspection rawtypes
  */
 public final class IssueAttachmentsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssueAttachments;
@@ -65,7 +69,68 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     private Issue<?> issue;
     private boolean editMode;
 
-    private final static int PICKFILE_REQUEST_CODE = 99, PHOTO_GALLERY = 100;
+    final ActivityResultLauncher<Intent> pick_file = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    try {
+                        assert result.getData() != null;
+                        Uri imageUri = result.getData().getData();
+                        if (imageUri != null) {
+                            if (getContext() != null) {
+                                InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
+                                if (imageStream != null) {
+                                    Attachment<?> attachment = new Attachment<>();
+                                    attachment.setDownloadUrl(imageUri.getPath());
+                                    attachment.setFilename(this.getFileName(imageUri));
+                                    attachment.setContentType(result.getData().getType());
+                                    attachment.setContent(ConvertHelper.convertStreamToByteArray(imageStream));
+                                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                    baseDescriptionObject.setObject(attachment);
+                                    baseDescriptionObject.setTitle(attachment.getTitle());
+                                    baseDescriptionObject.setDescription(attachment.getDescription());
+                                    this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
+                                }
+                            }
+                        }
+                    } catch (Exception ex) {
+                        Log.e("Error", ex.getLocalizedMessage(), ex);
+                    }
+                }
+            });
+    final ActivityResultLauncher<Intent> gallery = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    try {
+                        if (result.getData() != null) {
+                            if (this.getContext() != null) {
+                                Attachment<?> attachment = new Attachment<>();
+                                attachment.setDownloadUrl(Objects.requireNonNull(result.getData().getData()).getPath());
+                                attachment.setFilename(this.getFileName(result.getData().getData()));
+
+                                InputStream iStream = this.getContext().getContentResolver().openInputStream(result.getData().getData());
+                                if (iStream != null) {
+                                    byte[] inputData = getBytes(iStream);
+                                    attachment.setContent(inputData);
+                                    iStream.close();
+                                }
+
+                                String type = this.getContext().getContentResolver().getType(result.getData().getData());
+                                attachment.setContentType(type);
+
+                                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                baseDescriptionObject.setObject(attachment);
+                                baseDescriptionObject.setTitle(attachment.getTitle());
+                                baseDescriptionObject.setDescription(attachment.getDescription());
+                                this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
+                            }
+                        }
+                    } catch (Exception ex) {
+                        Log.e("Error", ex.getLocalizedMessage(), ex);
+                    }
+                }
+            });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,8 +153,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
             try {
                 if (listObject != null) {
                     if (getContext() != null) {
-                        if(listObject.getObject() instanceof Attachment) {
-                            Attachment<?> attachment = (Attachment<?>) listObject.getObject();
+                        if(listObject.getObject() instanceof Attachment<?> attachment) {
                             IntentHelper.saveAndOpenFile(attachment.getContent(), getActivity());
                         }
                     }
@@ -111,13 +175,13 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         this.cmdIssueAttachmentAdd.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
-            startActivityForResult(intent, PICKFILE_REQUEST_CODE);
+            this.pick_file.launch(intent);
         });
 
         this.cmdIssueAttachmentPhoto.setOnClickListener(v -> {
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
             photoPickerIntent.setType("image/*");
-            startActivityForResult(photoPickerIntent, PHOTO_GALLERY);
+            this.gallery.launch(photoPickerIntent);
         });
 
         this.updateUITrackerSpecific();
@@ -147,10 +211,11 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         return true;
     }
 
+    @SuppressLint("Range")
     private String getFileName(Uri uri) {
-        if(getActivity()!=null) {
+        if (getActivity() != null) {
             String scheme = uri.getScheme();
-            if(scheme!=null) {
+            if (scheme != null) {
                 String result = null;
                 if (scheme.equals("content")) {
                     try (Cursor cursor = getActivity().getContentResolver().query(uri, null, null, null, null)) {
@@ -177,61 +242,6 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         return "";
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        try {
-            if (requestCode == PHOTO_GALLERY && resultCode == RESULT_OK) {
-                Uri imageUri = data.getData();
-                if (imageUri != null) {
-                    if (getContext() != null) {
-                        InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
-                        if (imageStream != null) {
-                            Attachment<?> attachment = new Attachment<>();
-                            attachment.setDownloadUrl(imageUri.getPath());
-                            attachment.setFilename(this.getFileName(imageUri));
-                            attachment.setContentType(data.getType());
-                            attachment.setContent(ConvertHelper.convertStreamToByteArray(imageStream));
-                            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                            baseDescriptionObject.setObject(attachment);
-                            baseDescriptionObject.setTitle(attachment.getTitle());
-                            baseDescriptionObject.setDescription(attachment.getDescription());
-                            this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
-                        }
-                    }
-                }
-            }
-            if (resultCode == RESULT_OK && requestCode == PICKFILE_REQUEST_CODE) {
-                if (data != null) {
-                    if (data.getData() != null) {
-                        if (this.getContext() != null) {
-                            Attachment<?> attachment = new Attachment<>();
-                            attachment.setDownloadUrl(data.getData().getPath());
-                            attachment.setFilename(this.getFileName(data.getData()));
-
-                            InputStream iStream = this.getContext().getContentResolver().openInputStream(data.getData());
-                            if (iStream != null) {
-                                byte[] inputData = getBytes(iStream);
-                                attachment.setContent(inputData);
-                                iStream.close();
-                            }
-
-                            String type = this.getContext().getContentResolver().getType(data.getData());
-                            attachment.setContentType(type);
-
-                            BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                            baseDescriptionObject.setObject(attachment);
-                            baseDescriptionObject.setTitle(attachment.getTitle());
-                            baseDescriptionObject.setDescription(attachment.getDescription());
-                            this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
-        }
-    }
-
     private byte[] getBytes(InputStream inputStream) throws IOException {
         ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
         int bufferSize = 1024;
@@ -244,11 +254,13 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
         return byteBuffer.toByteArray();
     }
 
+    /** @noinspection rawtypes*/
     @Override
     public void setObject(DescriptionObject descriptionObject) {
         this.issue = (Issue<?>) descriptionObject;
     }
 
+    /** @noinspection unchecked*/
     @Override
     public DescriptionObject getObject(DescriptionObject descriptionObject) {
         Issue<?> issue = (Issue<?>) descriptionObject;
@@ -279,17 +291,16 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     @Override
     protected void initData() {
         this.lvIssueAttachments.getAdapter().clear();
-        for (Object obj : this.issue.getAttachments()) {
-            Attachment<?> attachment = (Attachment<?>) obj;
+        for (Attachment<?> obj : this.issue.getAttachments()) {
 
             BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-            baseDescriptionObject.setObject(attachment);
-            baseDescriptionObject.setTitle(attachment.getTitle());
-            baseDescriptionObject.setDescription(attachment.getDescription());
+            baseDescriptionObject.setObject(obj);
+            baseDescriptionObject.setTitle(obj.getTitle());
+            baseDescriptionObject.setDescription(obj.getDescription());
 
             byte[] content;
-            if (attachment.getContentType().contains("image")) {
-                content = attachment.getContent();
+            if (obj.getContentType().contains("image")) {
+                content = obj.getContent();
             } else {
                 try {
                     content = ConvertHelper.convertDrawableToByteArray(

@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.activities;
@@ -158,8 +158,8 @@ public final class SearchActivity extends AbstractActivity {
                 ArrayAdapter<String> projects = new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_list_item_1);
                 for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
                     IBugService<?> bugService = Helper.getCurrentBugService(authentication, this.getApplicationContext());
-                    for (Object object : bugService.getProjects()) {
-                        projects.add(((Project<?>) object).getTitle());
+                    for (Project<?> object : bugService.getProjects()) {
+                        projects.add(object.getTitle());
                     }
                     this.bugServices.add(bugService);
                 }
@@ -177,12 +177,11 @@ public final class SearchActivity extends AbstractActivity {
                 if (!this.txtSearchProjects.getText().toString().trim().isEmpty()) {
                     List<String> projects = new LinkedList<>(Arrays.asList(this.txtSearchProjects.getText().toString().split(",")));
                     for (IBugService<?> bugService : this.bugServices) {
-                        for (Object object : bugService.getProjects()) {
-                            Project<?> project = (Project<?>) object;
+                        for (Project<?> object : bugService.getProjects()) {
                             for (String title : projects) {
-                                if (project.getTitle().equals(title.trim())) {
-                                    for (Object objVersion : project.getVersions()) {
-                                        versions.add(((Version<?>) objVersion).getTitle());
+                                if (object.getTitle().equals(title.trim())) {
+                                    for (Version<?> objVersion : object.getVersions()) {
+                                        versions.add(objVersion.getTitle());
                                     }
                                 }
                             }
@@ -190,10 +189,9 @@ public final class SearchActivity extends AbstractActivity {
                     }
                 } else {
                     for (IBugService<?> bugService : this.bugServices) {
-                        for (Object object : bugService.getProjects()) {
-                            Project<?> project = (Project<?>) object;
-                            for (Object objVersion : project.getVersions()) {
-                                versions.add(((Version<?>) objVersion).getTitle());
+                        for (Project<?> object : bugService.getProjects()) {
+                            for (Version<?> objVersion : object.getVersions()) {
+                                versions.add(objVersion.getTitle());
                             }
                         }
                     }

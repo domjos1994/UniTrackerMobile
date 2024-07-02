@@ -1,19 +1,19 @@
 /*
- * Copyright (C)  2019-2020 Domjos
- *  This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+ * Copyright (C)  2019-2024 Domjos
+ * This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
  *
- *  UniTrackerMobile is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
+ * UniTrackerMobile is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  UniTrackerMobile is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * UniTrackerMobile is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License
+ * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package de.domjos.unibuggermobile.fragments;
@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -62,6 +63,7 @@ import de.domjos.customwidgets.utils.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
+ * @noinspection rawtypes
  */
 public final class IssueGeneralFragment extends AbstractFragment {
     private EditText txtIssueGeneralSummary;
@@ -74,6 +76,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
     private ImageButton cmdIssueGeneralSmartPhone, cmdIssueGeneralSummaryToDescription;
+    /** @noinspection rawtypes*/
     private ArrayAdapter<User> userAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
@@ -158,8 +161,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Tags);
                     loaderTask.setId(this.notificationId);
                     Object result = loaderTask.execute(this.pid).get();
-                    if (result instanceof List) {
-                        List lst = (List) result;
+                    if (result instanceof List lst) {
                         for (Object item : lst) {
                             if (item instanceof Tag) {
                                 tagAdapter.add(((Tag) item).getTitle());
@@ -175,8 +177,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
                     result = loaderTask.execute(0).get();
                     List<Profile> profiles = new LinkedList<>();
-                    if (result instanceof List) {
-                        List lst = (List) result;
+                    if (result instanceof List lst) {
                         for (Object object : lst) {
                             if (object instanceof Profile) {
                                 profiles.add((Profile) object);
@@ -184,8 +185,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                         }
                     }
                     for (Object object : profiles) {
-                        if (object instanceof Profile) {
-                            Profile profile = (Profile) object;
+                        if (object instanceof Profile profile) {
                             if (!profile.getPlatform().isEmpty()) {
                                 if (!platform.contains(profile.getPlatform())) {
                                     platform.add(profile.getPlatform());
@@ -299,7 +299,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             issue.setTags(this.txtIssueGeneralTags.getText().toString());
 
             try {
-                if (!this.txtIssueGeneralDueDate.getText().toString().equals("")) {
+                if (!Objects.requireNonNull(Objects.requireNonNull(this.txtIssueGeneralDueDate.getText())).toString().isEmpty()) {
                     Settings settings = MainActivity.GLOBALS.getSettings(this.getContext());
                     String format = settings.getDateFormat() + " " + settings.getTimeFormat();
                     issue.setDueDate(ConvertHelper.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), format));
@@ -596,8 +596,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 LoaderTask loaderTask = new LoaderTask(this.getActivity(), this.bugService, show, LoaderTask.Type.Categories);
                 loaderTask.setId(this.notificationId);
                 Object categoriesObjectList = loaderTask.execute(this.pid).get();
-                if (categoriesObjectList instanceof List) {
-                    List lst = (List) categoriesObjectList;
+                if (categoriesObjectList instanceof List lst) {
                     for (Object categoryObject : lst) {
                         if (categoryObject instanceof String) {
                             arrayAdapter.add((String) categoryObject);
