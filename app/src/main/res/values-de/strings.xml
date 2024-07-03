@@ -391,4 +391,5 @@
     <string name="messages_issues_with_max">%d - %d von %d</string>
 
     <string name="messages_no_item">Kein Eintrag vorhanden!</string>
+    <string name="sheet_top">-</string>
 </resources>

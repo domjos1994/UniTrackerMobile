@@ -51,6 +51,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unibuggermobile.sheets.BottomSheetIssue;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.cache.CacheGlobals;
@@ -104,6 +105,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     public static final Globals GLOBALS = new Globals();
     private boolean firstLogIn = false;
+
+    private BottomSheetIssue modalBottomSheet = new BottomSheetIssue();
 
     final ActivityResultLauncher<Intent> reloadAccounts = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -220,14 +223,28 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
         });
 
         this.lvMainIssues.setOnClickListener((SwipeRefreshDeleteList.SingleClickListener) listObject -> {
-            if (listObject != null) {
+            try {
+                Settings se = MainActivity.GLOBALS.getSettings(getApplicationContext());
+                String pid = String.valueOf(se.getCurrentProjectId());
+                String id = String.valueOf(((Issue<?>)listObject.getObject()).getId());
+                boolean notify = se.showNotifications();
+
+                IssueTask issueTask = new IssueTask(this, this.bugService, pid, false, true, notify, R.drawable.icon);
+                Issue issue = issueTask.execute(id).get().get(0);
+                this.modalBottomSheet.load(issue);
+                this.modalBottomSheet.show(getSupportFragmentManager(), BottomSheetIssue.TAG);
+            } catch (Exception ex) {
+                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+            }
+
+            /*if (listObject != null) {
                 Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
                 if(listObject.getObject()!=null) {
                     intent.putExtra("id", String.valueOf(((Issue<?>)listObject.getObject()).getId()));
                 }
                 intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
                 this.reloadIssues.launch(intent);
-            }
+            }*/
         });
 
         this.lvMainIssues.setOnDeleteListener(listObject -> {
