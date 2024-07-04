@@ -95,12 +95,6 @@
                         android:layout_width="0dp"
                         android:layout_height="@dimen/min_height"/>
 
-                    <CheckBox
-                        android:id="@+id/chkAccountGuest"
-                        android:layout_weight="3"
-                        android:layout_width="0dp"
-                        android:layout_height="@dimen/min_height"
-                        android:text="@string/accounts_guest" />
                 </TableRow>
 
                 <TableRow android:id="@+id/rowAuthentication">
@@ -119,6 +113,13 @@
                         android:layout_weight="6"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/min_height"/>
+
+                    <CheckBox
+                        android:id="@+id/chkAccountGuest"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/min_height"
+                        android:layout_weight="3"
+                        android:text="@string/accounts_guest" />
                 </TableRow>
 
                 <TableRow>
@@ -134,80 +135,98 @@
                             android:inputType="textUri"
                             android:hint="@string/accounts_server"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:ignore="Autofill"/>
+                            android:layout_height="wrap_content"/>
                     </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
                 <TableRow>
-
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_weight="5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:id="@+id/txtAccountUserName"
-                        android:inputType="text"
-                        android:hint="@string/accounts_user"
-                        android:layout_weight="5"
-                        android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:hint="@string/accounts_user"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <EditText
-                        android:id="@+id/txtAccountPassword"
-                        android:inputType="textPassword"
-                        android:hint="@string/accounts_pwd"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="5"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtAccountPassword"
+                        app:endIconMode="password_toggle">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:inputType="textPassword"
+                            android:hint="@string/accounts_pwd"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>
 
-                    <EditText
-                        android:id="@+id/txtAccountAPI"
-                        android:inputType="text"
-                        android:hint="@string/accounts_api"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtAccountAPI"
+                        app:endIconMode="password_toggle">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:inputType="textPassword"
+                            android:hint="@string/accounts_api"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow android:layout_height="48dp">
+                <TableRow>
 
-                    <EditText
-                            android:id="@+id/txtAccountImageURL"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtAccountImageURL"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@drawable/icon_images"
+                        app:endIconContentDescription="@string/accounts_image_gallery">
+                        <com.google.android.material.textfield.TextInputEditText
                             android:inputType="textUri"
                             android:hint="@string/accounts_image_url"
-                            android:layout_weight="8"
-                            android:layout_width="0dp"
-                            tools:ignore="Autofill"/>
-
-                    <ImageButton
-                            android:id="@+id/cmdAccountImageGallery"
-                            android:contentDescription="@string/accounts_image_gallery"
-                            app:srcCompat="@drawable/icon_images"
-                            android:layout_height="48dp"
-                            android:layout_width="0dp"
-                            android:layout_weight="2"/>
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>
-
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_weight="10"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
                         android:id="@+id/txtAccountExtended"
-                        android:inputType="text"
-                        android:hint="@string/accounts"
-                        android:layout_weight="10"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        tools:ignore="Autofill" />
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:hint="@string/accounts"
+                            android:inputType="textMultiLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>
-
-                    <EditText
-                        android:id="@+id/txtAccountDescription"
-                        android:inputType="textMultiLine"
-                        android:hint="@string/general_description"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:id="@+id/txtAccountDescription"
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:hint="@string/general_description"
+                            android:inputType="textMultiLine"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
             </TableLayout>
         </ScrollView>

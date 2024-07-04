@@ -66,12 +66,12 @@ public final class AccountActivity extends AbstractActivity {
     private Spinner cmbAccountTracker, cmbAccountAuthentication;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
     private ArrayAdapter<Authentication.Auth> authAdapter;
-    private EditText etAccountServer, txtAccountUserName, txtAccountPassword,
+    private EditText etAccountServer, etAccountUserName, etAccountPassword,
+            etAccountAPI, etAccountImageURL, etAccountDescription, etAccountExtended;
+    private TextInputLayout txtAccountTitle, txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
-    private TextInputLayout txtAccountTitle, txtAccountServer;
     private AutoCompleteTextView lblAccountTitle;
     private CheckBox chkAccountGuest;
-    private ImageButton cmdAccountImageGallery;
 
     private BottomNavigationView navigationView;
 
@@ -374,12 +374,17 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
         this.etAccountServer = this.txtAccountServer.getEditText();
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
+        this.etAccountUserName = this.txtAccountUserName.getEditText();
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
+        this.etAccountPassword = this.txtAccountPassword.getEditText();
         this.txtAccountAPI = this.findViewById(R.id.txtAccountAPI);
+        this.etAccountAPI = this.txtAccountAPI.getEditText();
         this.txtAccountImageURL = this.findViewById(R.id.txtAccountImageURL);
+        this.etAccountImageURL = this.txtAccountImageURL.getEditText();
         this.txtAccountExtended = this.findViewById(R.id.txtAccountExtended);
+        this.etAccountExtended = this.txtAccountExtended.getEditText();
         this.txtAccountDescription = this.findViewById(R.id.txtAccountDescription);
-        this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
+        this.etAccountDescription = this.txtAccountDescription.getEditText();
 
         this.etAccountServer.setText(Authentication.Tracker.Local.name());
     }
