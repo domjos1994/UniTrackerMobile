@@ -27,6 +27,12 @@
     android:weightSum="20"
     android:background="@drawable/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimaryContainer"/>
+
     <de.domjos.customwidgets.widgets.calendar.WidgetCalendar
         android:id="@+id/cvEventCalendar"
         android:layout_width="match_parent"

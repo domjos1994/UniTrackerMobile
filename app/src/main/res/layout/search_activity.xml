@@ -26,6 +26,13 @@
     tools:context=".activities.SearchActivity"
     android:background="@drawable/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimaryContainer"/>
+
     <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
         android:id="@+id/lvSearchResults"
         android:layout_width="match_parent"

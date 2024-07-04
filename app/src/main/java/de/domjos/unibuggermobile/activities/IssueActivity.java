@@ -62,6 +62,8 @@ public final class IssueActivity extends AbstractActivity {
     /** @noinspection rawtypes*/
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         int notificationId = 0;
         try {
             this.settings = MainActivity.GLOBALS.getSettings(getApplicationContext());

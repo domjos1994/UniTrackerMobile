@@ -34,13 +34,14 @@ import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -65,10 +66,10 @@ public final class AccountActivity extends AbstractActivity {
     private Spinner cmbAccountTracker, cmbAccountAuthentication;
     private ArrayAdapter<Authentication.Tracker> trackerAdapter;
     private ArrayAdapter<Authentication.Auth> authAdapter;
-    private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
+    private EditText etAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
-    private ImageView ivAccountServer;
-    private AutoCompleteTextView txtAccountTitle;
+    private TextInputLayout txtAccountTitle, txtAccountServer;
+    private AutoCompleteTextView lblAccountTitle;
     private CheckBox chkAccountGuest;
     private ImageButton cmdAccountImageGallery;
 
@@ -112,14 +113,13 @@ public final class AccountActivity extends AbstractActivity {
                     fillAuthByTracker(item);
                     switch (item) {
                         case Local:
-                            txtAccountServer.setText(Authentication.Tracker.Local.name());
+                            etAccountServer.setText(Authentication.Tracker.Local.name());
                             break;
                         case Github:
                             txtAccountPassword.setVisibility(View.GONE);
                             txtAccountAPI.setVisibility(View.GONE);
-                            txtAccountServer.setText(getString(R.string.accounts_github_server));
+                            etAccountServer.setText(getString(R.string.accounts_github_server));
                             txtAccountServer.setVisibility(View.GONE);
-                            ivAccountServer.setVisibility(View.GONE);
                             txtAccountAPI.setHint(R.string.accounts_github_client_secret);
                             break;
                         case Bugzilla:
@@ -140,7 +140,7 @@ public final class AccountActivity extends AbstractActivity {
                             }
                             break;
                         case PivotalTracker:
-                            txtAccountServer.setText(R.string.accounts_pivotal_server);
+                            etAccountServer.setText(R.string.accounts_pivotal_server);
                             if (chkAccountGuest.isChecked()) {
                                 accountValidator.removeValidator(txtAccountAPI);
                             } else {
@@ -168,7 +168,7 @@ public final class AccountActivity extends AbstractActivity {
 
         this.cmdAccountImageGallery.setOnClickListener(v -> IntentHelper.openGalleryIntent(AccountActivity.this));
 
-        this.txtAccountServer.addTextChangedListener(new TextWatcher() {
+        this.etAccountServer.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
             @Override
@@ -177,9 +177,9 @@ public final class AccountActivity extends AbstractActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(editable.toString().trim().equals(Authentication.Tracker.Local.name()) || editable.toString().trim().startsWith("https://")) {
-                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_close));
+                    txtAccountServer.setEndIconDrawable(R.drawable.icon_lock_close);
                 } else {
-                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_open));
+                    txtAccountServer.setEndIconDrawable(R.drawable.icon_lock_open);
                 }
             }
         });
@@ -216,7 +216,7 @@ public final class AccountActivity extends AbstractActivity {
             }
         });
 
-        this.txtAccountTitle.addTextChangedListener(new TextWatcher() {
+        this.lblAccountTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -284,6 +284,8 @@ public final class AccountActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.navigationView = this.findViewById(R.id.nav_view);
         this.navigationView.setOnItemSelectedListener(menuItem -> {
             if(menuItem.getItemId() == R.id.navAdd) {
@@ -366,10 +368,11 @@ public final class AccountActivity extends AbstractActivity {
 
         this.chkAccountGuest = this.findViewById(R.id.chkAccountGuest);
         this.txtAccountTitle = this.findViewById(R.id.txtAccountTitle);
+        this.lblAccountTitle = (AutoCompleteTextView) this.txtAccountTitle.getEditText();
         List<Authentication.Tracker> ls = Arrays.asList(Authentication.Tracker.values());
-        this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_dropdown_item_1line, ls));
+        this.lblAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_dropdown_item_1line, ls));
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
-        this.ivAccountServer = this.findViewById(R.id.ivAccountServer);
+        this.etAccountServer = this.txtAccountServer.getEditText();
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
         this.txtAccountAPI = this.findViewById(R.id.txtAccountAPI);
@@ -378,7 +381,7 @@ public final class AccountActivity extends AbstractActivity {
         this.txtAccountDescription = this.findViewById(R.id.txtAccountDescription);
         this.cmdAccountImageGallery = this.findViewById(R.id.cmdAccountImageGallery);
 
-        this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+        this.etAccountServer.setText(Authentication.Tracker.Local.name());
     }
 
     private void fillAuthByTracker(Authentication.Tracker tracker) {
@@ -403,8 +406,8 @@ public final class AccountActivity extends AbstractActivity {
     @Override
     protected void initValidator() {
         this.accountValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
-        this.accountValidator.addEmptyValidator(this.txtAccountTitle);
-        this.accountValidator.addEmptyValidator(this.txtAccountServer);
+        this.accountValidator.addEmptyValidator(this.lblAccountTitle);
+        this.accountValidator.addEmptyValidator(this.etAccountServer);
     }
 
     @Override
@@ -432,7 +435,6 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.setEnabled(!editMode);
         this.txtAccountTitle.setEnabled(editMode);
         this.txtAccountServer.setEnabled(editMode);
-        this.ivAccountServer.setEnabled(editMode);
         this.txtAccountUserName.setEnabled(editMode);
         this.txtAccountPassword.setEnabled(editMode);
         this.txtAccountAPI.setEnabled(editMode);
@@ -454,8 +456,8 @@ public final class AccountActivity extends AbstractActivity {
 
     private void objectToControls() {
         if (this.currentAccount != null) {
-            this.txtAccountTitle.setText(this.currentAccount.getTitle());
-            this.txtAccountServer.setText(this.currentAccount.getServer());
+            this.lblAccountTitle.setText(this.currentAccount.getTitle());
+            this.etAccountServer.setText(this.currentAccount.getServer());
             this.txtAccountUserName.setText(this.currentAccount.getUserName());
             this.txtAccountPassword.setText(this.currentAccount.getPassword());
             this.txtAccountAPI.setText(this.currentAccount.getAPIKey());
@@ -465,7 +467,7 @@ public final class AccountActivity extends AbstractActivity {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(this.currentAccount.getTracker()));
             } else {
                 this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(Authentication.Tracker.Local));
-                this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+                this.etAccountServer.setText(Authentication.Tracker.Local.name());
             }
             if (this.currentAccount.getAuthentication() !=null) {
                 this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(this.currentAccount.getAuthentication()));
@@ -490,8 +492,8 @@ public final class AccountActivity extends AbstractActivity {
             if(this.currentAccount.getId() == null) {
                 this.currentAccount.setId(0L);
             }
-            this.currentAccount.setTitle(this.txtAccountTitle.getText().toString());
-            this.currentAccount.setServer(this.txtAccountServer.getText().toString());
+            this.currentAccount.setTitle(this.lblAccountTitle.getText().toString());
+            this.currentAccount.setServer(this.etAccountServer.getText().toString());
             this.currentAccount.setUserName(this.txtAccountUserName.getText().toString());
             this.currentAccount.setPassword(this.txtAccountPassword.getText().toString());
             this.currentAccount.setAPIKey(this.txtAccountAPI.getText().toString());
@@ -518,9 +520,8 @@ public final class AccountActivity extends AbstractActivity {
     private void resetFieldsOnChange() {
         // reset server
         this.txtAccountServer.setVisibility(View.VISIBLE);
-        this.txtAccountServer.setText("");
-        this.ivAccountServer.setVisibility(View.VISIBLE);
-        this.ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_lock_open));
+        this.etAccountServer.setText("");
+        this.txtAccountServer.setEndIconDrawable(R.drawable.icon_lock_open);
 
         // reset user
         this.txtAccountUserName.setHint(R.string.accounts_user);
@@ -543,7 +544,7 @@ public final class AccountActivity extends AbstractActivity {
             String sever = this.currentAccount.getServer();
             if(sever!=null) {
                if(!sever.trim().isEmpty()) {
-                   this.txtAccountServer.setText(sever.trim());
+                   this.etAccountServer.setText(sever.trim());
                }
             }
         }

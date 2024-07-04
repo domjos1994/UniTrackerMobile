@@ -41,6 +41,7 @@ import android.view.Window;
 import android.widget.*;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -48,6 +49,8 @@ import androidx.core.content.res.ResourcesCompat;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +61,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
@@ -289,7 +293,7 @@ public class Helper {
             pwdDialog.setContentView(R.layout.password_dialog);
             final TextView lblTitle = pwdDialog.findViewById(R.id.lblTitle);
             final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
-            final EditText password2 = pwdDialog.findViewById(R.id.txtPassword2);
+            final TextInputLayout password2 = pwdDialog.findViewById(R.id.txtPassword2);
             final Button cmdSubmit = pwdDialog.findViewById(R.id.cmdSubmit);
             pwdDialog.setCancelable(false);
             pwdDialog.setCanceledOnTouchOutside(false);
@@ -322,10 +326,10 @@ public class Helper {
             cmdSubmit.setOnClickListener(v -> {
                 try {
                     if (!firstLogin || changePassword) {
-                        if (password1.getText().toString().equals(password2.getText().toString())) {
+                        if (password1.getText().toString().equals(Objects.requireNonNull(password2.getEditText()).getText().toString())) {
                             if (password1.getText().toString().length() >= 4) {
                                 password1.setTextColor(Color.GREEN);
-                                password2.setTextColor(Color.GREEN);
+                                Objects.requireNonNull(password2.getEditText()).setTextColor(Color.GREEN);
                                 MainActivity.GLOBALS.getSettings(activity).isFirstLogin(true);
 
                                 new Thread(() -> activity.runOnUiThread(() -> {
@@ -597,5 +601,13 @@ public class Helper {
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    public static void initToolbar(AppCompatActivity activity) {
+        MaterialToolbar toolbar = activity.findViewById(R.id.toolbar);
+        activity.setSupportActionBar(toolbar);
+
+        Objects.requireNonNull(activity.getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 }

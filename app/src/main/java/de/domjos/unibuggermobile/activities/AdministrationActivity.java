@@ -409,6 +409,8 @@ public final class AdministrationActivity extends AbstractActivity {
     }
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         int spinner = R.layout.spinner_item;
         this.ctx = this.getApplicationContext();
         this.settings = MainActivity.GLOBALS.getSettings(this.ctx);

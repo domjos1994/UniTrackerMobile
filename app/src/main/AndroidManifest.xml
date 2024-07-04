@@ -59,7 +59,7 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/about"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.domjos.unibuggermobile.activities.MainActivity" />
@@ -96,7 +96,7 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/help"
             android:parentActivityName=".activities.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.domjos.unibuggermobile.activities.MainActivity" />
@@ -208,7 +208,7 @@
             android:name=".activities.MainActivity"
             android:configChanges="orientation|screenSize"
             android:exported="true"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />

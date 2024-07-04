@@ -26,9 +26,9 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -64,7 +64,7 @@ public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private SwipeRefreshDeleteList lvProjects;
 
-    private TableLayout tblSearch;
+    private LinearLayout tblSearch;
     private EditText txtSearch;
     private ImageButton cmdSearch;
 
@@ -152,6 +152,8 @@ public final class ProjectActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
         // init bottom-navigation

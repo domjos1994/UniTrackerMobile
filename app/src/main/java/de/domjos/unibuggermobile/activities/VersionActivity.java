@@ -162,6 +162,8 @@ public final class VersionActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
         // init Navigation-View

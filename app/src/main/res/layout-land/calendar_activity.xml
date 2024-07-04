@@ -27,6 +27,13 @@
     android:weightSum="20"
     android:background="@drawable/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimaryContainer"/>
+
     <de.domjos.customwidgets.widgets.SplitPaneLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

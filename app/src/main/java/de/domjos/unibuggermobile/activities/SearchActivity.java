@@ -136,6 +136,8 @@ public final class SearchActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.lvSearchResults = this.findViewById(R.id.lvSearchResults);
         this.cmdSearch = this.findViewById(R.id.cmdSearch);
         this.txtSearch = this.findViewById(R.id.txtSearch);

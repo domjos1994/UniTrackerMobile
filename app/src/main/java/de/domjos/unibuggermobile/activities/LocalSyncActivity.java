@@ -107,6 +107,8 @@ public final class LocalSyncActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.activity = LocalSyncActivity.this;
         this.settings = MainActivity.GLOBALS.getSettings(this.activity);
         int item = R.layout.spinner_item;

@@ -41,7 +41,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.LinearLayoutCompat;
-import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -49,6 +48,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
+import com.google.android.material.search.SearchBar;
+import com.google.android.material.search.SearchView;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.unibuggermobile.sheets.BottomSheetIssue;
@@ -100,6 +101,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private IFunctionImplemented permissions;
     private Settings settings;
     private SearchView cmdSearch;
+    private SearchBar searchBar;
     private int page, currentNumberOfItems, notId;
     private long maximum;
 
@@ -156,10 +158,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     @Override
     protected void initActions() {
 
-        this.navigationView.getHeaderView(0).setOnClickListener(v -> {
+        /*this.navigationView.getHeaderView(0).setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             this.reloadAccounts.launch(intent);
-        });
+        });*/
 
         this.lblMainCommand.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
@@ -236,15 +238,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
             }
-
-            /*if (listObject != null) {
-                Intent intent = new Intent(getApplicationContext(), IssueActivity.class);
-                if(listObject.getObject()!=null) {
-                    intent.putExtra("id", String.valueOf(((Issue<?>)listObject.getObject()).getId()));
-                }
-                intent.putExtra("pid", String.valueOf(MainActivity.GLOBALS.getSettings(getApplicationContext()).getCurrentProjectId()));
-                this.reloadIssues.launch(intent);
-            }*/
         });
 
         this.lvMainIssues.setOnDeleteListener(listObject -> {
@@ -280,7 +273,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.cmdSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        /*this.searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
                 reload(s);
@@ -296,10 +289,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.cmdSearch.setOnCloseListener(() -> {
+        this.searchBar.setOnCloseListener(() -> {
             this.reload();
             return true;
-        });
+        });*/
 
         this.cmdPrevious.setOnLongClickListener(v -> {
             this.page = 1;
@@ -355,6 +348,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.navigationView.setNavigationItemSelectedListener(this);
 
             this.cmdSearch = this.findViewById(R.id.cmdSearch);
+            this.searchBar = this.findViewById(R.id.cmdSearchBar);
+            this.cmdSearch.setupWithSearchBar(this.searchBar);
 
             this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);

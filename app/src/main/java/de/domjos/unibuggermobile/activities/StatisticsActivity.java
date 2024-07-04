@@ -177,6 +177,8 @@ public final class StatisticsActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.bcStatisticsBugsPerProject = this.findViewById(R.id.bcStatisticsBugsPerProject);
         Description description = new Description();
         description.setText(this.getString(R.string.statistics_bar_description));

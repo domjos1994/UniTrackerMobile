@@ -71,6 +71,8 @@ public final class CalendarActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.widgetCalendar = this.findViewById(R.id.cvEventCalendar);
         this.widgetCalendar.showDay(false);
         this.progressBar = this.findViewById(R.id.pbCalendar);

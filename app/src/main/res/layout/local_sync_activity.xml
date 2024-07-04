@@ -26,13 +26,20 @@
     tools:context="de.domjos.unibuggermobile.activities.LocalSyncActivity"
     android:background="@drawable/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimaryContainer"/>
+
     <TableLayout
         android:id="@+id/tblControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="10"
-        android:layout_alignParentTop="true"
+        android:layout_below="@+id/toolbar"
         android:background="@drawable/background_controls_2">
 
         <TableRow>

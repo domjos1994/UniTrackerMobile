@@ -25,11 +25,19 @@
     tools:context=".activities.AccountActivity"
     android:background="@drawable/background">
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:background="?attr/colorPrimaryContainer"/>
+
     <TableLayout
         android:id="@+id/tblSearch"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
         android:weightSum="10">
         <TableRow>
             <EditText

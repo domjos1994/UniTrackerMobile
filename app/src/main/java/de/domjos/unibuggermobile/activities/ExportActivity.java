@@ -226,6 +226,8 @@ public final class ExportActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
 
         this.tblControls = this.findViewById(R.id.tblControls);
