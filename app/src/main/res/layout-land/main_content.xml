@@ -156,20 +156,35 @@
                 android:layout_gravity="bottom|end"
                 android:orientation="horizontal"
                 android:weightSum="10">
-                <ImageButton
+
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdBefore"
-                    android:contentDescription="@string/issues"
-                    android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    app:srcCompat="@drawable/icon_controls_before" />
-                <ImageButton
+                    android:layout_weight="5"
+                    android:layout_margin="5dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/icon_controls_before"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="40dp"/>
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdNext"
-                    android:contentDescription="@string/issues"
-                    android:layout_weight="5"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    app:srcCompat="@drawable/icon_controls_next" />
+                    android:layout_weight="5"
+                    android:layout_margin="5dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/icon_controls_next"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="40dp"/>
             </LinearLayout>
         </LinearLayout>
     </RelativeLayout>

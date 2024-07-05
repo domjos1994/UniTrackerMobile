@@ -20,13 +20,11 @@
 <TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="300dp"
     android:weightSum="10"
     android:orientation="horizontal"
-    android:id="@+id/root"
-    android:background="@color/colorPrimaryDark">
+    android:id="@+id/root">
 
     <TextView
         android:id="@+id/lblTitle"
@@ -64,25 +62,28 @@
             android:layout_margin="4dp"/>
     </TableRow>
 
-    <EditText
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/txtComment"
-        android:autofillHints="@string/general_description"
-        android:inputType="textMultiLine"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="10"
-        android:layout_margin="4dp"
-        android:hint="@string/general_description"
-        tools:targetApi="o"/>
+        app:endIconMode="clear_text"
+        android:layout_margin="5dp">
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:hint="@string/general_description"/>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cmdResolve"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="10"
-        android:contentDescription="@string/sys_save"
-        app:srcCompat="@drawable/icon_controls_save"
-        android:layout_margin="1dp"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle"/>
+        android:text="@string/sys_save"
+        app:icon="@drawable/icon_controls_save"
+        android:layout_margin="1dp"/>
 </TableLayout>

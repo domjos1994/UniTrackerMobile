@@ -21,6 +21,7 @@ package de.domjos.unibuggermobile.activities;
 import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -41,8 +42,10 @@ public final class UserActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
     private SwipeRefreshDeleteList lvUsers;
-    private EditText txtUserPassword, txtUserPasswordRepeat;
-    private EditText txtUserName, txtUserFullName, txtUserEmail;
+    private TextInputLayout txtUserPassword, txtUserPasswordRepeat;
+    private TextInputLayout txtUserName, txtUserFullName, txtUserEmail;
+    private EditText etUserPassword, etUserPasswordRepeat;
+    private EditText etUserName, etUserFullName, etUserEmail;
 
     private IBugService<?> bugService;
     private IFunctionImplemented permissions;
@@ -145,10 +148,15 @@ public final class UserActivity extends AbstractActivity {
         // init controls
         this.lvUsers = this.findViewById(R.id.lvUsers);
         this.txtUserName = this.findViewById(R.id.txtUserName);
+        this.etUserName = this.txtUserName.getEditText();
         this.txtUserFullName = this.findViewById(R.id.txtUserFullName);
+        this.etUserFullName = this.txtUserFullName.getEditText();
         this.txtUserEmail = this.findViewById(R.id.txtUserEmail);
+        this.etUserEmail = this.txtUserEmail.getEditText();
         this.txtUserPassword = this.findViewById(R.id.txtUserPassword);
+        this.etUserPassword = this.txtUserPassword.getEditText();
         this.txtUserPasswordRepeat = this.findViewById(R.id.txtUserPasswordRepeat);
+        this.etUserPasswordRepeat = this.txtUserPasswordRepeat.getEditText();
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
@@ -159,7 +167,7 @@ public final class UserActivity extends AbstractActivity {
     @Override
     protected void initValidator() {
         this.userValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
-        this.userValidator.addEmptyValidator(this.txtUserName);
+        this.userValidator.addEmptyValidator(this.etUserName);
     }
 
     @Override
@@ -185,18 +193,18 @@ public final class UserActivity extends AbstractActivity {
     }
 
     private void objectToControls() {
-        this.txtUserName.setText(this.currentUser.getTitle());
-        this.txtUserFullName.setText(this.currentUser.getRealName());
-        this.txtUserEmail.setText(this.currentUser.getEmail());
-        this.txtUserPassword.setText(this.currentUser.getPassword());
+        this.etUserName.setText(this.currentUser.getTitle());
+        this.etUserFullName.setText(this.currentUser.getRealName());
+        this.etUserEmail.setText(this.currentUser.getEmail());
+        this.etUserPassword.setText(this.currentUser.getPassword());
     }
 
     private void controlsToObject() {
-        this.currentUser.setTitle(this.txtUserName.getText().toString());
-        this.currentUser.setRealName(this.txtUserFullName.getText().toString());
-        this.currentUser.setEmail(this.txtUserEmail.getText().toString());
-        if (this.txtUserPassword.getText().toString().equals(this.txtUserPasswordRepeat.getText().toString())) {
-            this.currentUser.setPassword(this.txtUserPassword.getText().toString());
+        this.currentUser.setTitle(this.etUserName.getText().toString());
+        this.currentUser.setRealName(this.etUserFullName.getText().toString());
+        this.currentUser.setEmail(this.etUserEmail.getText().toString());
+        if (this.etUserPassword.getText().toString().equals(this.etUserPasswordRepeat.getText().toString())) {
+            this.currentUser.setPassword(this.etUserPassword.getText().toString());
         }
     }
 

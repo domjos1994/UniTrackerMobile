@@ -38,12 +38,12 @@ import de.domjos.customwidgets.utils.Crypto;
 import de.domjos.unibuggermobile.R;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
-    static final String NO_PASS = "noPassword";
+    public static final String NO_PASS = "noPassword";
     private final Context context;
     private String password;
     private Crypto crypto;
 
-    SQLiteGeneral(Context context, String password) throws Exception {
+    public SQLiteGeneral(Context context, String password) throws Exception {
         super(context, "general.db", null, Helper.getVersionCode(context));
         this.context = context;
         this.password = password;
@@ -99,7 +99,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         return this.getAccounts(where, false);
     }
 
-    List<Authentication> getAccounts(String where, boolean onlyCheck) {
+    public List<Authentication> getAccounts(String where, boolean onlyCheck) {
         List<Authentication> authentications = new LinkedList<>();
         try {
             Cursor cursor;

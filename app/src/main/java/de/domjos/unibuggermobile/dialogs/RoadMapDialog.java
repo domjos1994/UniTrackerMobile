@@ -27,11 +27,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.io.Serializable;
 import java.util.List;
@@ -59,7 +60,7 @@ public class RoadMapDialog extends DialogFragment {
     private static final String RoadMap = "RoadMap";
     private static final String ChangeLog = "ChangeLog";
 
-    private ProgressBar pbState;
+    private LinearProgressIndicator pbState;
     private TextView lblTitle, lblPercentage;
     private SwipeRefreshDeleteList lvIssues;
 

@@ -19,8 +19,9 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,7 @@ import de.domjos.unibuggermobile.helper.Helper;
 
 public final class CalendarActivity extends AbstractActivity {
     private WidgetCalendar widgetCalendar;
-    private ProgressBar progressBar;
+    private LinearProgressIndicator progressBar;
     private TextView lblCalendarTitle, lblCalendarSubTitle, lblCalendarState;
 
 

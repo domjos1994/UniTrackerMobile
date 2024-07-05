@@ -38,19 +38,19 @@
         android:layout_height="wrap_content"
         android:weightSum="10"
         android:orientation="horizontal">
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cmdIssueAttachmentAdd"
-            android:contentDescription="@string/issues_attachments"
+            android:text="@string/issues_attachments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            app:srcCompat="@drawable/icon_issues_attachments" />
-        <ImageButton
+            app:icon="@drawable/icon_issues_attachments" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cmdIssueAttachmentPhoto"
-            android:contentDescription="@string/issues_attachments"
+            android:text="@string/issues_attachments"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            app:srcCompat="@drawable/icon_camera" />
+            app:icon="@drawable/icon_camera" />
     </LinearLayout>
 </RelativeLayout>

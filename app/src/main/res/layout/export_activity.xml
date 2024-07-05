@@ -173,20 +173,23 @@
             </TableRow>
 
             <TableRow>
-                <TextView
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtExportPath"
-                    android:inputType="none"
-                    android:layout_weight="6"
+                    android:layout_weight="7"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:hint="@string/export_path"
-                    android:layout_margin="4dp"
-                    android:autofillHints="@string/export_path"
-                    tools:targetApi="o"/>
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/icon_search"
+                    app:endIconContentDescription="@string/export"
+                    android:layout_margin="5dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:hint="@string/export_path"/>
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <Spinner
                     android:id="@+id/spExportPath"
@@ -196,17 +199,6 @@
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
                     android:gravity="center_vertical"
-                    android:layout_gravity="center"
-                    android:foregroundGravity="center"/>
-
-                <ImageButton
-                    android:id="@+id/cmdExportPath"
-                    android:contentDescription="@string/export"
-                    app:srcCompat="@drawable/icon_search"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/min_height"
-                    android:background="@null"
                     android:layout_gravity="center"
                     android:foregroundGravity="center"/>
             </TableRow>
@@ -239,31 +231,23 @@
 
             <TableRow
                 android:tag="xml">
-                <TextView
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/txtXSLTPath"
-                    android:inputType="none"
-                    android:layout_weight="7"
+                    android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:hint="@string/export_extended_xml_xslt"
-                    android:layout_margin="4dp"
-                    android:autofillHints="@string/export_extended_xml_xslt"
-                    tools:targetApi="o"/>
-
-                <ImageButton
-                    android:id="@+id/cmdXSLTPath"
-                    android:contentDescription="@string/export"
-                    app:srcCompat="@drawable/icon_search"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/min_height"
-                    android:background="@null"
-                    android:layout_gravity="center"
-                    android:foregroundGravity="center"/>
+                    app:endIconMode="custom"
+                    app:endIconDrawable="@drawable/icon_search"
+                    app:endIconContentDescription="@string/export"
+                    android:layout_margin="5dp">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:textStyle="bold"
+                        android:textSize="14sp"
+                        android:hint="@string/export_extended_xml_xslt"/>
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
 
             <TableRow>
@@ -285,13 +269,11 @@
         </TableLayout>
     </ScrollView>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cmdExport"
         android:text="@string/export"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_height"
         android:layout_alignParentBottom="true"
-        android:textColor="@color/divider"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle" />
+        android:layout_margin="5dp"/>
 </RelativeLayout>

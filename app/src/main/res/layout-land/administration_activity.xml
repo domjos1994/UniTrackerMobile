@@ -247,37 +247,34 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="10"
-        android:orientation="horizontal"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarStyle">
+        android:orientation="horizontal">
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/pbProcess"
             android:visibility="gone"
             android:layout_weight="10"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_width="0dp"
-            android:padding="2dp"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:padding="10dp"/>
 
         <TableRow>
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdCopy"
                 android:text="@string/administration_copy"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:textColor="@color/divider"
                 android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"/>
+                android:layout_margin="5dp"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdMove"
                 android:text="@string/administration_move"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:textColor="@color/divider"
                 android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"/>
+                android:layout_margin="5dp"/>
         </TableRow>
     </TableLayout>
 </RelativeLayout>

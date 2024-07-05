@@ -21,6 +21,7 @@ package de.domjos.unibuggermobile.activities;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unibuggermobile.fragments.SettingsFragment;
+import de.domjos.unibuggermobile.helper.Helper;
 
 public final class SettingsActivity extends AbstractActivity {
 
@@ -30,6 +31,8 @@ public final class SettingsActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
+        Helper.initToolbar(this);
+
         this.getSupportFragmentManager().beginTransaction().replace(R.id.llSettings, new SettingsFragment()).commit();
     }
 

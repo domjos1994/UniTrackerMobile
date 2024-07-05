@@ -31,7 +31,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:layout_alignParentTop="true"
         android:background="?attr/colorPrimaryContainer"/>
 
     <de.domjos.customwidgets.widgets.SplitPaneLayout
@@ -93,11 +92,11 @@
                     android:padding="2dp"
                     android:layout_margin="2dp"/>
 
-                <ProgressBar
+                <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/pbCalendar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@android:style/Widget.ProgressBar.Horizontal"/>
+                    android:padding="10dp"/>
             </LinearLayout>
         </LinearLayout>
     </de.domjos.customwidgets.widgets.SplitPaneLayout>

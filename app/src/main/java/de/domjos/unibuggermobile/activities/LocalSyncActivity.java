@@ -26,11 +26,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,9 +58,10 @@ public final class LocalSyncActivity extends AbstractActivity {
     private Settings settings;
     private Activity activity;
 
-    private EditText txtLocalSyncSearch;
-    private ImageButton cmdLocalSyncSearch, cmdSync;
-    private ProgressBar pbProcess;
+    private TextInputLayout txtLocalSyncSearch;
+    private EditText etLocalSyncSearch;
+    private MaterialButton cmdSync;
+    private LinearProgressIndicator pbProcess;
 
     public LocalSyncActivity() {
         super(R.layout.local_sync_activity);
@@ -93,8 +96,8 @@ public final class LocalSyncActivity extends AbstractActivity {
             }
         });
 
-        this.cmdLocalSyncSearch.setOnClickListener(v -> {
-            String search = this.txtLocalSyncSearch.getText().toString().trim();
+        this.txtLocalSyncSearch.setEndIconOnClickListener(v -> {
+            String search = this.etLocalSyncSearch.getText().toString().trim();
             if (!search.isEmpty()) {
                 this.reload(search);
             } else {
@@ -126,7 +129,7 @@ public final class LocalSyncActivity extends AbstractActivity {
         this.expLvLocalSync = this.findViewById(R.id.expLvLocalSync);
 
         this.txtLocalSyncSearch = this.findViewById(R.id.txtLocalSyncSearch);
-        this.cmdLocalSyncSearch = this.findViewById(R.id.cmdLocalSyncSearch);
+        this.etLocalSyncSearch = this.txtLocalSyncSearch.getEditText();
         this.cmdSync = this.findViewById(R.id.cmdSync);
         this.pbProcess = this.findViewById(R.id.pbProcess);
 

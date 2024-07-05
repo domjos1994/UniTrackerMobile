@@ -26,7 +26,6 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TableRow;
 
@@ -35,6 +34,8 @@ import androidx.core.content.ContextCompat;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Date;
 import java.util.Objects;
@@ -63,12 +64,13 @@ public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
 
     private SwipeRefreshDeleteList lvVersions;
-    private EditText txtVersionTitle, txtVersionDescription;
+    private TextInputLayout txtVersionTitle, txtVersionDescription;
+    private EditText etVersionTitle, etVersionDescription;
     private DatePickerField txtVersionReleasedAt;
-    private ProgressBar pbVersion;
+    private LinearProgressIndicator pbVersion;
     private CheckBox chkVersionReleased, chkVersionDeprecated;
     private Spinner spVersionFilter;
-    private TableRow rowVersionReleased, rowVersionDeprecated, rowVersionReleasedAt;
+    private TableRow rowVersionReleasedAt;
     private LinearLayout rowVersionFilter;
 
     private IBugService<?> bugService;
@@ -203,7 +205,9 @@ public final class VersionActivity extends AbstractActivity {
         // init controls
         this.lvVersions = this.findViewById(R.id.lvVersions);
         this.txtVersionTitle = this.findViewById(R.id.txtVersionTitle);
+        this.etVersionTitle = this.txtVersionTitle.getEditText();
         this.txtVersionDescription = this.findViewById(R.id.txtVersionDescription);
+        this.etVersionDescription = this.txtVersionDescription.getEditText();
         this.txtVersionReleasedAt = this.findViewById(R.id.txtVersionReleasedAt);
         this.txtVersionReleasedAt.setTimePicker(true);
         this.chkVersionReleased = this.findViewById(R.id.chkVersionReleased);
@@ -213,8 +217,6 @@ public final class VersionActivity extends AbstractActivity {
         this.pbVersion.setVisibility(View.GONE);
         this.pbVersion.setMax(100);
 
-        this.rowVersionReleased = this.findViewById(R.id.rowVersionReleased);
-        this.rowVersionDeprecated = this.findViewById(R.id.rowVersionDeprecated);
         this.rowVersionReleasedAt = this.findViewById(R.id.rowVersionReleasedAt);
         this.rowVersionFilter = this.findViewById(R.id.rowVersionFilter);
 
@@ -227,7 +229,7 @@ public final class VersionActivity extends AbstractActivity {
     @Override
     protected void initValidator() {
         this.versionValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
-        this.versionValidator.addEmptyValidator(this.txtVersionTitle);
+        this.versionValidator.addEmptyValidator(this.etVersionTitle);
         this.versionValidator.addDateValidator(this.txtVersionReleasedAt, this.settings.getDateFormat(), false);
     }
 
@@ -288,8 +290,8 @@ public final class VersionActivity extends AbstractActivity {
 
     private void objectToControls() {
         if (this.currentVersion != null) {
-            this.txtVersionTitle.setText(this.currentVersion.getTitle());
-            this.txtVersionDescription.setText(this.currentVersion.getDescription());
+            this.etVersionTitle.setText(this.currentVersion.getTitle());
+            this.etVersionDescription.setText(this.currentVersion.getDescription());
             Date date = new Date();
             date.setTime(this.currentVersion.getReleasedVersionAt());
             this.txtVersionReleasedAt.setText(ConvertHelper.convertDateToString(date, this.settings.getDateFormat() + " " + this.settings.getTimeFormat()));
@@ -301,8 +303,8 @@ public final class VersionActivity extends AbstractActivity {
     private void controlsToObject() {
         try {
             if (this.currentVersion != null) {
-                this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
-                this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
+                this.currentVersion.setTitle(this.etVersionTitle.getText().toString());
+                this.currentVersion.setDescription(this.etVersionDescription.getText().toString());
                 this.currentVersion.setReleasedVersionAt(Helper.checkDateAndReturn(this.txtVersionReleasedAt, this.getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
@@ -321,8 +323,8 @@ public final class VersionActivity extends AbstractActivity {
         }
 
         this.rowVersionReleasedAt.setVisibility(View.GONE);
-        this.rowVersionReleased.setVisibility(View.GONE);
-        this.rowVersionDeprecated.setVisibility(View.GONE);
+        this.chkVersionReleased.setVisibility(View.GONE);
+        this.chkVersionDeprecated.setVisibility(View.GONE);
         this.rowVersionFilter.setVisibility(View.GONE);
 
         if (tracker != null) {
@@ -330,39 +332,33 @@ public final class VersionActivity extends AbstractActivity {
                 case MantisBT:
                 case Local:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionFilter.setVisibility(View.VISIBLE);
                     break;
                 case RedMine:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
                     this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
                     break;
                 case YouTrack:
-                case OpenProject:
+                case OpenProject, Jira:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
                     break;
                 case Github:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    break;
-                case Jira:
-                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
                     break;
                 case Backlog:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
             }
         }

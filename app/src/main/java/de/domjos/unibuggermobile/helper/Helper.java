@@ -19,25 +19,18 @@
 package de.domjos.unibuggermobile.helper;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.*;
 
 import androidx.annotation.DrawableRes;
@@ -50,29 +43,19 @@ import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.textfield.TextInputLayout;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
-import de.domjos.unitrackerlibrary.model.issues.Attachment;
-import de.domjos.unitrackerlibrary.model.issues.Issue;
-import de.domjos.unitrackerlibrary.model.issues.Note;
-import de.domjos.unitrackerlibrary.model.issues.Tag;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.AzureDevOps;
@@ -87,11 +70,9 @@ import de.domjos.unitrackerlibrary.services.tracker.Redmine;
 import de.domjos.unitrackerlibrary.services.tracker.SQLite;
 import de.domjos.unitrackerlibrary.services.tracker.Tuleap;
 import de.domjos.unitrackerlibrary.services.tracker.YouTrack;
-import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.settings.Settings;
-import de.domjos.unitrackerlibrary.tasks.LoaderTask;
 
 public class Helper {
     public static final List<Authentication.Tracker> disabledBugTrackers =
@@ -222,265 +203,6 @@ public class Helper {
         }
     }
 
-    public static void showTagDialog(Activity activity, IBugService<?> bugService, boolean show, Object pid, List<BaseDescriptionObject> objects, int notificationId) {
-        try {
-            Dialog tagDialog = new Dialog(activity);
-            tagDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            tagDialog.setContentView(R.layout.tag_dialog);
-
-            final Spinner cmbTags = tagDialog.findViewById(R.id.cmbTags);
-            final EditText txtTags = tagDialog.findViewById(R.id.txtTags);
-            final ImageButton cmdTags = tagDialog.findViewById(R.id.cmdTags);
-
-            ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_item);
-            cmbTags.setAdapter(tagAdapter);
-            tagAdapter.notifyDataSetChanged();
-            LoaderTask loaderTask = new LoaderTask(activity, bugService, show, LoaderTask.Type.Tags);
-            loaderTask.after((AbstractTask.PostExecuteListener<List<Tag<?>>>) o -> {
-                if(o != null) {
-                    for(Tag<?> tag : o) {
-                        tagAdapter.add(tag.getTitle());
-                    }
-                }
-            });
-            loaderTask.execute(pid);
-
-            cmbTags.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    String content = txtTags.getText().toString().trim();
-                    String newVal = content.isEmpty() ? tagAdapter.getItem(i) : content + "; " + tagAdapter.getItem(i);
-                    txtTags.setText(newVal);
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {}
-            });
-
-            cmdTags.setOnClickListener(event -> {
-                try {
-                    String tags = txtTags.getText().toString();
-
-                    for(BaseDescriptionObject listObject : objects) {
-                        IssueTask issueTask = new IssueTask(activity, bugService, pid, false, true, show, R.drawable.icon_issues);
-                        issueTask.setId(notificationId);
-                        List<Issue<?>> issues = issueTask.execute(((Issue<?>)listObject.getObject()).getId()).get();
-
-                        if(issues!=null) {
-                            if(!issues.isEmpty()) {
-                                issues.get(0).setTags(tags);
-                                issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.icon_issues);
-                                issueTask.execute(issues.get(0)).get();
-                            }
-                        }
-                    }
-                    tagDialog.dismiss();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-                }
-            });
-            tagDialog.show();
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
-    @SuppressWarnings("BusyWait")
-    public static void showPasswordDialog(Activity activity, boolean firstLogin, boolean changePassword, Runnable successRunnable) {
-        try {
-            Dialog pwdDialog = new Dialog(activity);
-            pwdDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            pwdDialog.setContentView(R.layout.password_dialog);
-            final TextView lblTitle = pwdDialog.findViewById(R.id.lblTitle);
-            final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
-            final TextInputLayout password2 = pwdDialog.findViewById(R.id.txtPassword2);
-            final Button cmdSubmit = pwdDialog.findViewById(R.id.cmdSubmit);
-            pwdDialog.setCancelable(false);
-            pwdDialog.setCanceledOnTouchOutside(false);
-            if (!firstLogin || changePassword) {
-                lblTitle.setText(R.string.pwd_title);
-            } else {
-                password2.setVisibility(View.GONE);
-                lblTitle.setText(R.string.pwd_title_pwd);
-            }
-            if (MainActivity.GLOBALS.getPassword().isEmpty() || changePassword) {
-                if(MainActivity.GLOBALS.getSettings(activity).isEncryptionEnabled()) {
-                    pwdDialog.show();
-                    new Thread(() -> {
-                        while (pwdDialog.isShowing()) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (Exception ignored) {
-                            }
-                        }
-                    }).start();
-                } else {
-                    MainActivity.GLOBALS.setPassword(SQLiteGeneral.NO_PASS);
-                    MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                    successRunnable.run();
-                }
-            } else {
-                MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                successRunnable.run();
-            }
-            cmdSubmit.setOnClickListener(v -> {
-                try {
-                    if (!firstLogin || changePassword) {
-                        if (password1.getText().toString().equals(Objects.requireNonNull(password2.getEditText()).getText().toString())) {
-                            if (password1.getText().toString().length() >= 4) {
-                                password1.setTextColor(Color.GREEN);
-                                Objects.requireNonNull(password2.getEditText()).setTextColor(Color.GREEN);
-                                MainActivity.GLOBALS.getSettings(activity).isFirstLogin(true);
-
-                                new Thread(() -> activity.runOnUiThread(() -> {
-                                    try {
-                                        if (changePassword) {
-                                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getText().toString());
-                                        }
-                                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
-                                        MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                                        if (Helper.checkDatabase()) {
-                                            successRunnable.run();
-                                            pwdDialog.cancel();
-                                        }
-                                    } catch (Exception ex) {
-                                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-                                    }
-                                })).start();
-                            } else {
-                                password2.setError(activity.getString(R.string.messages_passwords_too_small));
-                            }
-                        } else {
-                            password2.setError(activity.getString(R.string.messages_passwords_dont_fit));
-                        }
-                    } else {
-                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
-                        MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                        if(Helper.checkDatabase()) {
-                            password1.setTextColor(Color.GREEN);
-                            new Thread(() -> activity.runOnUiThread(() -> {
-                                successRunnable.run();
-                                pwdDialog.cancel();
-                            })).start();
-                        } else {
-                            password1.setError(activity.getString(R.string.messages_wrong_password));
-                        }
-                    }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-                }
-            });
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
-    /** @noinspection unchecked, rawtypes */
-    public static void showResolveDialog(Activity activity, String array, int position, Issue<?> issue, IBugService<?> bugService, Object pid, boolean show, Runnable runnable, int notificationId) {
-        try {
-            Dialog resolveDialog = new Dialog(activity);
-            resolveDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            resolveDialog.setContentView(R.layout.resolve_dialog);
-            final Spinner cmbState = resolveDialog.findViewById(R.id.cmbStatus);
-            cmbState.setAdapter(Helper.setAdapter(activity, array));
-            try {
-                if (position != -1) {
-                    cmbState.setSelection(position);
-                }
-            } catch (Exception ignored) {
-            }
-            final EditText txtDescription = resolveDialog.findViewById(R.id.txtComment);
-            final ImageButton cmdSave = resolveDialog.findViewById(R.id.cmdResolve);
-
-            cmdSave.setOnClickListener(v -> {
-                try {
-                    String noteContent = txtDescription.getText().toString();
-                    if (!noteContent.isEmpty()) {
-                        Note<?> note = new Note<>();
-                        note.setDescription(noteContent);
-                        note.setTitle(noteContent);
-                        note.setState(10, "öffentlich");
-                        //noinspection rawtypes
-                        issue.getNotes().add((Note) note);
-                    }
-                    issue.setStatus(ArrayHelper.getIdOfEnum(activity, cmbState, array), cmbState.getSelectedItem().toString());
-
-                    IssueTask issueTask = new IssueTask(activity, bugService, pid, false, false, show, R.drawable.icon_issues);
-                    issueTask.setId(notificationId);
-                    issueTask.execute(issue).get();
-                    resolveDialog.dismiss();
-                    runnable.run();
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-                }
-            });
-            resolveDialog.setCancelable(true);
-            resolveDialog.show();
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
-    public static void showAttachmentDialog(Activity activity, List<Attachment<?>> attachments) {
-        try {
-            AtomicInteger id = new AtomicInteger();
-            Dialog attachmentDialog = new Dialog(activity);
-            attachmentDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            attachmentDialog.setContentView(R.layout.attachment_dialog);
-            final ImageView iv = attachmentDialog.findViewById(R.id.ivCurrentAttachment);
-            final ImageButton cmdPrevious = attachmentDialog.findViewById(R.id.cmdPrevious);
-            final ImageButton cmdNext = attachmentDialog.findViewById(R.id.cmdNext);
-
-            Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
-            cmdPrevious.setOnClickListener(v -> {
-                if (id.get() != 0) {
-                    id.getAndDecrement();
-                    Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
-                }
-            });
-            cmdNext.setOnClickListener(v -> {
-                if (id.get() != attachments.size() - 1) {
-                    id.getAndIncrement();
-                    Helper.addAttachmentToImageView(activity, iv, attachments.get(id.get()));
-                }
-            });
-            attachmentDialog.show();
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
-    public static void showWhatsNewDialog(Activity activity) {
-        try {
-            Dialog whatsNewDialog = new Dialog(activity);
-            whatsNewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            whatsNewDialog.setContentView(R.layout.whats_new_dialog);
-            TextView lblTitle = whatsNewDialog.findViewById(R.id.lblTitle);
-            TextView lblContent = whatsNewDialog.findViewById(R.id.lblWhatsNewContent);
-            String version = Helper.getVersion(activity);
-
-            String content = Helper.getStringResourceByName(activity, "whats_new_" + version);
-            if(!content.isEmpty()) {
-                lblTitle.setText(version);
-                lblContent.setText(Html.fromHtml(content, Html.FROM_HTML_MODE_COMPACT));
-
-                Settings settings = MainActivity.GLOBALS.getSettings(activity);
-
-                if(!settings.getWhatsNewVersion().isEmpty()) {
-                    if(!settings.getWhatsNewVersion().equals(version)) {
-                        whatsNewDialog.show();
-                        settings.setWhatsNewVersion();
-                    }
-                } else {
-                    whatsNewDialog.show();
-                    settings.setWhatsNewVersion();
-                }
-            }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
     public static FilePickerDialog initFilePickerDialog(Activity activity, boolean selectDir, String[] extensions, String title) {
         DialogProperties dialogProperties = new DialogProperties();
         dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
@@ -498,17 +220,6 @@ public class Helper {
         dialog.setCancelable(true);
         dialog.setTitle(title);
         return dialog;
-    }
-
-    private static String getStringResourceByName(Activity activity, String aString) {
-        try {
-            String packageName = activity.getPackageName();
-            @SuppressLint("DiscouragedApi")
-            int resId = activity.getResources().getIdentifier(aString, "string", packageName);
-            return activity.getString(resId);
-        } catch (Exception ex) {
-            return "";
-        }
     }
 
     public static String getVersion(Context context) {
@@ -530,77 +241,6 @@ public class Helper {
             return stream.toByteArray();
         }
         return null;
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void addAttachmentToImageView(Activity activity, ImageView iv, Attachment<?> attachment) {
-        if (attachment.getContentType().toLowerCase().contains("image") ||
-                attachment.getFilename().toLowerCase().endsWith("png") ||
-                attachment.getFilename().toLowerCase().endsWith("jpg") ||
-                attachment.getFilename().toLowerCase().endsWith("jpeg") ||
-                attachment.getFilename().toLowerCase().endsWith("bmp") ||
-                attachment.getFilename().toLowerCase().endsWith("gif")) {
-
-            Bitmap bitmap = BitmapFactory.decodeByteArray(attachment.getContent(), 0, attachment.getContent().length);
-            iv.setImageBitmap(bitmap);
-        } else {
-            iv.setImageDrawable(ResourcesCompat.getDrawable(activity.getResources(), R.drawable.icon_download, activity.getTheme()));
-        }
-
-        iv.setOnClickListener(v -> {
-            DialogProperties dialogProperties = new DialogProperties();
-            dialogProperties.selection_mode = DialogConfigs.SINGLE_MODE;
-            dialogProperties.root = new File(DialogConfigs.DEFAULT_DIR);
-            dialogProperties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
-            dialogProperties.offset = new File(DialogConfigs.DEFAULT_DIR);
-            dialogProperties.selection_type = DialogConfigs.DIR_SELECT;
-            dialogProperties.extensions = null;
-
-            FilePickerDialog filePickerDialog = new FilePickerDialog(activity, dialogProperties);
-            filePickerDialog.setCancelable(true);
-            filePickerDialog.setDialogSelectionListener(files -> {
-                try {
-                    if (files != null) {
-                        String path = files[0];
-                        File file = new File(path + File.separatorChar + attachment.getFilename());
-                        file.mkdirs();
-                        if (file.createNewFile()) {
-                            Helper.saveAttachment(file, attachment.getContent(), activity);
-                        } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                            builder.setTitle(R.string.issues_context_attachment_overwrite);
-                            builder.setPositiveButton(R.string.issues_context_attachment_overwrite_yes, (dialog, which) -> Helper.saveAttachment(file, attachment.getContent(), activity));
-                            builder.setNegativeButton(R.string.issues_context_attachment_overwrite_no, (dialog, which) -> dialog.dismiss());
-                            builder.create().show();
-                        }
-                    }
-                } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-                }
-            });
-            filePickerDialog.show();
-        });
-    }
-
-    private static void saveAttachment(File file, byte[] content, Activity activity) {
-        try {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-            bos.write(content);
-            bos.flush();
-            bos.close();
-            MessageHelper.printMessage(activity.getString(R.string.issues_context_attachment_saved), R.mipmap.ic_launcher_round, activity);
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
-        }
-    }
-
-    private static boolean checkDatabase() {
-        try {
-            List<Authentication> authenticationList = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("", true);
-            return authenticationList != null;
-        } catch (Exception ex) {
-            return false;
-        }
     }
 
     public static void initToolbar(AppCompatActivity activity) {

@@ -30,12 +30,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
+
+import com.google.android.material.button.MaterialButton;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,8 +62,7 @@ import de.domjos.unitrackerlibrary.tools.ConvertHelper;
  */
 public final class IssueAttachmentsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssueAttachments;
-    private ImageButton cmdIssueAttachmentAdd;
-    private ImageButton cmdIssueAttachmentPhoto;
+    private MaterialButton cmdIssueAttachmentAdd, cmdIssueAttachmentPhoto;
     private IBugService<?> bugService;
 
     private View root;

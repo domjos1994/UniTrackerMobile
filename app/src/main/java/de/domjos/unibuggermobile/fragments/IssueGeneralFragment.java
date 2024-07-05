@@ -34,6 +34,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.textfield.TextInputLayout;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -66,16 +68,19 @@ import de.domjos.customwidgets.utils.Validator;
  * @noinspection rawtypes
  */
 public final class IssueGeneralFragment extends AbstractFragment {
-    private EditText txtIssueGeneralSummary;
+    private TextInputLayout txtIssueGeneralSummary;
+    private EditText etIssueGeneralSummary;
     private DatePickerField txtIssueGeneralDueDate;
     private TextView txtIssueGeneralSubmitted, txtIssueGeneralUpdated;
-    private AutoCompleteTextView txtIssueGeneralCategory, txtIssueGeneralVersion,
-            txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion,
+    private TextInputLayout txtIssueGeneralCategory, txtIssueGeneralVersion,
+            txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion;
+    private AutoCompleteTextView etIssueGeneralCategory, etIssueGeneralVersion,
+            etIssueGeneralTargetVersion, etIssueGeneralFixedInVersion,
             txtIssueGeneralPlatform, txtIssueGeneralOs, txtIssueGeneralBuild;
     private Spinner spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
     private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
-    private ImageButton cmdIssueGeneralSmartPhone, cmdIssueGeneralSummaryToDescription;
+    private ImageButton cmdIssueGeneralSmartPhone;
     /** @noinspection rawtypes*/
     private ArrayAdapter<User> userAdapter;
 
@@ -105,8 +110,10 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.root = inflater.inflate(R.layout.issue_fragment_general, container, false);
 
         this.txtIssueGeneralSummary = this.root.findViewById(R.id.txtIssueGeneralSummary);
+        this.etIssueGeneralSummary = this.txtIssueGeneralSummary.getEditText();
 
         this.txtIssueGeneralCategory = this.root.findViewById(R.id.txtIssueGeneralCategory);
+        this.etIssueGeneralCategory = (AutoCompleteTextView) this.txtIssueGeneralCategory.getEditText();
         this.initCategories();
 
         this.spIssueGeneralView = this.root.findViewById(R.id.spIssueGeneralView);
@@ -236,9 +243,11 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.txtIssueGeneralDueDate = this.root.findViewById(R.id.txtIssueGeneralDueDate);
 
         this.txtIssueGeneralVersion = this.root.findViewById(R.id.txtIssueGeneralVersion);
+        this.etIssueGeneralVersion = (AutoCompleteTextView) this.txtIssueGeneralVersion.getEditText();
         this.txtIssueGeneralTargetVersion = this.root.findViewById(R.id.txtIssueGeneralTargetVersion);
+        this.etIssueGeneralTargetVersion = (AutoCompleteTextView) this.txtIssueGeneralTargetVersion.getEditText();
         this.txtIssueGeneralFixedInVersion = this.root.findViewById(R.id.txtIssueGeneralFixedInVersion);
-        this.cmdIssueGeneralSummaryToDescription = this.root.findViewById(R.id.cmdIssueGeneralSummaryToDescription);
+        this.etIssueGeneralFixedInVersion = (AutoCompleteTextView) this.txtIssueGeneralFixedInVersion.getEditText();
 
         this.initVersions();
 
@@ -276,8 +285,8 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.issue = (Issue) descriptionObject;
 
         if (this.root != null) {
-            issue.setTitle(this.txtIssueGeneralSummary.getText().toString());
-            issue.setCategory(this.txtIssueGeneralCategory.getText().toString());
+            issue.setTitle(this.etIssueGeneralSummary.getText().toString());
+            issue.setCategory(this.etIssueGeneralCategory.getText().toString());
             issue.setState(this.getData(this.spIssueGeneralView).getId(), this.getData(this.spIssueGeneralView).getItem());
             if (this.rowIssueGeneralSeverity.getVisibility() == View.VISIBLE) {
                 issue.setSeverity(this.getData(this.spIssueGeneralSeverity).getId(), this.getData(this.spIssueGeneralSeverity).getItem());
@@ -286,9 +295,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
             issue.setPriority(this.getData(this.spIssueGeneralPriority).getId(), this.getData(this.spIssueGeneralPriority).getItem());
             issue.setStatus(this.getData(this.spIssueGeneralStatus).getId(), this.getData(this.spIssueGeneralStatus).getItem());
             issue.setResolution(this.getData(this.spIssueGeneralResolution).getId(), this.getData(this.spIssueGeneralResolution).getItem());
-            issue.setVersion(this.txtIssueGeneralVersion.getText().toString());
-            issue.setTargetVersion(this.txtIssueGeneralTargetVersion.getText().toString());
-            issue.setFixedInVersion(this.txtIssueGeneralFixedInVersion.getText().toString());
+            issue.setVersion(this.etIssueGeneralVersion.getText().toString());
+            issue.setTargetVersion(this.etIssueGeneralTargetVersion.getText().toString());
+            issue.setFixedInVersion(this.etIssueGeneralFixedInVersion.getText().toString());
             issue.setHandler((User) this.spIssueGeneralHandler.getSelectedItem());
             Profile profile = new Profile();
             profile.setPlatform(this.txtIssueGeneralPlatform.getText().toString());
@@ -333,15 +342,14 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralBuild.setEnabled(editMode);
             this.txtIssueGeneralOs.setEnabled(editMode);
             this.cmdIssueGeneralSmartPhone.setEnabled(editMode);
-            this.cmdIssueGeneralSummaryToDescription.setEnabled(editMode);
         }
     }
 
     @Override
     protected void initData() {
         if (this.issue != null) {
-            this.txtIssueGeneralSummary.setText(this.issue.getTitle());
-            this.txtIssueGeneralCategory.setText(this.issue.getCategory());
+            this.etIssueGeneralSummary.setText(this.issue.getTitle());
+            this.etIssueGeneralCategory.setText(this.issue.getCategory());
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getState().getKey().toString()), "issues_general_view_values", spIssueGeneralView);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getSeverity().getKey().toString()), this.severityValueArray, spIssueGeneralSeverity);
             ArrayHelper.setValueOfEnum(this.getContext(), Integer.parseInt(this.issue.getReproducibility().getKey().toString()), "issues_general_reproducibility_values", spIssueGeneralReproducibility);
@@ -362,9 +370,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 }
             }
 
-            this.txtIssueGeneralVersion.setText(this.issue.getVersion());
-            this.txtIssueGeneralTargetVersion.setText(this.issue.getTargetVersion());
-            this.txtIssueGeneralFixedInVersion.setText(this.issue.getFixedInVersion());
+            this.etIssueGeneralVersion.setText(this.issue.getVersion());
+            this.etIssueGeneralTargetVersion.setText(this.issue.getTargetVersion());
+            this.etIssueGeneralFixedInVersion.setText(this.issue.getFixedInVersion());
             if (this.issue.getProfile() != null) {
                 this.txtIssueGeneralPlatform.setText(this.issue.getProfile().getPlatform());
                 this.txtIssueGeneralOs.setText(this.issue.getProfile().getOs());
@@ -396,7 +404,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
             });
 
-            this.cmdIssueGeneralSummaryToDescription.setOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.txtIssueGeneralSummary.getText().toString()));
+            this.txtIssueGeneralSummary.setEndIconOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.etIssueGeneralSummary.getText().toString()));
         }
     }
 
@@ -409,10 +417,10 @@ public final class IssueGeneralFragment extends AbstractFragment {
         Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
-            this.validator.addEmptyValidator(this.txtIssueGeneralSummary);
+            this.validator.addEmptyValidator(this.etIssueGeneralSummary);
 
             if (authentication.getTracker() == Authentication.Tracker.MantisBT) {
-                this.validator.addEmptyValidator(this.txtIssueGeneralCategory);
+                this.validator.addEmptyValidator(this.etIssueGeneralCategory);
             }
         }
         return this.validator;
@@ -460,7 +468,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.rowIssueGeneralHandler.setVisibility(View.VISIBLE);
                 this.txtIssueGeneralCategory.setOnFocusChangeListener((v, hasFocus) -> {
                     if(hasFocus) {
-                        this.txtIssueGeneralCategory.showDropDown();
+                        this.etIssueGeneralCategory.showDropDown();
                     }
                 });
                 this.priorityValueArray = "issues_general_priority_mantisbt_values";
@@ -603,7 +611,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                         }
                     }
                 }
-                this.txtIssueGeneralCategory.setAdapter(arrayAdapter);
+                this.etIssueGeneralCategory.setAdapter(arrayAdapter);
             } catch (Exception ex) {
                 MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
             }
@@ -626,9 +634,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
             } catch (Exception ex) {
                 this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
             }
-            this.txtIssueGeneralVersion.setAdapter(arrayAdapter);
-            this.txtIssueGeneralTargetVersion.setAdapter(arrayAdapter);
-            this.txtIssueGeneralFixedInVersion.setAdapter(arrayAdapter);
+            this.etIssueGeneralVersion.setAdapter(arrayAdapter);
+            this.etIssueGeneralTargetVersion.setAdapter(arrayAdapter);
+            this.etIssueGeneralFixedInVersion.setAdapter(arrayAdapter);
         }
     }
 }

@@ -29,6 +29,7 @@ import android.widget.TextView;
 
 import de.domjos.customwidgets.model.AbstractActivity;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unibuggermobile.helper.Helper;
 
 public final class InfoActivity extends AbstractActivity {
     public final static String TITLE = "title";
@@ -48,9 +49,7 @@ public final class InfoActivity extends AbstractActivity {
 
     @Override
     protected void initControls() {
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        this.setSupportActionBar(toolbar);
+        Helper.initToolbar(this);
 
         CollapsingToolbarLayout toolBarLayout = findViewById(R.id.toolbar_layout);
         toolBarLayout.setTitle(getTitle());

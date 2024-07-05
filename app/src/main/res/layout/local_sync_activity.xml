@@ -43,32 +43,23 @@
         android:background="@drawable/background_controls_2">
 
         <TableRow>
-
-            <TextView
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/search_content" />
-
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtLocalSyncSearch"
-                android:layout_weight="6"
-                android:layout_width="0dp"
-                android:hint="@string/search_content"
-                android:inputType="text"
-                android:layout_height="wrap_content"
-                android:autofillHints="@string/search_content"
-                tools:targetApi="o" />
-
-            <ImageButton
-                android:id="@+id/cmdLocalSyncSearch"
-                android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/search_content"
-                app:srcCompat="@drawable/icon_search" />
+                android:layout_weight="10"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/icon_search"
+                app:endIconContentDescription="@string/search_content"
+                android:layout_margin="5dp">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:hint="@string/search_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
         <TableRow>
@@ -122,19 +113,17 @@
         style="?android:attr/buttonBarStyle"
         android:orientation="vertical">
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/pbProcess"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:padding="2dp"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:padding="10dp"/>
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cmdSync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/icon_local_sync"
-            android:contentDescription="@string/local_sync"
-            style="?android:attr/buttonBarButtonStyle"/>
+            app:icon="@drawable/icon_local_sync"
+            android:text="@string/local_sync"/>
     </LinearLayout>
 </RelativeLayout>

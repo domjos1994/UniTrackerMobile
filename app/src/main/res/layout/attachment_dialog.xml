@@ -58,27 +58,36 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="4dp"
-            android:weightSum="10"
-            android:background="@android:color/background_light"
-            style="?android:attr/buttonBarStyle">
+            android:weightSum="10">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdPrevious"
-                android:contentDescription="@string/issues_attachments"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_before"
-                style="?android:attr/buttonBarButtonStyle" />
-
-            <ImageButton
+                android:layout_margin="5dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/icon_controls_before"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="40dp"/>
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdNext"
-                android:contentDescription="@string/issues_attachments"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_next"
-                style="?android:attr/buttonBarButtonStyle" />
+                android:layout_margin="5dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                app:icon="@drawable/icon_controls_next"
+                app:iconGravity="textStart"
+                app:iconPadding="0dp"
+                app:iconSize="40dp"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

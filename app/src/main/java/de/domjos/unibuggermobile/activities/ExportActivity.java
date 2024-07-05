@@ -23,18 +23,18 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -61,9 +61,9 @@ import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class ExportActivity extends AbstractActivity {
-    private Button cmdExport;
-    private ImageButton cmdExportPath, cmdXSLTPath;
-    private TextView txtExportPath, txtXSLTPath;
+    private MaterialButton cmdExport;
+    private TextInputLayout txtExportPath, txtXSLTPath;
+    private EditText etExportPath, etXSLTPath;
     private Spinner spBugTracker, spProjects, spData, spExportPath;
     private CheckBox chkShowBackground, chkShowIcon, chkCopyExampleData;
     private ArrayAdapter<String> dataAdapter;
@@ -88,7 +88,7 @@ public final class ExportActivity extends AbstractActivity {
                     if(tableRow.getTag()!=null) {
                         if(tableRow.getTag() instanceof String) {
                             tableRow.setVisibility(View.GONE);
-                            txtXSLTPath.setText("");
+                            etXSLTPath.setText("");
                             if(tableRow.getTag().toString().equals(item)) {
                                 tableRow.setVisibility(View.VISIBLE);
                             }
@@ -121,13 +121,13 @@ public final class ExportActivity extends AbstractActivity {
             }
         });
 
-        this.cmdExportPath.setOnClickListener(v ->{
+        this.txtExportPath.setEndIconOnClickListener(v ->{
             FilePickerDialog dialog = Helper.initFilePickerDialog(ExportActivity.this, true, null, this.getString(R.string.export_path_choose));
             dialog.setDialogSelectionListener(files -> {
                 if(files!=null) {
                     if(files.length >= 1) {
                         String name = files[0] + File.separatorChar + this.createFileName();
-                        this.txtExportPath.setText(name);
+                        this.etExportPath.setText(name);
                     }
                 }
             });
@@ -144,16 +144,16 @@ public final class ExportActivity extends AbstractActivity {
             }
         });
 
-        this.cmdXSLTPath.setOnClickListener(v->{
+        this.txtXSLTPath.setEndIconOnClickListener(v->{
             FilePickerDialog dialog = Helper.initFilePickerDialog(ExportActivity.this, false, new String[]{"xslt"}, this.getString(R.string.export_path_choose));
             dialog.setDialogSelectionListener(files -> {
                 if(files!=null) {
                     if(files.length >= 1) {
-                        this.txtXSLTPath.setText(files[0]);
+                        this.etXSLTPath.setText(files[0]);
                     }
                 }
             });
-            dialog.setOnCancelListener(dialogInterface -> this.txtXSLTPath.setText(""));
+            dialog.setOnCancelListener(dialogInterface -> this.etXSLTPath.setText(""));
             dialog.show();
         });
 
@@ -163,7 +163,7 @@ public final class ExportActivity extends AbstractActivity {
                 IBugService<?> bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
                 Project<?> project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
                 TrackerXML.Type type = TrackerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
-                String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
+                String file = this.etExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
 
                 if (bugService != null && project != null) {
                     byte[] background = null, icon = null;
@@ -177,8 +177,8 @@ public final class ExportActivity extends AbstractActivity {
 
 
                     String xslt = "";
-                    if(this.txtXSLTPath.getText() != null) {
-                        xslt = this.txtXSLTPath.getText().toString();
+                    if(this.etXSLTPath.getText() != null) {
+                        xslt = this.etXSLTPath.getText().toString();
                     }
 
                     ExportTask exportTask = new ExportTask(
@@ -233,9 +233,9 @@ public final class ExportActivity extends AbstractActivity {
         this.tblControls = this.findViewById(R.id.tblControls);
 
         this.cmdExport = this.findViewById(R.id.cmdExport);
-        this.cmdExportPath = this.findViewById(R.id.cmdExportPath);
         this.spExportPath = this.findViewById(R.id.spExportPath);
         this.txtExportPath = this.findViewById(R.id.txtExportPath);
+        this.etExportPath = this.txtExportPath.getEditText();
 
         this.spBugTracker = this.findViewById(R.id.spBugTracker);
         this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
@@ -256,7 +256,7 @@ public final class ExportActivity extends AbstractActivity {
         this.chkShowIcon = this.findViewById(R.id.chkShowIcon);
 
         this.txtXSLTPath = this.findViewById(R.id.txtXSLTPath);
-        this.cmdXSLTPath = this.findViewById(R.id.cmdXSLTPath);
+        this.etXSLTPath = this.txtXSLTPath.getEditText();
         this.chkCopyExampleData = this.findViewById(R.id.chkCopyExampleData);
 
         this.loadData();
@@ -292,7 +292,7 @@ public final class ExportActivity extends AbstractActivity {
             }
         }
         File file = new File(dir.getAbsolutePath() + File.separatorChar + this.createFileName());
-        this.txtExportPath.setText(file.toString());
+        this.etExportPath.setText(file.toString());
     }
 
     private String createFileName() {

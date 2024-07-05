@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"
-            android:background="@drawable/background_controls_1"
+            android:background="@color/md_theme_primaryContainer"
             android:padding="5dp">
 
             <TableLayout
@@ -65,13 +65,18 @@
                 android:weightSum="10">
 
                 <TableRow>
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/txtFieldTitle"
-                        android:hint="@string/general_title"
-                        android:layout_weight="10"
-                        android:inputType="text"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        android:layout_margin="4dp"
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/general_title"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>
@@ -84,35 +89,45 @@
                         android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:textSize="@dimen/header_text_size"
-                        android:textStyle="bold"/>
+                        android:textStyle="bold"
+                        android:layout_margin="5dp"/>
 
                     <Spinner
                         android:id="@+id/cmbFieldType"
                         android:layout_weight="7"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/min_height"/>
+                        android:layout_height="@dimen/min_height"
+                        android:layout_margin="5dp"/>
                 </TableRow>
 
                 <TableRow>
-
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/txtFieldDefault"
-                        android:hint="@string/fields_default"
-                        android:layout_weight="10"
-                        android:inputType="text"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        android:layout_margin="4dp"
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/fields_default"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>
-
-                    <EditText
+                    <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/txtFieldPossibleValues"
-                        android:hint="@string/fields_possible_values"
-                        android:layout_weight="10"
-                        android:inputType="text"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        android:layout_margin="4dp"
+                        app:endIconMode="clear_text">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/fields_possible_values"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
                 <TableRow>

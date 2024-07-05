@@ -27,11 +27,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -58,7 +59,7 @@ import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
 
 public final class AdministrationActivity extends AbstractActivity {
-    private Button cmdCopy, cmdMove;
+    private MaterialButton cmdCopy, cmdMove;
     private Spinner spBugTracker1, spBugTracker2, spProject1, spProject2, spData1, spDataItem1;
     private ArrayAdapter<Authentication> bugTrackerAdapter1, bugTrackerAdapter2;
     private ArrayAdapter<Project<?>> projectAdapter1, projectAdapter2;
@@ -66,7 +67,7 @@ public final class AdministrationActivity extends AbstractActivity {
     private ArrayAdapter<String> dataAdapter1;
     private CheckBox chkWithIssues, chkAddToProject;
     private IBugService<?> bugService1, bugService2;
-    private ProgressBar pbProcess;
+    private LinearProgressIndicator pbProcess;
 
     private ArrayAdapter<String> logAdapter;
 

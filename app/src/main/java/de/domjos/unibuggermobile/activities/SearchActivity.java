@@ -24,8 +24,10 @@ import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -48,8 +50,8 @@ import de.domjos.unibuggermobile.helper.Helper;
 public final class SearchActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvSearchResults;
 
-    private ImageButton cmdSearch;
-    private EditText txtSearch;
+    private MaterialButton cmdSearch;
+    private EditText etSearch;
     private CheckBox chkSearchSummary, chkSearchDescription;
     private MultiAutoCompleteTextView txtSearchProjects, txtSearchVersions;
     private List<IBugService<?>> bugServices;
@@ -111,7 +113,7 @@ public final class SearchActivity extends AbstractActivity {
                     SearchTask searchTask =
                             new SearchTask(
                                     SearchActivity.this,
-                                    this.txtSearch.getText().toString(),
+                                    this.etSearch.getText().toString(),
                                     this.chkSearchSummary.isChecked(),
                                     this.chkSearchDescription.isChecked(),
                                     this.txtSearchProjects.getText().toString(),
@@ -140,7 +142,8 @@ public final class SearchActivity extends AbstractActivity {
 
         this.lvSearchResults = this.findViewById(R.id.lvSearchResults);
         this.cmdSearch = this.findViewById(R.id.cmdSearch);
-        this.txtSearch = this.findViewById(R.id.txtSearch);
+        TextInputLayout txtSearch = this.findViewById(R.id.txtSearch);
+        this.etSearch = txtSearch.getEditText();
         this.chkSearchSummary = this.findViewById(R.id.chkSearchSummary);
         this.chkSearchDescription = this.findViewById(R.id.chkSearchDescription);
 

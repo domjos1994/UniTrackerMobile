@@ -75,8 +75,7 @@
                     android:layout_height="@dimen/min_height"
                     android:layout_weight="10"
                     android:hint="@string/statistics_value"
-                    android:autofillHints="@string/statistics_value"
-                    tools:targetApi="o" />
+                    android:autofillHints="@string/statistics_value"/>
             </TableRow>
             <TextView
                 android:layout_width="match_parent"
@@ -166,19 +165,18 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/pbStatistics"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@android:style/Widget.ProgressBar.Horizontal" />
+            android:padding="10dp"/>
 
-        <ImageButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cmdStatisticsSync"
-            android:contentDescription="@string/local_sync"
+            android:text="@string/local_sync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/icon_local_sync"
-            android:background="@android:color/background_light"
-            style="?android:attr/buttonBarButtonStyle"/>
+            app:icon="@drawable/icon_local_sync"
+            android:layout_margin="5dp"/>
     </LinearLayout>
 </RelativeLayout>

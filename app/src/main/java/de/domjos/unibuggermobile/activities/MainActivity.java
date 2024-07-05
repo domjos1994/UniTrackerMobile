@@ -18,17 +18,20 @@
 
 package de.domjos.unibuggermobile.activities;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -45,6 +48,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
@@ -52,6 +56,11 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.search.SearchView;
 
 import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unibuggermobile.dialogs.AttachmentDialog;
+import de.domjos.unibuggermobile.dialogs.PasswordDialog;
+import de.domjos.unibuggermobile.dialogs.ResolveDialog;
+import de.domjos.unibuggermobile.dialogs.TagDialog;
+import de.domjos.unibuggermobile.dialogs.WhatsNewDialog;
 import de.domjos.unibuggermobile.sheets.BottomSheetIssue;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
 import de.domjos.customwidgets.utils.MessageHelper;
@@ -81,6 +90,7 @@ import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
 
+/** @noinspection rawtypes*/
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
     private DrawerLayout drawerLayout;
@@ -93,7 +103,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private SwipeRefreshDeleteList lvMainIssues;
     private LinearLayout pagination;
     private TextView lblItems;
-    private ImageButton cmdPrevious, cmdNext;
+    private MaterialButton cmdPrevious, cmdNext;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project<?>> projectList;
     private ArrayAdapter<String> filterAdapter;
@@ -108,7 +118,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     public static final Globals GLOBALS = new Globals();
     private boolean firstLogIn = false;
 
-    private BottomSheetIssue modalBottomSheet = new BottomSheetIssue();
+    private final BottomSheetIssue modalBottomSheet = new BottomSheetIssue();
 
     final ActivityResultLauncher<Intent> reloadAccounts = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -157,11 +167,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void initActions() {
-
-        /*this.navigationView.getHeaderView(0).setOnClickListener(v -> {
+        this.navigationView.getHeaderView(0).setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             this.reloadAccounts.launch(intent);
-        });*/
+        });
 
         this.lblMainCommand.setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
@@ -273,26 +282,27 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        /*this.searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        this.cmdSearch.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                reload(s);
-                return true;
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
 
             @Override
-            public boolean onQueryTextChange(String s) {
-                if (s.isEmpty()) {
-                    reload();
+            public void afterTextChanged(Editable s) {
+                if(!s.toString().isEmpty()) {
+                    reload(s.toString());
                 }
-                return true;
             }
         });
 
-        this.searchBar.setOnCloseListener(() -> {
-            this.reload();
-            return true;
-        });*/
+        this.searchBar.addCollapseAnimationListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                reload();
+            }
+        });
 
         this.cmdPrevious.setOnLongClickListener(v -> {
             this.page = 1;
@@ -371,11 +381,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lvMainIssues.setScrollList(MainActivity.GLOBALS.getSettings(MainActivity.this).isScrollList());
             this.lvMainIssues.addButtonClick(R.drawable.icon_tags, this.getString(R.string.issues_general_tags), objectList -> {
                 try {
-                    Activity act = MainActivity.this;
-                    boolean show = settings.showNotifications();
-                    Object pid = settings.getCurrentProjectId();
-
-                    Helper.showTagDialog(act, bugService, show, pid, objectList, notId);
+                    TagDialog.newInstance(objectList, notId).show(this.getSupportFragmentManager(), "tagDialog");
                 } catch (Exception ex) {
                     MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
                 }
@@ -394,7 +400,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
             this.firstLogIn = this.settings.isFirstLogin(false);
-            Helper.showPasswordDialog(this, this.firstLogIn, false, this::executeOnSuccess);
+            PasswordDialog.newInstance(this.firstLogIn, false, this::executeOnSuccess).show(getSupportFragmentManager(), "passwordDialog");
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
         }
@@ -462,7 +468,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
 
                 if (!statusArray.isEmpty()) {
-                    Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
+                    ResolveDialog.newInstance(statusArray, position, issue, this::reload, notId)
+                            .show(getSupportFragmentManager(), "resolveDialog");
                 }
             } else if(item.getItemId() == R.id.ctxClone) {
                 issue.setId(null);
@@ -486,7 +493,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (issue.getAttachments() != null) {
                         if (!issue.getAttachments().isEmpty()) {
                             List<Attachment<?>> attachments = new LinkedList<>(issue.getAttachments());
-                            Helper.showAttachmentDialog(MainActivity.this, attachments);
+                            AttachmentDialog.newInstance(attachments).show(this.getSupportFragmentManager(), "attachmentDialog");
                         }
                     }
                 }
@@ -519,7 +526,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
 
             if(this.firstLogIn) {
-                Helper.showWhatsNewDialog(this);
+                WhatsNewDialog.newInstance(this, getSupportFragmentManager());
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);

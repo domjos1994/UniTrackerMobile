@@ -22,24 +22,25 @@ import android.content.pm.PackageInfo;
 import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
-import android.text.method.LinkMovementMethod;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
+import com.google.android.material.card.MaterialCardView;
+import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.Objects;
+
+import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.MantisBTSpecific.ChangeLog;
 import de.domjos.unibuggermobile.R;
 import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.ExpandableTextView;
 
 public final class HelpActivity extends AbstractActivity {
-    private ExpandableTextView lblWhatsNew;
+    private TextView lblWhatsNew;
     private LinearLayout pnlQuestions;
-    private EditText txtSearch;
+    private TextInputLayout txtSearch;
 
     /**
      * Constructor with the Layout-Resource-ID
@@ -50,7 +51,7 @@ public final class HelpActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.txtSearch.addTextChangedListener(new TextWatcher() {
+        Objects.requireNonNull(this.txtSearch.getEditText()).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -74,32 +75,31 @@ public final class HelpActivity extends AbstractActivity {
         }
 
         for (int i = 0; i <= this.pnlQuestions.getChildCount() - 1; i++) {
-            if (this.pnlQuestions.getChildAt(i) instanceof ExpandableTextView txt) {
-
-                if (txt.getTitle().toLowerCase().trim().contains(search.toLowerCase().trim())) {
-                    continue;
+            boolean containsSearch = false;
+            if (this.pnlQuestions.getChildAt(i) instanceof MaterialCardView mcv) {
+                if(mcv.getChildAt(0) instanceof LinearLayout ll) {
+                    for(int child = 0; child<=ll.getChildCount() - 1; child++) {
+                        if(ll.getChildAt(child) instanceof TextView txt) {
+                            if (txt.getText().toString().toLowerCase().trim().contains(search.toLowerCase().trim())) {
+                                containsSearch = true;
+                                break;
+                            }
+                        }
+                    }
                 }
-                if (!txt.getContent().toLowerCase().trim().contains(search.toLowerCase().trim())) {
-                    txt.setVisibility(View.GONE);
+                if(!containsSearch) {
+                    mcv.setVisibility(View.GONE);
                 }
             }
         }
     }
 
     @Override
-    protected void initControls() {
-        Toolbar toolbar = this.findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ActionBar actionBar = this.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowHomeEnabled(true);
-        }
+    protected void initControls() {Helper.initToolbar(this);
 
         this.pnlQuestions = this.findViewById(R.id.pnlQuestions);
         this.lblWhatsNew = this.findViewById(R.id.lblWhatsNew);
-        ExpandableTextView lblNeedsHelp = this.findViewById(R.id.lblNeedsHelp);
+        TextView lblNeedsHelp = this.findViewById(R.id.lblNeedsHelp);
         this.txtSearch = this.findViewById(R.id.txtSearch);
 
         try {
@@ -112,7 +112,7 @@ public final class HelpActivity extends AbstractActivity {
                 authentication.setTracker(Authentication.Tracker.MantisBT);
                 authentication.setUserName("PUBLIC");
                 String content = new ChangeLog(authentication).getChangeLog(version);
-                runOnUiThread(() -> lblWhatsNew.setContent(content));
+                runOnUiThread(() -> lblWhatsNew.setText(content));
 
             }).start();
         } catch (Exception ignored) {
@@ -120,8 +120,7 @@ public final class HelpActivity extends AbstractActivity {
 
         try {
             String content = this.getString(R.string.help_need_help_text);
-            lblNeedsHelp.setContent(Html.fromHtml("<a href=\"https://unitrackermobile.domjos.de\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
-            lblNeedsHelp.getContextTextView().setMovementMethod(LinkMovementMethod.getInstance());
+            lblNeedsHelp.setText(Html.fromHtml("<a href=\"https://github.com/domjos1994/UniTrackerMobile\" title=\"UniTrackerMobile\">" + content + "<\\a>", Html.FROM_HTML_MODE_LEGACY));
         } catch (Exception ignored) {
         }
     }

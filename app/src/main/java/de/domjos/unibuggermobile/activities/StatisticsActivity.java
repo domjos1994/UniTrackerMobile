@@ -26,8 +26,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
@@ -39,6 +37,8 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -66,8 +66,8 @@ public final class StatisticsActivity extends AbstractActivity {
     private LineChart lcStatisticsBugsInTime;
     private RadioButton rbStatisticsMonthly, rbStatisticsYearly;
     private EditText txtStatisticsValue;
-    private ProgressBar pbStatistics;
-    private ImageButton cmdStatisticsReload;
+    private LinearProgressIndicator pbStatistics;
+    private MaterialButton cmdStatisticsReload;
 
     private Spinner spStatisticsBugTracker;
     private Spinner spStatisticsDiagram;

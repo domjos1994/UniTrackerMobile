@@ -30,7 +30,7 @@ import androidx.preference.SwitchPreference;
 import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
-import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unibuggermobile.dialogs.PasswordDialog;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -53,7 +53,7 @@ public class SettingsSecurityFragment extends PreferenceFragmentCompat {
                     if (Boolean.parseBoolean(newValue.toString())) {
                         if (swtPassword.isChecked()) {
                             swtPasswordChange.setPersistent(false);
-                            Helper.showPasswordDialog(getActivity(), true, true, () -> triggerRebirth(getActivity()));
+                            PasswordDialog.newInstance(true, true, () -> triggerRebirth(getActivity())).show(getChildFragmentManager(), "passwordDialog");
                         } else {
                             swtPasswordChange.setPersistent(false);
                         }
@@ -78,7 +78,8 @@ public class SettingsSecurityFragment extends PreferenceFragmentCompat {
                             MainActivity.GLOBALS.getSqLiteGeneral().changePassword(MainActivity.GLOBALS.getPassword());
                             editor.putBoolean("swtSecurityEnable", true);
                             editor.apply();
-                            Helper.showPasswordDialog(getActivity(), true, true, () -> triggerRebirth(getActivity()));
+                            PasswordDialog.newInstance(true, true, () -> triggerRebirth(getActivity())).show(getChildFragmentManager(), "passwordDialog");
+
                         }
                     }
                 } catch (Exception ex) {

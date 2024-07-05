@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
@@ -47,7 +48,8 @@ public final class FieldActivity extends AbstractActivity {
 
     private SwipeRefreshDeleteList lvFields;
 
-    private EditText txtFieldTitle, txtFieldDefault, txtFieldPossibleValues;
+    private TextInputLayout txtFieldTitle, txtFieldDefault, txtFieldPossibleValues;
+    private EditText etFieldTitle, etFieldDefault, etFieldPossibleValues;
     private Spinner cmbFieldType;
     private CheckBox chkFieldNullable;
     private ArrayAdapter<CustomField.Type> fieldTypeAdapter;
@@ -149,8 +151,11 @@ public final class FieldActivity extends AbstractActivity {
         // init controls
         this.lvFields = this.findViewById(R.id.lvFields);
         this.txtFieldTitle = this.findViewById(R.id.txtFieldTitle);
+        this.etFieldTitle = this.txtFieldTitle.getEditText();
         this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
+        this.etFieldDefault = this.txtFieldDefault.getEditText();
         this.txtFieldPossibleValues = this.findViewById(R.id.txtFieldPossibleValues);
+        this.etFieldPossibleValues = this.txtFieldPossibleValues.getEditText();
         this.cmbFieldType = this.findViewById(R.id.cmbFieldType);
         this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, R.layout.spinner_item);
         this.cmbFieldType.setAdapter(this.fieldTypeAdapter);
@@ -166,7 +171,7 @@ public final class FieldActivity extends AbstractActivity {
     @Override
     protected void initValidator() {
         this.fieldValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
-        this.fieldValidator.addEmptyValidator(this.txtFieldTitle);
+        this.fieldValidator.addEmptyValidator(this.etFieldTitle);
     }
 
     @Override
@@ -190,9 +195,9 @@ public final class FieldActivity extends AbstractActivity {
     }
 
     private void objectToControls() {
-        this.txtFieldTitle.setText(this.currentField.getTitle());
-        this.txtFieldDefault.setText(this.currentField.getDefaultValue());
-        this.txtFieldPossibleValues.setText(this.currentField.getPossibleValues());
+        this.etFieldTitle.setText(this.currentField.getTitle());
+        this.etFieldDefault.setText(this.currentField.getDefaultValue());
+        this.etFieldPossibleValues.setText(this.currentField.getPossibleValues());
         if (this.currentField.getType() != null) {
             this.cmbFieldType.setSelection(this.fieldTypeAdapter.getPosition(this.currentField.getType()));
         }
@@ -200,9 +205,9 @@ public final class FieldActivity extends AbstractActivity {
     }
 
     private void controlsToObject() {
-        this.currentField.setTitle(this.txtFieldTitle.getText().toString());
-        this.currentField.setDefaultValue(this.txtFieldDefault.getText().toString());
-        this.currentField.setPossibleValues(this.txtFieldPossibleValues.getText().toString());
+        this.currentField.setTitle(this.etFieldTitle.getText().toString());
+        this.currentField.setDefaultValue(this.etFieldDefault.getText().toString());
+        this.currentField.setPossibleValues(this.etFieldPossibleValues.getText().toString());
         this.currentField.setType(Objects.requireNonNull(this.fieldTypeAdapter.getItem(this.cmbFieldType.getSelectedItemPosition())));
         this.currentField.setNullable(this.chkFieldNullable.isChecked());
     }
