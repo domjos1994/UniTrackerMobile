@@ -620,23 +620,28 @@ public final class IssueGeneralFragment extends AbstractFragment {
 
     private void initVersions() {
         if (this.getContext() != null && this.getActivity() != null) {
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
-            arrayAdapter.add("");
+            ArrayAdapter<String> allVersions = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+            ArrayAdapter<String> unReleasedVersions = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
+            allVersions.add("");
+            unReleasedVersions.add("");
             try {
                 if (this.bugService != null) {
                     VersionTask versionTask = new VersionTask(this.getActivity(), this.bugService, this.pid, false, MainActivity.GLOBALS.getSettings(this.getContext()).showNotifications(), "versions", R.drawable.icon_versions);
                     versionTask.setId(this.notificationId);
                     List<Version<?>> versions = versionTask.execute(0).get();
                     for (Version<?> version : versions) {
-                        arrayAdapter.add(version.getTitle());
+                        allVersions.add(version.getTitle());
+                        if(!version.isReleasedVersion() && !version.isDeprecatedVersion()) {
+                            unReleasedVersions.add(version.getTitle());
+                        }
                     }
                 }
             } catch (Exception ex) {
                 this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
             }
-            this.etIssueGeneralVersion.setAdapter(arrayAdapter);
-            this.etIssueGeneralTargetVersion.setAdapter(arrayAdapter);
-            this.etIssueGeneralFixedInVersion.setAdapter(arrayAdapter);
+            this.etIssueGeneralVersion.setAdapter(allVersions);
+            this.etIssueGeneralTargetVersion.setAdapter(unReleasedVersions);
+            this.etIssueGeneralFixedInVersion.setAdapter(unReleasedVersions);
         }
     }
 }
