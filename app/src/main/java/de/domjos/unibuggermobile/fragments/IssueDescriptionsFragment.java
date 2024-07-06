@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -52,6 +53,7 @@ import de.domjos.customwidgets.utils.Validator;
 public final class IssueDescriptionsFragment extends AbstractFragment {
     private MultiAutoCompleteTextView txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
     private TableRow rowIssueDescriptionsSteps, rowIssueDescriptionsAdditional;
+    private String description;
 
     private View root;
     private Issue<?> issue;
@@ -144,6 +146,8 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
             issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());
             issue.setStepsToReproduce(this.txtIssueDescriptionsSteps.getText().toString());
             issue.setAdditionalInformation(this.txtIssueDescriptionsAdditional.getText().toString());
+        } else {
+            issue.setDescription(this.description);
         }
         return issue;
     }
@@ -160,15 +164,21 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     }
 
     public void setDescription(String text) {
-        this.txtIssueDescriptionsDescription.setText(text);
+        this.description = text;
     }
 
     @Override
     protected void initData() {
         if (this.issue != null) {
-            this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+            if(Objects.equals(this.description, this.issue.getDescription())) {
+                this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+            } else {
+                this.txtIssueDescriptionsDescription.setText(this.description);
+            }
             this.txtIssueDescriptionsSteps.setText(this.issue.getStepsToReproduce());
             this.txtIssueDescriptionsAdditional.setText(this.issue.getAdditionalInformation());
+        } else {
+            this.txtIssueDescriptionsDescription.setText(this.description);
         }
     }
 
