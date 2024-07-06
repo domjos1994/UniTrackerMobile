@@ -103,7 +103,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private SwipeRefreshDeleteList lvMainIssues;
     private LinearLayout pagination, llNoAuth;
     private TextView lblItems;
-    private MaterialButton cmdPrevious, cmdNext, cmdNoAuthAccounts;
+    private MaterialButton cmdPrevious, cmdHome, cmdNext, cmdNoAuthAccounts;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project<?>> projectList;
     private ArrayAdapter<String> filterAdapter;
@@ -309,12 +309,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.cmdPrevious.setOnLongClickListener(v -> {
-            this.page = 1;
-            this.reload();
-            return true;
-        });
-
         this.cmdPrevious.setOnClickListener(v -> {
             if (this.page > 1) {
                 this.page--;
@@ -322,12 +316,20 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
         });
 
-        this.cmdNext.setOnLongClickListener(v -> {
-            while (this.lvMainIssues.getAdapter().getItemCount() == this.settings.getNumberOfItems()) {
-                this.page++;
-                this.reload();
+        this.cmdHome.setOnClickListener((e) -> {
+            this.page = 1;
+            this.reload();
+        });
+
+        this.cmdHome.setOnLongClickListener((e) -> {
+            int pageItems = this.settings.getNumberOfItems();
+            int maxPage = (int) maximum / pageItems;
+            if(maximum % pageItems  != 0) {
+                maxPage += 1;
             }
 
+            this.page = maxPage;
+            this.reload();
             return true;
         });
 
@@ -342,6 +344,25 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             CacheGlobals.reload = true;
             this.reload();
         });
+    }
+
+    private void checkControls() {
+        int pageItems = this.settings.getNumberOfItems();
+        int maxPage = (int) maximum / pageItems;
+        if(maximum % pageItems  != 0) {
+            maxPage += 1;
+        }
+
+        if(this.page == 1) {
+            this.cmdPrevious.setEnabled(false);
+            this.cmdNext.setEnabled(true);
+        } else if(maxPage == this.page) {
+            this.cmdPrevious.setEnabled(true);
+            this.cmdNext.setEnabled(false);
+        } else {
+            this.cmdPrevious.setEnabled(true);
+            this.cmdNext.setEnabled(true);
+        }
     }
 
     @Override
@@ -402,6 +423,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.lblItems = this.findViewById(R.id.lblItems);
             this.pagination = this.findViewById(R.id.pagination);
             this.cmdPrevious = this.findViewById(R.id.cmdBefore);
+            this.cmdHome = this.findViewById(R.id.cmdHome);
             this.cmdNext = this.findViewById(R.id.cmdNext);
 
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
@@ -595,6 +617,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void reload() {
+        this.checkControls();
         this.reload("");
     }
 

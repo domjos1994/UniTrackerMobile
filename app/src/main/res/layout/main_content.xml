@@ -191,12 +191,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
                 android:orientation="horizontal"
-                android:weightSum="10">
+                android:weightSum="9">
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdBefore"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:layout_weight="5"
+                    android:layout_weight="3"
                     android:layout_margin="5dp"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
@@ -207,10 +207,24 @@
                     app:iconPadding="0dp"
                     app:iconSize="40dp"/>
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cmdHome"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="3"
+                    android:layout_margin="5dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/baseline_home_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="40dp"/>
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdNext"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
-                    android:layout_weight="5"
+                    android:layout_weight="3"
                     android:layout_margin="5dp"
                     android:insetLeft="0dp"
                     android:insetTop="0dp"
