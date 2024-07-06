@@ -361,6 +361,9 @@
     <string name="sys_item_deleted">Eintrag wird gelöscht!</string>
     <string name="sys_undone">Rückgängig</string>
     <string name="sys_multiple">Mehrere Einträge auswählen</string>
+    <string name="sys_no_account_title">Kein Konto vorhanden</string>
+    <string name="sys_no_account_content">Kein Konto vorhanden, bitte fügen Sie zuerst einen hinzu!</string>
+    <string name="sys_no_account_button">Zu den Konten</string>
 
     <string name="general_title">Titel</string>
     <string name="general_enabled">Aktiviert</string>

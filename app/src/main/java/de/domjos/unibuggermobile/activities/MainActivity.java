@@ -101,9 +101,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private Spinner spMainAccounts, spMainFilters, spMainProjects;
     private TableRow rowNoConnection;
     private SwipeRefreshDeleteList lvMainIssues;
-    private LinearLayout pagination;
+    private LinearLayout pagination, llNoAuth;
     private TextView lblItems;
-    private MaterialButton cmdPrevious, cmdNext;
+    private MaterialButton cmdPrevious, cmdNext, cmdNoAuthAccounts;
     private ArrayAdapter<String> accountList;
     private ArrayAdapter<Project<?>> projectList;
     private ArrayAdapter<String> filterAdapter;
@@ -167,6 +167,11 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
     @Override
     protected void initActions() {
+        this.cmdNoAuthAccounts.setOnClickListener((e)->{
+            Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
+            this.reloadAccounts.launch(intent);
+        });
+
         this.navigationView.getHeaderView(0).setOnClickListener(v -> {
             Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
             this.reloadAccounts.launch(intent);
@@ -360,6 +365,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.cmdSearch = this.findViewById(R.id.cmdSearch);
             this.searchBar = this.findViewById(R.id.cmdSearchBar);
             this.cmdSearch.setupWithSearchBar(this.searchBar);
+            this.llNoAuth = this.findViewById(R.id.llNoAuthItem);
+            this.cmdNoAuthAccounts = this.findViewById(R.id.cmdNoAuthAccounts);
 
             this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
             this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
@@ -631,6 +638,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                 listIssueTask.setId(notId);
                                 listIssueTask.after((AbstractTask.PostExecuteListener<List<Issue<?>>>) issues -> {
                                     lvMainIssues.getAdapter().clear();
+
                                     for (Issue<?> issue : issues) {
                                         if (issue.getTitle().contains(search)) {
                                             BaseDescriptionObject baseDescriptionObject1 = new BaseDescriptionObject();
@@ -656,23 +664,38 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                                             reloadStateData();
                                         }
                                     }
+
+
+
+                                    if(this.lvMainIssues.getChildCount() == 1) {
+                                        BaseDescriptionObject obj = this.lvMainIssues.getAdapter().getItem(0);
+                                        if(obj.getTitle().equals(this.getString(R.string.task_loader_title))) {
+                                            this.lvMainIssues.getAdapter().clear();
+                                        }
+                                    }
+
+                                    this.llNoAuth.setVisibility(this.lvMainIssues.getChildCount() == 0?View.VISIBLE:View.GONE);
+                                    this.lvMainIssues.setVisibility(this.lvMainIssues.getChildCount() == 0?View.GONE:View.VISIBLE);
                                 });
-                                listIssueTask.execute(0);
+                                listIssueTask.execute(0).get();
                                 this.notId = listIssueTask.getId();
                             }
                         }
+                    } else {
+                        if(this.lvMainIssues.getAdapter().getItemCount() == 1) {
+                            BaseDescriptionObject obj = this.lvMainIssues.getAdapter().getItem(0);
+                            if(obj.getTitle().equals(this.getString(R.string.task_loader_title))) {
+                                this.lvMainIssues.getAdapter().clear();
+                            }
+                        }
+
+                        this.llNoAuth.setVisibility(this.lvMainIssues.getAdapter().getItemCount() == 0?View.VISIBLE:View.GONE);
+                        this.lvMainIssues.setVisibility(this.lvMainIssues.getAdapter().getItemCount()== 0?View.GONE:View.VISIBLE);
                     }
                 }
             }
         } catch (Exception ex) {
             MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
-        }
-
-        if(this.lvMainIssues.getAdapter().getItemCount() == 1) {
-            BaseDescriptionObject baseDescriptionObject = this.lvMainIssues.getAdapter().getItem(0);
-            if(baseDescriptionObject.getTitle().equals(this.getString(R.string.task_loader_title))) {
-                this.lvMainIssues.getAdapter().clear();
-            }
         }
     }
 

@@ -123,6 +123,46 @@
             app:listItemForeground="@android:color/black"
             app:listItemBackgroundStatePositive="@drawable/background_positive"/>
 
+
+
+        <LinearLayout
+            android:id="@+id/llNoAuthItem"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_below="@+id/separator"
+            android:layout_above="@+id/footer"
+            android:visibility="gone">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/help_no_connection_title"
+                android:textSize="22sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="@string/help_no_connection_text"
+                android:textSize="16sp"
+                android:textStyle="normal"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cmdNoAuthAccounts"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:insetLeft="0dp"
+                android:insetTop="0dp"
+                android:insetRight="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/sys_no_account_button"
+                app:icon="@drawable/icon_accounts"
+                app:iconGravity="textStart"
+                app:iconPadding="4dp"
+                app:iconSize="40dp"/>
+        </LinearLayout>
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/cmdIssueAdd"
             app:srcCompat="@drawable/icon_controls_add"

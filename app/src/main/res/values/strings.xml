@@ -365,6 +365,9 @@
     <string name="sys_item_deleted">Entry will be deleted!</string>
     <string name="sys_undone">Undone</string>
     <string name="sys_multiple">Select multiple Items</string>
+    <string name="sys_no_account_title">No Account</string>
+    <string name="sys_no_account_content">There was no Account, please add an Account!</string>
+    <string name="sys_no_account_button">To the Accounts</string>
 
     <string name="general_title">Title</string>
     <string name="general_enabled">Enabled</string>

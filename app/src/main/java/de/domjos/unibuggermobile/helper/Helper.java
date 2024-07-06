@@ -80,7 +80,6 @@ public class Helper {
                 Authentication.Tracker.TuLeap,
                 Authentication.Tracker.AzureDevOps
             );
-
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public static String readStringFromRaw(int rawID, Context context) throws Exception {
         Resources res = context.getResources();
