@@ -27,7 +27,9 @@ android {
         targetSdkVersion propCompVersion
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        manifestPlaceholders = [
+                appAuthRedirectScheme: 'io.identityserver.demo'
+        ]
     }
 
     buildTypes {
