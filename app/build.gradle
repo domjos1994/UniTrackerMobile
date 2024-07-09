@@ -71,7 +71,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:$propAndAppCompat"
     implementation "androidx.vectordrawable:vectordrawable:1.2.0"
     //noinspection GradleDependency
-    implementation 'androidx.work:work-runtime:2.4.0'
+    implementation 'androidx.work:work-runtime:2.7.1'
 
     // other androidx libraries
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
@@ -89,6 +89,7 @@ dependencies {
     implementation 'com.github.angads25:filepicker:1.1.1'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
     implementation 'org.kohsuke:github-api:1.111'
+    implementation 'androidx.test.ext:junit:1.2.1'
 
 
     // test libraries

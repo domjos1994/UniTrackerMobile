@@ -115,7 +115,7 @@ public class Notifications {
             cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, id);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this.activity, CANCEL_CODE, cancelIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+                    PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT
             );
             builder.addAction(
                     R.drawable.baseline_cancel_24,
@@ -144,7 +144,7 @@ public class Notifications {
             cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, id);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(
                     this.activity, CANCEL_CODE, cancelIntent,
-                    PendingIntent.FLAG_IMMUTABLE
+                    PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT
             );
             builder.addAction(
                     R.drawable.baseline_cancel_24,
