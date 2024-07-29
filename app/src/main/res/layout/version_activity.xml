@@ -17,7 +17,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -57,7 +58,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
             android:id="@+id/lvVersions"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -121,7 +122,7 @@
 
                 <TableRow android:id="@+id/rowVersionReleasedAt">
 
-                    <de.domjos.unibuggermobile.custom.DatePickerField
+                    <de.domjos.unitrackerlibrary.custom.DatePickerField
                         android:id="@+id/txtVersionReleasedAt"
                         android:hint="@string/versions_releasedAt"
                         android:layout_weight="10"

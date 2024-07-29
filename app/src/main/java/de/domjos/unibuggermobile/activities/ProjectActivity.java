@@ -26,9 +26,9 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.Spinner;
-import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -39,9 +39,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Date;
 import java.util.List;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.custom.AsyncTaskExecutorService;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -49,22 +49,22 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.utils.Validator;
-import de.domjos.customwidgets.tokenizer.CommaTokenizer;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 @SuppressWarnings("unchecked")
 public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private SwipeRefreshDeleteList lvProjects;
 
-    private TableLayout tblSearch;
+    private LinearLayout tblSearch;
     private EditText txtSearch;
     private ImageButton cmdSearch;
 
@@ -120,19 +120,19 @@ public final class ProjectActivity extends AbstractActivity {
                             task[0] = new ProjectTask(ProjectActivity.this, bugService, true, settings.showNotifications(), R.drawable.icon_projects);
                             task[0].execute(((Project<?>)listObject.getObject()).getId()).get();
                             if (bugService.getCurrentState() != 200 && bugService.getCurrentState() != 201 && bugService.getCurrentState() != 204) {
-                                MessageHelper.printMessage(bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, getApplicationContext());
+                                Notifications.printMessage(ProjectActivity.this, bugService.getCurrentMessage(), R.mipmap.ic_launcher_round);
                             } else {
                                 manageControls(false, false, false);
                             }
                         } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+                            Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
                         } finally {
                             dialog.dismiss();
                         }
                     });
                     builder.create().show();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+                    Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
         });
@@ -171,18 +171,18 @@ public final class ProjectActivity extends AbstractActivity {
                             task[0] = new ProjectTask(ProjectActivity.this, this.bugService, true, this.settings.showNotifications(), R.drawable.icon_projects);
                             task[0].execute(this.currentProject.getId()).get();
                             if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201 && this.bugService.getCurrentState() != 204) {
-                                MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                                Notifications.printMessage(ProjectActivity.this, this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round);
                             } else {
                                 this.reload();
                                 this.manageControls(false, false, false);
                             }
                         } catch (Exception ex) {
-                            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
                         }
                     });
                     builder.create().show();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                    Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             } else if(menuItem.getItemId() == R.id.navCancel) {
                 this.manageControls(false, false, false);
@@ -193,7 +193,7 @@ public final class ProjectActivity extends AbstractActivity {
                         task[0] = new ProjectTask(ProjectActivity.this, this.bugService, false, this.settings.showNotifications(), R.drawable.icon_projects);
                         task[0].execute(this.currentProject).get();
                         if (this.bugService.getCurrentState() != 200 && this.bugService.getCurrentState() != 201) {
-                            MessageHelper.printMessage(this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round, this.getApplicationContext());
+                            Notifications.printMessage(ProjectActivity.this, this.bugService.getCurrentMessage(), R.mipmap.ic_launcher_round);
                         } else {
                             this.reload();
                             this.manageControls(false, false, false);
@@ -202,7 +202,7 @@ public final class ProjectActivity extends AbstractActivity {
                         super.createSnackBar(this.projectValidator.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                    Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return true;
@@ -334,7 +334,7 @@ public final class ProjectActivity extends AbstractActivity {
                 task.execute(0);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+            Notifications.printException(ProjectActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -351,15 +351,15 @@ public final class ProjectActivity extends AbstractActivity {
             try {
                 baseDescriptionObject.setCover(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
                 if (baseDescriptionObject.getCover() == null) {
-                    Bitmap bitmap = ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
+                    Bitmap bitmap = ConvertHelper.convertByteArrayToBitmap(ConvertHelper.convertStringToByteArray(project.getIconUrl()));
                     if(bitmap != null) {
                         baseDescriptionObject.setCover(bitmap);
                     } else {
-                        baseDescriptionObject.setCover(ConvertHelper.convertSVGByteArrayToBitmap(ConvertHelper.convertDrawableToByteArray(super.refActivity.get(), R.drawable.icon_projects)));
+                        baseDescriptionObject.setCover(ConvertHelper.convertByteArrayToBitmap(ConvertHelper.convertDrawableToByteArray(super.refActivity.get(), R.drawable.icon_projects)));
                     }
                 }
             } catch (Exception ex) {
-                super.refActivity.get().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, super.refActivity.get().getApplicationContext()));
+                super.refActivity.get().runOnUiThread(() -> Notifications.printException(super.refActivity.get(), ex, R.mipmap.ic_launcher_round));
             }
 
             return baseDescriptionObject;

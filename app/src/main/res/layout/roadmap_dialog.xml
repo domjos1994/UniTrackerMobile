@@ -61,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@+id/lblTitle"/>
 
 
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+    <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
         android:id="@+id/lvIssues"
         android:layout_width="match_parent"
         android:layout_height="200dp"

@@ -27,7 +27,7 @@
     android:weightSum="20"
     android:background="@drawable/background">
 
-    <de.domjos.customwidgets.widgets.calendar.WidgetCalendar
+    <de.domjos.unitrackerlibrary.custom.WidgetCalendar
         android:id="@+id/cvEventCalendar"
         android:layout_width="match_parent"
         android:layout_height="0dp"

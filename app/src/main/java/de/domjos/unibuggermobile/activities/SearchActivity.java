@@ -31,8 +31,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.model.projects.Project;
@@ -40,10 +40,10 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.SearchTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.tokenizer.CommaTokenizer;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
 
 public final class SearchActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvSearchResults;
@@ -130,7 +130,7 @@ public final class SearchActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, SearchActivity.this);
+            Notifications.printException(SearchActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -165,7 +165,7 @@ public final class SearchActivity extends AbstractActivity {
                 }
                 SearchActivity.this.runOnUiThread(() -> this.txtSearchProjects.setAdapter(projects));
             } catch (Exception ex) {
-                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext()));
+                SearchActivity.this.runOnUiThread(() -> Notifications.printException(SearchActivity.this, ex, R.mipmap.ic_launcher_round));
             }
         }).start();
     }
@@ -199,7 +199,7 @@ public final class SearchActivity extends AbstractActivity {
 
                 SearchActivity.this.runOnUiThread(() -> this.txtSearchVersions.setAdapter(versions));
             } catch (Exception ex) {
-                SearchActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext()));
+                SearchActivity.this.runOnUiThread(() -> Notifications.printException(SearchActivity.this, ex, R.mipmap.ic_launcher_round));
             }
         }).start();
     }

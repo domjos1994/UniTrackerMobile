@@ -17,7 +17,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
@@ -38,40 +39,39 @@
             android:layout_height="wrap_content"
             android:inputType="text"
             android:hint="@string/search_content"
-            android:autofillHints="@string/search"
-            tools:targetApi="o"/>
+            android:autofillHints="@string/search"/>
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"
             custom:title="@string/help_no_connection_title"
             custom:text="@string/help_no_connection_text" />
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"
             custom:title="@string/help_problem_mantis_title"
             custom:text="@string/help_problem_mantis_text" />
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"
             custom:title="@string/help_key_youtrack_title"
             custom:text="@string/help_key_youtrack_text" />
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"
             custom:title="@string/help_key_redmine_title"
             custom:text="@string/help_key_redmine_text" />
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:id="@+id/lblNeedsHelp"
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"
             custom:title="@string/help_need_help_title" />
 
-        <de.domjos.customwidgets.widgets.ExpandableTextView
+        <de.domjos.unitrackerlibrary.custom.ExpandableTextView
             android:id="@+id/lblWhatsNew"
             android:layout_width="match_parent"
             android:layout_height="@dimen/min_height"

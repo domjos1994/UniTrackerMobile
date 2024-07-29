@@ -27,8 +27,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.CustomField;
@@ -36,11 +36,11 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 public final class FieldActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -79,7 +79,7 @@ public final class FieldActivity extends AbstractActivity {
                 new FieldTask(FieldActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_custom_fields).execute(((CustomField<?>)listObject.getObject()).getId()).get();
                 manageControls(false, true, false);
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                Notifications.printException(FieldActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
@@ -102,7 +102,7 @@ public final class FieldActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+            Notifications.printException(FieldActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -123,7 +123,7 @@ public final class FieldActivity extends AbstractActivity {
                     this.reload();
                     this.manageControls(false, true, false);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                    Notifications.printException(FieldActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             } else if(menuItem.getItemId() == R.id.navCancel) {
                 this.manageControls(false, true, false);
@@ -138,7 +138,7 @@ public final class FieldActivity extends AbstractActivity {
                         super.createSnackBar(this.fieldValidator.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, FieldActivity.this);
+                    Notifications.printException(FieldActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return true;

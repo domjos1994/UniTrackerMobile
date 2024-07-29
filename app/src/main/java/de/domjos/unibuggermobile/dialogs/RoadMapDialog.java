@@ -38,10 +38,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.helper.Helper;
@@ -50,6 +49,7 @@ import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 
 public class RoadMapDialog extends DialogFragment {
@@ -196,7 +196,7 @@ public class RoadMapDialog extends DialogFragment {
                 issueTask.execute(0);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.requireActivity());
+            Notifications.printException(this.requireActivity(), ex, R.mipmap.ic_launcher_round);
         }
     }
 }

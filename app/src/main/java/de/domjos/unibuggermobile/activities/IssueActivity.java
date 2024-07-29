@@ -29,7 +29,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -38,9 +37,10 @@ import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.adapter.PagerAdapter;
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 /** @noinspection unchecked*/
 public final class IssueActivity extends AbstractActivity {
@@ -85,7 +85,7 @@ public final class IssueActivity extends AbstractActivity {
                 this.issue = new Issue<>();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, IssueActivity.this);
+            Notifications.printException(IssueActivity.this, ex, R.mipmap.ic_launcher_round);
         }
 
         // init Navigation-View
@@ -150,7 +150,7 @@ public final class IssueActivity extends AbstractActivity {
                         super.createSnackBar(this.pagerAdapter.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+                    Notifications.printException(IssueActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return false;
@@ -163,9 +163,8 @@ public final class IssueActivity extends AbstractActivity {
         viewPager.setAdapter(this.pagerAdapter);
         viewPager.setCurrentItem(0);
         TabLayout tabs = findViewById(R.id.tabs);
-        new TabLayoutMediator(tabs, viewPager, (tab, position) -> {
-            tab.setText(pagerAdapter.getTabTitle(position));
-        }).attach();
+        new TabLayoutMediator(tabs, viewPager, (tab, position) ->
+                tab.setText(pagerAdapter.getTabTitle(position))).attach();
         this.pagerAdapter.setObject(this.issue);
         this.pagerAdapter.setPid(pid);
     }

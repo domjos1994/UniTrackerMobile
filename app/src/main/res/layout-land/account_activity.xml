@@ -33,7 +33,7 @@
         android:orientation="horizontal"
         android:weightSum="20">
 
-        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
             android:id="@+id/lvAccounts"
             android:layout_width="0dp"
             android:layout_height="match_parent"

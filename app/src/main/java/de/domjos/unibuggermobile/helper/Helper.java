@@ -31,6 +31,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.text.Html;
 import android.util.Log;
@@ -60,10 +62,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -88,6 +88,8 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.tasks.LoaderTask;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public class Helper {
     public static final List<Authentication.Tracker> disabledBugTrackers =
@@ -165,7 +167,7 @@ public class Helper {
                 bugService = new SQLite(context, Helper.getVersionCode(context), new Authentication());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
+            Notifications.printException((Activity)context,  ex, R.mipmap.ic_launcher_round);
         }
         return bugService;
     }
@@ -183,17 +185,12 @@ public class Helper {
         return null;
     }
 
-    public static boolean isNetworkAvailable(Activity activity) {
+    public static Boolean isNetworkAvailable(Activity activity) {
         ConnectivityManager connectivityManager = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager!=null) {
-            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-            if (MainActivity.GLOBALS.getSettings(activity).isBlockMobile()) {
-                return false;
-            } else {
-                return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-            }
-        }
-        return false;
+        Network nw = connectivityManager.getActiveNetwork();
+        if (nw == null) return false;
+        NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
+        return actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) || actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH));
     }
 
     public static boolean isInWLan(Context context) {
@@ -272,12 +269,12 @@ public class Helper {
                     }
                     tagDialog.dismiss();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                    Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
                 }
             });
             tagDialog.show();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -340,7 +337,7 @@ public class Helper {
                                             pwdDialog.cancel();
                                         }
                                     } catch (Exception ex) {
-                                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                                        Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
                                     }
                                 })).start();
                             } else {
@@ -363,11 +360,11 @@ public class Helper {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                    Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
                 }
             });
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -407,13 +404,13 @@ public class Helper {
                     resolveDialog.dismiss();
                     runnable.run();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                    Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
                 }
             });
             resolveDialog.setCancelable(true);
             resolveDialog.show();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -442,7 +439,7 @@ public class Helper {
             });
             attachmentDialog.show();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -473,7 +470,7 @@ public class Helper {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -511,7 +508,7 @@ public class Helper {
         try {
             return context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionName;
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, context);
+            Notifications.printException((Activity)context,  ex, R.mipmap.ic_launcher_round);
         }
         return "";
     }
@@ -571,7 +568,7 @@ public class Helper {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+                    Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
                 }
             });
             filePickerDialog.show();
@@ -584,9 +581,9 @@ public class Helper {
             bos.write(content);
             bos.flush();
             bos.close();
-            MessageHelper.printMessage(activity.getString(R.string.issues_context_attachment_saved), R.mipmap.ic_launcher_round, activity);
+            Notifications.printMessage(activity, activity.getString(R.string.issues_context_attachment_saved), R.mipmap.ic_launcher_round);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, activity);
+            Notifications.printException(activity,  ex, R.mipmap.ic_launcher_round);
         }
     }
 

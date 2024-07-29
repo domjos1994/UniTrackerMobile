@@ -19,7 +19,7 @@
 package de.domjos.unibuggermobile.activities;
 
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.fragments.SettingsFragment;
 
 public final class SettingsActivity extends AbstractActivity {

@@ -23,9 +23,9 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import de.domjos.customwidgets.utils.Crypto;
-
 import static org.junit.Assert.assertEquals;
+
+import de.domjos.unitrackerlibrary.tools.Crypto;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class CryptoTest {

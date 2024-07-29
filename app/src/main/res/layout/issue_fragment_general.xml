@@ -200,7 +200,7 @@
 
         <TableRow android:id="@+id/rowIssueGeneralDueDates">
 
-            <de.domjos.unibuggermobile.custom.DatePickerField
+            <de.domjos.unitrackerlibrary.custom.DatePickerField
                 android:id="@+id/txtIssueGeneralDueDate"
                 android:hint="@string/issues_general_dueDate"
                 android:layout_weight="10"

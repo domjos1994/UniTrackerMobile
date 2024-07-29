@@ -44,16 +44,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import java.util.Arrays;
 import java.util.List;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.services.authentication.OAuthHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
 
@@ -261,7 +261,7 @@ public final class AccountActivity extends AbstractActivity {
             Bitmap bitmap = IntentHelper.getImageFromGallery(requestCode, resultCode, data, this.getApplicationContext());
             this.cmdAccountImageGallery.setImageBitmap(bitmap);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this);
+            Notifications.printException(AccountActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -318,22 +318,22 @@ public final class AccountActivity extends AbstractActivity {
                                     IBugService<?> bugService = Helper.getCurrentBugService(this.currentAccount, this.getApplicationContext());
                                     if (chkAccountGuest.isChecked() || bugService.testConnection()) {
                                         AccountActivity.this.runOnUiThread(() -> {
-                                            MessageHelper.printMessage(this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round, AccountActivity.this);
+                                            Notifications.printMessage(AccountActivity.this, this.getString(R.string.accounts_connection_successfully), R.mipmap.ic_launcher_round);
                                             MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(this.currentAccount);
                                             this.manageControls(false, true, false);
                                             this.reload();
                                         });
                                     } else {
-                                        AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                        AccountActivity.this.runOnUiThread(() -> Notifications.printMessage(AccountActivity.this, this.getString(R.string.accounts_connection_not_successfully), R.mipmap.ic_launcher_round));
                                     }
                                 } catch (Exception ex) {
                                     Log.v("Exception", ex.toString());
                                     String msg = ex.getMessage();
                                     if (msg != null) {
                                         if (msg.contains("PHP SOAP")) {
-                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printMessage(this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round, AccountActivity.this));
+                                            AccountActivity.this.runOnUiThread(() -> Notifications.printMessage(AccountActivity.this, this.getString(R.string.messages_no_soap), R.mipmap.ic_launcher_round));
                                         } else {
-                                            AccountActivity.this.runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this));
+                                            AccountActivity.this.runOnUiThread(() -> Notifications.printException(AccountActivity.this, ex, R.mipmap.ic_launcher_round));
                                         }
                                     }
                                 }
@@ -345,7 +345,7 @@ public final class AccountActivity extends AbstractActivity {
                         super.createSnackBar(this.accountValidator.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AccountActivity.this);
+                    Notifications.printException(AccountActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return false;

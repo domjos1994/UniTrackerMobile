@@ -57,4 +57,20 @@
 
     <string name="notify_cancel">Abbrechen</string>
     <string name="notify_iv_content">Icon</string>
+
+    <string name="sys_date_format">dd.MM.yyyy</string>
+    <string name="sys_time_format">HH:mm:ss</string>
+    <string name="sys_multiple">Mehrere Elemente auswählen!</string>
+    <string name="sys_no_entry">Kein Eintrag!</string>
+    <string name="sys_item_deleted">Element wurde gelöscht!</string>
+    <string name="sys_item_undo">Aktion rückgängig machen!</string>
+
+    <string formatted="false" name="message_validation_date">%s muss ein Datum im Format (dd-MM-yyyy) oder (dd.MM.yyyy) sein!</string>
+    <string formatted="false" name="message_validation_date_min_max">%s muss vor %s und nach %s sein!</string>
+    <string formatted="false" name="message_validation_double">%s muss eine Gleitkommazahl sein!</string>
+    <string formatted="false" name="message_validation_empty">%s darf nicht leer sein!</string>
+    <string formatted="false" name="message_validation_integer">%s muss eine Ganzzahl sein!</string>
+    <string formatted="false" name="message_validator_duplicated">Der Eintrag %s ist bereits vorhanden!</string>
+    <string formatted="false" name="message_validator_length">%s darf nicht länger als %d Zeichen und nicht kürzer als %d Zeichen sein!</string>
+    <string formatted="false" name="message_validator_matches">Feld \'%s\' enthält unzulässige Zeichen!</string>
 </resources>

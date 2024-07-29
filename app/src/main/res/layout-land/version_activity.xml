@@ -17,7 +17,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
@@ -58,12 +59,12 @@
         </LinearLayout>
 
 
-        <de.domjos.customwidgets.widgets.SplitPaneLayout
+        <de.domjos.unitrackerlibrary.custom.SplitPaneLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="20"
             app:splitterBackground="@color/divider">
-            <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+            <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
                 android:id="@+id/lvVersions"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -125,7 +126,7 @@
 
                     <TableRow android:id="@+id/rowVersionReleasedAt">
 
-                        <de.domjos.unibuggermobile.custom.DatePickerField
+                        <de.domjos.unitrackerlibrary.custom.DatePickerField
                             android:id="@+id/txtVersionReleasedAt"
                             android:hint="@string/versions_releasedAt"
                             android:layout_weight="10"
@@ -145,7 +146,7 @@
                     </TableRow>
                 </TableLayout>
             </ScrollView>
-        </de.domjos.customwidgets.widgets.SplitPaneLayout>
+        </de.domjos.unitrackerlibrary.custom.SplitPaneLayout>
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

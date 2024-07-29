@@ -38,9 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.unibuggermobile.custom.DatePickerField;
+import de.domjos.unitrackerlibrary.custom.DatePickerField;
 import de.domjos.unibuggermobile.helper.SpinnerItem;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -56,10 +54,12 @@ import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
-import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -228,7 +228,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+            Notifications.printException(this.getActivity(), ex, R.mipmap.ic_launcher_round);
         }
         this.spIssueGeneralResolution = this.root.findViewById(R.id.spIssueGeneralResolution);
         this.txtIssueGeneralSubmitted = this.root.findViewById(R.id.txtIssueGeneralSubmitDate);
@@ -305,7 +305,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     issue.setDueDate(ConvertHelper.convertStringToDate(this.txtIssueGeneralDueDate.getText().toString(), format));
                 }
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+                Notifications.printException(this.getActivity(), ex, R.mipmap.ic_launcher_round);
             }
         }
         return issue;
@@ -605,7 +605,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 }
                 this.txtIssueGeneralCategory.setAdapter(arrayAdapter);
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity());
+                Notifications.printException(this.getActivity(), ex, R.mipmap.ic_launcher_round);
             }
         }
     }
@@ -624,7 +624,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
                     }
                 }
             } catch (Exception ex) {
-                this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
+                this.getActivity().runOnUiThread(() ->
+                        Notifications.printException(this.getActivity(), ex, R.mipmap.ic_launcher_round)
+                );
             }
             this.txtIssueGeneralVersion.setAdapter(arrayAdapter);
             this.txtIssueGeneralTargetVersion.setAdapter(arrayAdapter);

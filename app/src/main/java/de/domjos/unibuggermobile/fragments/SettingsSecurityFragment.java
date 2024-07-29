@@ -27,10 +27,10 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -59,7 +59,7 @@ public class SettingsSecurityFragment extends PreferenceFragmentCompat {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
+                    Notifications.printException(getActivity(), ex, R.mipmap.ic_launcher_round);
                 }
                 return true;
             });
@@ -82,7 +82,7 @@ public class SettingsSecurityFragment extends PreferenceFragmentCompat {
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
+                    Notifications.printException(getActivity(), ex, R.mipmap.ic_launcher_round);
                 }
                 return true;
             }));

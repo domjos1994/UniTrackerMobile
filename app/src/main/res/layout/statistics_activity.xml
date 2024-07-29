@@ -17,7 +17,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -67,8 +68,7 @@
                     android:layout_height="@dimen/min_height"
                     android:layout_weight="10"
                     android:hint="@string/statistics_value"
-                    android:autofillHints="@string/statistics_value"
-                    tools:targetApi="o" />
+                    android:autofillHints="@string/statistics_value"/>
             </TableRow>
             <TextView
                 android:layout_width="match_parent"

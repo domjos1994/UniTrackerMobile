@@ -18,6 +18,8 @@
 
 package de.domjos.unibuggermobile.helper;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -32,10 +34,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
-import de.domjos.customwidgets.utils.Crypto;
+import de.domjos.unitrackerlibrary.tools.Crypto;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public class SQLiteGeneral extends SQLiteOpenHelper {
     static final String NO_PASS = "noPassword";
@@ -82,6 +84,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         return super.getReadableDatabase(this.password);
     }
 
+    /** @noinspection SameParameterValue*/
     private SQLiteDatabase getReadableDatabase(boolean onlyCheck) {
         try {
             if(onlyCheck) {
@@ -99,11 +102,12 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         return this.getAccounts(where, false);
     }
 
+    @SuppressLint("Range")
     List<Authentication> getAccounts(String where, boolean onlyCheck) {
         List<Authentication> authentications = new LinkedList<>();
         try {
             Cursor cursor;
-            String sql = "SELECT * FROM accounts" + (!where.trim().equals("") ? " WHERE " + where : "");
+            String sql = "SELECT * FROM accounts" + (!where.trim().isEmpty() ? " WHERE " + where : "");
             if(onlyCheck) {
                 SQLiteDatabase database = this.getReadableDatabase(true);
                 if(database!=null) {
@@ -142,7 +146,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             if(onlyCheck) {
                 return null;
             } else {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+                Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
             }
         }
         return authentications;
@@ -190,7 +194,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 this.setHints(authentication);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -204,7 +208,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             }
             cursor.close();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
         }
         return hints;
     }
@@ -227,13 +231,14 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             this.getWritableDatabase().execSQL("DELETE FROM " + table);
         } else {
             if (value instanceof Integer) {
-                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "=" + value.toString() + "");
+                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "=" + value);
             } else {
-                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "='" + value.toString() + "'");
+                this.getWritableDatabase().execSQL("DELETE FROM " + table + " WHERE " + column + "='" + value + "'");
             }
         }
     }
 
+    @SuppressLint("Range")
     private String getString(Cursor cursor, String key) {
         if (cursor.getColumnIndex(key) == -1) {
             return "";
@@ -249,7 +254,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(query.trim());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -262,7 +267,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -279,7 +284,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                     return;
                 }
                 if(defaultValue != null) {
-                    if(!defaultValue.equals("")) {
+                    if(!defaultValue.isEmpty()) {
                         typeString += " DEFAULT " + defaultValue;
                     } else {
                         typeString += " DEFAULT ''";
@@ -290,7 +295,7 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
                 db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", "accounts", "authentication", typeString));
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.context);
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
         }
     }
 

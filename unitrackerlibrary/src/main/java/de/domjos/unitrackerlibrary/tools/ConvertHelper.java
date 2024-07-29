@@ -22,8 +22,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Picture;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
@@ -33,10 +31,7 @@ import android.provider.MediaStore;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.caverock.androidsvg.SVG;
-
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,8 +52,7 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.GlobalHelper;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.R;
 
 /** @noinspection unused*/
 public class ConvertHelper {
@@ -104,7 +98,7 @@ public class ConvertHelper {
 
     public static Date convertStringToDate(String dt, String format) throws ParseException {
         if(dt!=null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, GlobalHelper.getLocale());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
             return dt.isEmpty() ? null : simpleDateFormat.parse(dt);
         }
         return null;
@@ -140,52 +134,44 @@ public class ConvertHelper {
         return 0.0;
     }
 
-    public static Date convertStringToDate(String dt, String format, Context context) throws ParseException {
-        return de.domjos.customwidgets.utils.ConvertHelper.convertStringToDate(dt, format);
+    public static Date convertStringToDate(String dt, Context context) throws ParseException {
+        String format = context.getString(R.string.sys_date_format);
+        return convertStringToDate(dt, format);
     }
 
     public static String convertDateToString(Date date, String format) {
         if(date!=null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, GlobalHelper.getLocale());
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.getDefault());
             return simpleDateFormat.format(date);
         }
         return null;
     }
 
-    public static String convertDateToString(Date date, String format, Context context) {
-        return de.domjos.customwidgets.utils.ConvertHelper.convertDateToString(date, format);
+    public static String convertDateToString(Date date, Context context) {
+        String format = context.getString(R.string.sys_date_format);
+        return convertDateToString(date, format);
     }
 
     public static Calendar convertStringToCalendar(String dt, Context context) throws ParseException {
-        Date date = de.domjos.customwidgets.utils.ConvertHelper.convertStringToDate(dt, context);
+        Date date = convertStringToDate(dt, context);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar;
     }
 
-    public static Time convertStringToTime(Context context, String time, int icon) {
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            return new Time(Objects.requireNonNull(formatter.parse(time)).getTime());
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, icon, context);
-        }
-        return null;
+    public static Time convertStringToTime(Context context, String time, int icon) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        return new Time(Objects.requireNonNull(formatter.parse(time)).getTime());
     }
 
-    public static Date convertStringTimeToDate(Context context, String time, int icon) {
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
-            Calendar calendar = GregorianCalendar.getInstance();
-            calendar.setTime(new Date());
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            int month = calendar.get(Calendar.MONTH) + 1;
-            int year = calendar.get(Calendar.YEAR);
-            return formatter.parse(String.format("%s.%s.%s %s", day, month, year, time));
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, icon, context);
-        }
-        return null;
+    public static Date convertStringTimeToDate(Context context, String time, int icon) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault());
+        Calendar calendar = GregorianCalendar.getInstance();
+        calendar.setTime(new Date());
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        return formatter.parse(String.format("%s.%s.%s %s", day, month, year, time));
     }
 
     public static Drawable convertStringToImage(String url) {
@@ -198,7 +184,7 @@ public class ConvertHelper {
 
     public static byte[] convertStringToByteArray(String url) {
         try (InputStream is = (InputStream) new URL(url).getContent()) {
-            return de.domjos.customwidgets.utils.ConvertHelper.convertStreamToByteArray(is);
+            return convertStreamToByteArray(is);
         } catch (IOException e) {
             return null;
         }
@@ -211,13 +197,13 @@ public class ConvertHelper {
         return stream.toByteArray();
     }
 
-    public static byte[] convertDrawableToByteArray(Context context, int id) {
-        Drawable d = de.domjos.customwidgets.utils.ConvertHelper.convertResourcesToDrawable(context, id);
+    public static byte[] convertDrawableToByteArray(Context context, int id) throws Exception {
+        Drawable d = convertResourcesToDrawable(context, id);
         if(d instanceof VectorDrawable) {
-            return ConvertHelper.convertSVGToBytes(context, id);
+            throw new Exception("VectorDrawable not supported!");
         }
         if(d instanceof VectorDrawableCompat) {
-            return ConvertHelper.convertSVGToBytes(context, id);
+            throw new Exception("VectorDrawableCompat not supported!");
         }
 
         BitmapDrawable bitmapDrawable = ((BitmapDrawable)d);
@@ -228,34 +214,6 @@ public class ConvertHelper {
             return stream.toByteArray();
         }
         return null;
-    }
-
-    private static byte[] convertSVGToBytes(Context context, int id) {
-        try {
-            SVG svg = SVG.getFromResource(context, id);
-            Picture picture = svg.renderToPicture();
-            Canvas canvas = new Canvas();
-            Bitmap bitmap = Bitmap.createBitmap(picture.getWidth(), picture.getHeight(), Bitmap.Config.RGB_565);
-            canvas.setBitmap(bitmap);
-            svg.renderToPicture().draw(canvas);
-            return de.domjos.customwidgets.utils.ConvertHelper.convertBitmapToByteArray(bitmap);
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    public static Bitmap convertSVGByteArrayToBitmap(byte[] bytes) {
-        try {
-            SVG svg = SVG.getFromInputStream(new ByteArrayInputStream(bytes));
-            Picture picture = svg.renderToPicture();
-            Canvas canvas = new Canvas();
-            Bitmap bitmap = Bitmap.createBitmap(picture.getWidth(), picture.getHeight(), Bitmap.Config.RGB_565);
-            canvas.setBitmap(bitmap);
-            svg.renderToPicture().draw(canvas);
-            return bitmap;
-        } catch (Exception ex) {
-            return null;
-        }
     }
 
     public static Bitmap convertByteArrayToBitmap(byte[] bytes) {
@@ -307,8 +265,6 @@ public class ConvertHelper {
             if (cursor != null) {
                 return cursor.getString(column_index);
             }
-        } catch (Exception ex) {
-            MessageHelper.printException(ex, icon, context);
         } finally {
             if (cursor != null) {
                 cursor.close();

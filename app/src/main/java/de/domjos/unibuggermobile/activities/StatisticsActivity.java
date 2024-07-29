@@ -50,16 +50,16 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.StatisticsTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.DiagramHelper;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class StatisticsActivity extends AbstractActivity {
     private BarChart bcStatisticsBugsPerProject, bcStatisticsBugsPerUser, bcStatisticsSolvedBugs;
@@ -132,7 +132,7 @@ public final class StatisticsActivity extends AbstractActivity {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
                 String label = bcStatisticsBugsPerProject.getXAxis().getValueFormatter().getFormattedValue(e.getX(), bcStatisticsBugsPerProject.getXAxis());
-                MessageHelper.printMessage(label + ": " + (int) e.getY() + " Bugs", R.mipmap.ic_launcher_round, StatisticsActivity.this);
+                Notifications.printMessage(StatisticsActivity.this, label + ": " + (int) e.getY() + " Bugs", R.mipmap.ic_launcher_round);
             }
 
             @Override
@@ -163,9 +163,9 @@ public final class StatisticsActivity extends AbstractActivity {
                         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
                         value += "-" + simpleDateFormat.format(calendar.getTime());
                     }
-                    MessageHelper.printMessage(value + ": Bugs: " + e.getY(), R.mipmap.ic_launcher_round, StatisticsActivity.this);
+                    Notifications.printMessage(StatisticsActivity.this, value + ": Bugs: " + e.getY(), R.mipmap.ic_launcher_round);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, StatisticsActivity.this);
+                    Notifications.printException(StatisticsActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
 
@@ -254,7 +254,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.bcStatisticsBugsPerProject.saveToGallery("uniTrackerMobile_bugsPerProject.jpg");
             this.bcStatisticsBugsPerUser.saveToGallery("uniTrackerMobile_bugsPerUser.jpg");
             this.bcStatisticsSolvedBugs.saveToGallery("uniTrackerMobile_solvedBugs.jpg");
-            MessageHelper.printMessage(this.getString(R.string.statistics_export_succes), R.mipmap.ic_launcher_round, StatisticsActivity.this);
+            Notifications.printMessage(StatisticsActivity.this, this.getString(R.string.statistics_export_succes), R.mipmap.ic_launcher_round);
         }
 
         return super.onOptionsItemSelected(item);
@@ -285,7 +285,7 @@ public final class StatisticsActivity extends AbstractActivity {
             this.data.put(auth, data);
             reloadCharts();
         });
-        statisticsTask.after((AbstractTask.PostExecuteListener<Map<Authentication, Map<Project<?>, List<Issue<?>>>>>) result -> MessageHelper.printMessage(getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round, StatisticsActivity.this));
+        statisticsTask.after((AbstractTask.PostExecuteListener<Map<Authentication, Map<Project<?>, List<Issue<?>>>>>) result -> Notifications.printMessage(StatisticsActivity.this, getString(R.string.statistics_loaded), R.mipmap.ic_launcher_round));
         statisticsTask.execute();
     }
 

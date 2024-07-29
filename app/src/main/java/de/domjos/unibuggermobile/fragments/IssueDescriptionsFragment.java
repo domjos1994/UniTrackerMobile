@@ -41,9 +41,9 @@ import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.SuggestionAdapter;
-import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.SpecialTokenizer;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 /**
  * A placeholder fragment containing a simple view.

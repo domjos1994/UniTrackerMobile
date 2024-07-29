@@ -32,8 +32,8 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.ConvertHelper;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -46,11 +46,11 @@ import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.adapter.SuggestionAdapter;
-import de.domjos.customwidgets.tokenizer.SpecialTokenizer;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.SpecialTokenizer;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 /**
  * A placeholder fragment containing a simple view.

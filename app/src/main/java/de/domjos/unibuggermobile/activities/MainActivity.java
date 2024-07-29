@@ -50,9 +50,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.cache.CacheGlobals;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -72,12 +72,12 @@ import de.domjos.unitrackerlibrary.services.tracker.GithubSpecific.SearchAll;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Globals;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class MainActivity extends AbstractActivity implements OnNavigationItemSelectedListener {
     private FloatingActionButton cmdIssuesAdd;
@@ -239,7 +239,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     }
                 }
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getApplicationContext());
+                Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
@@ -365,7 +365,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
 
                     Helper.showTagDialog(act, bugService, show, pid, objectList, notId);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+                    Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             });
 
@@ -384,7 +384,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.firstLogIn = this.settings.isFirstLogin(false);
             Helper.showPasswordDialog(this, this.firstLogIn, false, this::executeOnSuccess);
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+            Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -480,7 +480,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+            Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
         return super.onContextItemSelected(item);
     }
@@ -510,7 +510,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 Helper.showWhatsNewDialog(this);
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+            Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -646,7 +646,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+            Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
 
         if(this.lvMainIssues.getAdapter().getItemCount() == 1) {
@@ -712,7 +712,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, MainActivity.this);
+            Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -735,11 +735,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     @Override
-    public void onBackPressed() {
+    public void onPressBack() {
         if (this.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             this.drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
         }
     }
 

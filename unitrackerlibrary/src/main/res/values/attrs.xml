@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (C)  2019-2024 Domjos
+  ~ This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
+  ~
+  ~ UniTrackerMobile is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ UniTrackerMobile is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<resources>
+    <declare-styleable name="ExpandableTextView">
+        <attr format="string" name="title"/>
+        <attr format="string" name="text"/>
+    </declare-styleable>
+    <declare-styleable name="LabelledSeekBar">
+        <attr format="boolean" name="editableLabel"/>
+        <attr format="integer" name="max"/>
+        <attr format="float" name="current"/>
+    </declare-styleable>
+    <declare-styleable name="SplitPaneLayout">
+        <attr name="orientation">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
+        <attr format="dimension" name="splitterSize"/>
+        <attr format="boolean" name="splitterMovable"/>
+        <attr format="dimension|fraction" name="splitterPosition"/>
+        <attr format="reference|color" name="splitterBackground"/>
+        <attr format="reference|color" name="splitterDraggingBackground"/>
+        <attr format="dimension" name="splitterTouchSlop"/>
+        <attr format="dimension" name="paneSizeMin"/>
+    </declare-styleable>
+    <declare-styleable name="SwipeRefreshDeleteList">
+        <attr format="integer" name="itemIcon"/>
+        <attr format="integer" name="listItemBackground"/>
+        <attr format="integer" name="listItemBackgroundStatePositive"/>
+        <attr format="color" name="listItemForeground"/>
+        <attr format="integer" name="selectedListItemBackground"/>
+        <attr format="boolean" name="readOnly"/>
+        <attr format="integer" name="listItemDivider"/>
+        <attr format="color" name="iconColor"/>
+    </declare-styleable>
+    <declare-styleable name="WidgetCalendar">
+        <attr format="integer" name="toolBarBackground"/>
+        <attr format="integer" name="monthViewBackground"/>
+        <attr format="integer" name="dayViewBackground"/>
+        <attr format="integer" name="focusBackground"/>
+        <attr format="dimension" name="groupLabelWidth"/>
+    </declare-styleable>
+</resources>

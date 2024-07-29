@@ -18,8 +18,8 @@
 
 package de.domjos.unitrackerlibrary.model;
 
-import de.domjos.customwidgets.widgets.calendar.Event;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.custom.Event;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.model.projects.Version;

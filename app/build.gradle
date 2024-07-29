@@ -99,5 +99,4 @@ dependencies {
 
     // own libraries
     implementation project(path: ':unitrackerlibrary')
-    implementation "de.domjos.customwidgets:customwidgets:$propCustomWidgetsVersion"
 }

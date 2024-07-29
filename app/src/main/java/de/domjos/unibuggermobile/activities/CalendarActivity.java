@@ -25,15 +25,15 @@ import android.widget.TextView;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.customwidgets.widgets.calendar.WidgetCalendar;
+import de.domjos.unitrackerlibrary.custom.WidgetCalendar;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.TrackerEvent;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.CalendarTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class CalendarActivity extends AbstractActivity {
     private WidgetCalendar widgetCalendar;
@@ -101,7 +101,7 @@ public final class CalendarActivity extends AbstractActivity {
             calendarTask.setIcons(R.drawable.icon_projects, R.drawable.icon_versions, R.drawable.icon_issues);
             calendarTask.execute();
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, CalendarActivity.this);
+            Notifications.printException(CalendarActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 }

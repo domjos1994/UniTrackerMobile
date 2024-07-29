@@ -42,18 +42,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.tools.Validator;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Attachment;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.helper.IntentHelper;
-import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -159,7 +159,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                     }
                 }
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
+                Notifications.printException(getActivity(), ex, R.mipmap.ic_launcher_round);
             }
         });
 
@@ -201,12 +201,12 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                         this.bugService.deleteAttachment(id, null, null);
                         getActivity().runOnUiThread(()->lvIssueAttachments.getAdapter().deleteItem(lvIssueAttachments.getAdapter().getItemPosition(listObject)));
                     } catch (Exception ex) {
-                        getActivity().runOnUiThread(()->MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity()));
+                        getActivity().runOnUiThread(()->Notifications.printException(getActivity(), ex, R.mipmap.ic_launcher_round));
                     }
                 }).start();
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, getActivity());
+            Notifications.printException(getActivity(), ex, R.mipmap.ic_launcher_round);
         }
         return true;
     }

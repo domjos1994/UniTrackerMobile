@@ -26,7 +26,7 @@
     tools:context=".activities.SearchActivity"
     android:background="@drawable/background">
 
-    <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+    <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
         android:id="@+id/lvSearchResults"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -58,8 +58,7 @@
                     android:layout_weight="10"
                     android:autofillHints="@string/search"
                     android:inputType="text"
-                    android:hint="@string/search_content"
-                    tools:targetApi="o"/>
+                    android:hint="@string/search_content"/>
             </TableRow>
 
             <TableRow>

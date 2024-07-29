@@ -32,8 +32,6 @@ import androidx.annotation.NonNull;
 import java.util.Date;
 import java.util.List;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.History;
@@ -42,7 +40,9 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 /** @noinspection rawtypes*/
 public final class IssueHistoryFragment extends AbstractFragment {
@@ -131,7 +131,9 @@ public final class IssueHistoryFragment extends AbstractFragment {
                             }
                         }
                     } catch (Exception ex) {
-                        this.getActivity().runOnUiThread(() -> MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getActivity()));
+                        this.getActivity().runOnUiThread(() ->
+                                Notifications.printException(this.getActivity(), ex, R.mipmap.ic_launcher_round)
+                        );
                     }
                 }).start();
             }

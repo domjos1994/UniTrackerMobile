@@ -33,8 +33,8 @@ import androidx.appcompat.widget.Toolbar;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.services.tracker.MantisBTSpecific.ChangeLog;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.ExpandableTextView;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.ExpandableTextView;
 
 public final class HelpActivity extends AbstractActivity {
     private ExpandableTextView lblWhatsNew;

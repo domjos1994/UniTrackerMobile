@@ -16,7 +16,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -107,7 +108,7 @@
             android:background="@color/divider" />
 
 
-        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
             android:id="@+id/lvMainIssues"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

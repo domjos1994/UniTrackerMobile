@@ -16,7 +16,7 @@
  * along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package de.domjos.unibuggermobile.custom;
+package de.domjos.unitrackerlibrary.custom;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.Objects;
 
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.unibuggermobile.activities.MainActivity;
+import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 public class DatePickerField extends androidx.appcompat.widget.AppCompatEditText {
     private Context context;
@@ -70,8 +70,8 @@ public class DatePickerField extends androidx.appcompat.widget.AppCompatEditText
 
     private void setParams(Context context) {
         this.context = context;
-        this.dateFormat = MainActivity.GLOBALS.getSettings(this.context).getDateFormat();
-        this.timeFormat = MainActivity.GLOBALS.getSettings(this.context).getTimeFormat();
+        this.dateFormat = this.context.getString(R.string.sys_date_format);
+        this.timeFormat = this.context.getString(R.string.sys_time_format);
 
         this.setInputType(InputType.TYPE_CLASS_DATETIME);
         this.setClickable(true);

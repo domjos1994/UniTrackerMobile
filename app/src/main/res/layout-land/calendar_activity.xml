@@ -27,12 +27,12 @@
     android:weightSum="20"
     android:background="@drawable/background">
 
-    <de.domjos.customwidgets.widgets.SplitPaneLayout
+    <de.domjos.unitrackerlibrary.custom.SplitPaneLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:orientation="horizontal"
         app:splitterBackground="@color/divider">
-        <de.domjos.customwidgets.widgets.calendar.WidgetCalendar
+        <de.domjos.unitrackerlibrary.custom.WidgetCalendar
             android:id="@+id/cvEventCalendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -93,5 +93,5 @@
                     style="@android:style/Widget.ProgressBar.Horizontal"/>
             </LinearLayout>
         </LinearLayout>
-    </de.domjos.customwidgets.widgets.SplitPaneLayout>
+    </de.domjos.unitrackerlibrary.custom.SplitPaneLayout>
 </LinearLayout>

@@ -47,9 +47,9 @@ import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
 import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.activities.MainActivity;
-import de.domjos.customwidgets.tokenizer.CommaTokenizer;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
+import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 /** @noinspection rawtypes*/
 public final class IssueCustomFragment extends AbstractFragment {

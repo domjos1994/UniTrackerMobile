@@ -34,10 +34,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
-import de.domjos.customwidgets.utils.ConvertHelper;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unibuggermobile.fragments.*;
 import de.domjos.unibuggermobile.helper.Helper;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to

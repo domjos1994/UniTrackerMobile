@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.Administration;
@@ -52,10 +51,11 @@ import de.domjos.unitrackerlibrary.tasks.FieldTask;
 import de.domjos.unitrackerlibrary.tasks.IssueTask;
 import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unitrackerlibrary.services.ArrayHelper;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class AdministrationActivity extends AbstractActivity {
     private Button cmdCopy, cmdMove;
@@ -102,7 +102,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     }
                     checkPermissions();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AdministrationActivity.this);
+                    Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             @Override
@@ -124,7 +124,7 @@ public final class AdministrationActivity extends AbstractActivity {
                     }
                     checkPermissions();
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, AdministrationActivity.this);
+                    Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             @Override
@@ -272,7 +272,7 @@ public final class AdministrationActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+            Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -327,13 +327,13 @@ public final class AdministrationActivity extends AbstractActivity {
                 String item = getResources().getStringArray(R.array.administration_data)[spData1.getSelectedItemPosition()];
                 String action = move ? getString(R.string.administration_move) : getString(R.string.administration_copy);
                 String message = String.format(msg, item, action);
-                MessageHelper.printMessage(message, R.mipmap.ic_launcher_round, ctx);
+                Notifications.printMessage(AdministrationActivity.this, message, R.mipmap.ic_launcher_round);
                 initAction(false);
             });
             administrationTask.execute(this.administration);
 
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+            Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 

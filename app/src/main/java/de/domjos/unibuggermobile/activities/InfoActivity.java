@@ -30,7 +30,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.TextView;
 
-import de.domjos.customwidgets.model.AbstractActivity;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.R;
 
 public class InfoActivity extends AbstractActivity {

@@ -59,7 +59,7 @@
         android:orientation="vertical"
         android:weightSum="20">
 
-        <de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList
+        <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
             android:id="@+id/lvProjects"
             android:layout_width="match_parent"
             android:layout_height="0dp"

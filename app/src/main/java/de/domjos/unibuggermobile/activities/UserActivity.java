@@ -22,8 +22,8 @@ import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.User;
@@ -31,11 +31,11 @@ import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.UserTask;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 public final class UserActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -76,7 +76,7 @@ public final class UserActivity extends AbstractActivity {
                     new UserTask(UserActivity.this, bugService, currentProject.getId(), true, settings.showNotifications(), R.drawable.icon_users).execute(((User<?>)listObject.getObject()).getId()).get();
                     manageControls(false, true, false);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                    Notifications.printException(UserActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
         });
@@ -98,7 +98,7 @@ public final class UserActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+            Notifications.printException(UserActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -119,7 +119,7 @@ public final class UserActivity extends AbstractActivity {
                     this.reload();
                     this.manageControls(false, true, false);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                    Notifications.printException(UserActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             } else if(menuItem.getItemId() == R.id.navCancel) {
                 this.manageControls(false, true, false);
@@ -134,7 +134,7 @@ public final class UserActivity extends AbstractActivity {
                         super.createSnackBar(this.userValidator.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, UserActivity.this);
+                    Notifications.printException(UserActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return true;

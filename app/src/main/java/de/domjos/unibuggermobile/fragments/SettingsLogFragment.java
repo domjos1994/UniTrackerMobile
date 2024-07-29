@@ -25,9 +25,9 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
-import de.domjos.customwidgets.utils.LogHelper;
-import de.domjos.customwidgets.utils.MessageHelper;
 import de.domjos.unibuggermobile.R;
+import de.domjos.unitrackerlibrary.tools.LogHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public class SettingsLogFragment extends PreferenceFragmentCompat {
 
@@ -48,7 +48,7 @@ public class SettingsLogFragment extends PreferenceFragmentCompat {
                         LogHelper logHelper = new LogHelper(super.getActivity());
                         logHelper.clearFile();
                     } catch (Exception ex) {
-                        MessageHelper.printException(ex, R.mipmap.ic_launcher_round, super.getActivity());
+                        Notifications.printException(super.getActivity(), ex, R.mipmap.ic_launcher_round);
                     } finally {
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(super.getActivity()).edit();
                         editor.putBoolean("swtLogClear", false);

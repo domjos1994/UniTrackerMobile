@@ -27,12 +27,12 @@ import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.List;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.R;
 import de.domjos.unitrackerlibrary.export.TrackerCSV;
 import de.domjos.unitrackerlibrary.export.TrackerPDF;
 import de.domjos.unitrackerlibrary.export.TrackerXML;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Version;
 

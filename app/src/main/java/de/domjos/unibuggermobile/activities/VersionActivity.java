@@ -41,9 +41,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import de.domjos.customwidgets.model.BaseDescriptionObject;
-import de.domjos.customwidgets.utils.MessageHelper;
-import de.domjos.unibuggermobile.custom.DatePickerField;
+import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
+import de.domjos.unitrackerlibrary.custom.DatePickerField;
 import de.domjos.unibuggermobile.dialogs.RoadMapDialog;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
@@ -51,13 +51,13 @@ import de.domjos.unitrackerlibrary.model.projects.Version;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tasks.ExportTask;
 import de.domjos.unitrackerlibrary.tasks.VersionTask;
-import de.domjos.customwidgets.utils.ConvertHelper;
-import de.domjos.customwidgets.utils.Validator;
 import de.domjos.unibuggermobile.R;
-import de.domjos.customwidgets.model.AbstractActivity;
-import de.domjos.customwidgets.widgets.swiperefreshdeletelist.SwipeRefreshDeleteList;
+import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.tools.ConvertHelper;
+import de.domjos.unitrackerlibrary.tools.Notifications;
+import de.domjos.unitrackerlibrary.tools.Validator;
 
 public final class VersionActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
@@ -101,7 +101,7 @@ public final class VersionActivity extends AbstractActivity {
             try {
                 new VersionTask(VersionActivity.this, bugService, currentProject, true, settings.showNotifications(), "", R.drawable.icon_versions).execute(((Version<?>)listObject.getObject()).getId()).get();
             } catch (Exception ex) {
-                MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
@@ -133,12 +133,12 @@ public final class VersionActivity extends AbstractActivity {
                         ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, path.get(), this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
                         exportTask.after(o -> {
                             pbVersion.setVisibility(View.GONE);
-                            MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
+                            Notifications.printMessage(VersionActivity.this, getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round);
                         });
                         exportTask.execute(list);
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                    Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             });
             dialog.show();
@@ -177,7 +177,7 @@ public final class VersionActivity extends AbstractActivity {
                     this.reload();
                     this.manageControls(false, true, false);
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                    Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             } else if(menuItem.getItemId() == R.id.navCancel) {
                 this.manageControls(false, true, false);
@@ -192,7 +192,7 @@ public final class VersionActivity extends AbstractActivity {
                         super.createSnackBar(this.versionValidator.getResult());
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                    Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             }
             return true;
@@ -258,7 +258,7 @@ public final class VersionActivity extends AbstractActivity {
                 }
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, this.getApplicationContext());
+            Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -306,7 +306,7 @@ public final class VersionActivity extends AbstractActivity {
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }
         } catch (Exception ex) {
-            MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+            Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -388,15 +388,15 @@ public final class VersionActivity extends AbstractActivity {
                             ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
                             exportTask.after(o -> {
                                 pbVersion.setVisibility(View.GONE);
-                                MessageHelper.printMessage(getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round, VersionActivity.this);
+                                Notifications.printMessage(VersionActivity.this, getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round);
                             });
                             exportTask.execute(vid);
                         } else {
-                            MessageHelper.printMessage(this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round, VersionActivity.this);
+                            Notifications.printMessage(VersionActivity.this, this.getString(R.string.versions_menu_changelog_no_selected), R.mipmap.ic_launcher_round);
                         }
                     }
                 } catch (Exception ex) {
-                    MessageHelper.printException(ex, R.mipmap.ic_launcher_round, VersionActivity.this);
+                    Notifications.printException(VersionActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
             });
             dialog.show();

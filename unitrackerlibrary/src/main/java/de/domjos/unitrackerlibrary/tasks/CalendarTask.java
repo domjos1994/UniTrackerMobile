@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
-import de.domjos.customwidgets.widgets.calendar.WidgetCalendar;
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.custom.WidgetCalendar;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.TrackerEvent;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
