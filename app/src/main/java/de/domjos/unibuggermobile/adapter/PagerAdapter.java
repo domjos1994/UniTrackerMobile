@@ -31,6 +31,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import de.domjos.unibuggermobile.activities.MainActivity;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.objects.DescriptionObject;
@@ -57,6 +58,7 @@ public class PagerAdapter extends FragmentStateAdapter {
         this.general = new IssueGeneralFragment();
         this.notes = new IssueNotesFragment();
         this.descriptions = new IssueDescriptionsFragment();
+        ((IssueDescriptionsFragment) this.descriptions).setAuthentication(MainActivity.GLOBALS.getSettings(this.context).getCurrentAuthentication());
         ((IssueGeneralFragment) this.general).setDescriptionFragment((IssueDescriptionsFragment) this.descriptions);
         this.attachments = new IssueAttachmentsFragment();
         this.custom = new IssueCustomFragment();

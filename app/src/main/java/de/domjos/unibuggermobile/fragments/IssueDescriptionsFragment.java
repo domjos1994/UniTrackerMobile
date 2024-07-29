@@ -52,6 +52,8 @@ import de.domjos.unitrackerlibrary.tools.Validator;
 public final class IssueDescriptionsFragment extends AbstractFragment {
     private MultiAutoCompleteTextView txtIssueDescriptionsDescription, txtIssueDescriptionsSteps, txtIssueDescriptionsAdditional;
     private TableRow rowIssueDescriptionsSteps, rowIssueDescriptionsAdditional;
+    private String description = "";
+    private Authentication authentication = null;
 
     private View root;
     private Issue<?> issue;
@@ -141,9 +143,15 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
         Issue<?> issue = (Issue<?>) descriptionObject;
 
         if (this.root != null) {
-            issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());
+            if(this.txtIssueDescriptionsDescription.getText().toString().equals(this.description)) {
+                issue.setDescription(this.txtIssueDescriptionsDescription.getText().toString());
+            } else {
+                issue.setDescription(this.description);
+            }
             issue.setStepsToReproduce(this.txtIssueDescriptionsSteps.getText().toString());
             issue.setAdditionalInformation(this.txtIssueDescriptionsAdditional.getText().toString());
+        } else {
+            issue.setDescription(this.description);
         }
         return issue;
     }
@@ -160,24 +168,36 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     }
 
     public void setDescription(String text) {
-        this.txtIssueDescriptionsDescription.setText(text);
+        if(this.txtIssueDescriptionsDescription != null) {
+            this.txtIssueDescriptionsDescription.setText(text);
+        }
+        this.description = text;
     }
 
     @Override
     protected void initData() {
         if (this.issue != null) {
-            this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+            if(this.description.isEmpty()) {
+                this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());
+            } else {
+                this.txtIssueDescriptionsDescription.setText(this.description);
+            }
             this.txtIssueDescriptionsSteps.setText(this.issue.getStepsToReproduce());
             this.txtIssueDescriptionsAdditional.setText(this.issue.getAdditionalInformation());
+        } else {
+            this.txtIssueDescriptionsDescription.setText(this.description);
         }
+    }
+
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
     }
 
     @Override
     protected Validator initValidator() {
-        Authentication authentication = MainActivity.GLOBALS.getSettings(this.getContext()).getCurrentAuthentication();
         this.validator = new Validator(this.getContext(), R.mipmap.ic_launcher_round);
         if (this.root != null) {
-            if (authentication.getTracker() != Authentication.Tracker.Bugzilla) {
+            if (this.authentication != null && authentication.getTracker() != Authentication.Tracker.Bugzilla) {
                 this.validator.addEmptyValidator(this.txtIssueDescriptionsDescription);
             }
         }
