@@ -69,22 +69,64 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     private Issue<?> issue;
     private boolean editMode;
 
-    final ActivityResultLauncher<Intent> pick_file = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    try {
-                        assert result.getData() != null;
-                        Uri imageUri = result.getData().getData();
-                        if (imageUri != null) {
-                            if (getContext() != null) {
-                                InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
-                                if (imageStream != null) {
+    ActivityResultLauncher<Intent> pick_file = null;
+    ActivityResultLauncher<Intent> gallery = null;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        this.pick_file = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            assert result.getData() != null;
+                            Uri imageUri = result.getData().getData();
+                            if (imageUri != null) {
+                                if (getContext() != null) {
+                                    InputStream imageStream = getContext().getContentResolver().openInputStream(imageUri);
+                                    if (imageStream != null) {
+                                        Attachment<?> attachment = new Attachment<>();
+                                        attachment.setDownloadUrl(imageUri.getPath());
+                                        attachment.setFilename(this.getFileName(imageUri));
+                                        attachment.setContentType(result.getData().getType());
+                                        attachment.setContent(ConvertHelper.convertStreamToByteArray(imageStream));
+                                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                        baseDescriptionObject.setObject(attachment);
+                                        baseDescriptionObject.setTitle(attachment.getTitle());
+                                        baseDescriptionObject.setDescription(attachment.getDescription());
+                                        this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
+                                    }
+                                }
+                            }
+                        } catch (Exception ex) {
+                            Log.e("Error", ex.getLocalizedMessage(), ex);
+                        }
+                    }
+                });
+
+        this.gallery = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        try {
+                            if (result.getData() != null) {
+                                if (this.getContext() != null) {
                                     Attachment<?> attachment = new Attachment<>();
-                                    attachment.setDownloadUrl(imageUri.getPath());
-                                    attachment.setFilename(this.getFileName(imageUri));
-                                    attachment.setContentType(result.getData().getType());
-                                    attachment.setContent(ConvertHelper.convertStreamToByteArray(imageStream));
+                                    attachment.setDownloadUrl(Objects.requireNonNull(result.getData().getData()).getPath());
+                                    attachment.setFilename(this.getFileName(result.getData().getData()));
+
+                                    InputStream iStream = this.getContext().getContentResolver().openInputStream(result.getData().getData());
+                                    if (iStream != null) {
+                                        byte[] inputData = getBytes(iStream);
+                                        attachment.setContent(inputData);
+                                        iStream.close();
+                                    }
+
+                                    String type = this.getContext().getContentResolver().getType(result.getData().getData());
+                                    attachment.setContentType(type);
+
                                     BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                                     baseDescriptionObject.setObject(attachment);
                                     baseDescriptionObject.setTitle(attachment.getTitle());
@@ -92,49 +134,11 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
                                     this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
                                 }
                             }
+                        } catch (Exception ex) {
+                            Log.e("Error", ex.getLocalizedMessage(), ex);
                         }
-                    } catch (Exception ex) {
-                        Log.e("Error", ex.getLocalizedMessage(), ex);
                     }
-                }
-            });
-    final ActivityResultLauncher<Intent> gallery = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == Activity.RESULT_OK) {
-                    try {
-                        if (result.getData() != null) {
-                            if (this.getContext() != null) {
-                                Attachment<?> attachment = new Attachment<>();
-                                attachment.setDownloadUrl(Objects.requireNonNull(result.getData().getData()).getPath());
-                                attachment.setFilename(this.getFileName(result.getData().getData()));
-
-                                InputStream iStream = this.getContext().getContentResolver().openInputStream(result.getData().getData());
-                                if (iStream != null) {
-                                    byte[] inputData = getBytes(iStream);
-                                    attachment.setContent(inputData);
-                                    iStream.close();
-                                }
-
-                                String type = this.getContext().getContentResolver().getType(result.getData().getData());
-                                attachment.setContentType(type);
-
-                                BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                                baseDescriptionObject.setObject(attachment);
-                                baseDescriptionObject.setTitle(attachment.getTitle());
-                                baseDescriptionObject.setDescription(attachment.getDescription());
-                                this.lvIssueAttachments.getAdapter().add(baseDescriptionObject);
-                            }
-                        }
-                    } catch (Exception ex) {
-                        Log.e("Error", ex.getLocalizedMessage(), ex);
-                    }
-                }
-            });
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+                });
     }
 
     @Override
