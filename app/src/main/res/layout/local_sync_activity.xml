@@ -17,14 +17,14 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.domjos.unibuggermobile.activities.LocalSyncActivity"
-    android:background="@drawable/background">
+    tools:context="de.domjos.unibuggermobile.activities.LocalSyncActivity">
 
     <TableLayout
         android:id="@+id/tblControls"
@@ -32,8 +32,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="10"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/background_controls_2">
+        android:layout_alignParentTop="true">
 
         <TableRow>
 
@@ -52,8 +51,7 @@
                 android:hint="@string/search_content"
                 android:inputType="text"
                 android:layout_height="wrap_content"
-                android:autofillHints="@string/search_content"
-                tools:targetApi="o" />
+                android:autofillHints="@string/search_content"/>
 
             <ImageButton
                 android:id="@+id/cmdLocalSyncSearch"
@@ -111,23 +109,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarStyle"
         android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/pbProcess"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:padding="2dp"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:padding="2dp"/>
 
         <ImageButton
             android:id="@+id/cmdSync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/icon_local_sync"
-            android:contentDescription="@string/local_sync"
-            style="?android:attr/buttonBarButtonStyle"/>
+            android:contentDescription="@string/local_sync"/>
     </LinearLayout>
 </RelativeLayout>

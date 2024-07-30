@@ -22,8 +22,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:id="@+id/root"
-    android:background="@drawable/background">
+    android:id="@+id/root">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,9 +41,7 @@
             android:paddingStart="8dp"
             android:paddingBottom="20dp"
             android:layout_gravity="center"
-            android:gravity="center"
-            android:textColor="@color/textColorPrimary"
-            android:background="@color/colorPrimary"/>
+            android:gravity="center"/>
 
         <ImageView
             android:id="@+id/ivCurrentAttachment"
@@ -58,9 +55,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_margin="4dp"
-            android:weightSum="10"
-            android:background="@android:color/background_light"
-            style="?android:attr/buttonBarStyle">
+            android:weightSum="10">
 
             <ImageButton
                 android:id="@+id/cmdPrevious"
@@ -68,8 +63,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_before"
-                style="?android:attr/buttonBarButtonStyle" />
+                app:srcCompat="@drawable/icon_controls_before"/>
 
             <ImageButton
                 android:id="@+id/cmdNext"
@@ -77,8 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_next"
-                style="?android:attr/buttonBarButtonStyle" />
+                app:srcCompat="@drawable/icon_controls_next" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

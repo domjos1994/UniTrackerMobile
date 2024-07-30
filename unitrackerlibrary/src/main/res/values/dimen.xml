@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C)  2019-2024 Domjos
   ~ This file is part of UniTrackerMobile <https://unitrackermobile.de/>.
   ~
@@ -17,6 +16,6 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#770eff0e" />
-</shape>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="mtrl_exposed_dropdown_menu_popup_vertical_padding" tools:override="true">0dp</dimen>
+</resources>

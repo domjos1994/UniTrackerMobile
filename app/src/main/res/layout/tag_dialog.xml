@@ -24,8 +24,7 @@
     android:layout_width="300dp"
     android:weightSum="10"
     android:orientation="horizontal"
-    android:id="@+id/root"
-    android:background="@color/colorPrimaryDark">
+    android:id="@+id/root">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,9 +36,7 @@
         android:paddingStart="8dp"
         android:paddingBottom="20dp"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/textColorPrimary"
-        android:background="@color/colorPrimary"/>
+        android:gravity="center"/>
 
     <TableRow>
         <TextView
@@ -75,7 +72,5 @@
         android:layout_weight="10"
         android:contentDescription="@string/sys_save"
         app:srcCompat="@drawable/icon_controls_save"
-        android:layout_margin="1dp"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle"/>
+        android:layout_margin="1dp"/>
 </TableLayout>

@@ -20,13 +20,11 @@
 <TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_height="wrap_content"
     android:layout_width="300dp"
     android:weightSum="10"
     android:orientation="horizontal"
-    android:id="@+id/root"
-    android:background="@color/colorPrimaryDark">
+    android:id="@+id/root">
 
     <TextView
         android:id="@+id/lblTitle"
@@ -40,9 +38,7 @@
         android:paddingStart="8dp"
         android:paddingBottom="20dp"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/textColorPrimary"
-        android:background="@color/colorPrimary"/>
+        android:gravity="center"/>
 
     <TableRow>
         <TextView
@@ -72,8 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="10"
         android:layout_margin="4dp"
-        android:hint="@string/general_description"
-        tools:targetApi="o"/>
+        android:hint="@string/general_description"/>
 
     <ImageButton
         android:id="@+id/cmdResolve"
@@ -82,7 +77,5 @@
         android:layout_weight="10"
         android:contentDescription="@string/sys_save"
         app:srcCompat="@drawable/icon_controls_save"
-        android:layout_margin="1dp"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle"/>
+        android:layout_margin="1dp"/>
 </TableLayout>

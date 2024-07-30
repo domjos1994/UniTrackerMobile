@@ -168,9 +168,6 @@ public final class ExportActivity extends AbstractActivity {
                 if (bugService != null && project != null) {
                     byte[] background = null, icon = null;
 
-                    if(this.chkShowBackground.isChecked()) {
-                        background = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ResourcesCompat.getDrawable(this.getResources(), R.drawable.background, this.getTheme())));
-                    }
                     if(this.chkShowIcon.isChecked()) {
                         icon = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon, this.getTheme())));
                     }

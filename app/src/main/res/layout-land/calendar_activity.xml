@@ -24,24 +24,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="de.domjos.unibuggermobile.activities.CalendarActivity"
     android:orientation="vertical"
-    android:weightSum="20"
-    android:background="@drawable/background">
+    android:weightSum="20">
 
     <de.domjos.unitrackerlibrary.custom.SplitPaneLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:orientation="horizontal"
-        app:splitterBackground="@color/divider">
+        app:orientation="horizontal">
         <de.domjos.unitrackerlibrary.custom.WidgetCalendar
             android:id="@+id/cvEventCalendar"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="15"
-            app:toolBarBackground="@android:color/transparent"
-            app:monthViewBackground="@android:color/transparent"
-            app:dayViewBackground="@android:color/transparent"
-            app:groupLabelWidth="25dp"
-            app:focusBackground="@color/colorPrimary"/>
+            app:groupLabelWidth="25dp"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,8 +44,7 @@
                 android:id="@+id/llToObject"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/background_controls_2">
+                android:orientation="vertical">
                 <TextView
                     android:id="@+id/lblCalendarTitle"
                     android:text="@string/calendar"
@@ -75,8 +68,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@android:color/background_light">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/lblCalendarState"
@@ -89,8 +81,7 @@
                 <ProgressBar
                     android:id="@+id/pbCalendar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@android:style/Widget.ProgressBar.Horizontal"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
     </de.domjos.unitrackerlibrary.custom.SplitPaneLayout>

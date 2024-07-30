@@ -18,12 +18,40 @@
 
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Base.Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="Theme.Material3.Dark">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorPrimaryContainer">@color/colorPrimary</item>
+        <item name="colorOnPrimaryContainer">@color/colorOnPrimary</item>
+        <item name="colorPrimaryInverse">@color/colorOnPrimary</item>
+
+        <item name="colorPrimarySurface">@color/colorSurface</item>
+        <item name="colorOnPrimarySurface">@color/colorOnSurface</item>
+
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorSecondaryContainer">@color/colorOnSecondary</item>
+        <item name="colorOnSecondaryContainer">@color/colorSecondary</item>
+
+        <item name="colorTertiary">@color/colorOnSecondary</item>
+        <item name="colorOnTertiary">@color/colorSecondaryVariant</item>
+        <item name="colorOnTertiaryContainer">@color/colorSecondaryVariant</item>
+        <item name="colorTertiaryContainer">@color/colorOnSecondary</item>
+
+        <item name="colorError">@color/colorError</item>
+        <item name="colorOnError">@color/colorOnError</item>
+        <item name="colorErrorContainer">@color/colorError</item>
+        <item name="colorOnErrorContainer">@color/colorOnError</item>
+
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="colorSurfaceVariant">@color/colorSurface</item>
+        <item name="colorOnSurfaceVariant">@color/colorOnSurface</item>
+        <item name="colorSurfaceInverse">@color/colorSurface</item>
+        <item name="colorOnSurfaceInverse">@color/colorOnSurface</item>
+        <item name="colorSurfaceContainer">@color/colorPrimary</item>
+        <item name="colorOutline">@color/colorSurface</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

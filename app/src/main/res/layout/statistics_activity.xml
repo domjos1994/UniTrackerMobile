@@ -23,8 +23,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="de.domjos.unibuggermobile.activities.StatisticsActivity"
-    android:background="@drawable/background">
+    tools:context="de.domjos.unibuggermobile.activities.StatisticsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -37,8 +36,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="20"
-            android:id="@+id/pnlControls"
-            android:background="@drawable/background_controls_2">
+            android:id="@+id/pnlControls">
 
             <TableRow>
                 <RadioGroup
@@ -72,8 +70,7 @@
             </TableRow>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider" />
+                android:layout_height="1dp" />
             <TableRow>
                 <TextView
                     android:layout_width="0dp"
@@ -81,7 +78,6 @@
                     android:layout_height="match_parent"
                     android:text="@string/settings_bug_tracker"
                     android:textSize="@dimen/header_text_size"
-                    android:textColor="@color/divider"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
@@ -94,8 +90,7 @@
             </TableRow>
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/divider" />
+                android:layout_height="1dp" />
             <TableRow>
                 <TextView
                     android:layout_width="0dp"
@@ -103,7 +98,6 @@
                     android:layout_height="match_parent"
                     android:text="@string/statistics_diagram"
                     android:textSize="@dimen/header_text_size"
-                    android:textColor="@color/divider"
                     android:textStyle="bold"
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
@@ -120,8 +114,7 @@
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/divider" />
+            android:layout_height="1dp" />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bcStatisticsBugsPerProject"
@@ -161,16 +154,13 @@
         <ProgressBar
             android:id="@+id/pbStatistics"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@android:style/Widget.ProgressBar.Horizontal" />
+            android:layout_height="wrap_content"/>
 
         <ImageButton
             android:id="@+id/cmdStatisticsSync"
             android:contentDescription="@string/local_sync"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/icon_local_sync"
-            android:background="@android:color/background_light"
-            style="?android:attr/buttonBarButtonStyle"/>
+            app:srcCompat="@drawable/icon_local_sync"/>
     </LinearLayout>
 </RelativeLayout>

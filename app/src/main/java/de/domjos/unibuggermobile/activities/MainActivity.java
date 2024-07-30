@@ -26,12 +26,9 @@ import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -50,6 +47,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
@@ -84,17 +83,18 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private ImageView ivMainCover;
-    private TextView lblMainCommand;
     private TextView lblAccountTitle;
-    private Spinner spMainAccounts, spMainFilters, spMainProjects;
+    private DropDown<String> spMainFilters;
+    private DropDown<Project<?>> spMainProjects;
+    private DropDown<String> spMainAccounts;
     private TableRow rowNoConnection;
     private SwipeRefreshDeleteList lvMainIssues;
     private LinearLayout pagination;
     private TextView lblItems;
     private ImageButton cmdPrevious, cmdNext;
-    private ArrayAdapter<String> accountList;
-    private ArrayAdapter<Project<?>> projectList;
-    private ArrayAdapter<String> filterAdapter;
+    private DropDownAdapter<String> accountList;
+    private DropDownAdapter<Project<?>> projectList;
+    private DropDownAdapter<String> filterAdapter;
     private IBugService<?> bugService;
     private IFunctionImplemented permissions;
     private Settings settings;
@@ -158,33 +158,34 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reloadAccounts.launch(intent);
         });
 
-        this.lblMainCommand.setOnClickListener(v -> {
-            Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
-            this.reloadAccounts.launch(intent);
-        });
+        this.spMainAccounts.setCustomIcon(
+                R.drawable.icon_accounts,
+                getString(R.string.accounts),
+                () -> {
+                    Intent intent = new Intent(this.getApplicationContext(), AccountActivity.class);
+                    this.reloadAccounts.launch(intent);
+                }
+        );
 
-        this.spMainAccounts.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Settings settings = MainActivity.GLOBALS.getSettings(getApplicationContext());
-                String item = accountList.getItem(position);
-                if (item != null) {
-                    if (!item.trim().isEmpty()) {
-                        Authentication authentication = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
-                        if (authentication != null) {
-                            Authentication selected = settings.getCurrentAuthentication();
-                            if (!selected.getTitle().equals(authentication.getTitle())) {
-                                settings.setCurrentProject("");
-                            }
-                            settings.setCurrentAuthentication(authentication);
+        this.spMainAccounts.setOnItemSelectedListener((position) -> {
+            Settings settings = MainActivity.GLOBALS.getSettings(getApplicationContext());
+            String item = accountList.getItem(position);
+            if (item != null) {
+                if (!item.trim().isEmpty()) {
+                    Authentication authentication = MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("title='" + item + "'").get(0);
+                    if (authentication != null) {
+                        Authentication selected = settings.getCurrentAuthentication();
+                        if (!selected.getTitle().equals(authentication.getTitle())) {
+                            settings.setCurrentProject("");
+                        }
+                        settings.setCurrentAuthentication(authentication);
 
-                            if (projectList.getCount() < spMainProjects.getSelectedItemPosition()) {
-                                spMainProjects.setSelection(0);
-                                Project<?> project = (Project<?>) spMainProjects.getSelectedItem();
+                        if (projectList.getCount() < position) {
+                            spMainProjects.setSelection(0);
+                            Project<?> project = spMainProjects.getSelectedItem();
+                            if(project != null) {
                                 settings.setCurrentProject(String.valueOf(project.getId()));
                             }
-                        } else {
-                            settings.setCurrentAuthentication(null);
                         }
                     } else {
                         settings.setCurrentAuthentication(null);
@@ -192,30 +193,21 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 } else {
                     settings.setCurrentAuthentication(null);
                 }
-
-                changeAuthentication();
-                fillFields();
-                reload();
+            } else {
+                settings.setCurrentAuthentication(null);
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            changeAuthentication();
+            fillFields();
+            reload();
         });
 
-        this.spMainProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Project<?> project = projectList.getItem(position);
-                if (project != null) {
-                    MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(String.valueOf(project.getId()));
-                    changePermissions();
-                    reload();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        this.spMainProjects.setOnItemSelectedListener((position) -> {
+            Project<?> project = projectList.getItem(position);
+            if (project != null) {
+                MainActivity.GLOBALS.getSettings(getApplicationContext()).setCurrentProject(String.valueOf(project.getId()));
+                changePermissions();
+                reload();
             }
         });
 
@@ -250,17 +242,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.reloadIssues.launch(intent);
         });
 
-        this.spMainFilters.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                settings.setCurrentFilter(IBugService.IssueFilter.valueOf(filterAdapter.getItem(position)));
-                page = 1;
-                reload();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+        this.spMainFilters.setOnItemSelectedListener((position) -> {
+            settings.setCurrentFilter(IBugService.IssueFilter.valueOf(filterAdapter.getItem(position)));
+            page = 1;
+            reload();
         });
 
         this.cmdSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -340,19 +325,17 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.cmdSearch = this.findViewById(R.id.cmdSearch);
 
             this.ivMainCover = this.navigationView.getHeaderView(0).findViewById(R.id.ivMainCover);
-            this.lblMainCommand = this.navigationView.getHeaderView(0).findViewById(R.id.lblMainCommand);
             this.lblAccountTitle = this.navigationView.getHeaderView(0).findViewById(R.id.lblAccountTitle);
 
             this.cmdIssuesAdd = this.findViewById(R.id.cmdIssueAdd);
             this.spMainAccounts = this.navigationView.getHeaderView(0).findViewById(R.id.spMainAccounts);
-            this.accountList = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+            this.accountList = new DropDownAdapter<>(this.getApplicationContext());
             this.spMainAccounts.setAdapter(this.accountList);
             this.accountList.notifyDataSetChanged();
 
             this.spMainProjects = this.findViewById(R.id.spMainProjects);
-            this.projectList = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+            this.projectList = new DropDownAdapter<>(this.getApplicationContext());
             this.spMainProjects.setAdapter(this.projectList);
-            this.projectList.notifyDataSetChanged();
 
             this.lvMainIssues = this.findViewById(R.id.lvMainIssues);
             this.lvMainIssues.setContextMenu(R.menu.context_main);
@@ -370,7 +353,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             });
 
             this.spMainFilters = this.findViewById(R.id.spMainFilters);
-            this.filterAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+            this.filterAdapter = new DropDownAdapter<>(this.getApplicationContext());
             this.spMainFilters.setAdapter(this.filterAdapter);
             this.filterAdapter.notifyDataSetChanged();
 
@@ -605,7 +588,7 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                             if (!id.equals("0")) {
                                 String filter = "";
                                 if (this.spMainFilters.getSelectedItem() != null) {
-                                    filter = this.spMainFilters.getSelectedItem().toString();
+                                    filter = this.spMainFilters.getSelectedItem();
                                 }
 
                                 IssueTask listIssueTask = new IssueTask(MainActivity.this, this.bugService, id, this.page, this.settings.getNumberOfItems(), filter, false, false, this.settings.showNotifications(), R.drawable.icon_issues);
@@ -808,7 +791,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             if (authentication.getServer().isEmpty()) {
                 ivMainCover.setImageDrawable(this.getDrawable());
                 lblAccountTitle.setText(R.string.accounts_noAccount);
-                lblMainCommand.setText(R.string.accounts_add);
             } else {
                 if (authentication.getCover() != null) {
                     ivMainCover.setImageBitmap(BitmapFactory.decodeByteArray(authentication.getCover(), 0, authentication.getCover().length));
@@ -830,13 +812,10 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     } catch (Exception ignored) {
                     }
                 }).start();
-
-                lblMainCommand.setText(R.string.accounts_change);
             }
         } else {
             ivMainCover.setImageDrawable(this.getDrawable());
             lblAccountTitle.setText(R.string.accounts_noAccount);
-            lblMainCommand.setText(R.string.accounts_add);
         }
     }
 

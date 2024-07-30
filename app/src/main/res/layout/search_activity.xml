@@ -23,8 +23,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="20"
-    tools:context=".activities.SearchActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.SearchActivity">
 
     <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
         android:id="@+id/lvSearchResults"
@@ -32,17 +31,12 @@
         android:layout_height="0dp"
         android:layout_weight="12"
         android:padding="5dp"
-        app:itemIcon="@drawable/icon_search"
-        app:listItemBackground="@drawable/background_controls_2"
-        app:selectedListItemBackground="@drawable/background_selected"
-        app:listItemDivider="@drawable/background_selected"
-        app:listItemForeground="@android:color/black"/>
+        app:itemIcon="@drawable/icon_search"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="8"
-        android:background="@drawable/background_controls_1"
         android:padding="5dp">
 
         <TableLayout
@@ -85,8 +79,7 @@
                     android:hint="@string/projects"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:inputType="textMultiLine"
-                    android:popupBackground="@color/colorAccent" />
+                    android:inputType="textMultiLine" />
             </TableRow>
 
             <TableRow>
@@ -96,14 +89,12 @@
                     android:hint="@string/versions"
                     android:layout_width="0dp"
                     android:layout_weight="10"
-                    android:inputType="textMultiLine"
-                    android:popupBackground="@color/colorAccent" />
+                    android:inputType="textMultiLine" />
             </TableRow>
         </TableLayout>
     </ScrollView>
 
     <TextView
-        android:background="@color/colorPrimaryDark"
         android:layout_weight="10"
         android:layout_width="match_parent"
         android:layout_height="1dp" />
@@ -113,7 +104,5 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         app:srcCompat="@drawable/icon_search"
-        android:contentDescription="@string/search"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle" />
+        android:contentDescription="@string/search" />
 </LinearLayout>

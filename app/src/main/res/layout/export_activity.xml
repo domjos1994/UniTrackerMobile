@@ -23,8 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.ExportActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.ExportActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -36,8 +35,7 @@
             android:id="@+id/tblControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="10"
-            android:background="@drawable/background_controls_2">
+            android:weightSum="10">
 
             <TableRow>
                 <TextView
@@ -51,7 +49,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -69,7 +66,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -87,7 +83,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -105,7 +100,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -123,7 +117,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -141,7 +134,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -159,7 +151,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -178,8 +169,7 @@
                     android:textSize="14sp"
                     android:hint="@string/export_path"
                     android:layout_margin="4dp"
-                    android:autofillHints="@string/export_path"
-                    tools:targetApi="o"/>
+                    android:autofillHints="@string/export_path"/>
 
                 <Spinner
                     android:id="@+id/spExportPath"
@@ -206,7 +196,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -244,8 +233,7 @@
                     android:textSize="14sp"
                     android:hint="@string/export_extended_xml_xslt"
                     android:layout_margin="4dp"
-                    android:autofillHints="@string/export_extended_xml_xslt"
-                    tools:targetApi="o"/>
+                    android:autofillHints="@string/export_extended_xml_xslt"/>
 
                 <ImageButton
                     android:id="@+id/cmdXSLTPath"
@@ -261,7 +249,6 @@
 
             <TableRow>
                 <TextView
-                    android:background="@color/divider"
                     android:layout_weight="10"
                     android:layout_width="0dp"
                     android:layout_height="1dp" />
@@ -283,8 +270,5 @@
         android:text="@string/export"
         android:layout_width="match_parent"
         android:layout_height="@dimen/min_height"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/divider"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarButtonStyle" />
+        android:layout_alignParentBottom="true" />
 </RelativeLayout>

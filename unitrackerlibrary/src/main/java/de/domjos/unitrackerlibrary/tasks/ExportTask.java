@@ -42,7 +42,7 @@ public final class ExportTask extends CustomProgressBarTask<Object, Void> {
     private String xslt;
     private TrackerXML.Type type;
     private final Object project_id;
-    private final byte[] array;
+    private byte[] array;
     private final byte[] icon;
     private final boolean changelog;
     private final WeakReference<ProgressBar> pb;
@@ -59,12 +59,11 @@ public final class ExportTask extends CustomProgressBarTask<Object, Void> {
         this.pb = new WeakReference<>(null);
     }
 
-    public ExportTask(Activity activity, IBugService bugService, Object project_id, String path, boolean showNotifications, int icon, byte[] array, byte[] appIcon, ProgressBar pb) {
+    public ExportTask(Activity activity, IBugService bugService, Object project_id, String path, boolean showNotifications, int icon, byte[] appIcon, ProgressBar pb) {
         super(activity, bugService, R.string.task_export_title, R.string.task_export_contet, showNotifications, icon, pb);
         this.changelog = true;
         this.path = path;
         this.project_id = project_id;
-        this.array = array;
         this.icon = appIcon;
         this.pb = new WeakReference<>(pb);
     }

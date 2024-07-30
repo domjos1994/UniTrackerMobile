@@ -22,8 +22,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AccountActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.AccountActivity">
 
     <LinearLayout
         android:id="@+id/tblSearch"
@@ -62,16 +61,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="5dp"
-            app:itemIcon="@drawable/icon_projects"
-            app:listItemBackground="@drawable/background_controls_2"
-            app:selectedListItemBackground="@drawable/background_selected"
-            app:listItemDivider="@drawable/background_selected"
-            app:listItemForeground="@android:color/black"/>
+            app:itemIcon="@drawable/icon_projects"/>
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/background_controls_1"
             android:padding="5dp">
 
             <TableLayout

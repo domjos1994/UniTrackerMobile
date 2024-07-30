@@ -19,7 +19,6 @@
 
 <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
     android:id="@+id/lvNews"
-    android:background="@drawable/background"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,9 +26,4 @@
     android:layout_height="match_parent"
     app:readOnly="true"
     app:itemIcon="@drawable/icon_issues"
-    app:listItemBackground="@drawable/background_controls_2"
-    app:selectedListItemBackground="@drawable/background_selected"
-    app:listItemDivider="@drawable/background_selected"
-    app:listItemForeground="@android:color/black"
-    app:listItemBackgroundStatePositive="@drawable/background_positive"
     tools:context=".activities.NewsActivity"/>

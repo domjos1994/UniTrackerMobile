@@ -128,15 +128,15 @@ public class SwipeRefreshDeleteList extends LinearLayout {
             }
 
             try {
-                this.color = a.getColor(R.styleable.SwipeRefreshDeleteList_listItemForeground, ContextCompat.getColor(this.context, android.R.color.white));
+                this.color = a.getColor(R.styleable.SwipeRefreshDeleteList_listItemForeground, ContextCompat.getColor(this.context, R.color.colorOnSurface));
             } catch (Exception ex) {
-                this.color = ContextCompat.getColor(this.context, android.R.color.white);
+                this.color = ContextCompat.getColor(this.context, R.color.colorOnSurface);
             }
 
             try {
-                this.iconColor = a.getColor(R.styleable.SwipeRefreshDeleteList_iconColor, ContextCompat.getColor(this.context, android.R.color.white));
+                this.iconColor = a.getColor(R.styleable.SwipeRefreshDeleteList_iconColor, ContextCompat.getColor(this.context, R.color.colorOnSurface));
             } catch (Exception ex) {
-                this.iconColor = ContextCompat.getColor(this.context, android.R.color.white);
+                this.iconColor = ContextCompat.getColor(this.context, R.color.colorOnSurface);
             }
         }
 

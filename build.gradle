@@ -18,7 +18,7 @@
 
 // app-versions
 ext.propVersion = 33
-ext.propVersionCode = "1.4.1"
+ext.propVersionCode = "2.0 Alpha.1"
 
 // java-level
 ext.propJavaVersion = "17"
@@ -30,7 +30,7 @@ ext.propMinVersion = 26
 // libraries
 ext.propAndPreferences = "1.2.1"
 ext.propAndAppCompat = "1.7.0"
-ext.propCustomWidgetsVersion = "3.5.1"
+ext.propMaterial = "1.12.0"
 
 buildscript {
     repositories {

@@ -16,14 +16,14 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.UserActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.UserActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -39,17 +39,12 @@
             android:layout_height="match_parent"
             android:layout_weight="10"
             android:padding="5dp"
-            app:itemIcon="@drawable/icon_custom_fields"
-            app:listItemBackground="@drawable/background_controls_2"
-            app:selectedListItemBackground="@drawable/background_selected"
-            app:listItemDivider="@drawable/background_selected"
-            app:listItemForeground="@android:color/black"/>
+            app:itemIcon="@drawable/icon_custom_fields"/>
 
         <ScrollView
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="10"
-            android:background="@drawable/background_controls_1"
             android:padding="5dp">
 
             <TableLayout

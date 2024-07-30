@@ -29,11 +29,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
         android:layout_above="@+id/tblIssuesRelations"
-        app:itemIcon="@drawable/icon_issues"
-        app:listItemBackground="@drawable/background_controls_2"
-        app:selectedListItemBackground="@drawable/background_selected"
-        app:listItemDivider="@drawable/background_selected"
-        app:listItemForeground="@android:color/black"/>
+        app:itemIcon="@drawable/icon_issues"/>
 
     <TableLayout
         android:id="@+id/tblIssuesRelations"

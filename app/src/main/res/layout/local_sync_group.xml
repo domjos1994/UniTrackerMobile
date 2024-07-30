@@ -24,6 +24,5 @@
     android:drawableEnd="@drawable/icon_issues"
     android:gravity="center_vertical"
     android:padding="10dp"
-    android:textColor="#000"
     android:textSize="14sp"
     android:textStyle="bold" />

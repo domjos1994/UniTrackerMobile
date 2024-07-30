@@ -16,7 +16,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -26,11 +27,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/ll"
-        app:itemIcon="@drawable/icon_issues_attachments"
-        app:listItemBackground="@drawable/background_controls_2"
-        app:selectedListItemBackground="@drawable/background_selected"
-        app:listItemDivider="@drawable/background_selected"
-        app:listItemForeground="@android:color/black"/>
+        app:itemIcon="@drawable/icon_issues_attachments"/>
 
     <LinearLayout
         android:id="@+id/ll"

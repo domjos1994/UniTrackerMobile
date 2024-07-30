@@ -20,16 +20,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AdministrationActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.AdministrationActivity">
 
     <TableLayout
         android:id="@+id/adminControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:weightSum="10"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/background_controls_2">
+        android:layout_alignParentTop="true">
 
         <TableRow>
             <TextView
@@ -44,7 +42,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -70,7 +67,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -90,7 +86,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -116,7 +111,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -136,7 +130,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -161,7 +154,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -186,7 +178,6 @@
         <TableRow>
 
             <TextView
-                android:background="@color/divider"
                 android:layout_weight="10"
                 android:layout_width="0dp"
                 android:layout_height="1dp" />
@@ -226,9 +217,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="10"
-        android:orientation="horizontal"
-        android:background="@android:color/background_light"
-        style="?android:attr/buttonBarStyle">
+        android:orientation="horizontal">
 
         <ProgressBar
             android:id="@+id/pbProcess"
@@ -236,8 +225,7 @@
             android:layout_weight="10"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:padding="2dp"
-            style="@android:style/Widget.ProgressBar.Horizontal"/>
+            android:padding="2dp"/>
 
         <TableRow>
             <Button
@@ -245,18 +233,14 @@
                 android:text="@string/administration_copy"
                 android:layout_weight="5"
                 android:layout_width="0dp"
-                android:textColor="@color/divider"
-                android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"/>
+                android:layout_height="wrap_content"/>
 
             <Button
                 android:id="@+id/cmdMove"
                 android:text="@string/administration_move"
                 android:layout_weight="5"
                 android:layout_width="0dp"
-                android:textColor="@color/divider"
-                android:layout_height="wrap_content"
-                style="?android:attr/buttonBarButtonStyle"/>
+                android:layout_height="wrap_content"/>
         </TableRow>
     </TableLayout>
 </RelativeLayout>

@@ -17,9 +17,20 @@
   -->
 
 <resources>
-    <color name="colorPrimary">#708090</color>
-    <color name="colorPrimaryDark">#ccc</color>
-    <color name="colorAccent">#808080</color>
+    <color name="colorPrimary">#405060</color>
+    <color name="colorOnPrimary">#ffffff</color>
 
-    <color name="divider">#000000</color>
+    <color name="colorPrimaryVariant">#242e38</color>
+    <color name="colorOnPrimaryVariant">#ffffff</color>
+    
+    <color name="colorSecondary">#c2c7cd</color>
+    <color name="colorOnSecondary">#000000</color>
+
+    <color name="colorSecondaryVariant">#d6d9dd</color>
+
+    <color name="colorError">#AA0000</color>
+    <color name="colorOnError">#ffffff</color>
+
+    <color name="colorSurface">#404a60</color>
+    <color name="colorOnSurface">#ffffff</color>
 </resources>

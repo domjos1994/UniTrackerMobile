@@ -16,7 +16,8 @@
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
@@ -34,11 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="10"
                 android:layout_height="250dp"
-                app:itemIcon="@drawable/icon_issues_notes"
-                app:listItemBackground="@drawable/background_controls_2"
-                app:selectedListItemBackground="@drawable/background_selected"
-                app:listItemDivider="@drawable/background_selected"
-                app:listItemForeground="@android:color/black"/>
+                app:itemIcon="@drawable/icon_issues_notes"/>
         </TableRow>
 
         <TableRow>

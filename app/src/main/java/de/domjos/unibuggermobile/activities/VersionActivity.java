@@ -31,13 +31,11 @@ import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -81,7 +79,6 @@ public final class VersionActivity extends AbstractActivity {
 
     private String filter;
 
-    private byte[] bg;
     private byte[] icon;
     private Activity act;
     private boolean notification;
@@ -95,7 +92,6 @@ public final class VersionActivity extends AbstractActivity {
         this.icon = Helper.getBytesFromIcon(this, R.drawable.icon);
         this.act = VersionActivity.this;
         this.notification = MainActivity.GLOBALS.getSettings(this.getApplicationContext()).showNotifications();
-        this.bg = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.background)));
 
         this.lvVersions.setOnDeleteListener(listObject -> {
             try {
@@ -130,7 +126,7 @@ public final class VersionActivity extends AbstractActivity {
                         Object pid = this.currentProject;
 
                         this.pbVersion.setVisibility(View.VISIBLE);
-                        ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, path.get(), this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
+                        ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, path.get(), this.notification, R.mipmap.ic_launcher_round, this.icon, this.pbVersion);
                         exportTask.after(o -> {
                             pbVersion.setVisibility(View.GONE);
                             Notifications.printMessage(VersionActivity.this, getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round);
@@ -385,7 +381,7 @@ public final class VersionActivity extends AbstractActivity {
                             Object pid = this.currentProject;
 
                             this.pbVersion.setVisibility(View.VISIBLE);
-                            ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.bg, this.icon, this.pbVersion);
+                            ExportTask exportTask = new ExportTask(this.act, this.bugService, pid, files[0], this.notification, R.mipmap.ic_launcher_round, this.icon, this.pbVersion);
                             exportTask.after(o -> {
                                 pbVersion.setVisibility(View.GONE);
                                 Notifications.printMessage(VersionActivity.this, getString(R.string.versions_menu_changelog_created), R.mipmap.ic_launcher_round);

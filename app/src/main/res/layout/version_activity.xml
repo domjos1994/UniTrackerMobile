@@ -24,8 +24,7 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.VersionActivity"
-    android:background="@drawable/background">
+    tools:context=".activities.VersionActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -64,19 +63,13 @@
             android:layout_height="0dp"
             android:layout_weight="12"
             android:padding="5dp"
-            app:itemIcon="@drawable/icon_versions"
-            app:listItemBackground="@drawable/background_controls_2"
-            app:selectedListItemBackground="@drawable/background_selected"
-            app:listItemDivider="@drawable/background_selected"
-            app:listItemForeground="@android:color/black"
-            app:listItemBackgroundStatePositive="@drawable/background_positive"/>
+            app:itemIcon="@drawable/icon_versions"/>
 
         <ScrollView
             android:id="@+id/viewControls"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"
-            android:background="@drawable/background_controls_1"
             android:padding="5dp">
 
             <TableLayout
@@ -88,8 +81,7 @@
                     android:id="@+id/pbVersion"
                     android:layout_height="wrap_content"
                     android:layout_width="0dp"
-                    android:layout_weight="10"
-                    style="@android:style/Widget.ProgressBar.Horizontal"/>
+                    android:layout_weight="10"/>
 
                 <TableRow>
 
@@ -150,7 +142,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="0dp"
         android:layout_marginEnd="0dp"
-        android:background="?android:attr/windowBackground"
         app:menu="@menu/nav_controls"
         android:layout_alignParentBottom="true" />
 

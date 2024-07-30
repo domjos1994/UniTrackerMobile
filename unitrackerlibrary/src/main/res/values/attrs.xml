@@ -56,4 +56,8 @@
         <attr format="integer" name="focusBackground"/>
         <attr format="dimension" name="groupLabelWidth"/>
     </declare-styleable>
+
+    <declare-styleable name="DropDown">
+        <attr name="dropdown_title" format="string"/>
+    </declare-styleable>
 </resources>
