@@ -22,10 +22,11 @@ import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -48,9 +49,9 @@ import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
 public final class SearchActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvSearchResults;
 
-    private ImageButton cmdSearch;
+    private MaterialButton cmdSearch;
     private EditText txtSearch;
-    private CheckBox chkSearchSummary, chkSearchDescription;
+    private MaterialSwitch chkSearchSummary, chkSearchDescription;
     private MultiAutoCompleteTextView txtSearchProjects, txtSearchVersions;
     private List<IBugService<?>> bugServices;
 

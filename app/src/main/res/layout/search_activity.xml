@@ -44,35 +44,45 @@
             android:layout_height="wrap_content"
             android:weightSum="10">
 
-            <TableRow>
-
-                <EditText
-                    android:id="@+id/txtSearch"
+            <TableRow
+                android:layout_margin="5dp">
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="10"
-                    android:autofillHints="@string/search"
-                    android:inputType="text"
-                    android:hint="@string/search_content"/>
+                    app:endIconMode="clear_text">
+                    <EditText
+                        android:id="@+id/txtSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:autofillHints="@string/search"
+                        android:inputType="text"
+                        android:hint="@string/search_content"/>
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_margin="5dp">
 
-                <CheckBox
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/chkSearchSummary"
                     android:text="@string/issues_general_summary"
                     android:layout_width="0dp"
                     android:layout_weight="5"
+                    android:layout_margin="5dp"
                     android:checked="true" />
 
-                <CheckBox
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/chkSearchDescription"
                     android:text="@string/general_description"
                     android:layout_width="0dp"
                     android:layout_weight="5"
+                    android:layout_margin="5dp"
                     android:checked="true" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_margin="5dp">
 
                 <MultiAutoCompleteTextView
                     android:id="@+id/txtSearchProjects"
@@ -82,7 +92,8 @@
                     android:inputType="textMultiLine" />
             </TableRow>
 
-            <TableRow>
+            <TableRow
+                android:layout_margin="5dp">
 
                 <MultiAutoCompleteTextView
                     android:id="@+id/txtSearchVersions"
@@ -99,10 +110,10 @@
         android:layout_width="match_parent"
         android:layout_height="1dp" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/cmdSearch"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        app:srcCompat="@drawable/icon_search"
-        android:contentDescription="@string/search" />
+        app:icon="@drawable/icon_search"
+        android:text="@string/search" />
 </LinearLayout>

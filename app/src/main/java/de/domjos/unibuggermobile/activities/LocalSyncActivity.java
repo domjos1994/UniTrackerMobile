@@ -21,21 +21,21 @@ package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.projects.Project;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
@@ -50,14 +50,16 @@ import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class LocalSyncActivity extends AbstractActivity {
     private ExpandableListView expLvLocalSync;
-    private Spinner spLocalSyncBugTracker, spLocalSyncProjects;
-    private ArrayAdapter<Authentication> bugTrackerArrayAdapter;
-    private ArrayAdapter<Project<?>> projectArrayAdapter;
+    private DropDown<Authentication> spLocalSyncBugTracker;
+    private DropDown<Project<?>> spLocalSyncProjects;
+    private DropDownAdapter<Authentication> bugTrackerArrayAdapter;
+    private DropDownAdapter<Project<?>> projectArrayAdapter;
     private Settings settings;
     private Activity activity;
 
     private EditText txtLocalSyncSearch;
-    private ImageButton cmdLocalSyncSearch, cmdSync;
+    private TextInputLayout tilLocalSyncSearch;
+    private ImageButton cmdSync;
     private ProgressBar pbProcess;
 
     public LocalSyncActivity() {
@@ -66,34 +68,17 @@ public final class LocalSyncActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.spLocalSyncBugTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    reloadProjects(position);
-                } catch (Exception ex) {
-                    Notifications.printException(LocalSyncActivity.this, ex, R.mipmap.ic_launcher_round);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        this.spLocalSyncBugTracker.setOnItemSelectedListener(position -> {
+            try {
+                reloadProjects(position);
+            } catch (Exception ex) {
+                Notifications.printException(LocalSyncActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
-        this.spLocalSyncProjects.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                reload();
-            }
+        this.spLocalSyncProjects.setOnItemSelectedListener(position -> reload());
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        this.cmdLocalSyncSearch.setOnClickListener(v -> {
+        this.tilLocalSyncSearch.setEndIconOnClickListener(v -> {
             String search = this.txtLocalSyncSearch.getText().toString().trim();
             if (!search.isEmpty()) {
                 this.reload(search);
@@ -109,22 +94,21 @@ public final class LocalSyncActivity extends AbstractActivity {
     protected void initControls() {
         this.activity = LocalSyncActivity.this;
         this.settings = MainActivity.GLOBALS.getSettings(this.activity);
-        int item = R.layout.spinner_item;
 
         this.spLocalSyncBugTracker = this.findViewById(R.id.spLocalSyncBugTracker);
-        this.bugTrackerArrayAdapter = new ArrayAdapter<>(this.activity, item, MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
+        this.bugTrackerArrayAdapter = new DropDownAdapter<>(this.activity, MainActivity.GLOBALS.getSqLiteGeneral().getAccounts(""));
         this.spLocalSyncBugTracker.setAdapter(this.bugTrackerArrayAdapter);
         this.bugTrackerArrayAdapter.notifyDataSetChanged();
 
         this.spLocalSyncProjects = this.findViewById(R.id.spLocalSyncProjects);
-        this.projectArrayAdapter = new ArrayAdapter<>(this.activity, item, new ArrayList<>());
+        this.projectArrayAdapter = new DropDownAdapter<>(this.activity, new ArrayList<>());
         this.spLocalSyncProjects.setAdapter(this.projectArrayAdapter);
         this.projectArrayAdapter.notifyDataSetChanged();
 
         this.expLvLocalSync = this.findViewById(R.id.expLvLocalSync);
 
         this.txtLocalSyncSearch = this.findViewById(R.id.txtLocalSyncSearch);
-        this.cmdLocalSyncSearch = this.findViewById(R.id.cmdLocalSyncSearch);
+        this.tilLocalSyncSearch = this.findViewById(R.id.tilLocalSync);
         this.cmdSync = this.findViewById(R.id.cmdSync);
         this.pbProcess = this.findViewById(R.id.pbProcess);
 

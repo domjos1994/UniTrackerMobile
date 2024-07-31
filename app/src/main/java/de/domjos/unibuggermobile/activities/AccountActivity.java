@@ -18,9 +18,6 @@
 
 package de.domjos.unibuggermobile.activities;
 
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.Editable;
@@ -28,22 +25,26 @@ import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TableRow;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.services.authentication.OAuthHelper;
@@ -55,22 +56,21 @@ import de.domjos.unibuggermobile.R;
 import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.IntentHelper;
 
 public final class AccountActivity extends AbstractActivity {
     private static Authentication authentication;
     private final static String ACCOUNTS = "accounts";
 
     private SwipeRefreshDeleteList lvAccounts;
-    private Spinner cmbAccountTracker, cmbAccountAuthentication;
-    private ArrayAdapter<Authentication.Tracker> trackerAdapter;
-    private ArrayAdapter<Authentication.Auth> authAdapter;
+    private DropDown<Authentication.Tracker> cmbAccountTracker;
+    private DropDown<Authentication.Auth> cmbAccountAuthentication;
+    private DropDownAdapter<Authentication.Tracker> trackerAdapter;
+    private DropDownAdapter<Authentication.Auth> authAdapter;
     private EditText txtAccountServer, txtAccountUserName, txtAccountPassword,
             txtAccountAPI, txtAccountImageURL, txtAccountDescription, txtAccountExtended;
-    private ImageView ivAccountServer;
+    private TextInputLayout tilAccountServer, cmdAccountImageGallery;
     private AutoCompleteTextView txtAccountTitle;
-    private CheckBox chkAccountGuest;
-    private ImageButton cmdAccountImageGallery;
+    private SwitchMaterial chkAccountGuest;
 
     private BottomNavigationView navigationView;
 
@@ -78,6 +78,21 @@ public final class AccountActivity extends AbstractActivity {
     private Validator accountValidator;
 
     private TableRow rowAuthentication;
+
+    private final ActivityResultLauncher<PickVisualMediaRequest> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.PickVisualMedia(),
+            uri -> {
+                try {
+                    if (uri != null) {
+                        final InputStream imageStream = AccountActivity.this.getContentResolver().openInputStream(uri);
+                        Drawable drawable = BitmapDrawable.createFromStream(imageStream, "Icon");
+                        this.cmdAccountImageGallery.setEndIconDrawable(drawable);
+                    }
+                } catch (Exception ex) {
+                    Notifications.printException(AccountActivity.this, ex, R.mipmap.ic_launcher_round);
+                }
+            }
+    );
 
     public AccountActivity() {
         super(R.layout.account_activity);
@@ -102,71 +117,70 @@ public final class AccountActivity extends AbstractActivity {
             manageControls(false, true, false);
         });
 
-        this.cmbAccountTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                resetFieldsOnChange();
+        this.cmbAccountTracker.setOnItemSelectedListener(position -> {
+            resetFieldsOnChange();
 
-                Authentication.Tracker item = trackerAdapter.getItem(position);
-                if (item != null) {
-                    fillAuthByTracker(item);
-                    switch (item) {
-                        case Local:
-                            txtAccountServer.setText(Authentication.Tracker.Local.name());
-                            break;
-                        case Github:
-                            txtAccountPassword.setVisibility(View.GONE);
-                            txtAccountAPI.setVisibility(View.GONE);
-                            txtAccountServer.setText(getString(R.string.accounts_github_server));
-                            txtAccountServer.setVisibility(View.GONE);
-                            ivAccountServer.setVisibility(View.GONE);
-                            txtAccountAPI.setHint(R.string.accounts_github_client_secret);
-                            break;
-                        case Bugzilla:
-                        case AzureDevOps:
-                            if (chkAccountGuest.isChecked()) {
-                                accountValidator.removeValidator(txtAccountAPI);
-                            } else {
-                                accountValidator.addEmptyValidator(txtAccountAPI);
-                            }
-                            break;
-                        case YouTrack:
-                            txtAccountExtended.setVisibility(View.VISIBLE);
-                            txtAccountExtended.setHint(R.string.accounts_youtrack_hub);
-                            if (chkAccountGuest.isChecked()) {
-                                accountValidator.removeValidator(txtAccountAPI);
-                            } else {
-                                accountValidator.addEmptyValidator(txtAccountAPI);
-                            }
-                            break;
-                        case PivotalTracker:
-                            txtAccountServer.setText(R.string.accounts_pivotal_server);
-                            if (chkAccountGuest.isChecked()) {
-                                accountValidator.removeValidator(txtAccountAPI);
-                            } else {
-                                accountValidator.addEmptyValidator(txtAccountAPI);
-                            }
-                            break;
-                        case OpenProject:
-                            String user = "apikey";
-                            txtAccountUserName.setText(user);
-                            txtAccountUserName.setHint(txtAccountAPI.getHint());
-                            txtAccountAPI.setVisibility(View.GONE);
+            Authentication.Tracker item = trackerAdapter.getItem(position);
+            if (item != null) {
+                fillAuthByTracker(item);
+                switch (item) {
+                    case Local:
+                        txtAccountServer.setText(Authentication.Tracker.Local.name());
+                        break;
+                    case Github:
+                        txtAccountPassword.setVisibility(View.GONE);
+                        txtAccountAPI.setVisibility(View.GONE);
+                        txtAccountServer.setText(getString(R.string.accounts_github_server));
+                        txtAccountServer.setVisibility(View.GONE);
+                        tilAccountServer.setVisibility(View.GONE);
+                        txtAccountAPI.setHint(R.string.accounts_github_client_secret);
+                        break;
+                    case Bugzilla:
+                    case AzureDevOps:
+                        if (chkAccountGuest.isChecked()) {
                             accountValidator.removeValidator(txtAccountAPI);
-                            break;
-                        default:
+                        } else {
+                            accountValidator.addEmptyValidator(txtAccountAPI);
+                        }
+                        break;
+                    case YouTrack:
+                        txtAccountExtended.setVisibility(View.VISIBLE);
+                        txtAccountExtended.setHint(R.string.accounts_youtrack_hub);
+                        if (chkAccountGuest.isChecked()) {
                             accountValidator.removeValidator(txtAccountAPI);
-                            break;
-                    }
+                        } else {
+                            accountValidator.addEmptyValidator(txtAccountAPI);
+                        }
+                        break;
+                    case PivotalTracker:
+                        txtAccountServer.setText(R.string.accounts_pivotal_server);
+                        if (chkAccountGuest.isChecked()) {
+                            accountValidator.removeValidator(txtAccountAPI);
+                        } else {
+                            accountValidator.addEmptyValidator(txtAccountAPI);
+                        }
+                        break;
+                    case OpenProject:
+                        String user = "apikey";
+                        txtAccountUserName.setText(user);
+                        txtAccountUserName.setHint(txtAccountAPI.getHint());
+                        txtAccountAPI.setVisibility(View.GONE);
+                        accountValidator.removeValidator(txtAccountAPI);
+                        break;
+                    default:
+                        accountValidator.removeValidator(txtAccountAPI);
+                        break;
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
             }
         });
 
-        this.cmdAccountImageGallery.setOnClickListener(v -> IntentHelper.openGalleryIntent(AccountActivity.this));
+        this.cmdAccountImageGallery.setEndIconOnClickListener(v ->
+            galleryLauncher.launch(
+                new PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                        .build()
+            )
+        );
 
         this.txtAccountServer.addTextChangedListener(new TextWatcher() {
             @Override
@@ -177,9 +191,9 @@ public final class AccountActivity extends AbstractActivity {
             @Override
             public void afterTextChanged(Editable editable) {
                 if(editable.toString().trim().equals(Authentication.Tracker.Local.name()) || editable.toString().trim().startsWith("https://")) {
-                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_close));
+                    tilAccountServer.setEndIconDrawable(R.drawable.icon_lock_close);
                 } else {
-                    ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.icon_lock_open));
+                    tilAccountServer.setEndIconDrawable(R.drawable.icon_lock_open);
                 }
             }
         });
@@ -196,7 +210,7 @@ public final class AccountActivity extends AbstractActivity {
                     try {
                         Drawable drawable = ConvertHelper.convertStringToImage(s.toString());
                         if (drawable != null) {
-                            runOnUiThread(() -> cmdAccountImageGallery.setImageDrawable(drawable));
+                            runOnUiThread(() -> cmdAccountImageGallery.setEndIconDrawable(drawable));
                         }
                     } catch (Exception ignored) {
                     }
@@ -252,17 +266,6 @@ public final class AccountActivity extends AbstractActivity {
             }
             return false;
         });
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        try {
-            Bitmap bitmap = IntentHelper.getImageFromGallery(requestCode, resultCode, data, this.getApplicationContext());
-            this.cmdAccountImageGallery.setImageBitmap(bitmap);
-        } catch (Exception ex) {
-            Notifications.printException(AccountActivity.this, ex, R.mipmap.ic_launcher_round);
-        }
     }
 
     @Override
@@ -354,12 +357,12 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts = this.findViewById(R.id.lvAccounts);
 
         this.cmbAccountTracker = this.findViewById(R.id.cmbAccountTracker);
-        this.trackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.trackerAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.cmbAccountTracker.setAdapter(this.trackerAdapter);
         this.trackerAdapter.notifyDataSetChanged();
 
         this.cmbAccountAuthentication = this.findViewById(R.id.cmbAccountAuthentication);
-        this.authAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.authAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.cmbAccountAuthentication.setAdapter(this.authAdapter);
         this.authAdapter.notifyDataSetChanged();
         this.rowAuthentication = this.findViewById(R.id.rowAuthentication);
@@ -369,7 +372,7 @@ public final class AccountActivity extends AbstractActivity {
         List<Authentication.Tracker> ls = Arrays.asList(Authentication.Tracker.values());
         this.txtAccountTitle.setAdapter(new ArrayAdapter<>(this.getApplicationContext(), android.R.layout.simple_dropdown_item_1line, ls));
         this.txtAccountServer = this.findViewById(R.id.txtAccountServer);
-        this.ivAccountServer = this.findViewById(R.id.ivAccountServer);
+        this.tilAccountServer = this.findViewById(R.id.tilAccountServer);
         this.txtAccountUserName = this.findViewById(R.id.txtAccountUserName);
         this.txtAccountPassword = this.findViewById(R.id.txtAccountPassword);
         this.txtAccountAPI = this.findViewById(R.id.txtAccountAPI);
@@ -432,7 +435,6 @@ public final class AccountActivity extends AbstractActivity {
         this.lvAccounts.setEnabled(!editMode);
         this.txtAccountTitle.setEnabled(editMode);
         this.txtAccountServer.setEnabled(editMode);
-        this.ivAccountServer.setEnabled(editMode);
         this.txtAccountUserName.setEnabled(editMode);
         this.txtAccountPassword.setEnabled(editMode);
         this.txtAccountAPI.setEnabled(editMode);
@@ -453,35 +455,39 @@ public final class AccountActivity extends AbstractActivity {
     }
 
     private void objectToControls() {
-        if (this.currentAccount != null) {
-            this.txtAccountTitle.setText(this.currentAccount.getTitle());
-            this.txtAccountServer.setText(this.currentAccount.getServer());
-            this.txtAccountUserName.setText(this.currentAccount.getUserName());
-            this.txtAccountPassword.setText(this.currentAccount.getPassword());
-            this.txtAccountAPI.setText(this.currentAccount.getAPIKey());
-            this.txtAccountDescription.setText(this.currentAccount.getDescription());
-            this.chkAccountGuest.setChecked(this.currentAccount.isGuest());
-            if (this.currentAccount.getTracker() != null) {
-                this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(this.currentAccount.getTracker()));
-            } else {
-                this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(Authentication.Tracker.Local));
-                this.txtAccountServer.setText(Authentication.Tracker.Local.name());
-            }
-            if (this.currentAccount.getAuthentication() !=null) {
-                this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(this.currentAccount.getAuthentication()));
-            } else {
-                this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(Authentication.Auth.Basic));
-            }
-            if (this.currentAccount.getCover() != null) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(this.currentAccount.getCover(), 0, this.currentAccount.getCover().length);
-                this.cmdAccountImageGallery.setImageBitmap(bitmap);
-            } else {
-                this.cmdAccountImageGallery.setImageDrawable(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon_accounts, this.getTheme()));
-            }
+        try {
+            if (this.currentAccount != null) {
+                this.txtAccountTitle.setText(this.currentAccount.getTitle());
+                this.txtAccountServer.setText(this.currentAccount.getServer());
+                this.txtAccountUserName.setText(this.currentAccount.getUserName());
+                this.txtAccountPassword.setText(this.currentAccount.getPassword());
+                this.txtAccountAPI.setText(this.currentAccount.getAPIKey());
+                this.txtAccountDescription.setText(this.currentAccount.getDescription());
+                this.chkAccountGuest.setChecked(this.currentAccount.isGuest());
+                if (this.currentAccount.getTracker() != null) {
+                    this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(this.currentAccount.getTracker()));
+                } else {
+                    this.cmbAccountTracker.setSelection(this.trackerAdapter.getPosition(Authentication.Tracker.Local));
+                    this.txtAccountServer.setText(Authentication.Tracker.Local.name());
+                }
+                if (this.currentAccount.getAuthentication() !=null) {
+                    this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(this.currentAccount.getAuthentication()));
+                } else {
+                    this.cmbAccountAuthentication.setSelection(this.authAdapter.getPosition(Authentication.Auth.Basic));
+                }
+                if (this.currentAccount.getCover() != null) {
+                    Drawable drawable = ConvertHelper.convertByteArrayToDrawable(this.currentAccount.getCover());
+                    this.cmdAccountImageGallery.setEndIconDrawable(drawable);
+                } else {
+                    this.cmdAccountImageGallery.setEndIconDrawable(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon_accounts, this.getTheme()));
+                }
 
-            if(this.currentAccount.getTracker() == Authentication.Tracker.YouTrack) {
-                this.txtAccountExtended.setText(this.currentAccount.getHints().get("hub"));
+                if(this.currentAccount.getTracker() == Authentication.Tracker.YouTrack) {
+                    this.txtAccountExtended.setText(this.currentAccount.getHints().get("hub"));
+                }
             }
+        } catch (Exception ex) {
+            Notifications.printException(this, ex, R.mipmap.ic_launcher_round);
         }
     }
 
@@ -500,8 +506,8 @@ public final class AccountActivity extends AbstractActivity {
             this.currentAccount.setGuest(this.chkAccountGuest.isChecked());
             //this.currentAccount.setAuthentication(this.authAdapter.getItem(this.cmbAccountAuthentication.getSelectedItemPosition()));
             try {
-                if (this.cmdAccountImageGallery.getDrawable() instanceof BitmapDrawable) {
-                    this.currentAccount.setCover(ConvertHelper.convertDrawableToByteArray(this.cmdAccountImageGallery.getDrawable()));
+                if (this.cmdAccountImageGallery.getEndIconDrawable() instanceof BitmapDrawable) {
+                    this.currentAccount.setCover(ConvertHelper.convertDrawableToByteArray(this.cmdAccountImageGallery.getEndIconDrawable()));
                 } else {
                     this.currentAccount.setCover(null);
                 }
@@ -519,8 +525,8 @@ public final class AccountActivity extends AbstractActivity {
         // reset server
         this.txtAccountServer.setVisibility(View.VISIBLE);
         this.txtAccountServer.setText("");
-        this.ivAccountServer.setVisibility(View.VISIBLE);
-        this.ivAccountServer.setImageBitmap(BitmapFactory.decodeResource(this.getResources(), R.drawable.icon_lock_open));
+        this.tilAccountServer.setVisibility(View.VISIBLE);
+        this.tilAccountServer.setEndIconDrawable(R.drawable.icon_lock_open);
 
         // reset user
         this.txtAccountUserName.setHint(R.string.accounts_user);

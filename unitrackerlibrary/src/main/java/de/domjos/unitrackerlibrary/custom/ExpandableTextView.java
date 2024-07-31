@@ -20,17 +20,11 @@ package de.domjos.unitrackerlibrary.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Typeface;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
-
-import static android.view.Gravity.CENTER;
-
-import androidx.core.content.ContextCompat;
 
 import de.domjos.unitrackerlibrary.R;
 
@@ -47,23 +41,20 @@ public class ExpandableTextView extends LinearLayout {
 
     public ExpandableTextView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
+
         this.context = context;
         this.attributeSet = attributeSet;
 
-        this.setOrientation(LinearLayout.VERTICAL);
-        this.setWeightSum(10f);
+        this.addControls();
+    }
+
+    public ExpandableTextView(Context context, AttributeSet attributeSet, int defStyleAttr) {
+        super(context, attributeSet, defStyleAttr);
+
+        this.context = context;
+        this.attributeSet = attributeSet;
 
         this.addControls();
-
-        this.setOnClickListener(v -> {
-            if (this.content.getVisibility() == GONE) {
-                this.content.setVisibility(VISIBLE);
-                this.imageView.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_expand_less));
-            } else {
-                this.content.setVisibility(GONE);
-                this.imageView.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_expand_more));
-            }
-        });
     }
 
     public String getTitle() {
@@ -87,50 +78,12 @@ public class ExpandableTextView extends LinearLayout {
     }
 
     private void addControls() {
-        LinearLayout linearContent = new LinearLayout(this.context);
-        linearContent.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        linearContent.setOrientation(HORIZONTAL);
-        linearContent.setWeightSum(10f);
+        View view = inflate(this.context, R.layout.help_card, this);
+        this.header = view.findViewById(R.id.lblHeader);
+        this.content = view.findViewById(R.id.lblContent);
 
-        this.imageView = new ImageView(this.context);
-        LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 2);
-        layoutParams.gravity = CENTER;
-        this.imageView.setLayoutParams(layoutParams);
-        this.imageView.setImageDrawable(ContextCompat.getDrawable(this.context, R.drawable.ic_expand_more));
-        linearContent.addView(this.imageView);
-
-        LinearLayout linearLayout = new LinearLayout(this.context);
-        linearLayout.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 8));
-        linearLayout.setOrientation(VERTICAL);
-
-        this.header = new TextView(this.context);
-        layoutParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.setMargins(3, 3, 3, 3);
-        this.header.setLayoutParams(layoutParams);
-        this.header.setTextSize(16);
-        this.header.setTypeface(null, Typeface.BOLD);
-        this.header.setPadding(3, 3, 3, 3);
         this.header.setText(this.getContentFromAttr(R.styleable.ExpandableTextView_title));
-        this.header.setGravity(CENTER);
-        linearLayout.addView(this.header);
-
-
-        this.content = new TextView(this.context);
-        this.content.setLayoutParams(layoutParams);
-        this.content.setTextSize(14);
-        this.content.setTypeface(null, Typeface.NORMAL);
-        this.content.setPadding(3, 3, 3, 3);
-        this.content.setVisibility(GONE);
         this.content.setText(this.getContentFromAttr(R.styleable.ExpandableTextView_text));
-        linearLayout.addView(this.content);
-
-        linearContent.addView(linearLayout);
-        this.addView(linearContent);
-
-        LinearLayout splitter = new LinearLayout(this.context);
-        splitter.setLayoutParams(new TableLayout.LayoutParams(LayoutParams.MATCH_PARENT, 1, 10f));
-        splitter.setBackgroundColor(ContextCompat.getColor(this.context, android.R.color.darker_gray));
-        this.addView(splitter);
     }
 
 

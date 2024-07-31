@@ -59,5 +59,10 @@
 
     <declare-styleable name="DropDown">
         <attr name="dropdown_title" format="string"/>
+        <attr name="android:entries"/>
+    </declare-styleable>
+
+    <declare-styleable name="DatePickerField">
+        <attr name="android:hint"/>
     </declare-styleable>
 </resources>

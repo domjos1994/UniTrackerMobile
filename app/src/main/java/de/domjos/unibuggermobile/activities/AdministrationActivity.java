@@ -25,13 +25,12 @@ import android.content.Context;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -40,6 +39,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.Administration;
@@ -58,13 +59,16 @@ import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class AdministrationActivity extends AbstractActivity {
-    private Button cmdCopy, cmdMove;
-    private Spinner spBugTracker1, spBugTracker2, spProject1, spProject2, spData1, spDataItem1;
-    private ArrayAdapter<Authentication> bugTrackerAdapter1, bugTrackerAdapter2;
-    private ArrayAdapter<Project<?>> projectAdapter1, projectAdapter2;
-    private ArrayAdapter<DescriptionObject<?>> dataItemAdapter1;
-    private ArrayAdapter<String> dataAdapter1;
-    private CheckBox chkWithIssues, chkAddToProject;
+    private MaterialButton cmdCopy, cmdMove;
+    private DropDown<Authentication> spBugTracker1, spBugTracker2;
+    private DropDown<Project<?>> spProject1, spProject2;
+    private DropDown<String> spData1;
+    private DropDown<DescriptionObject<?>> spDataItem1;
+    private DropDownAdapter<Authentication> bugTrackerAdapter1, bugTrackerAdapter2;
+    private DropDownAdapter<Project<?>> projectAdapter1, projectAdapter2;
+    private DropDownAdapter<DescriptionObject<?>> dataItemAdapter1;
+    private DropDownAdapter<String> dataAdapter1;
+    private MaterialSwitch chkWithIssues, chkAddToProject;
     private IBugService<?> bugService1, bugService2;
     private ProgressBar pbProcess;
 
@@ -81,78 +85,53 @@ public final class AdministrationActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.spBugTracker1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    projectAdapter1.clear();
-                    Authentication authentication = bugTrackerAdapter1.getItem(position);
-                    bugService1 = Helper.getCurrentBugService(authentication, ctx);
+        this.spBugTracker1.setOnItemSelectedListener((position) -> {
+            try {
+                projectAdapter1.clear();
+                Authentication authentication = bugTrackerAdapter1.getItem(position);
+                bugService1 = Helper.getCurrentBugService(authentication, ctx);
 
-                    boolean showData = false;
-                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications(), R.drawable.icon_projects);
-                    for (Project<?> object : projectTask.execute(0L).get()) {
-                        projectAdapter1.add(object);
-                        showData = true;
-                    }
-
-                    if (showData) {
-                        dataAdapter1.clear();
-                        dataAdapter1.addAll(Arrays.asList(getResources().getStringArray(R.array.administration_data)));
-                    }
-                    checkPermissions();
-                } catch (Exception ex) {
-                    Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
+                boolean showData = false;
+                ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService1, false, settings.showNotifications(), R.drawable.icon_projects);
+                for (Project<?> object : projectTask.execute(0L).get()) {
+                    projectAdapter1.add(object);
+                    showData = true;
                 }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
 
-        this.spBugTracker2.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    projectAdapter2.clear();
-                    Authentication authentication = bugTrackerAdapter2.getItem(position);
-                    bugService2 = Helper.getCurrentBugService(authentication, ctx);
-
-                    ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications(), R.drawable.icon_projects);
-                    for (Project<?> object : projectTask.execute(0L).get()) {
-                        projectAdapter2.add(object);
-                    }
-                    checkPermissions();
-                } catch (Exception ex) {
-                    Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
+                if (showData) {
+                    dataAdapter1.clear();
+                    dataAdapter1.addAll(Arrays.asList(getResources().getStringArray(R.array.administration_data)));
                 }
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                checkPermissions();
+            } catch (Exception ex) {
+                Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
-        this.spProject1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                reloadData1(spData1.getSelectedItemPosition(), position);
+        this.spBugTracker2.setOnItemSelectedListener((position) -> {
+            try {
+                projectAdapter2.clear();
+                Authentication authentication = bugTrackerAdapter2.getItem(position);
+                bugService2 = Helper.getCurrentBugService(authentication, ctx);
+
+                ProjectTask projectTask = new ProjectTask(AdministrationActivity.this, bugService2, false, settings.showNotifications(), R.drawable.icon_projects);
+                for (Project<?> object : projectTask.execute(0L).get()) {
+                    projectAdapter2.add(object);
+                }
                 checkPermissions();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+            } catch (Exception ex) {
+                Notifications.printException(AdministrationActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
-        this.spData1.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                reloadData1(position, spProject1.getSelectedItemPosition());
-                checkPermissions();
-            }
+        this.spProject1.setOnItemSelectedListener((position) -> {
+            reloadData1(spData1.getSelectedItemPosition(), position);
+            checkPermissions();
+        });
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+        this.spData1.setOnItemSelectedListener((position) -> {
+            reloadData1(position, spProject1.getSelectedItemPosition());
+            checkPermissions();
         });
 
         this.chkWithIssues.setOnCheckedChangeListener((buttonView, isChecked) -> checkPermissions());
@@ -409,7 +388,6 @@ public final class AdministrationActivity extends AbstractActivity {
     }
     @Override
     protected void initControls() {
-        int spinner = R.layout.spinner_item;
         this.ctx = this.getApplicationContext();
         this.settings = MainActivity.GLOBALS.getSettings(this.ctx);
         this.cmdCopy = this.findViewById(R.id.cmdCopy);
@@ -417,31 +395,31 @@ public final class AdministrationActivity extends AbstractActivity {
         this.pbProcess = this.findViewById(R.id.pbProcess);
 
         this.spBugTracker1 = this.findViewById(R.id.spBugTracker1);
-        this.bugTrackerAdapter1 = new ArrayAdapter<>(ctx, spinner);
+        this.bugTrackerAdapter1 = new DropDownAdapter<>(ctx);
         this.spBugTracker1.setAdapter(this.bugTrackerAdapter1);
         this.bugTrackerAdapter1.notifyDataSetChanged();
         this.spBugTracker2 = this.findViewById(R.id.spBugTracker2);
-        this.bugTrackerAdapter2 = new ArrayAdapter<>(ctx, spinner);
+        this.bugTrackerAdapter2 = new DropDownAdapter<>(ctx);
         this.spBugTracker2.setAdapter(this.bugTrackerAdapter2);
         this.bugTrackerAdapter2.notifyDataSetChanged();
         this.reloadAuthentications();
 
         this.spProject1 = this.findViewById(R.id.spProject1);
-        this.projectAdapter1 = new ArrayAdapter<>(ctx, spinner);
+        this.projectAdapter1 = new DropDownAdapter<>(ctx);
         this.spProject1.setAdapter(this.projectAdapter1);
         this.projectAdapter1.notifyDataSetChanged();
         this.spProject2 = this.findViewById(R.id.spProject2);
-        this.projectAdapter2 = new ArrayAdapter<>(ctx, spinner);
+        this.projectAdapter2 = new DropDownAdapter<>(ctx);
         this.spProject2.setAdapter(this.projectAdapter2);
         this.projectAdapter2.notifyDataSetChanged();
 
         this.spData1 = this.findViewById(R.id.spData1);
-        this.dataAdapter1 = new ArrayAdapter<>(ctx, spinner);
+        this.dataAdapter1 = new DropDownAdapter<>(ctx);
         this.spData1.setAdapter(this.dataAdapter1);
         this.dataAdapter1.notifyDataSetChanged();
 
         this.spDataItem1 = this.findViewById(R.id.spDataItem1);
-        this.dataItemAdapter1 = new ArrayAdapter<>(ctx, spinner);
+        this.dataItemAdapter1 = new DropDownAdapter<>(ctx);
         this.spDataItem1.setAdapter(this.dataItemAdapter1);
         this.dataItemAdapter1.notifyDataSetChanged();
 

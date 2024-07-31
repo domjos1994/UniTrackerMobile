@@ -24,36 +24,30 @@
     android:layout_height="match_parent"
     tools:context=".activities.AccountActivity">
 
-    <LinearLayout
-        android:id="@+id/tblSearch"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilSearch"
         android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="10">
+        android:layout_height="60dp"
+        android:padding="5dp"
+        app:endIconMode="custom"
+        app:endIconContentDescription="@string/projects_user"
+        app:endIconDrawable="@drawable/icon_search"
+        app:endIconScaleType="fitEnd"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <EditText
             android:id="@+id/txtSearch"
             android:hint="@string/projects_user"
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="9"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
             android:autofillHints="@string/projects_user"
             android:inputType="text" />
-
-        <ImageButton
-            android:id="@+id/cmdSearch"
-            android:contentDescription="@string/projects_user"
-            android:layout_height="48dp"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:background="@null"
-            app:srcCompat="@drawable/icon_search"/>
-    </LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <de.domjos.unitrackerlibrary.custom.SplitPaneLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/tblSearch"
+        android:layout_below="@+id/tilSearch"
         android:layout_above="@+id/nav_view">
 
         <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
@@ -73,75 +67,97 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10">
 
-                <TableRow>
-                    <EditText
-                        android:id="@+id/txtProjectTitle"
-                        android:inputType="text"
-                        android:hint="@string/general_title"
+                <TableRow
+                    android:layout_margin="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtProjectTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="text"
+                            android:hint="@string/general_title"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectAlias">
-                    <EditText
-                        android:id="@+id/txtProjectAlias"
-                        android:inputType="text"
-                        android:hint="@string/projects_alias"
+                <TableRow
+                    android:id="@+id/rowProjectAlias"
+                    android:layout_margin="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtProjectAlias"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="text"
+                            android:hint="@string/projects_alias"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectEnabled">
-                    <CheckBox
+                <TableRow
+                    android:layout_margin="5dp">
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/chkProjectEnabled"
                         android:text="@string/general_enabled"
-                        android:layout_weight="10"
+                        android:padding="5dp"
+                        android:layout_weight="5"
                         android:layout_width="0dp" />
-                </TableRow>
-
-                <TableRow android:id="@+id/rowProjectPrivate">
-                    <CheckBox
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/chkProjectPrivate"
                         android:text="@string/projects_private"
-                        android:layout_weight="10"
+                        android:padding="5dp"
+                        android:layout_weight="5"
                         android:layout_width="0dp" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectState">
+                <TableRow
+                    android:id="@+id/rowProjectState"
+                    android:layout_margin="5dp">
 
                     <TextView
                         android:text="@string/projects_state"
                         android:layout_width="0dp"
                         android:layout_weight="3" />
 
-                    <Spinner
+                    <de.domjos.unitrackerlibrary.custom.DropDown
                         android:id="@+id/spProjectsState"
                         android:layout_width="0dp"
-                        android:layout_weight="7" />
+                        android:layout_weight="7"
+                        app:dropdown_title="@string/projects_state" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectWebsite">
-
-                    <EditText
-                        android:id="@+id/txtProjectWebsite"
-                        android:inputType="textUri"
-                        android:hint="@string/projects_website"
-                        android:layout_weight="9"
+                <TableRow
+                    android:id="@+id/rowProjectWebsite"
+                    android:layout_margin="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilProjectWebsite"
+                        android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
-
-                    <ImageButton
-                        android:id="@+id/cmdProjectWebsite"
-                        app:srcCompat="@drawable/icon_open_in_browser"
-                        android:contentDescription="@string/projects_website"
-                        android:layout_weight="1"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        app:endIconMode="custom"
+                        app:endIconDrawable="@drawable/icon_open_in_browser"
+                        app:endIconContentDescription="@string/projects_website_content">
+                        <EditText
+                            android:id="@+id/txtProjectWebsite"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="text"
+                            android:hint="@string/projects_website"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow android:id="@+id/rowSubProjects">
+                <TableRow
+                    android:id="@+id/rowSubProjects"
+                    android:layout_margin="5dp">
 
                     <MultiAutoCompleteTextView
                         android:id="@+id/txtSubProjects"
@@ -151,7 +167,9 @@
                         android:inputType="textAutoComplete" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rowTimestamps">
+                <TableRow
+                    android:id="@+id/rowTimestamps">
+                    android:layout_margin="5dp"
 
                     <TextView
                         android:id="@+id/lblCreatedAt"
@@ -164,37 +182,61 @@
                         android:layout_weight="5" />
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectIcon">
+                <TableRow
+                    android:id="@+id/rowProjectIcon"
+                    android:layout_margin="5dp">
 
-                    <EditText
-                        android:id="@+id/txtProjectIcon"
-                        android:inputType="textUri"
-                        android:hint="@string/projects_icon_url"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtProjectIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="textUri"
+                            android:hint="@string/projects_icon_url"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow android:id="@+id/rowProjectVersion">
+                <TableRow
+                    android:id="@+id/rowProjectVersion"
+                    android:layout_margin="5dp">
 
-                    <EditText
-                        android:id="@+id/txtProjectVersion"
-                        android:inputType="textUri"
-                        android:hint="@string/projects_version"
-                        android:text="@string/projects_version_default"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtProjectVersion"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="text"
+                            android:hint="@string/projects_version"
+                            android:text="@string/projects_version_default"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
-                    <EditText
-                        android:id="@+id/txtProjectDescription"
-                        android:inputType="textMultiLine"
-                        android:hint="@string/general_description"
+                <TableRow
+                    android:layout_margin="5dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_weight="10"
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtProjectDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:inputType="textMultiLine"
+                            android:hint="@string/general_description"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
             </TableLayout>
         </ScrollView>

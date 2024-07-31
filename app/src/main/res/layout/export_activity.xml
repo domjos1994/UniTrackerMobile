@@ -47,15 +47,12 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spBugTracker"
                     android:contentDescription="@string/administration_bugTracker"
                     android:layout_weight="10"
@@ -64,12 +61,9 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
                 <TextView
@@ -81,15 +75,12 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spProjects"
                     android:contentDescription="@string/projects"
                     android:layout_weight="5"
@@ -98,12 +89,9 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
                 <TextView
@@ -115,15 +103,12 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spData"
                     android:contentDescription="@string/administration_data"
                     android:layout_weight="10"
@@ -132,12 +117,9 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
                 <TextView
@@ -149,18 +131,15 @@
                     android:layout_margin="4dp" />
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow>
                 <TextView
                     android:id="@+id/txtExportPath"
                     android:inputType="none"
-                    android:layout_weight="6"
+                    android:layout_weight="4"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
                     android:layout_gravity="center_vertical"
@@ -171,21 +150,21 @@
                     android:layout_margin="4dp"
                     android:autofillHints="@string/export_path"/>
 
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spExportPath"
                     android:entries="@array/export_path_extensions"
                     android:contentDescription="@string/export_path"
-                    android:layout_weight="3"
+                    android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
                     android:gravity="center_vertical"
                     android:layout_gravity="center"
                     android:foregroundGravity="center"/>
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdExportPath"
                     android:contentDescription="@string/export"
-                    app:srcCompat="@drawable/icon_search"
+                    app:icon="@drawable/icon_search"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
@@ -194,23 +173,20 @@
                     android:foregroundGravity="center"/>
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow
                 android:tag="pdf"
                 android:visibility="gone">
-                <CheckBox
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/chkShowBackground"
                     android:checked="true"
                     android:text="@string/export_extended_pdf_background"
                     android:layout_width="0dp"
                     android:layout_weight="5"/>
-                <CheckBox
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/chkShowIcon"
                     android:checked="true"
                     android:text="@string/export_extended_pdf_icon"
@@ -235,10 +211,10 @@
                     android:layout_margin="4dp"
                     android:autofillHints="@string/export_extended_xml_xslt"/>
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/cmdXSLTPath"
                     android:contentDescription="@string/export"
-                    app:srcCompat="@drawable/icon_search"
+                    app:icon="@drawable/icon_search"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
@@ -247,16 +223,13 @@
                     android:foregroundGravity="center"/>
             </TableRow>
 
-            <TableRow>
-                <TextView
-                    android:layout_weight="10"
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-            </TableRow>
+            <com.google.android.material.divider.MaterialDivider
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TableRow
                 android:tag="xml">
-                <CheckBox
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/chkCopyExampleData"
                     android:text="@string/export_extended_xml_xslt_example"
                     android:layout_width="0dp"

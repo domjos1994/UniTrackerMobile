@@ -32,6 +32,7 @@ import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -218,6 +219,13 @@ public class ConvertHelper {
 
     public static Bitmap convertByteArrayToBitmap(byte[] bytes) {
         return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+    }
+
+    public static Drawable convertByteArrayToDrawable(byte[] bytes) throws Exception {
+        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+        Drawable drawable = BitmapDrawable.createFromStream(is, "icon");
+        is.close();
+        return drawable;
     }
 
     public static byte[] convertBitmapToByteArray(Bitmap bitmap) throws IOException {

@@ -49,12 +49,13 @@
                 android:gravity="center"
                 android:text="@string/versions_filter" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spVersionFilter"
                 android:entries="@array/versions_filer"
                 android:layout_weight="7"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                app:dropdown_title="@string/versions_filter"/>
         </LinearLayout>
 
 
@@ -86,36 +87,42 @@
                         android:layout_width="0dp"
                         android:layout_weight="10"/>
 
-                    <TableRow>
-
-                        <EditText
-                            android:id="@+id/txtVersionTitle"
-                            android:inputType="text"
-                            android:hint="@string/general_title"
+                    <TableRow
+                        android:layout_margin="5dp">
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_weight="10"
                             android:layout_width="0dp"
-                            tools:ignore="Autofill" />
+                            android:layout_height="wrap_content"
+                            app:endIconMode="clear_text">
+                            <EditText
+                                android:id="@+id/txtVersionTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="text"
+                                android:hint="@string/general_title"
+                                tools:ignore="Autofill" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </TableRow>
 
-                    <TableRow android:id="@+id/rowVersionReleased">
-
-                        <CheckBox
+                    <TableRow
+                        android:layout_margin="5dp">
+                        <com.google.android.material.materialswitch.MaterialSwitch
                             android:id="@+id/chkVersionReleased"
                             android:text="@string/versions_released"
-                            android:layout_weight="10"
+                            android:padding="5dp"
+                            android:layout_weight="5"
                             android:layout_width="0dp" />
-                    </TableRow>
-
-                    <TableRow android:id="@+id/rowVersionDeprecated">
-
-                        <CheckBox
+                        <com.google.android.material.materialswitch.MaterialSwitch
                             android:id="@+id/chkVersionDeprecated"
                             android:text="@string/versions_deprecated"
-                            android:layout_weight="10"
+                            android:padding="5dp"
+                            android:layout_weight="5"
                             android:layout_width="0dp" />
                     </TableRow>
 
-                    <TableRow android:id="@+id/rowVersionReleasedAt">
+                    <TableRow
+                        android:id="@+id/rowVersionReleasedAt"
+                        android:layout_margin="5dp">
 
                         <de.domjos.unitrackerlibrary.custom.DatePickerField
                             android:id="@+id/txtVersionReleasedAt"
@@ -125,15 +132,21 @@
                             tools:ignore="Autofill" />
                     </TableRow>
 
-                    <TableRow>
-
-                        <EditText
-                            android:id="@+id/txtVersionDescription"
-                            android:inputType="textMultiLine"
-                            android:hint="@string/general_description"
+                    <TableRow
+                        android:layout_margin="5dp">
+                        <com.google.android.material.textfield.TextInputLayout
                             android:layout_weight="10"
                             android:layout_width="0dp"
-                            tools:ignore="Autofill" />
+                            android:layout_height="wrap_content"
+                            app:endIconMode="clear_text">
+                            <EditText
+                                android:id="@+id/txtVersionDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:inputType="textMultiLine"
+                                android:hint="@string/general_description"
+                                tools:ignore="Autofill" />
+                        </com.google.android.material.textfield.TextInputLayout>
                     </TableRow>
                 </TableLayout>
             </ScrollView>

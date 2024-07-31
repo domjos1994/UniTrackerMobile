@@ -34,35 +34,28 @@
         android:weightSum="10"
         android:layout_alignParentTop="true">
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="3"
+        <TableRow
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLocalSync"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/search_content" />
-
-            <EditText
-                android:id="@+id/txtLocalSyncSearch"
-                android:layout_weight="6"
-                android:layout_width="0dp"
-                android:hint="@string/search_content"
-                android:inputType="text"
-                android:layout_height="wrap_content"
-                android:autofillHints="@string/search_content"/>
-
-            <ImageButton
-                android:id="@+id/cmdLocalSyncSearch"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:contentDescription="@string/search_content"
-                app:srcCompat="@drawable/icon_search" />
+                android:layout_weight="10"
+                app:endIconMode="custom"
+                app:endIconScaleType="fitEnd"
+                app:endIconDrawable="@drawable/icon_search">
+                <EditText
+                    android:id="@+id/txtLocalSyncSearch"
+                    android:layout_width="match_parent"
+                    android:hint="@string/search_content"
+                    android:inputType="text"
+                    android:layout_height="wrap_content"
+                    android:autofillHints="@string/search_content"/>
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_weight="3"
@@ -72,14 +65,15 @@
                 android:gravity="center"
                 android:text="@string/administration_bugTracker" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spLocalSyncBugTracker"
                 android:layout_weight="7"
                 android:layout_width="0dp"
-                android:layout_height="48dp" />
+                android:layout_height="wrap_content" />
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_weight="3"
@@ -89,11 +83,11 @@
                 android:gravity="center"
                 android:text="@string/projects" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spLocalSyncProjects"
                 android:layout_weight="7"
                 android:layout_width="0dp"
-                android:layout_height="48dp" />
+                android:layout_height="wrap_content" />
         </TableRow>
     </TableLayout>
 

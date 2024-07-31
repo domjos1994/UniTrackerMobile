@@ -34,9 +34,9 @@
         android:layout_weight="15"
         app:groupLabelWidth="25dp"/>
 
-    <TextView
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="1dp" />
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:id="@+id/llToObject"

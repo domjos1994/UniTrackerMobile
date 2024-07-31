@@ -21,12 +21,7 @@ package de.domjos.unibuggermobile.activities;
 import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -35,6 +30,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.export.TrackerXML;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -62,13 +61,15 @@ import de.domjos.unitrackerlibrary.tools.Notifications;
 
 public final class ExportActivity extends AbstractActivity {
     private Button cmdExport;
-    private ImageButton cmdExportPath, cmdXSLTPath;
+    private MaterialButton cmdExportPath, cmdXSLTPath;
     private TextView txtExportPath, txtXSLTPath;
-    private Spinner spBugTracker, spProjects, spData, spExportPath;
-    private CheckBox chkShowBackground, chkShowIcon, chkCopyExampleData;
-    private ArrayAdapter<String> dataAdapter;
-    private ArrayAdapter<IBugService<?>> bugTrackerAdapter;
-    private ArrayAdapter<Project<?>> projectAdapter;
+    private DropDown<IBugService<?>> spBugTracker;
+    private DropDown<Project<?>> spProjects;
+    private DropDown<String> spData, spExportPath;
+    private MaterialSwitch chkShowIcon, chkCopyExampleData;
+    private DropDownAdapter<String> dataAdapter;
+    private DropDownAdapter<IBugService<?>> bugTrackerAdapter;
+    private DropDownAdapter<Project<?>> projectAdapter;
     private Settings settings;
     private TableLayout tblControls;
 
@@ -78,46 +79,32 @@ public final class ExportActivity extends AbstractActivity {
 
     @Override
     protected void initActions() {
-        this.spExportPath.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = spExportPath.getSelectedItem().toString().trim().toLowerCase();
+        this.spExportPath.setOnItemSelectedListener(i -> {
+            String item = Objects.requireNonNull(spExportPath.getSelectedItem()).trim().toLowerCase();
 
-                for(int j = 0; j<=tblControls.getChildCount()-1; j++) {
-                    TableRow tableRow = (TableRow) tblControls.getChildAt(j);
-                    if(tableRow.getTag()!=null) {
-                        if(tableRow.getTag() instanceof String) {
-                            tableRow.setVisibility(View.GONE);
-                            txtXSLTPath.setText("");
-                            if(tableRow.getTag().toString().equals(item)) {
-                                tableRow.setVisibility(View.VISIBLE);
-                            }
+            for(int j = 0; j<=tblControls.getChildCount()-1; j++) {
+                TableRow tableRow = (TableRow) tblControls.getChildAt(j);
+                if(tableRow.getTag()!=null) {
+                    if(tableRow.getTag() instanceof String) {
+                        tableRow.setVisibility(View.GONE);
+                        txtXSLTPath.setText("");
+                        if(tableRow.getTag().toString().equals(item)) {
+                            tableRow.setVisibility(View.VISIBLE);
                         }
                     }
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
         });
 
-        this.spBugTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                try {
-                    projectAdapter.clear();
-                    IBugService<?> bugService = bugTrackerAdapter.getItem(position);
-                    ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, settings.showNotifications(), R.drawable.icon_projects);
-                    List<Project<?>> projects = projectTask.execute(0).get();
-                    projectAdapter.addAll(projects);
-                } catch (Exception ex) {
-                    Notifications.printException(ExportActivity.this, ex, R.mipmap.ic_launcher_round);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        this.spBugTracker.setOnItemSelectedListener(position -> {
+            try {
                 projectAdapter.clear();
+                IBugService<?> bugService = bugTrackerAdapter.getItem(position);
+                ProjectTask projectTask = new ProjectTask(ExportActivity.this, bugService, false, settings.showNotifications(), R.drawable.icon_projects);
+                List<Project<?>> projects = projectTask.execute(0).get();
+                projectAdapter.addAll(projects);
+            } catch (Exception ex) {
+                Notifications.printException(ExportActivity.this, ex, R.mipmap.ic_launcher_round);
             }
         });
 
@@ -163,10 +150,10 @@ public final class ExportActivity extends AbstractActivity {
                 IBugService<?> bugService = bugTrackerAdapter.getItem(this.spBugTracker.getSelectedItemPosition());
                 Project<?> project = this.projectAdapter.getItem(this.spProjects.getSelectedItemPosition());
                 TrackerXML.Type type = TrackerXML.Type.valueOf(this.dataAdapter.getItem(this.spData.getSelectedItemPosition()));
-                String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem().toString();
+                String file = this.txtExportPath.getText().toString() + "." + this.spExportPath.getSelectedItem();
 
                 if (bugService != null && project != null) {
-                    byte[] background = null, icon = null;
+                    byte[] icon = null;
 
                     if(this.chkShowIcon.isChecked()) {
                         icon = ConvertHelper.convertDrawableToByteArray(Objects.requireNonNull(ResourcesCompat.getDrawable(this.getResources(), R.drawable.icon, this.getTheme())));
@@ -180,7 +167,7 @@ public final class ExportActivity extends AbstractActivity {
 
                     ExportTask exportTask = new ExportTask(
                             ExportActivity.this, bugService, type, project.getId(), file, notify,
-                            R.drawable.icon_export, background, icon, xslt);
+                            R.drawable.icon_export, null, icon, xslt);
                     List<Object> objects = new LinkedList<>();
                     switch (type) {
                         case Projects:
@@ -233,21 +220,17 @@ public final class ExportActivity extends AbstractActivity {
         this.txtExportPath = this.findViewById(R.id.txtExportPath);
 
         this.spBugTracker = this.findViewById(R.id.spBugTracker);
-        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.bugTrackerAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.spBugTracker.setAdapter(this.bugTrackerAdapter);
-        this.bugTrackerAdapter.notifyDataSetChanged();
 
         this.spProjects = this.findViewById(R.id.spProjects);
-        this.projectAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.projectAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.spProjects.setAdapter(this.projectAdapter);
-        this.projectAdapter.notifyDataSetChanged();
 
         this.spData = this.findViewById(R.id.spData);
-        this.dataAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.dataAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.spData.setAdapter(this.dataAdapter);
-        this.dataAdapter.notifyDataSetChanged();
 
-        this.chkShowBackground = this.findViewById(R.id.chkShowBackground);
         this.chkShowIcon = this.findViewById(R.id.chkShowIcon);
 
         this.txtXSLTPath = this.findViewById(R.id.txtXSLTPath);

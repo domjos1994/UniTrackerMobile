@@ -52,17 +52,25 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10">
 
-                <TableRow>
-                    <EditText
-                        android:id="@+id/txtFieldTitle"
-                        android:hint="@string/general_title"
-                        android:layout_weight="10"
-                        android:inputType="text"
+                <TableRow
+                    android:padding="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_weight="10"
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtFieldTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/general_title"
+                            android:inputType="text"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
                     <TextView
                         android:text="@string/fields_type"
@@ -74,38 +82,51 @@
                         android:textSize="@dimen/header_text_size"
                         android:textStyle="bold"/>
 
-                    <Spinner
+                    <de.domjos.unitrackerlibrary.custom.DropDown
                         android:id="@+id/cmbFieldType"
                         android:layout_weight="7"
                         android:layout_width="0dp"
                         android:layout_height="@dimen/min_height"/>
                 </TableRow>
 
-                <TableRow>
-
-                    <EditText
-                        android:id="@+id/txtFieldDefault"
-                        android:hint="@string/fields_default"
-                        android:layout_weight="10"
-                        android:inputType="text"
+                <TableRow
+                    android:padding="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_weight="10"
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtFieldDefault"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/fields_default"
+                            android:inputType="text"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
-
-                    <EditText
-                        android:id="@+id/txtFieldPossibleValues"
-                        android:hint="@string/fields_possible_values"
-                        android:layout_weight="10"
-                        android:inputType="text"
+                <TableRow
+                    android:padding="5dp">
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_weight="10"
+                        android:layout_height="wrap_content"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtFieldPossibleValues"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:hint="@string/fields_possible_values"
+                            android:inputType="text"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <CheckBox
+                    <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/chkFieldNullable"
                         android:text="@string/fields_nullable"
                         android:layout_weight="10"

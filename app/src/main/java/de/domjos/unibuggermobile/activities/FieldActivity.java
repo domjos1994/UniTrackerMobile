@@ -18,15 +18,15 @@
 
 package de.domjos.unibuggermobile.activities;
 
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Objects;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -48,9 +48,9 @@ public final class FieldActivity extends AbstractActivity {
     private SwipeRefreshDeleteList lvFields;
 
     private EditText txtFieldTitle, txtFieldDefault, txtFieldPossibleValues;
-    private Spinner cmbFieldType;
-    private CheckBox chkFieldNullable;
-    private ArrayAdapter<CustomField.Type> fieldTypeAdapter;
+    private DropDown<CustomField.Type> cmbFieldType;
+    private MaterialSwitch chkFieldNullable;
+    private DropDownAdapter<CustomField.Type> fieldTypeAdapter;
 
     private IBugService<?> bugService;
     private IFunctionImplemented permissions;
@@ -150,7 +150,7 @@ public final class FieldActivity extends AbstractActivity {
         this.txtFieldDefault = this.findViewById(R.id.txtFieldDefault);
         this.txtFieldPossibleValues = this.findViewById(R.id.txtFieldPossibleValues);
         this.cmbFieldType = this.findViewById(R.id.cmbFieldType);
-        this.fieldTypeAdapter = new ArrayAdapter<>(FieldActivity.this, R.layout.spinner_item);
+        this.fieldTypeAdapter = new DropDownAdapter<>(FieldActivity.this);
         this.cmbFieldType.setAdapter(this.fieldTypeAdapter);
         this.fieldTypeAdapter.notifyDataSetChanged();
         this.chkFieldNullable = this.findViewById(R.id.chkFieldNullable);

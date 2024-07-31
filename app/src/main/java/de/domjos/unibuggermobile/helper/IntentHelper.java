@@ -19,46 +19,16 @@
 package de.domjos.unibuggermobile.helper;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.util.UUID;
 
 import de.domjos.unibuggermobile.provider.FileProvider;
 
-import static android.app.Activity.RESULT_OK;
-
 public class IntentHelper {
-    private static final int GALLERY = 44;
-
-    public static void openGalleryIntent(Activity activity) {
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-        photoPickerIntent.setType("image/*");
-        activity.startActivityForResult(photoPickerIntent, IntentHelper.GALLERY);
-    }
-
-    public static Bitmap getImageFromGallery(int requestCode, int resultCode, Intent data, Context context) throws FileNotFoundException {
-        if (requestCode == IntentHelper.GALLERY && resultCode == RESULT_OK) {
-            final Uri imageUri = data.getData();
-            if (imageUri != null) {
-                final InputStream imageStream = context.getContentResolver().openInputStream(imageUri);
-                return BitmapFactory.decodeStream(imageStream);
-            }
-        }
-        return null;
-    }
-
-    public static void openBrowserIntent(Activity activity, String url) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        activity.startActivity(intent);
-    }
 
     public static void saveAndOpenFile(byte[] array, Activity activity) throws Exception {
         Uri uri = FileProvider.getUriForFile(activity, "de.domjos.unitrackermobile.provider.FileProvider", IntentHelper.saveFile(array, activity));

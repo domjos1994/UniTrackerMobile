@@ -39,24 +39,20 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spBugTracker1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spBugTracker2"
                 android:layout_weight="5"
                 android:layout_width="0dp"
@@ -64,13 +60,9 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
@@ -83,24 +75,20 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spProject1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_height="@dimen/min_height"
                 android:layout_margin="4dp" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spProject2"
                 android:layout_weight="5"
                 android:layout_width="0dp"
@@ -108,13 +96,9 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
@@ -127,17 +111,13 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spData1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
@@ -151,17 +131,13 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spDataItem1"
                 android:layout_weight="5"
                 android:layout_width="0dp"
@@ -175,17 +151,13 @@
                 android:layout_margin="4dp" />
         </TableRow>
 
-        <TableRow>
-
-            <TextView
-                android:layout_weight="10"
-                android:layout_width="0dp"
-                android:layout_height="1dp" />
-        </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
         <TableRow>
 
-            <CheckBox
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/chkWithIssues"
                 android:text="@string/administration_withIssues"
                 android:layout_weight="5"
@@ -193,7 +165,7 @@
                 android:layout_height="48dp"
                 android:layout_margin="4dp" />
 
-            <CheckBox
+            <com.google.android.material.materialswitch.MaterialSwitch
                 android:id="@+id/chkAddToProject"
                 android:text="@string/administration_addToProject"
                 android:layout_weight="5"
@@ -228,14 +200,14 @@
             android:padding="2dp"/>
 
         <TableRow>
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdCopy"
                 android:text="@string/administration_copy"
                 android:layout_weight="5"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"/>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdMove"
                 android:text="@string/administration_move"
                 android:layout_weight="5"

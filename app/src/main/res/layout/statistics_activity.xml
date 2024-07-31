@@ -38,39 +38,51 @@
             android:weightSum="20"
             android:id="@+id/pnlControls">
 
-            <TableRow>
-                <RadioGroup
+            <TableRow
+                android:padding="5dp">
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/rbGroup"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/min_height"
                     android:layout_weight="10"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_gravity="center">
 
-                    <RadioButton
-                        android:id="@+id/rbStatisticsMonthly"
+                    <Button
+                        android:id="@+id/cmdStatisticsMonthly"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/min_height"
                         android:text="@string/statistics_monthly"
-                        android:checked="true" />
+                        android:checked="true"
+                        style="?attr/materialButtonOutlinedStyle"/>
 
-                    <RadioButton
-                        android:id="@+id/rbStatisticsYearly"
+                    <Button
+                        android:id="@+id/cmdStatisticsYearly"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/min_height"
-                        android:text="@string/statistics_yearly" />
-                </RadioGroup>
+                        android:text="@string/statistics_yearly"
+                        style="?attr/materialButtonOutlinedStyle"/>
+                </com.google.android.material.button.MaterialButtonToggleGroup>
 
-                <EditText
-                    android:id="@+id/txtStatisticsValue"
-                    android:inputType="text"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/min_height"
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:layout_weight="10"
-                    android:hint="@string/statistics_value"
-                    android:autofillHints="@string/statistics_value"/>
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:endIconMode="clear_text">
+                    <EditText
+                        android:id="@+id/txtStatisticsValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:inputType="text"
+                        android:hint="@string/statistics_value"
+                        tools:ignore="Autofill" />
+                </com.google.android.material.textfield.TextInputLayout>
             </TableRow>
-            <TextView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="wrap_content"/>
             <TableRow>
                 <TextView
                     android:layout_width="0dp"
@@ -82,15 +94,15 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:layout_margin="2dp"/>
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spStatisticsBugTracker"
                     android:layout_width="0dp"
                     android:layout_weight="10"
                     android:layout_height="@dimen/min_height" />
             </TableRow>
-            <TextView
+            <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="wrap_content"/>
             <TableRow>
                 <TextView
                     android:layout_width="0dp"
@@ -103,7 +115,7 @@
                     android:gravity="center_vertical"
                     android:layout_margin="2dp"/>
 
-                <Spinner
+                <de.domjos.unitrackerlibrary.custom.DropDown
                     android:id="@+id/spStatisticsDiagram"
                     android:layout_width="0dp"
                     android:layout_weight="10"
@@ -112,9 +124,9 @@
             </TableRow>
         </TableLayout>
 
-        <TextView
+        <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="1dp" />
+            android:layout_height="wrap_content"/>
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/bcStatisticsBugsPerProject"
@@ -137,12 +149,11 @@
             android:visibility="gone" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/splitter2"
+    <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#000"
-        android:layout_above="@+id/llActions" />
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/llActions"
+        android:id="@+id/splitter2" />
 
     <LinearLayout
         android:id="@+id/llActions"

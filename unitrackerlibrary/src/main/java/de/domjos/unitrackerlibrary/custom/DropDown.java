@@ -144,10 +144,23 @@ public class DropDown<T> extends LinearLayout {
         this.title = "";
         if(attrs != null) {
             try(TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DropDown, 0, 0)) {
-                String tmp = a.getString(R.styleable.DropDown_dropdown_title);
-                if(tmp != null) {
-                    this.title = tmp;
-                }
+                try {
+                    String tmp = a.getString(R.styleable.DropDown_dropdown_title);
+                    if(tmp != null) {
+                        this.title = tmp;
+                    }
+                } catch (Exception ignored) {}
+                try {
+                    CharSequence[] entries = a.getTextArray(R.styleable.DropDown_android_entries);
+                    if(entries != null) {
+                        DropDownAdapter<String> items = new DropDownAdapter<>(this.getContext());
+                        items.add("");
+                        for(CharSequence item : entries) {
+                            items.add(item.toString());
+                        }
+                        this.txt.setAdapter(items);
+                    }
+                } catch (Exception ignored) {}
             }
         }
     }

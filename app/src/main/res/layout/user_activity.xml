@@ -53,59 +53,94 @@
                 android:layout_height="wrap_content"
                 android:weightSum="10">
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <EditText
-                        android:id="@+id/txtUserName"
-                        android:hint="@string/users_login"
-                        android:inputType="text"
-                        android:layout_weight="10"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtUserName"
+                            android:hint="@string/users_login"
+                            android:inputType="text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <EditText
-                        android:id="@+id/txtUserFullName"
-                        android:hint="@string/users_fullName"
-                        android:inputType="text"
-                        android:layout_weight="10"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtUserFullName"
+                            android:hint="@string/users_fullName"
+                            android:inputType="text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <EditText
-                        android:id="@+id/txtUserEmail"
-                        android:hint="@string/users_email"
-                        android:inputType="textEmailAddress"
-                        android:layout_weight="10"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        app:endIconMode="clear_text">
+                        <EditText
+                            android:id="@+id/txtUserEmail"
+                            android:hint="@string/users_email"
+                            android:inputType="textEmailAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <EditText
-                        android:id="@+id/txtUserPassword"
-                        android:hint="@string/users_password"
-                        android:inputType="textPassword"
-                        android:layout_weight="10"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        app:endIconMode="password_toggle">
+                        <EditText
+                            android:id="@+id/txtUserPassword"
+                            android:hint="@string/users_password"
+                            android:inputType="textPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
 
-                <TableRow>
+                <TableRow
+                    android:padding="5dp">
 
-                    <EditText
-                        android:id="@+id/txtUserPasswordRepeat"
-                        android:hint="@string/users_password_repeat"
-                        android:inputType="textPassword"
-                        android:layout_weight="10"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
-                        tools:ignore="Autofill" />
+                        android:layout_height="wrap_content"
+                        android:layout_weight="10"
+                        app:endIconMode="password_toggle">
+                        <EditText
+                            android:id="@+id/txtUserPasswordRepeat"
+                            android:hint="@string/users_password_repeat"
+                            android:inputType="textPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:ignore="Autofill" />
+                    </com.google.android.material.textfield.TextInputLayout>
                 </TableRow>
             </TableLayout>
         </ScrollView>

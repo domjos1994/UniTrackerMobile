@@ -23,13 +23,10 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.Chart;
@@ -39,6 +36,7 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -50,6 +48,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.projects.Project;
@@ -64,14 +64,15 @@ import de.domjos.unitrackerlibrary.tools.Notifications;
 public final class StatisticsActivity extends AbstractActivity {
     private BarChart bcStatisticsBugsPerProject, bcStatisticsBugsPerUser, bcStatisticsSolvedBugs;
     private LineChart lcStatisticsBugsInTime;
-    private RadioButton rbStatisticsMonthly, rbStatisticsYearly;
+    private MaterialButtonToggleGroup grpStats;
+    private Button cmdStatisticsMonthly;
     private EditText txtStatisticsValue;
     private ProgressBar pbStatistics;
     private ImageButton cmdStatisticsReload;
 
-    private Spinner spStatisticsBugTracker;
-    private Spinner spStatisticsDiagram;
-    private ArrayAdapter<Authentication> bugTrackerAdapter;
+    private DropDown<Authentication> spStatisticsBugTracker;
+    private DropDown<String> spStatisticsDiagram;
+    private DropDownAdapter<Authentication> bugTrackerAdapter;
 
     private Map<Authentication, Map<Project<?>, List<Issue<?>>>> data;
     private final List<Chart<?>> charts;
@@ -85,22 +86,15 @@ public final class StatisticsActivity extends AbstractActivity {
     @Override
     protected void initActions() {
 
-        this.spStatisticsDiagram.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                for(Chart<?> chart : charts) {
-                    chart.setVisibility(View.GONE);
-                }
-                charts.get(i).setVisibility(View.VISIBLE);
+        this.spStatisticsDiagram.setOnItemSelectedListener(i -> {
+            for(Chart<?> chart : charts) {
+                chart.setVisibility(View.GONE);
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {}
+            charts.get(i).setVisibility(View.VISIBLE);
         });
 
         this.cmdStatisticsReload.setOnClickListener(view -> reloadCharts());
-        this.rbStatisticsMonthly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadCharts());
-        this.rbStatisticsYearly.setOnCheckedChangeListener((buttonView, isChecked) -> reloadCharts());
+        this.grpStats.addOnButtonCheckedListener((group, checkedId, isChecked) -> reloadCharts());
 
         this.txtStatisticsValue.addTextChangedListener(new TextWatcher() {
             @Override
@@ -117,16 +111,7 @@ public final class StatisticsActivity extends AbstractActivity {
             }
         });
 
-        this.spStatisticsBugTracker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                reloadCharts();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-            }
-        });
+        this.spStatisticsBugTracker.setOnItemSelectedListener(i -> reloadCharts());
 
         this.bcStatisticsBugsPerProject.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -148,7 +133,7 @@ public final class StatisticsActivity extends AbstractActivity {
                     String value = txtStatisticsValue.getText().toString().trim();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(new Date());
-                    if (rbStatisticsMonthly.isChecked()) {
+                    if (cmdStatisticsMonthly.getId() == grpStats.getCheckedButtonId()) {
                         if (!value.isEmpty()) {
                             calendar.set(Calendar.MONTH, Integer.parseInt(value));
                         }
@@ -221,14 +206,15 @@ public final class StatisticsActivity extends AbstractActivity {
         legend.setOrientation(Legend.LegendOrientation.VERTICAL);
         this.charts.add(this.bcStatisticsSolvedBugs);
 
-        this.rbStatisticsMonthly = this.findViewById(R.id.rbStatisticsMonthly);
-        this.rbStatisticsYearly = this.findViewById(R.id.rbStatisticsYearly);
+        this.grpStats = this.findViewById(R.id.rbGroup);
+        this.cmdStatisticsMonthly = this.findViewById(R.id.cmdStatisticsMonthly);
+        this.cmdStatisticsMonthly.performClick();
         this.txtStatisticsValue = this.findViewById(R.id.txtStatisticsValue);
         this.pbStatistics = this.findViewById(R.id.pbStatistics);
         this.cmdStatisticsReload = this.findViewById(R.id.cmdStatisticsSync);
 
         this.spStatisticsBugTracker = this.findViewById(R.id.spStatisticsBugTracker);
-        this.bugTrackerAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item);
+        this.bugTrackerAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.spStatisticsBugTracker.setAdapter(bugTrackerAdapter);
         this.bugTrackerAdapter.notifyDataSetChanged();
         this.bugTrackerAdapter.add(new Authentication());
@@ -264,7 +250,7 @@ public final class StatisticsActivity extends AbstractActivity {
     private void initData() {
         List<IBugService<?>> bugServices = new LinkedList<>();
         if (this.spStatisticsBugTracker.getSelectedItem() != null) {
-            Authentication selectedItem = (Authentication) this.spStatisticsBugTracker.getSelectedItem();
+            Authentication selectedItem = this.spStatisticsBugTracker.getSelectedItem();
             if (selectedItem.getId() == null) {
                 for (Authentication authentication : MainActivity.GLOBALS.getSqLiteGeneral().getAccounts("")) {
                     bugServices.add(Helper.getCurrentBugService(authentication, StatisticsActivity.this));
@@ -291,9 +277,9 @@ public final class StatisticsActivity extends AbstractActivity {
 
     private void reloadCharts() {
         DiagramHelper diagramHelper = new DiagramHelper(this.data, StatisticsActivity.this);
-        if (this.rbStatisticsMonthly.isChecked()) {
+        if (this.cmdStatisticsMonthly.getId() == grpStats.getCheckedButtonId()) {
             diagramHelper.setTimeSpan(DiagramHelper.TimeSpan.Month);
-        } else if (this.rbStatisticsYearly.isChecked()) {
+        } else {
             diagramHelper.setTimeSpan(DiagramHelper.TimeSpan.Year);
         }
         diagramHelper.setTime(this.txtStatisticsValue.getText().toString());

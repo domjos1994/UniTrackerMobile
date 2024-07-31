@@ -22,23 +22,22 @@ import android.app.Activity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TableRow;
 
 import androidx.annotation.NonNull;
 
 import com.github.angads25.filepicker.view.FilePickerDialog;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.materialswitch.MaterialSwitch;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.DatePickerField;
@@ -64,9 +63,9 @@ public final class VersionActivity extends AbstractActivity {
     private EditText txtVersionTitle, txtVersionDescription;
     private DatePickerField txtVersionReleasedAt;
     private ProgressBar pbVersion;
-    private CheckBox chkVersionReleased, chkVersionDeprecated;
-    private Spinner spVersionFilter;
-    private TableRow rowVersionReleased, rowVersionDeprecated, rowVersionReleasedAt;
+    private MaterialSwitch chkVersionReleased, chkVersionDeprecated;
+    private DropDown<String> spVersionFilter;
+    private TableRow rowVersionReleasedAt;
     private LinearLayout rowVersionFilter;
 
     private IBugService<?> bugService;
@@ -142,17 +141,9 @@ public final class VersionActivity extends AbstractActivity {
 
         this.lvVersions.setOnReloadListener(this::reload);
 
-        this.spVersionFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                filter = spVersionFilter.getSelectedItem().toString();
-                reload();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+        this.spVersionFilter.setOnItemSelectedListener(position -> {
+            filter = spVersionFilter.getSelectedItem();
+            reload();
         });
     }
 
@@ -207,8 +198,6 @@ public final class VersionActivity extends AbstractActivity {
         this.pbVersion.setVisibility(View.GONE);
         this.pbVersion.setMax(100);
 
-        this.rowVersionReleased = this.findViewById(R.id.rowVersionReleased);
-        this.rowVersionDeprecated = this.findViewById(R.id.rowVersionDeprecated);
         this.rowVersionReleasedAt = this.findViewById(R.id.rowVersionReleasedAt);
         this.rowVersionFilter = this.findViewById(R.id.rowVersionFilter);
 
@@ -222,7 +211,7 @@ public final class VersionActivity extends AbstractActivity {
     protected void initValidator() {
         this.versionValidator = new Validator(this.getApplicationContext(), R.mipmap.ic_launcher_round);
         this.versionValidator.addEmptyValidator(this.txtVersionTitle);
-        this.versionValidator.addDateValidator(this.txtVersionReleasedAt, this.settings.getDateFormat(), false);
+        this.versionValidator.addDateValidator(this.txtVersionReleasedAt.getEditText(), this.settings.getDateFormat(), false);
     }
 
     @Override
@@ -297,7 +286,7 @@ public final class VersionActivity extends AbstractActivity {
             if (this.currentVersion != null) {
                 this.currentVersion.setTitle(this.txtVersionTitle.getText().toString());
                 this.currentVersion.setDescription(this.txtVersionDescription.getText().toString());
-                this.currentVersion.setReleasedVersionAt(Helper.checkDateAndReturn(this.txtVersionReleasedAt, this.getApplicationContext()).getTime());
+                this.currentVersion.setReleasedVersionAt(Helper.checkDateAndReturn(this.txtVersionReleasedAt.getEditText(), this.getApplicationContext()).getTime());
                 this.currentVersion.setReleasedVersion(this.chkVersionReleased.isChecked());
                 this.currentVersion.setDeprecatedVersion(this.chkVersionDeprecated.isChecked());
             }
@@ -315,8 +304,8 @@ public final class VersionActivity extends AbstractActivity {
         }
 
         this.rowVersionReleasedAt.setVisibility(View.GONE);
-        this.rowVersionReleased.setVisibility(View.GONE);
-        this.rowVersionDeprecated.setVisibility(View.GONE);
+        this.chkVersionReleased.setVisibility(View.GONE);
+        this.chkVersionDeprecated.setVisibility(View.GONE);
         this.rowVersionFilter.setVisibility(View.GONE);
 
         if (tracker != null) {
@@ -324,39 +313,32 @@ public final class VersionActivity extends AbstractActivity {
                 case MantisBT:
                 case Local:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     this.rowVersionFilter.setVisibility(View.VISIBLE);
                     break;
                 case RedMine:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     this.chkVersionDeprecated.setText(this.getString(R.string.versions_deprecated_redmine));
                     this.chkVersionDeprecated.setOnCheckedChangeListener((buttonView, isChecked) -> this.chkVersionReleased.setVisibility(isChecked ? View.GONE : View.VISIBLE));
                     break;
-                case YouTrack:
-                case OpenProject:
+                case OpenProject, Jira, YouTrack:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
                     break;
                 case Github:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    break;
-                case Jira:
-                    this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionReleased.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionReleased.setVisibility(View.VISIBLE);
                     break;
                 case Backlog:
                     this.rowVersionReleasedAt.setVisibility(View.VISIBLE);
-                    this.rowVersionDeprecated.setVisibility(View.VISIBLE);
+                    this.chkVersionDeprecated.setVisibility(View.VISIBLE);
                     break;
             }
         }

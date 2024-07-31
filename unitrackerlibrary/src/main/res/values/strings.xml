@@ -80,4 +80,6 @@
     <string formatted="false" name="message_validator_matches">Field \'%s\' contains invalid characters!</string>
 
     <string name="module_name" translatable="false">module</string>
+    <string name="open_calendar" translatable="false">Open Calendar</string>
+    <string name="calendar" translatable="false">Calendar</string>
 </resources>

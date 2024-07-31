@@ -15,6 +15,7 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with UniTrackerMobile. If not, see <http://www.gnu.org/licenses/>.
   -->
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -22,22 +23,19 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:id="@+id/tilCalendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:endIconMode="dropdown_menu"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        app:endIconContentDescription="@string/app_name">
-        <AutoCompleteTextView
-            android:id="@+id/filled_exposed_dropdown"
+        app:endIconMode="custom"
+        app:endIconDrawable="@drawable/ic_calendar"
+        app:endIconScaleType="fitEnd"
+        app:endIconContentDescription="@string/open_calendar">
+        <EditText
+            android:id="@+id/txtCalendar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="none"
-            android:paddingTop="0dp"
-            android:paddingBottom="0dp"
-            tools:ignore="LabelFor" />
+            android:inputType="datetime"
+            android:hint="@string/calendar"
+            tools:ignore="Autofill" />
     </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

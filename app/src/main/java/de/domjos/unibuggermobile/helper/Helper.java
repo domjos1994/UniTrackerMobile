@@ -50,6 +50,7 @@ import androidx.core.content.res.ResourcesCompat;
 import com.github.angads25.filepicker.model.DialogConfigs;
 import com.github.angads25.filepicker.model.DialogProperties;
 import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -60,6 +61,7 @@ import java.util.Date;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
@@ -285,8 +287,8 @@ public class Helper {
             pwdDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             pwdDialog.setContentView(R.layout.password_dialog);
             final TextView lblTitle = pwdDialog.findViewById(R.id.lblTitle);
-            final EditText password1 = pwdDialog.findViewById(R.id.txtPassword1);
-            final EditText password2 = pwdDialog.findViewById(R.id.txtPassword2);
+            final TextInputLayout password1 = pwdDialog.findViewById(R.id.txtPassword1);
+            final TextInputLayout password2 = pwdDialog.findViewById(R.id.txtPassword2);
             final Button cmdSubmit = pwdDialog.findViewById(R.id.cmdSubmit);
             pwdDialog.setCancelable(false);
             pwdDialog.setCanceledOnTouchOutside(false);
@@ -319,18 +321,18 @@ public class Helper {
             cmdSubmit.setOnClickListener(v -> {
                 try {
                     if (!firstLogin || changePassword) {
-                        if (password1.getText().toString().equals(password2.getText().toString())) {
-                            if (password1.getText().toString().length() >= 4) {
-                                password1.setTextColor(Color.GREEN);
-                                password2.setTextColor(Color.GREEN);
+                        if (Objects.requireNonNull(password1.getEditText()).getText().toString().equals(Objects.requireNonNull(password2.getEditText()).getText().toString())) {
+                            if (password1.getEditText().getText().toString().length() >= 4) {
+                                password1.getEditText().setTextColor(Color.GREEN);
+                                password2.getEditText().setTextColor(Color.GREEN);
                                 MainActivity.GLOBALS.getSettings(activity).isFirstLogin(true);
 
                                 new Thread(() -> activity.runOnUiThread(() -> {
                                     try {
                                         if (changePassword) {
-                                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getText().toString());
+                                            MainActivity.GLOBALS.getSqLiteGeneral().changePassword(password1.getEditText().getText().toString());
                                         }
-                                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
+                                        MainActivity.GLOBALS.setPassword(password1.getEditText().getText().toString());
                                         MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
                                         if (Helper.checkDatabase()) {
                                             successRunnable.run();
@@ -347,10 +349,10 @@ public class Helper {
                             password2.setError(activity.getString(R.string.messages_passwords_dont_fit));
                         }
                     } else {
-                        MainActivity.GLOBALS.setPassword(password1.getText().toString());
+                        MainActivity.GLOBALS.setPassword(password1.getEditText().getText().toString());
                         MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
                         if(Helper.checkDatabase()) {
-                            password1.setTextColor(Color.GREEN);
+                            password1.getEditText().setTextColor(Color.GREEN);
                             new Thread(() -> activity.runOnUiThread(() -> {
                                 successRunnable.run();
                                 pwdDialog.cancel();

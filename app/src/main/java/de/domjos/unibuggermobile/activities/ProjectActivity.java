@@ -19,26 +19,30 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.text.InputType;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Date;
 import java.util.List;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.custom.AbstractTask;
@@ -52,7 +56,6 @@ import de.domjos.unitrackerlibrary.tasks.ProjectTask;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unitrackerlibrary.custom.AbstractActivity;
 import de.domjos.unibuggermobile.helper.Helper;
-import de.domjos.unibuggermobile.helper.IntentHelper;
 import de.domjos.unibuggermobile.settings.Settings;
 import de.domjos.unitrackerlibrary.tools.CommaTokenizer;
 import de.domjos.unitrackerlibrary.tools.ConvertHelper;
@@ -64,27 +67,31 @@ public final class ProjectActivity extends AbstractActivity {
     private BottomNavigationView navigationView;
     private SwipeRefreshDeleteList lvProjects;
 
-    private LinearLayout tblSearch;
     private EditText txtSearch;
-    private ImageButton cmdSearch;
+    private TextInputLayout tilSearch;
 
     private EditText txtProjectTitle, txtProjectAlias, txtProjectDescription, txtProjectWebsite;
     private EditText txtProjectIconUrl, txtProjectVersion;
-    private ImageButton cmdProjectWebsite;
+    private TextInputLayout tilProjectWebsite;
     private TextView lblCreatedAt, lblUpdatedAt;
-    private CheckBox chkProjectEnabled, chkProjectPrivate;
+    private MaterialSwitch chkProjectEnabled, chkProjectPrivate;
     private MultiAutoCompleteTextView txtProjectsSubProject;
-    private Spinner spProjectsState;
-    private ArrayAdapter<String> stateAdapter;
+    private DropDown<String> spProjectsState;
+    private DropDownAdapter<String> stateAdapter;
 
     private TableRow rowProjectState, rowSubProjects, rowTimestamps, rowProjectAlias, rowProjectWebsite;
-    private TableRow rowProjectEnabled, rowProjectIcon, rowProjectVersion, rowProjectPrivate;
+    private TableRow rowProjectIcon, rowProjectVersion;
 
     private IBugService<?> bugService;
     private IFunctionImplemented permissions;
     private Project<?> currentProject;
     private Validator projectValidator;
     private Settings settings;
+
+    private final ActivityResultLauncher<Intent> openWebsite = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            intent -> {}
+    );
 
     public ProjectActivity() {
         super(R.layout.project_activity);
@@ -93,7 +100,7 @@ public final class ProjectActivity extends AbstractActivity {
     @Override
     protected void initActions() {
 
-        this.cmdSearch.setOnClickListener(event -> {
+        this.tilSearch.setEndIconOnClickListener(event -> {
             Authentication authentication = this.bugService.getAuthentication();
             authentication.getHints().put(SearchAll.SEARCH, this.txtSearch.getText().toString());
             MainActivity.GLOBALS.getSqLiteGeneral().insertOrUpdateAccount(authentication);
@@ -137,13 +144,14 @@ public final class ProjectActivity extends AbstractActivity {
             }
         });
 
-        this.cmdProjectWebsite.setOnClickListener(view -> {
+        this.tilProjectWebsite.setEndIconOnClickListener(view -> {
             String url = this.txtProjectWebsite.getText().toString().trim();
             if(!url.isEmpty()) {
                 if (!url.startsWith("http://") && !url.startsWith("https://")) {
                     url = "http://" + url;
                 }
-                IntentHelper.openBrowserIntent(ProjectActivity.this, url);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                openWebsite.launch(intent);
             }
         });
 
@@ -209,16 +217,15 @@ public final class ProjectActivity extends AbstractActivity {
         });
 
         // init controls
-        this.tblSearch = this.findViewById(R.id.tblSearch);
         this.txtSearch = this.findViewById(R.id.txtSearch);
-        this.cmdSearch = this.findViewById(R.id.cmdSearch);
+        this.tilSearch = this.findViewById(R.id.tilSearch);
 
         this.lvProjects = this.findViewById(R.id.lvProjects);
         this.txtProjectTitle = this.findViewById(R.id.txtProjectTitle);
         this.txtProjectAlias = this.findViewById(R.id.txtProjectAlias);
         this.txtProjectDescription = this.findViewById(R.id.txtProjectDescription);
         this.txtProjectWebsite = this.findViewById(R.id.txtProjectWebsite);
-        this.cmdProjectWebsite = this.findViewById(R.id.cmdProjectWebsite);
+        this.tilProjectWebsite = this.findViewById(R.id.tilProjectWebsite);
         this.txtProjectIconUrl = this.findViewById(R.id.txtProjectIcon);
         this.txtProjectVersion = this.findViewById(R.id.txtProjectVersion);
         this.lblCreatedAt = this.findViewById(R.id.lblCreatedAt);
@@ -226,9 +233,13 @@ public final class ProjectActivity extends AbstractActivity {
         this.chkProjectEnabled = this.findViewById(R.id.chkProjectEnabled);
         this.chkProjectPrivate = this.findViewById(R.id.chkProjectPrivate);
         this.spProjectsState = this.findViewById(R.id.spProjectsState);
-        this.stateAdapter = new ArrayAdapter<>(this.getApplicationContext(), R.layout.spinner_item, this.getResources().getStringArray(R.array.project_state_mantis_label));
+        String[] items = this.getResources().getStringArray(R.array.project_state_mantis_label);
+        this.stateAdapter = new DropDownAdapter<>(this.getApplicationContext());
         this.spProjectsState.setAdapter(this.stateAdapter);
-        this.stateAdapter.notifyDataSetChanged();
+        this.stateAdapter.add("");
+        for(String item : items) {
+            this.stateAdapter.add(item);
+        }
 
         this.txtProjectsSubProject = this.findViewById(R.id.txtSubProjects);
         this.txtProjectsSubProject.setTokenizer(new CommaTokenizer());
@@ -238,10 +249,8 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowTimestamps = this.findViewById(R.id.rowTimestamps);
         this.rowProjectAlias = this.findViewById(R.id.rowProjectAlias);
         this.rowProjectWebsite = this.findViewById(R.id.rowProjectWebsite);
-        this.rowProjectEnabled = this.findViewById(R.id.rowProjectEnabled);
         this.rowProjectVersion = this.findViewById(R.id.rowProjectVersion);
         this.rowProjectIcon = this.findViewById(R.id.rowProjectIcon);
-        this.rowProjectPrivate = this.findViewById(R.id.rowProjectPrivate);
 
         this.bugService = Helper.getCurrentBugService(this.getApplicationContext());
         this.permissions = this.bugService.getPermissions();
@@ -305,7 +314,7 @@ public final class ProjectActivity extends AbstractActivity {
         try {
             if (this.permissions.listProjects()) {
                 ProjectTask task;
-                if(this.tblSearch.getVisibility() == View.VISIBLE) {
+                if(this.tilSearch.getVisibility() == View.VISIBLE) {
                     String search = "";
                     if(this.bugService.getAuthentication().getHints().containsKey(SearchAll.SEARCH)) {
                         search = this.bugService.getAuthentication().getHints().get(SearchAll.SEARCH);
@@ -512,55 +521,55 @@ public final class ProjectActivity extends AbstractActivity {
         this.rowTimestamps.setVisibility(View.GONE);
         this.rowProjectAlias.setVisibility(View.GONE);
         this.rowProjectWebsite.setVisibility(View.GONE);
-        this.rowProjectEnabled.setVisibility(View.GONE);
+        this.chkProjectEnabled.setVisibility(View.GONE);
         this.rowProjectIcon.setVisibility(View.GONE);
         this.rowProjectVersion.setVisibility(View.GONE);
-        this.rowProjectPrivate.setVisibility(View.GONE);
+        this.chkProjectPrivate.setVisibility(View.GONE);
         this.txtProjectDescription.setVisibility(View.VISIBLE);
-        this.tblSearch.setVisibility(View.GONE);
+        this.tilSearch.setVisibility(View.GONE);
 
         if (tracker != null) {
             switch (tracker) {
                 case MantisBT:
                     this.rowProjectState.setVisibility(View.VISIBLE);
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
-                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectPrivate.setVisibility(View.VISIBLE);
                     break;
                 case RedMine:
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
-                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    this.chkProjectPrivate.setVisibility(View.VISIBLE);
                     break;
                 case YouTrack:
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowProjectIcon.setVisibility(View.VISIBLE);
                     this.txtProjectIconUrl.setInputType(InputType.TYPE_NULL);
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     break;
                 case Bugzilla:
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     break;
                 case Github:
-                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectPrivate.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
-                    this.tblSearch.setVisibility(View.VISIBLE);
+                    this.tilSearch.setVisibility(View.VISIBLE);
                     break;
                 case Jira:
                     this.rowProjectIcon.setVisibility(View.VISIBLE);
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
                     break;
                 case PivotalTracker:
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     break;
                 case Backlog:
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.txtProjectDescription.setVisibility(View.GONE);
                     break;
@@ -570,10 +579,10 @@ public final class ProjectActivity extends AbstractActivity {
                     this.rowTimestamps.setVisibility(View.VISIBLE);
                     this.rowProjectAlias.setVisibility(View.VISIBLE);
                     this.rowProjectWebsite.setVisibility(View.VISIBLE);
-                    this.rowProjectEnabled.setVisibility(View.VISIBLE);
+                    this.chkProjectEnabled.setVisibility(View.VISIBLE);
                     this.rowProjectIcon.setVisibility(View.VISIBLE);
                     this.rowProjectVersion.setVisibility(View.VISIBLE);
-                    this.rowProjectPrivate.setVisibility(View.VISIBLE);
+                    this.chkProjectPrivate.setVisibility(View.VISIBLE);
                     break;
             }
         }
