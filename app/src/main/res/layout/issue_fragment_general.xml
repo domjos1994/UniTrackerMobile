@@ -30,159 +30,231 @@
         android:layout_height="wrap_content"
         android:weightSum="10">
 
-        <TableRow>
-
-            <EditText
-                android:id="@+id/txtIssueGeneralSummary"
+        <TableRow
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilIssueGeneralSummaryToDescription"
                 android:layout_width="0dp"
-                android:layout_weight="9"
-                android:hint="@string/issues_general_summary"
-                android:inputType="textMultiLine"
-                tools:ignore="Autofill" />
-
-            <ImageButton
-                android:id="@+id/cmdIssueGeneralSummaryToDescription"
-                android:contentDescription="@string/general_description"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/icon_issues_descriptions" />
-        </TableRow>
-
-        <TableRow android:id="@+id/rowIssueGeneralCategory">
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralCategory"
-                android:hint="@string/issues_general_category"
-                android:inputType="text"
                 android:layout_weight="10"
-                android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_height="wrap_content"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/icon_issues_descriptions"
+                app:endIconContentDescription="@string/general_description"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+                <EditText
+                    android:id="@+id/txtIssueGeneralSummary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/issues_general_summary"
+                    android:inputType="textMultiLine"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralReproducibility">
+        <TableRow
+            android:id="@+id/rowIssueGeneralCategory"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/issues_general_category"
+                    android:inputType="text"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/rowIssueGeneralReproducibility"
+            android:layout_margin="5dp">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_reproducibility" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralReproducibilitty"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralView">
+        <TableRow
+            android:id="@+id/rowIssueGeneralView"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_view" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralView"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralSeverity">
+        <TableRow
+            android:id="@+id/rowIssueGeneralSeverity"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_severity" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralSeverity"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralPriority">
+        <TableRow
+            android:id="@+id/rowIssueGeneralPriority"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_priority" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralPriority"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralStatus">
+        <TableRow
+            android:id="@+id/rowIssueGeneralStatus"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_status" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralStatus"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralHandler">
+        <TableRow
+            android:id="@+id/rowIssueGeneralHandler"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issue_general_handler" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralHandler"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralResolution">
+        <TableRow
+            android:id="@+id/rowIssueGeneralResolution"
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@string/issues_general_resolution" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueGeneralResolution"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralVersion">
-
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralVersion"
-                android:hint="@string/issues_general_version"
-                android:inputType="text"
-                android:layout_weight="10"
+        <TableRow
+            android:id="@+id/rowIssueGeneralVersion"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/issues_general_version"
+                    android:inputType="text"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralTargetVersion">
-
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralTargetVersion"
-                android:hint="@string/issues_general_targetVersion"
-                android:inputType="text"
-                android:layout_weight="10"
+        <TableRow
+            android:id="@+id/rowIssueGeneralTargetVersion"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralTargetVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/issues_general_targetVersion"
+                    android:inputType="text"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralFixedInVersion">
-
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralFixedInVersion"
-                android:hint="@string/issues_general_fixedInVersion"
-                android:inputType="text"
-                android:layout_weight="10"
+        <TableRow
+            android:id="@+id/rowIssueGeneralFixedInVersion"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralFixedInVersion"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/issues_general_fixedInVersion"
+                    android:inputType="text"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralDates">
+        <TableRow
+            android:id="@+id/rowIssueGeneralDates"
+            android:layout_margin="5dp">
 
             <TextView
                 android:id="@+id/txtIssueGeneralSubmitDate"
@@ -196,10 +268,12 @@
                 android:hint="@string/issues_general_lastUpdated"
                 android:layout_weight="5"
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                tools:ignore="Autofill"/>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralDueDates">
+        <TableRow
+            android:id="@+id/rowIssueGeneralDueDates"
+            android:layout_margin="5dp">
 
             <de.domjos.unitrackerlibrary.custom.DatePickerField
                 android:id="@+id/txtIssueGeneralDueDate"
@@ -209,42 +283,81 @@
                 tools:ignore="Autofill" />
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralProfile">
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralPlatform"
-                android:hint="@string/issues_general_platform"
-                android:layout_weight="3"
+        <TableRow
+            android:id="@+id/rowIssueGeneralProfile1"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralOS"
-                android:hint="@string/issues_general_os"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                tools:ignore="Autofill" />
-            <AutoCompleteTextView
-                android:id="@+id/txtIssueGeneralOsBuild"
-                android:hint="@string/issues_general_build"
-                android:layout_weight="3"
-                android:layout_width="0dp"
-                tools:ignore="Autofill" />
-            <ImageButton
-                android:id="@+id/cmdIssueGeneralSmartPhone"
-                android:contentDescription="@string/general_description"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+                android:layout_weight="5"
                 android:layout_height="wrap_content"
-                app:srcCompat="@drawable/icon_issues_general_profile" />
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralPlatform"
+                    android:hint="@string/issues_general_platform"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="5"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralOS"
+                    android:hint="@string/issues_general_os"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow android:id="@+id/rowIssueGeneralTags">
+        <TableRow
+            android:id="@+id/rowIssueGeneralProfile2"
+            android:layout_margin="5dp">
 
-            <MultiAutoCompleteTextView
-                android:id="@+id/txtIssueGeneralTags"
-                android:hint="@string/issues_general_tags"
-                android:layout_weight="10"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_weight="8"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralOsBuild"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/issues_general_build"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/cmdIssueGeneralSmartPhone"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="wrap_content"
+                app:iconGravity="textEnd"
+                app:icon="@drawable/icon_issues_general_profile"
+                style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/rowIssueGeneralTags"
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_weight="10"
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <MultiAutoCompleteTextView
+                    android:id="@+id/txtIssueGeneralTags"
+                    android:hint="@string/issues_general_tags"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
     </TableLayout>
 

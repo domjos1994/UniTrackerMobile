@@ -379,11 +379,11 @@ public final class VersionActivity extends AbstractActivity {
             });
             dialog.show();
         } else if(item.getItemId() == R.id.menShowChangelog) {
-            roadMapDialog = RoadMapDialog.newInstance(false, this.currentProject, this.currentVersion.getId());
-            roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
+            roadMapDialog = new RoadMapDialog(this, false, this.currentProject, this.currentVersion.getId());
+            roadMapDialog.show();
         } else if(item.getItemId() == R.id.menShowRoadMap) {
-            roadMapDialog = RoadMapDialog.newInstance(true, this.currentProject, this.currentVersion.getId());
-            roadMapDialog.show(this.getSupportFragmentManager(), "roadMapDialog");
+            roadMapDialog = new RoadMapDialog(this, true, this.currentProject, this.currentVersion.getId());
+            roadMapDialog.show();
         }
         return super.onOptionsItemSelected(item);
     }

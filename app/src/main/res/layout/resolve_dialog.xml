@@ -25,22 +25,8 @@
     android:weightSum="10"
     android:orientation="horizontal"
     android:id="@+id/root">
-
-    <TextView
-        android:id="@+id/lblTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:text="@string/issues_context_solve"
-        android:paddingTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:paddingBottom="20dp"
-        android:layout_gravity="center"
-        android:gravity="center"/>
-
-    <TableRow>
+    <TableRow
+        android:layout_margin="5dp">
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -52,7 +38,7 @@
             android:layout_gravity="center"
             android:layout_margin="4dp"/>
 
-        <Spinner
+        <de.domjos.unitrackerlibrary.custom.DropDown
             android:id="@+id/cmbStatus"
             android:layout_width="0dp"
             android:layout_height="@dimen/min_height"
@@ -60,22 +46,18 @@
             android:layout_margin="4dp"/>
     </TableRow>
 
-    <EditText
-        android:id="@+id/txtComment"
-        android:autofillHints="@string/general_description"
-        android:inputType="textMultiLine"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="10"
-        android:layout_margin="4dp"
-        android:hint="@string/general_description"/>
-
-    <ImageButton
-        android:id="@+id/cmdResolve"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="10"
-        android:contentDescription="@string/sys_save"
-        app:srcCompat="@drawable/icon_controls_save"
-        android:layout_margin="1dp"/>
+        android:layout_margin="5dp"
+        app:endIconMode="clear_text">
+        <EditText
+            android:id="@+id/txtComment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:autofillHints="@string/general_description"
+            android:inputType="textMultiLine"
+            android:hint="@string/general_description"/>
+    </com.google.android.material.textfield.TextInputLayout>
 </TableLayout>

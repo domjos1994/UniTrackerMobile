@@ -37,31 +37,49 @@
                 android:text="@string/issues_history_field"
                 android:textStyle="bold"
                 android:layout_width="0dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"/>
 
             <TextView
                 android:text="@string/issues_history_user"
                 android:textStyle="bold"
                 android:layout_width="0dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"/>
 
             <TextView
                 android:text="@string/issues_history_time"
                 android:textStyle="bold"
                 android:layout_width="0dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"/>
 
             <TextView
                 android:text="@string/issues_history_oldValue"
                 android:textStyle="bold"
                 android:layout_width="0dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"/>
 
             <TextView
                 android:text="@string/issues_history_newValue"
                 android:textStyle="bold"
                 android:layout_width="0dp"
-                android:layout_weight="2" />
+                android:layout_weight="2"
+                android:layout_margin="5dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"/>
         </TableRow>
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </TableLayout>
 </ScrollView>

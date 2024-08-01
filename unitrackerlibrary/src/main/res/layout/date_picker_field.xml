@@ -29,7 +29,8 @@
         app:endIconMode="custom"
         app:endIconDrawable="@drawable/ic_calendar"
         app:endIconScaleType="fitEnd"
-        app:endIconContentDescription="@string/open_calendar">
+        app:endIconContentDescription="@string/open_calendar"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <EditText
             android:id="@+id/txtCalendar"
             android:layout_width="match_parent"

@@ -47,6 +47,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.navigation.NavigationView.OnNavigationItemSelectedListener;
 
+import de.domjos.unibuggermobile.dialogs.AttachmentDialog;
+import de.domjos.unibuggermobile.dialogs.PasswordDialog;
+import de.domjos.unibuggermobile.dialogs.ResolveDialog;
+import de.domjos.unibuggermobile.dialogs.TagDialog;
+import de.domjos.unibuggermobile.dialogs.WhatsNewDialog;
 import de.domjos.unitrackerlibrary.custom.DropDown;
 import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
@@ -346,7 +351,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     boolean show = settings.showNotifications();
                     Object pid = settings.getCurrentProjectId();
 
-                    Helper.showTagDialog(act, bugService, show, pid, objectList, notId);
+                    TagDialog tagDialog = new TagDialog(act, bugService, show, pid, objectList, notId);
+                    tagDialog.show();
                 } catch (Exception ex) {
                     Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
                 }
@@ -365,7 +371,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             this.rowNoConnection = this.findViewById(R.id.rowNoConnection);
             this.settings = MainActivity.GLOBALS.getSettings(this.getApplicationContext());
             this.firstLogIn = this.settings.isFirstLogin(false);
-            Helper.showPasswordDialog(this, this.firstLogIn, false, this::executeOnSuccess);
+            PasswordDialog passwordDialog = new PasswordDialog(this, this.firstLogIn, false, this::executeOnSuccess);
+            passwordDialog.show();
         } catch (Exception ex) {
             Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);
         }
@@ -433,7 +440,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 }
 
                 if (!statusArray.isEmpty()) {
-                    Helper.showResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
+                    ResolveDialog resolveDialog = new ResolveDialog(MainActivity.this, statusArray, position, issue, bugService, pid, show, this::reload, notId);
+                    resolveDialog.show();
                 }
             } else if(item.getItemId() == R.id.ctxClone) {
                 issue.setId(null);
@@ -457,7 +465,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                     if (issue.getAttachments() != null) {
                         if (!issue.getAttachments().isEmpty()) {
                             List<Attachment<?>> attachments = new LinkedList<>(issue.getAttachments());
-                            Helper.showAttachmentDialog(MainActivity.this, attachments);
+                            AttachmentDialog attachmentDialog = new AttachmentDialog(MainActivity.this, attachments);
+                            attachmentDialog.show();
                         }
                     }
                 }
@@ -490,7 +499,8 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             }
 
             if(this.firstLogIn) {
-                Helper.showWhatsNewDialog(this);
+                WhatsNewDialog whatsNewDialog = new WhatsNewDialog(this);
+                whatsNewDialog.show();
             }
         } catch (Exception ex) {
             Notifications.printException(MainActivity.this, ex, R.mipmap.ic_launcher_round);

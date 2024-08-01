@@ -19,21 +19,10 @@
 package de.domjos.unibuggermobile.dialogs;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-
-import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -52,151 +41,115 @@ import de.domjos.unitrackerlibrary.tasks.VersionTask;
 import de.domjos.unitrackerlibrary.tools.Notifications;
 
 
-public class RoadMapDialog extends DialogFragment {
-    private static final String TITLE = "title";
-    private static final String VERSION_ID = "version_id";
-    private static final String PROJECT_ID = "project_id";
+public class RoadMapDialog extends AbstractDialog {
     private static final String RoadMap = "RoadMap";
     private static final String ChangeLog = "ChangeLog";
 
     private ProgressBar pbState;
-    private TextView lblTitle, lblPercentage;
+    private TextView lblPercentage;
     private SwipeRefreshDeleteList lvIssues;
 
-    public static RoadMapDialog newInstance(boolean roadMap, Object pid, Object vid) {
-        Bundle arguments = new Bundle();
-        if(roadMap) {
-            arguments.putString(RoadMapDialog.TITLE, RoadMapDialog.RoadMap);
+    private final Object pid;
+    private final Object vid;
+    private final boolean roadMap;
+
+    public RoadMapDialog(Activity activity, boolean roadMap, Object pid, Object vid) {
+        super(activity, R.layout.roadmap_dialog);
+
+        this.pid = pid;
+        this.vid = vid;
+        this.roadMap = roadMap;
+
+        if(this.roadMap) {
+            this.setTitle(RoadMapDialog.RoadMap);
         } else {
-            arguments.putString(RoadMapDialog.TITLE, RoadMapDialog.ChangeLog);
+            this.setTitle(RoadMapDialog.ChangeLog);
         }
-        arguments.putSerializable(RoadMapDialog.PROJECT_ID, (Serializable) pid);
-        arguments.putSerializable(RoadMapDialog.VERSION_ID, (Serializable) vid);
-
-        RoadMapDialog roadMapDialog = new RoadMapDialog();
-        roadMapDialog.setArguments(arguments);
-        return roadMapDialog;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.roadmap_dialog, container, false);
-
-        Dialog dialog = super.getDialog();
-        if(dialog != null) {
-            Window window = dialog.getWindow();
-            if(window != null) {
-                WindowManager.LayoutParams layoutParams = window.getAttributes();
-                layoutParams.gravity = Gravity.FILL_HORIZONTAL;
-                window.requestFeature(Window.FEATURE_NO_TITLE);
-            }
-        }
-
-        this.pbState = view.findViewById(R.id.pbProcess);
-        this.lblTitle = view.findViewById(R.id.lblTitle);
-        this.lblPercentage = view.findViewById(R.id.lblPercentage);
-        this.lvIssues = view.findViewById(R.id.lvIssues);
-
         this.initWithArguments();
-        return view;
     }
 
     private void initWithArguments() {
         try {
-            boolean isChangeLog = false;
-            Bundle bundle = this.getArguments();
-            if(bundle != null) {
-                String title = bundle.getString(RoadMapDialog.TITLE);
-                Object pid = bundle.getSerializable(RoadMapDialog.PROJECT_ID);
-                Object vid = bundle.getSerializable(RoadMapDialog.VERSION_ID);
+            boolean changeLog = !this.roadMap;
+            boolean not = MainActivity.GLOBALS.getSettings(this.activity).showNotifications();
+            Activity act = this.activity;
+            IBugService<?>  bugs = Helper.getCurrentBugService(this.activity);
+            int icon = R.drawable.icon_versions;
 
-                if(title != null) {
-                    if(!title.equals(RoadMapDialog.RoadMap)) {
-                        isChangeLog = true;
-                        this.pbState.setVisibility(View.GONE);
+            VersionTask versionTask = new VersionTask(act, bugs, pid, false, not, "versions", icon);
+            List<Version<?>> versions = versionTask.execute(0).get();
+            String version_name = "";
+            for(Version<?> version : versions) {
+                if(version.getId() instanceof Long v) {
+                    Long tmp = Long.parseLong(String.valueOf(vid));
+                    if(v.equals(tmp)) {
+                        version_name = version.getTitle();
+                        break;
                     }
-                    this.lblTitle.setText(title);
-                }
-
-                boolean changeLog = isChangeLog;
-                boolean not = MainActivity.GLOBALS.getSettings(this.requireContext()).showNotifications();
-                Activity act = this.requireActivity();
-                IBugService<?>  bugs = Helper.getCurrentBugService(this.requireContext());
-                int icon = R.drawable.icon_versions;
-
-                VersionTask versionTask = new VersionTask(act, bugs, pid, false, not, "versions", icon);
-                List<Version<?>> versions = versionTask.execute(0).get();
-                String version_name = "";
-                for(Version<?> version : versions) {
-                    if(version.getId() instanceof Long v) {
-                        Long tmp = Long.parseLong(String.valueOf(vid));
-                        if(v.equals(tmp)) {
-                            version_name = version.getTitle();
-                            break;
-                        }
-                    } else if(version.getId() instanceof String v) {
-                        String tmp = String.valueOf(vid);
-                        if(v.equals(tmp)) {
-                            version_name = version.getTitle();
-                            break;
-                        }
+                } else if(version.getId() instanceof String v) {
+                    String tmp = String.valueOf(vid);
+                    if(v.equals(tmp)) {
+                        version_name = version.getTitle();
+                        break;
                     }
                 }
-                String version = version_name;
+            }
+            String version = version_name;
 
-                IssueTask issueTask = new IssueTask(act, bugs, pid, false, false, not, icon);
-                issueTask.after((AbstractTask.PostExecuteListener<List<Issue<?>>>) issues -> {
-                    int max = 0, resolved = 0;
-                    for(Issue<?> issue : issues) {
-                        boolean item = Boolean.parseBoolean(issue.getHints().get("resolved"));
-                        try {
-                            IssueTask oneDetailed = new IssueTask(act, bugs, pid, false, true, not, icon);
-                            issue = Objects.requireNonNull(oneDetailed.execute(issue.getId()).get()).get(0);
-                            if(changeLog) {
-                                if(issue.getFixedInVersion() != null) {
-                                    if(issue.getFixedInVersion().trim().equals(version.trim())) {
-                                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                                        baseDescriptionObject.setTitle(issue.getTitle());
-                                        baseDescriptionObject.setDescription(issue.getDescription());
-                                        baseDescriptionObject.setObject(issue);
-                                        baseDescriptionObject.setState(item);
-                                        this.lvIssues.getAdapter().add(baseDescriptionObject);
-                                    }
-                                }
-                            } else {
-                                if(issue.getTargetVersion() != null) {
-                                    if(issue.getTargetVersion().trim().equals(version.trim())) {
-                                        max++;
-                                        resolved = item ? resolved + 1 : resolved;
-
-                                        BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
-                                        baseDescriptionObject.setTitle(issue.getTitle());
-                                        baseDescriptionObject.setDescription(issue.getDescription());
-                                        baseDescriptionObject.setObject(issue);
-                                        baseDescriptionObject.setState(item);
-                                        this.lvIssues.getAdapter().add(baseDescriptionObject);
-
-                                        this.pbState.setMax(max);
-                                        this.pbState.setProgress(resolved);
-
-                                        double factor = 100.0 / max;
-                                        String text = String.format(Locale.GERMANY, "%d", (int) factor * resolved) + "%";
-                                        this.lblPercentage.setText(text);
-                                    }
+            IssueTask issueTask = new IssueTask(act, bugs, pid, false, false, not, icon);
+            issueTask.after((AbstractTask.PostExecuteListener<List<Issue<?>>>) issues -> {
+                int max = 0, resolved = 0;
+                for(Issue<?> issue : issues) {
+                    boolean item = Boolean.parseBoolean(issue.getHints().get("resolved"));
+                    try {
+                        IssueTask oneDetailed = new IssueTask(act, bugs, pid, false, true, not, icon);
+                        issue = Objects.requireNonNull(oneDetailed.execute(issue.getId()).get()).get(0);
+                        if(changeLog) {
+                            if(issue.getFixedInVersion() != null) {
+                                if(issue.getFixedInVersion().trim().equals(version.trim())) {
+                                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                    baseDescriptionObject.setTitle(issue.getTitle());
+                                    baseDescriptionObject.setDescription(issue.getDescription());
+                                    baseDescriptionObject.setObject(issue);
+                                    baseDescriptionObject.setState(item);
+                                    this.lvIssues.getAdapter().add(baseDescriptionObject);
                                 }
                             }
-                        } catch (Exception ignored) {}
-                    }
-                });
-                issueTask.execute(0);
-            }
+                        } else {
+                            if(issue.getTargetVersion() != null) {
+                                if(issue.getTargetVersion().trim().equals(version.trim())) {
+                                    max++;
+                                    resolved = item ? resolved + 1 : resolved;
+
+                                    BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
+                                    baseDescriptionObject.setTitle(issue.getTitle());
+                                    baseDescriptionObject.setDescription(issue.getDescription());
+                                    baseDescriptionObject.setObject(issue);
+                                    baseDescriptionObject.setState(item);
+                                    this.lvIssues.getAdapter().add(baseDescriptionObject);
+
+                                    this.pbState.setMax(max);
+                                    this.pbState.setProgress(resolved);
+
+                                    double factor = 100.0 / max;
+                                    String text = String.format(Locale.GERMANY, "%d", (int) factor * resolved) + "%";
+                                    this.lblPercentage.setText(text);
+                                }
+                            }
+                        }
+                    } catch (Exception ignored) {}
+                }
+            });
+            issueTask.execute(0);
         } catch (Exception ex) {
-            Notifications.printException(this.requireActivity(), ex, R.mipmap.ic_launcher_round);
+            Notifications.printException(this.activity, ex, R.mipmap.ic_launcher_round);
         }
+    }
+
+    @Override
+    protected void init(View view) {
+        this.pbState = view.findViewById(R.id.pbProcess);
+        this.lblPercentage = view.findViewById(R.id.lblPercentage);
+        this.lvIssues = view.findViewById(R.id.lvIssues);
     }
 }

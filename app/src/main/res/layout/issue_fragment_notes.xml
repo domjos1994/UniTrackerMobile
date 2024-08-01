@@ -28,7 +28,8 @@
         android:layout_height="wrap_content"
         android:weightSum="10">
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList
                 android:id="@+id/lvIssuesNote"
@@ -38,7 +39,8 @@
                 app:itemIcon="@drawable/icon_issues_notes"/>
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <ImageButton
                 android:id="@+id/cmdIssueNotesAdd"
@@ -81,18 +83,27 @@
                 app:srcCompat="@drawable/icon_controls_save" />
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
-            <MultiAutoCompleteTextView
-                android:id="@+id/txtIssueNotesContent"
-                android:hint="@string/general_description"
-                android:inputType="textMultiLine"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_weight="10"
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <MultiAutoCompleteTextView
+                    android:id="@+id/txtIssueNotesContent"
+                    android:hint="@string/general_description"
+                    android:inputType="textMultiLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <TextView
                 android:id="@+id/txtIssueNotesSubmitDate"
@@ -109,14 +120,17 @@
                 tools:ignore="Autofill" />
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
-                android:text="@string/issues_general_view" />
+                android:text="@string/issues_general_view"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"/>
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssueNotesView"
                 android:layout_width="0dp"
                 android:layout_weight="7" />

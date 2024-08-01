@@ -28,11 +28,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +43,8 @@ import java.util.Objects;
 import de.domjos.unitrackerlibrary.custom.DatePickerField;
 import de.domjos.unibuggermobile.helper.SpinnerItem;
 import de.domjos.unibuggermobile.settings.Settings;
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
 import de.domjos.unitrackerlibrary.model.issues.Profile;
@@ -72,12 +76,14 @@ public final class IssueGeneralFragment extends AbstractFragment {
     private AutoCompleteTextView txtIssueGeneralCategory, txtIssueGeneralVersion,
             txtIssueGeneralTargetVersion, txtIssueGeneralFixedInVersion,
             txtIssueGeneralPlatform, txtIssueGeneralOs, txtIssueGeneralBuild;
-    private Spinner spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
-    private Spinner spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution, spIssueGeneralHandler;
+    private DropDown<SpinnerItem> spIssueGeneralView, spIssueGeneralSeverity, spIssueGeneralReproducibility;
+    private DropDown<SpinnerItem> spIssueGeneralPriority, spIssueGeneralStatus, spIssueGeneralResolution;
+    private DropDown<User> spIssueGeneralHandler;
     private MultiAutoCompleteTextView txtIssueGeneralTags;
-    private ImageButton cmdIssueGeneralSmartPhone, cmdIssueGeneralSummaryToDescription;
+    private MaterialButton cmdIssueGeneralSmartPhone;
+    private TextInputLayout tilIssueGeneralSummaryToDescription;
     /** @noinspection rawtypes*/
-    private ArrayAdapter<User> userAdapter;
+    private DropDownAdapter<User> userAdapter;
 
     private String priorityValueArray, statusValueArray, severityValueArray, resolutionValueArray;
     private TableRow rowIssueGeneralDueDate, rowIssueGeneralDates, rowIssueGeneralCategory,
@@ -85,7 +91,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             rowIssueGeneralTags;
     private TableRow rowIssueGeneralView, rowIssueGeneralSeverity, rowIssueGeneralReproducibility,
             rowIssueGeneralPriority, rowIssueGeneralStatus, rowIssueGeneralResolution,
-            rowIssueGeneralHandler, rowIssueGeneralProfile;
+            rowIssueGeneralHandler, rowIssueGeneralProfile1, rowIssueGeneralProfile2;
 
     private View root;
     private Issue issue;
@@ -135,15 +141,15 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.rowIssueGeneralResolution = this.root.findViewById(R.id.rowIssueGeneralResolution);
         this.rowIssueGeneralTags = this.root.findViewById(R.id.rowIssueGeneralTags);
         this.rowIssueGeneralHandler = this.root.findViewById(R.id.rowIssueGeneralHandler);
-        this.rowIssueGeneralProfile = this.root.findViewById(R.id.rowIssueGeneralProfile);
+        this.rowIssueGeneralProfile1 = this.root.findViewById(R.id.rowIssueGeneralProfile1);
+        this.rowIssueGeneralProfile2 = this.root.findViewById(R.id.rowIssueGeneralProfile2);
         this.cmdIssueGeneralSmartPhone = this.root.findViewById(R.id.cmdIssueGeneralSmartPhone);
 
 
         try {
             if (this.getContext() != null && this.getActivity() != null) {
-                this.userAdapter = new ArrayAdapter<>(this.getContext(), R.layout.spinner_item);
+                this.userAdapter = new DropDownAdapter<>(this.getContext());
                 this.spIssueGeneralHandler.setAdapter(this.userAdapter);
-                this.userAdapter.notifyDataSetChanged();
 
                 ArrayAdapter<String> tagAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_list_item_1);
                 this.txtIssueGeneralTags.setAdapter(tagAdapter);
@@ -238,7 +244,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.txtIssueGeneralVersion = this.root.findViewById(R.id.txtIssueGeneralVersion);
         this.txtIssueGeneralTargetVersion = this.root.findViewById(R.id.txtIssueGeneralTargetVersion);
         this.txtIssueGeneralFixedInVersion = this.root.findViewById(R.id.txtIssueGeneralFixedInVersion);
-        this.cmdIssueGeneralSummaryToDescription = this.root.findViewById(R.id.cmdIssueGeneralSummaryToDescription);
+        this.tilIssueGeneralSummaryToDescription = this.root.findViewById(R.id.tilIssueGeneralSummaryToDescription);
 
         this.initVersions();
 
@@ -263,9 +269,9 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.issue = (Issue) descriptionObject;
     }
 
-    private SpinnerItem getData(Spinner spinner) {
-        if(spinner.getSelectedItem() instanceof SpinnerItem) {
-            return (SpinnerItem) spinner.getSelectedItem();
+    private SpinnerItem getData(DropDown<SpinnerItem> spinner) {
+        if(spinner.getSelectedItem() != null) {
+            return spinner.getSelectedItem();
         }
         return new SpinnerItem(0, "");
     }
@@ -333,7 +339,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
             this.txtIssueGeneralBuild.setEnabled(editMode);
             this.txtIssueGeneralOs.setEnabled(editMode);
             this.cmdIssueGeneralSmartPhone.setEnabled(editMode);
-            this.cmdIssueGeneralSummaryToDescription.setEnabled(editMode);
+            this.tilIssueGeneralSummaryToDescription.setEndIconActivated(editMode);
         }
     }
 
@@ -396,7 +402,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 this.txtIssueGeneralBuild.setText(String.valueOf(Build.VERSION.RELEASE));
             });
 
-            this.cmdIssueGeneralSummaryToDescription.setOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.txtIssueGeneralSummary.getText().toString()));
+            this.tilIssueGeneralSummaryToDescription.setEndIconOnClickListener(v -> this.issueDescriptionsFragment.setDescription(this.txtIssueGeneralSummary.getText().toString()));
         }
     }
 
@@ -436,9 +442,11 @@ public final class IssueGeneralFragment extends AbstractFragment {
         this.rowIssueGeneralTags.setVisibility(View.GONE);
         this.rowIssueGeneralHandler.setVisibility(View.GONE);
         if (this.bugService.getPermissions().listProfiles()) {
-            this.rowIssueGeneralProfile.setVisibility(View.VISIBLE);
+            this.rowIssueGeneralProfile1.setVisibility(View.VISIBLE);
+            this.rowIssueGeneralProfile2.setVisibility(View.VISIBLE);
         } else {
-            this.rowIssueGeneralProfile.setVisibility(View.GONE);
+            this.rowIssueGeneralProfile1.setVisibility(View.GONE);
+            this.rowIssueGeneralProfile2.setVisibility(View.GONE);
         }
         this.resolutionValueArray = "issues_general_resolution_values";
 
@@ -579,12 +587,12 @@ public final class IssueGeneralFragment extends AbstractFragment {
                 break;
         }
 
-        this.spIssueGeneralPriority.setAdapter(Helper.setAdapter(this.getContext(), this.priorityValueArray));
-        this.spIssueGeneralView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_state_values"));
-        this.spIssueGeneralResolution.setAdapter(Helper.setAdapter(this.getContext(), this.resolutionValueArray));
-        this.spIssueGeneralStatus.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
-        this.spIssueGeneralReproducibility.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_reproducibility_values"));
-        this.spIssueGeneralSeverity.setAdapter(Helper.setAdapter(this.getContext(), this.severityValueArray));
+        this.spIssueGeneralPriority.setAdapter(Helper.setDropDownAdapter(this.getContext(), this.priorityValueArray));
+        this.spIssueGeneralView.setAdapter(Helper.setDropDownAdapter(this.getContext(), "issues_general_view_state_values"));
+        this.spIssueGeneralResolution.setAdapter(Helper.setDropDownAdapter(this.getContext(), this.resolutionValueArray));
+        this.spIssueGeneralStatus.setAdapter(Helper.setDropDownAdapter(this.getContext(), this.statusValueArray));
+        this.spIssueGeneralReproducibility.setAdapter(Helper.setDropDownAdapter(this.getContext(), "issues_general_reproducibility_values"));
+        this.spIssueGeneralSeverity.setAdapter(Helper.setDropDownAdapter(this.getContext(), this.severityValueArray));
     }
 
     private void initCategories() {

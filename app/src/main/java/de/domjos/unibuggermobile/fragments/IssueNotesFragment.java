@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,6 +31,8 @@ import androidx.annotation.NonNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.domjos.unibuggermobile.helper.SpinnerItem;
+import de.domjos.unitrackerlibrary.custom.DropDown;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unibuggermobile.settings.Settings;
@@ -61,7 +62,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     private ImageButton cmdIssueNotesAdd, cmdIssueNotesEdit, cmdIssueNotesDelete, cmdIssueNotesCancel, cmdIssueNotesSave;
     private MultiAutoCompleteTextView txtIssueNotesText;
     private TextView txtIssueNotesSubmitDate, txtIssueNotesLastUpdated;
-    private Spinner spIssueNotesView;
+    private DropDown<SpinnerItem> spIssueNotesView;
     /** @noinspection rawtypes*/
     private IBugService bugService;
 
@@ -228,7 +229,7 @@ public final class IssueNotesFragment extends AbstractFragment {
         this.lvIssueNotes.getAdapter().clear();
         for (Object note : this.issue.getNotes()) {
 
-            this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), "issues_general_view_values"));
+            this.spIssueNotesView.setAdapter(Helper.setDropDownAdapter(this.getContext(), "issues_general_view_values"));
             BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
             baseDescriptionObject.setObject(note);
             baseDescriptionObject.setTitle(((Note) note).getTitle());
@@ -254,7 +255,7 @@ public final class IssueNotesFragment extends AbstractFragment {
                 break;
         }
 
-        this.spIssueNotesView.setAdapter(Helper.setAdapter(this.getContext(), this.statusValueArray));
+        this.spIssueNotesView.setAdapter(Helper.setDropDownAdapter(this.getContext(), this.statusValueArray));
         this.spIssueNotesView.setSelection(0);
     }
 

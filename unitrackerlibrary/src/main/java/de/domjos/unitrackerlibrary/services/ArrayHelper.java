@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.domjos.unitrackerlibrary.R;
+import de.domjos.unitrackerlibrary.custom.DropDown;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 
 /** @noinspection unused*/
@@ -89,6 +90,10 @@ public class ArrayHelper {
         return ArrayHelper.getIdOfEnum(context, spinner.getSelectedItemPosition(), key);
     }
 
+    public static int getIdOfEnum(Context context, DropDown<?> spinner, String key) {
+        return ArrayHelper.getIdOfEnum(context, spinner.getSelectedItemPosition(), key);
+    }
+
     public static int getIdOfEnum(Context context, int position, String key) {
         List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
         for (int i = 0; i <= typedArrays.size() - 1; i++) {
@@ -111,6 +116,16 @@ public class ArrayHelper {
     }
 
     public static void setValueOfEnum(Context context, int id, String key, Spinner spinner) {
+        List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
+        for (int i = 0; i <= typedArrays.size() - 1; i++) {
+            if (id == typedArrays.get(i).getInt(0, 0)) {
+                spinner.setSelection(i);
+                break;
+            }
+        }
+    }
+
+    public static void setValueOfEnum(Context context, int id, String key, DropDown<?> spinner) {
         List<TypedArray> typedArrays = ArrayHelper.getMultiTypedArray(context, key);
         for (int i = 0; i <= typedArrays.size() - 1; i++) {
             if (id == typedArrays.get(i).getInt(0, 0)) {

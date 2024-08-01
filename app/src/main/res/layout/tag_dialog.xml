@@ -25,20 +25,9 @@
     android:weightSum="10"
     android:orientation="horizontal"
     android:id="@+id/root">
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:text="@string/issues_general_tags"
-        android:paddingTop="8dp"
-        android:paddingEnd="8dp"
-        android:paddingStart="8dp"
-        android:paddingBottom="20dp"
-        android:layout_gravity="center"
-        android:gravity="center"/>
 
-    <TableRow>
+    <TableRow
+        android:layout_margin="5dp">
         <TextView
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -50,27 +39,24 @@
             android:layout_gravity="center"
             android:layout_margin="4dp"/>
 
-        <Spinner
+        <de.domjos.unitrackerlibrary.custom.DropDown
             android:id="@+id/cmbTags"
             android:layout_width="0dp"
             android:layout_height="@dimen/min_height"
             android:layout_weight="7"
             android:layout_margin="4dp"/>
     </TableRow>
-    <EditText
-        android:id="@+id/txtTags"
-        android:inputType="text"
-        android:layout_height="45dp"
-        android:layout_width="match_parent"
-        android:hint="@string/issues_general_tags"
-        android:layout_margin="2dp"
-        android:autofillHints="@string/issues_general_tags" />
-    <ImageButton
-        android:id="@+id/cmdTags"
-        android:layout_width="0dp"
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_height="wrap_content"
-        android:layout_weight="10"
-        android:contentDescription="@string/sys_save"
-        app:srcCompat="@drawable/icon_controls_save"
-        android:layout_margin="1dp"/>
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        app:endIconMode="clear_text">
+        <EditText
+            android:id="@+id/txtTags"
+            android:inputType="text"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:hint="@string/issues_general_tags"
+            android:autofillHints="@string/issues_general_tags" />
+    </com.google.android.material.textfield.TextInputLayout>
 </TableLayout>

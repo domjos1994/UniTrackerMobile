@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 
+import de.domjos.unitrackerlibrary.custom.DropDown;
+import de.domjos.unitrackerlibrary.custom.DropDownAdapter;
 import de.domjos.unitrackerlibrary.custom.SwipeRefreshDeleteList;
 import de.domjos.unitrackerlibrary.model.BaseDescriptionObject;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
@@ -50,11 +52,11 @@ public final class IssueRelationsFragment extends AbstractFragment {
     private SwipeRefreshDeleteList lvIssuesRelations;
     private ImageButton cmdIssuesRelationsAdd, cmdIssuesRelationsEdit, cmdIssuesRelationsDelete, cmdIssuesRelationsCancel, cmdIssuesRelationsSave;
     private AutoCompleteTextView txtIssuesRelationsIssues;
-    private Spinner spIssuesRelationsType;
+    private DropDown<String> spIssuesRelationsType;
     private ArrayAdapter<Issue<?>> issuesAdapter;
     /** @noinspection rawtypes*/
     private IBugService bugService;
-    private ArrayAdapter<String> relationTypeAdapter;
+    private DropDownAdapter<String> relationTypeAdapter;
     /** @noinspection rawtypes*/
     private Relationship currentEntry;
 
@@ -163,8 +165,8 @@ public final class IssueRelationsFragment extends AbstractFragment {
                 }
                 relationship.setIssue(issue);
                 int id = ArrayHelper.getIdOfEnum(this.getContext(), this.spIssuesRelationsType, this.arrayKey);
-                relationship.setType(new AbstractMap.SimpleEntry<>(this.spIssuesRelationsType.getSelectedItem().toString(), id));
-                issue.setDescription(this.spIssuesRelationsType.getSelectedItem().toString());
+                relationship.setType(new AbstractMap.SimpleEntry<>(this.spIssuesRelationsType.getSelectedItem(), id));
+                issue.setDescription(this.spIssuesRelationsType.getSelectedItem());
                 BaseDescriptionObject baseDescriptionObject = new BaseDescriptionObject();
                 baseDescriptionObject.setObject(relationship);
                 baseDescriptionObject.setTitle(relationship.getTitle());
@@ -261,7 +263,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
         }
 
         if(this.getContext()!=null)  {
-            this.relationTypeAdapter = new ArrayAdapter<>(this.getContext(), android.R.layout.simple_spinner_item, ArrayHelper.getValues(this.getContext(), this.arrayKey));
+            this.relationTypeAdapter = new DropDownAdapter<>(this.getContext(), ArrayHelper.getValues(this.getContext(), this.arrayKey));
             this.spIssuesRelationsType.setAdapter(this.relationTypeAdapter);
             this.relationTypeAdapter.notifyDataSetChanged();
         }

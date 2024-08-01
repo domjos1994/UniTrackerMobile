@@ -37,29 +37,41 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="10">
-        <TableRow>
-            <AutoCompleteTextView
-                android:id="@+id/txtIssuesRelationsIssues"
-                android:hint="@string/issues_relations_issue"
-                android:inputType="textMultiLine"
+        <TableRow
+            android:layout_margin="5dp">
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_weight="10"
                 android:layout_width="0dp"
-                tools:ignore="Autofill" />
+                android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+                <AutoCompleteTextView
+                    android:id="@+id/txtIssuesRelationsIssues"
+                    android:hint="@string/issues_relations_issue"
+                    android:inputType="textMultiLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    tools:ignore="Autofill" />
+            </com.google.android.material.textfield.TextInputLayout>
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
             <TextView
                 android:layout_width="0dp"
                 android:layout_weight="3"
-                android:text="@string/issues_relations_relation" />
+                android:text="@string/issues_relations_relation"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical" />
 
-            <Spinner
+            <de.domjos.unitrackerlibrary.custom.DropDown
                 android:id="@+id/spIssuesRelationsType"
                 android:layout_width="0dp"
                 android:layout_weight="7" />
         </TableRow>
 
-        <TableRow>
+        <TableRow
+            android:layout_margin="5dp">
             <ImageButton
                     android:id="@+id/cmdIssuesRelationsAdd"
                     android:contentDescription="@string/sys_add"

@@ -29,20 +29,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/lblTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:text="@string/issues_attachments"
-            android:paddingTop="8dp"
-            android:paddingEnd="8dp"
-            android:paddingStart="8dp"
-            android:paddingBottom="20dp"
-            android:layout_gravity="center"
-            android:gravity="center"/>
-
         <ImageView
             android:id="@+id/ivCurrentAttachment"
             android:contentDescription="@string/issues_attachments"
@@ -57,21 +43,23 @@
             android:layout_margin="4dp"
             android:weightSum="10">
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdPrevious"
-                android:contentDescription="@string/issues_attachments"
+                android:text="@string/issues_attachments_previous"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_before"/>
+                app:icon="@drawable/icon_controls_before"
+                app:iconGravity="textStart"/>
 
-            <ImageButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/cmdNext"
-                android:contentDescription="@string/issues_attachments"
+                android:text="@string/issues_attachments_next"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                app:srcCompat="@drawable/icon_controls_next" />
+                app:icon="@drawable/icon_controls_next"
+                app:iconGravity="textEnd"/>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

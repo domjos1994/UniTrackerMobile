@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.material.divider.MaterialDivider;
+
 import java.util.Date;
 import java.util.List;
 
@@ -126,7 +128,11 @@ public final class IssueHistoryFragment extends AbstractFragment {
                                     tableRow.addView(this.createTextView(history.getOldValue()));
                                     tableRow.addView(this.createTextView(history.getNewValue()));
 
+                                    LayoutParams dividerParams = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, 10);
+                                    MaterialDivider materialDivider = new MaterialDivider(this.requireContext());
+
                                     this.getActivity().runOnUiThread(() -> this.tblCustomFields.addView(tableRow, layoutParams));
+                                    this.getActivity().runOnUiThread(() -> this.tblCustomFields.addView(materialDivider, dividerParams));
                                 }
                             }
                         }
@@ -142,6 +148,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
     private TextView createTextView(String text) {
         LayoutParams layoutParams = new LayoutParams(0, LayoutParams.WRAP_CONTENT, 2);
+        layoutParams.setMargins(5, 5, 5, 5);
         TextView textView = new TextView(this.getActivity());
         textView.setLayoutParams(layoutParams);
         textView.setText(text);
