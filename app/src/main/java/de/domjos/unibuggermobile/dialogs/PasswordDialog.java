@@ -100,6 +100,29 @@ public class PasswordDialog extends AbstractDialog {
     }
 
     @Override
+    public void show() {
+        try {
+            if (MainActivity.GLOBALS.getPassword().isEmpty() || changePassword) {
+                if(!MainActivity.GLOBALS.getSettings(activity).isEncryptionEnabled()) {
+                    MainActivity.GLOBALS.setPassword(SQLiteGeneral.NO_PASS);
+                    MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
+                    successRunnable.run();
+                } else {
+                    super.show();
+                }
+            } else {
+                if(MainActivity.GLOBALS.getSqLiteGeneral() == null) {
+                    super.show();
+                } else {
+                    successRunnable.run();
+                }
+            }
+        } catch (Exception ex) {
+            Notifications.printException(activity, ex, R.mipmap.ic_launcher_round);
+        }
+    }
+
+    @Override
     protected void init(View view) {
         password1 = view.findViewById(R.id.txtPassword1);
         password2 = view.findViewById(R.id.txtPassword2);
@@ -110,22 +133,6 @@ public class PasswordDialog extends AbstractDialog {
         } else {
             password2.setVisibility(View.GONE);
             super.setTitle(R.string.pwd_title_pwd);
-        }
-
-        try {
-            if (MainActivity.GLOBALS.getPassword().isEmpty() || changePassword) {
-                if(!MainActivity.GLOBALS.getSettings(activity).isEncryptionEnabled()) {
-                    super.alertDialog.cancel();
-                    MainActivity.GLOBALS.setPassword(SQLiteGeneral.NO_PASS);
-                    MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                    successRunnable.run();
-                }
-            } else {
-                MainActivity.GLOBALS.setSqLiteGeneral(new SQLiteGeneral(activity, MainActivity.GLOBALS.getPassword()));
-                successRunnable.run();
-            }
-        } catch (Exception ex) {
-            Notifications.printException(activity, ex, R.mipmap.ic_launcher_round);
         }
     }
 }

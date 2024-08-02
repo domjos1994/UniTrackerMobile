@@ -28,6 +28,7 @@ import android.graphics.drawable.VectorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
@@ -201,10 +202,10 @@ public class ConvertHelper {
     public static byte[] convertDrawableToByteArray(Context context, int id) throws Exception {
         Drawable d = convertResourcesToDrawable(context, id);
         if(d instanceof VectorDrawable) {
-            throw new Exception("VectorDrawable not supported!");
+            return null;
         }
         if(d instanceof VectorDrawableCompat) {
-            throw new Exception("VectorDrawableCompat not supported!");
+            return null;
         }
 
         BitmapDrawable bitmapDrawable = ((BitmapDrawable)d);
@@ -218,7 +219,10 @@ public class ConvertHelper {
     }
 
     public static Bitmap convertByteArrayToBitmap(byte[] bytes) {
-        return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        if(bytes != null) {
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+        }
+        return null;
     }
 
     public static Drawable convertByteArrayToDrawable(byte[] bytes) throws Exception {
@@ -256,6 +260,14 @@ public class ConvertHelper {
 
     public static Drawable convertResourcesToDrawable(Context context, int resource_id) {
         return ContextCompat.getDrawable(context, resource_id);
+    }
+
+    public static Drawable convertResourcesToDrawable(Context context, int resource_id, @ColorRes int color) {
+        Drawable drawable = ContextCompat.getDrawable(context, resource_id);
+        if(drawable != null) {
+            drawable.setTint(ContextCompat.getColor(context, color));
+        }
+        return drawable;
     }
 
     public static String convertURIToStringPath(Context context, Uri contentUri, int icon) {

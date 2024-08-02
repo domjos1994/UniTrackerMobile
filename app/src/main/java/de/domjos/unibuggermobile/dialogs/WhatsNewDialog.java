@@ -34,7 +34,11 @@ public class WhatsNewDialog extends AbstractDialog {
 
     public WhatsNewDialog(Activity activity) {
         super(activity, R.layout.whats_new_dialog);
+        this.setTitle(R.string.help_key_whats_new_title);
+    }
 
+    @Override
+    public void show() {
         String version = Helper.getVersion(activity);
         String content = this.getStringResourceByName(activity, "whats_new_" + version);
         if(!content.isEmpty()) {
@@ -46,13 +50,13 @@ public class WhatsNewDialog extends AbstractDialog {
             if(!settings.getWhatsNewVersion().isEmpty()) {
                 if(!settings.getWhatsNewVersion().equals(version)) {
                     settings.setWhatsNewVersion();
+                    super.show();
                 }
             } else {
                 settings.setWhatsNewVersion();
+                super.show();
             }
         }
-
-        this.setTitle(R.string.help_key_whats_new_title);
     }
 
     @Override

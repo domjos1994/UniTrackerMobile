@@ -89,22 +89,13 @@ public class Notifications {
     }
 
     public static void printMessage(Activity activity, String message, int icon) {
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View layout = inflater.inflate(R.layout.custom_toast, activity.findViewById(R.id.custom_toast_container));
-        TextView text = layout.findViewById(R.id.text);
-        ImageView iv = layout.findViewById(R.id.ivIcon);
-        iv.setImageDrawable(ActivityCompat.getDrawable(activity, icon));
-        text.setText(message);
-        Toast toast = new Toast(activity);
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(layout);
-        toast.show();
+        Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
+        Log.i("Message", message);
     }
 
     public static void printException(Activity activity, Exception ex, int icon) {
-        Notifications.printMessage(activity, ex.getLocalizedMessage(), icon);
-        Log.e("Error", ex.getLocalizedMessage() + "\n" + ex, ex);
+        Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_LONG).show();
+        Log.e("Error", ex.getMessage(), ex);
     }
 
     public NotificationCompat.Builder showProgressNotification(int id, int title, int description, int icon, Intent cancelIntent, int max, int progress) {

@@ -73,4 +73,17 @@
                 android:title="@string/export" />
         </menu>
     </item>
+
+    <item android:title="@string/app_name">
+        <menu>
+            <item
+                android:id="@+id/navSettings"
+                android:icon="@drawable/baseline_settings_24"
+                android:title="@string/settings" />
+            <item
+                android:id="@+id/navHelp"
+                android:icon="@drawable/baseline_help_24"
+                android:title="@string/help" />
+        </menu>
+    </item>
 </menu>

@@ -25,43 +25,43 @@
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsGeneralFragment"
-        android:icon="@drawable/icon_settings_general_dark"
+        android:icon="@drawable/icon_settings_general_light"
         android:title="@string/settings_general"
         android:summary="@string/settings_general_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsCacheFragment"
-        android:icon="@drawable/icon_settings_cache_dark"
+        android:icon="@drawable/icon_settings_cache_light"
         android:title="@string/settings_cache"
         android:summary="@string/settings_cache_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsBugTrackerFragment"
-        android:icon="@drawable/icon_settings_issues_dark"
+        android:icon="@drawable/icon_settings_issues_light"
         android:title="@string/settings_bug_tracker"
         android:summary="@string/settings_bug_tracker_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsInternetFragment"
-        android:icon="@drawable/icon_settings_web_dark"
+        android:icon="@drawable/icon_settings_web_light"
         android:title="@string/settings_internet"
         android:summary="@string/settings_internet_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsSecurityFragment"
-        android:icon="@drawable/icon_settings_security_dark"
+        android:icon="@drawable/icon_settings_security_light"
         android:title="@string/settings_security"
         android:summary="@string/settings_security_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsSyncFragment"
-        android:icon="@drawable/icon_settings_local_sync_dark"
+        android:icon="@drawable/icon_settings_local_sync_light"
         android:title="@string/settings_sync"
         android:summary="@string/settings_sync_summary" />
 
     <Preference
         app:fragment="de.domjos.unibuggermobile.fragments.SettingsLogFragment"
-        android:icon="@drawable/icon_settings_log_dark"
+        android:icon="@drawable/icon_settings_log_light"
         android:title="@string/settings_log"
         android:summary="@string/settings_log_summary" />
 </androidx.preference.PreferenceScreen>

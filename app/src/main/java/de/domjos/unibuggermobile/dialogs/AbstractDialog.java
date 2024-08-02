@@ -29,6 +29,8 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import de.domjos.unibuggermobile.R;
+
 /** @noinspection SameParameterValue*/
 public abstract class AbstractDialog {
     private final MaterialAlertDialogBuilder builder;
@@ -42,7 +44,7 @@ public abstract class AbstractDialog {
         LayoutInflater inflater = this.activity.getLayoutInflater();
         this.view = inflater.inflate(id, null);
 
-        this.builder = new MaterialAlertDialogBuilder(this.activity);
+        this.builder = new MaterialAlertDialogBuilder(this.activity, R.style.CustomDialogTheme);
         this.builder.setView(this.view);
     }
 

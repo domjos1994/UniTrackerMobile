@@ -23,7 +23,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -574,7 +573,9 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
                 baseDescriptionObject.setDescription(this.getString(R.string.task_loader_title));
                 this.lvMainIssues.getAdapter().clear();
                 this.lvMainIssues.getAdapter().add(baseDescriptionObject);
-                this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
+                try {
+                    this.spMainFilters.setSelection(this.filterAdapter.getPosition(this.settings.getCurrentFilter().name()));
+                } catch (Exception ignored) {}
                 this.changePagination();
                 boolean isLocal = true;
                 if (this.bugService != null) {
@@ -735,30 +736,6 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = null;
-        if(item.getItemId() == R.id.menSettings) {
-            intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
-        } else if(item.getItemId() == R.id.menHelp) {
-            intent = new Intent(this.getApplicationContext(), HelpActivity.class);
-        } else if(item.getItemId() == R.id.menAbout) {
-            intent = new Intent(this.getApplicationContext(), InfoActivity.class);
-            intent.putExtra(InfoActivity.CONTENT, String.format(this.getString(R.string.about_content), Helper.getVersion(this.getApplicationContext())));
-            intent.putExtra(InfoActivity.ABOUT, true);
-        }
-        if (intent != null) {
-            this.reloadSettings.launch(intent);
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         Intent intent = null;
         if(item.getItemId() == R.id.navNews) {
@@ -785,6 +762,12 @@ public final class MainActivity extends AbstractActivity implements OnNavigation
             intent = new Intent(this.getApplicationContext(), CalendarActivity.class);
         } else if(item.getItemId() == R.id.navExport) {
             intent = new Intent(this.getApplicationContext(), ExportActivity.class);
+        } else if(item.getItemId() == R.id.navSettings) {
+            intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+            this.reloadSettings.launch(intent);
+            intent = null;
+        } else if(item.getItemId() == R.id.navHelp) {
+            intent = new Intent(this.getApplicationContext(), HelpActivity.class);
         }
 
         if (intent != null) {
