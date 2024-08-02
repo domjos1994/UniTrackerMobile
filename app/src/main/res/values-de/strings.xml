@@ -141,6 +141,9 @@
     <string name="fields_possible_values">Mögliche Werte (durch | getrennt)</string>
 
     <string name="issues">Fehler</string>
+    <string name="issues_menu_use_default">Standard-Vorlage</string>
+    <string name="issues_menu_use_template">Vorlage benutzen</string>
+    <string name="issues_menu_use_manage">Vorlagen organisieren</string>
     <string name="issues_general">Generell</string>
     <string name="issues_custom">Benutzerdefiniert</string>
     <string name="issues_general_summary">Zusammenfassung</string>
@@ -315,6 +318,15 @@
         <item>@string/statistics_bar_user</item>
         <item>@string/statistics_solved_bugs</item>
     </string-array>
+
+    <string name="template_title_choose">Vorlage auswählen</string>
+    <string name="template_title_manage">Vorlagen organisieren</string>
+    <string name="template_name">Name</string>
+    <string name="template_default">Als Standard setzen</string>
+    <string name="template_button_select">Vorlage auswählen</string>
+    <string name="template_button_save">Vorlage Speichern</string>
+    <string name="template_button_delete">Vorlage löschen</string>
+    <string name="template_action_success">Aktion für die Vorlage war erfolgreich!</string>
 
     <string name="calendar">Kalender</string>
     <string name="calendar_project">Projekt</string>

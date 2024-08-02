@@ -38,7 +38,7 @@ public abstract class AbstractFragment extends Fragment {
 
     public abstract void manageControls(boolean editMode);
 
-    protected abstract void initData();
+    public abstract void initData();
 
     public Validator getValidator() {
         if(this.validator == null) {

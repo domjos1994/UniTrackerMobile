@@ -175,7 +175,7 @@ public final class IssueDescriptionsFragment extends AbstractFragment {
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         if (this.issue != null) {
             if(this.description.isEmpty()) {
                 this.txtIssueDescriptionsDescription.setText(this.issue.getDescription());

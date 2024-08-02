@@ -162,6 +162,10 @@ public class PagerAdapter extends FragmentStateAdapter {
         this.history.setObject(object);
     }
 
+    public void initData(int position) {
+        ((AbstractFragment) this.createFragment(position)).initData();
+    }
+
     public DescriptionObject getObject() {
         DescriptionObject object = this.general.getObject(new Issue());
         object = this.descriptions.getObject(object);

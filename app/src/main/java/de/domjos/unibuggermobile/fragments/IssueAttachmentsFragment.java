@@ -293,7 +293,7 @@ public final class IssueAttachmentsFragment extends AbstractFragment {
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         this.lvIssueAttachments.getAdapter().clear();
         for (Attachment<?> obj : this.issue.getAttachments()) {
 

@@ -83,7 +83,7 @@ public final class IssueHistoryFragment extends AbstractFragment {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void initData() {
+    public void initData() {
         if (this.issue != null) {
             if (this.getActivity() != null) {
                 new Thread(() -> {

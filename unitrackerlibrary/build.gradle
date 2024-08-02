@@ -56,6 +56,7 @@ dependencies {
     implementation "androidx.preference:preference:$propAndPreferences"
     implementation "androidx.core:core:1.13.1"
     implementation "androidx.appcompat:appcompat:$propAndAppCompat"
+    implementation 'com.google.code.gson:gson:2.11.0'
 
     // libraries to call the webservices of the bug-trackers
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'

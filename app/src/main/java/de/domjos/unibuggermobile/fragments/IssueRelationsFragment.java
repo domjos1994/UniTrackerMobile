@@ -216,7 +216,7 @@ public final class IssueRelationsFragment extends AbstractFragment {
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         this.lvIssuesRelations.getAdapter().clear();
         for(Object obj : this.issue.getRelations()) {
             if(obj instanceof Relationship relationship) {

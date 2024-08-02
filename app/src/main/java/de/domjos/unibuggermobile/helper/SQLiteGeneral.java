@@ -34,11 +34,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import de.domjos.unitrackerlibrary.model.Template;
 import de.domjos.unitrackerlibrary.services.engine.Authentication;
 import de.domjos.unitrackerlibrary.tools.Crypto;
 import de.domjos.unibuggermobile.R;
 import de.domjos.unitrackerlibrary.tools.Notifications;
 
+/** @noinspection unchecked*/
 public class SQLiteGeneral extends SQLiteOpenHelper {
     public static final String NO_PASS = "noPassword";
     private final Context context;
@@ -121,17 +123,17 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
             if(cursor!=null) {
                 while (cursor.moveToNext()) {
                     Authentication authentication = new Authentication();
-                    authentication.setServer(this.crypto.decryptString(this.getString(cursor, "serverName")));
-                    authentication.setUserName(this.crypto.decryptString(this.getString(cursor, "userName")));
-                    authentication.setPassword(this.crypto.decryptString(this.getString(cursor, "password")));
-                    authentication.setAPIKey(this.getString(cursor, "apiKey"));
-                    authentication.setTitle(this.getString(cursor, "title"));
-                    authentication.setDescription(this.getString(cursor, "description"));
-                    authentication.setCover(cursor.getBlob(cursor.getColumnIndex("cover")));
-                    authentication.setTracker(Authentication.Tracker.valueOf(this.getString(cursor, "tracker")));
+                    authentication.setServer(this.crypto.decryptString(this.get(cursor, "serverName", "")));
+                    authentication.setUserName(this.crypto.decryptString(this.get(cursor, "userName", "")));
+                    authentication.setPassword(this.crypto.decryptString(this.get(cursor, "password", "")));
+                    authentication.setAPIKey(this.get(cursor, "apiKey", ""));
+                    authentication.setTitle(this.get(cursor, "title", ""));
+                    authentication.setDescription(this.get(cursor, "description", ""));
+                    authentication.setCover(this.get(cursor, "cover", new byte[0]));
+                    authentication.setTracker(Authentication.Tracker.valueOf(this.get(cursor, "tracker", "")));
                     authentication.setId(cursor.getLong(cursor.getColumnIndex("ID")));
                     authentication.setGuest(cursor.getLong(cursor.getColumnIndex("guest")) == 1);
-                    authentication.setAuthentication(Authentication.Auth.valueOf(this.getString(cursor, "authentication")));
+                    authentication.setAuthentication(Authentication.Auth.valueOf(this.get(cursor, "authentication", "")));
                     authentications.add(authentication);
                 }
                 cursor.close();
@@ -198,13 +200,101 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
         }
     }
 
+    public List<Template> getTemplates(Authentication authentication) {
+        List<Template> templates = new LinkedList<>();
+        try {
+            SQLiteDatabase db = this.getReadableDatabase();
+            Cursor cursor;
+            if(authentication == null) {
+                cursor = db.rawQuery("SELECT * FROM templates", new String[]{});
+            } else {
+                cursor = db.rawQuery("SELECT * FROM templates WHERE account=?", new String[]{String.valueOf(authentication.getId())});
+            }
+            while (cursor.moveToNext()) {
+                Template template = new Template();
+                template.setId(this.get(cursor, "ID", 0L));
+                template.setTitle(this.get(cursor,  "name", ""));
+                template.setDescription(this.get(cursor,  "content", ""));
+                template.setUseAsDefault(Boolean.TRUE.equals(this.get(cursor, "useAsDefault", Boolean.FALSE)));
+                if(authentication != null) {
+                    template.setAuthentication(authentication);
+                } else {
+                    Long id = this.get(cursor,  "account", 0L);
+                    List<Authentication> authentications = this.getAccounts("id=" + id);
+                    if(!authentications.isEmpty()) {
+                        template.setAuthentication(authentications.get(0));
+                    }
+                }
+                templates.add(template);
+            }
+            cursor.close();
+        } catch (Exception ex) {
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
+        }
+        return templates;
+    }
+
+    public void updateOrInsertTemplate(Template template) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            Long id = template.getId();
+            if(id == null) {
+                id = 0L;
+            }
+            if(id == 0) {
+                try {
+                    Cursor cursor = db.rawQuery("SELECT ID FROM templates WHERE name=?", new String[]{template.getTitle()});
+                    while (cursor.moveToNext()) {
+                        id = get(cursor, "ID", 0L);
+                    }
+                    cursor.close();
+                } catch (Exception ignored) {}
+            }
+
+            if(id == null) {
+                id = 0L;
+            }
+
+            SQLiteStatement stmt;
+            if(id != 0L) {
+                stmt = db.compileStatement("UPDATE templates SET name=?, content=?, account=?, useAsDefault=? WHERE id=?");
+                stmt.bindLong(5, id);
+            } else {
+                stmt = db.compileStatement("INSERT INTO templates(name, content, account, useAsDefault) VALUES(?, ?, ?, ?)");
+            }
+            stmt.bindString(1, template.getTitle());
+            stmt.bindString(2, template.getDescription());
+            if(template.getAuthentication() != null) {
+                stmt.bindLong(3, template.getAuthentication().getId());
+            } else {
+                stmt.bindLong(3, 0);
+            }
+            stmt.bindLong(4, template.isUseAsDefault()?1:0);
+            if(id == 0L) {
+                stmt.executeInsert();
+            } else {
+                stmt.execute();
+            }
+        } catch (Exception ex) {
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
+        }
+    }
+
+    public void deleteTemplate(Template template) {
+        try {
+            this.delete("templates", "id", template.getId());
+        } catch (Exception ex) {
+            Notifications.printException((Activity) this.context, ex, R.mipmap.ic_launcher_round);
+        }
+    }
+
     private Map<String, String> getHints(long id) {
         Map<String, String> hints = new LinkedHashMap<>();
         try {
             SQLiteDatabase db = this.getReadableDatabase();
             Cursor cursor = db.rawQuery("SELECT * FROM hints WHERE account=" + id, new String[]{});
             while (cursor.moveToNext()) {
-                hints.put(this.getString(cursor, "hint_key"), this.getString(cursor, "hint_value"));
+                hints.put(this.get(cursor, "hint_key", ""), this.get(cursor, "hint_value", ""));
             }
             cursor.close();
         } catch (Exception ex) {
@@ -239,12 +329,28 @@ public class SQLiteGeneral extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    private String getString(Cursor cursor, String key) {
+    private <T> T get(Cursor cursor, String key, T def) {
         if (cursor.getColumnIndex(key) == -1) {
-            return "";
-        } else {
-            return cursor.getString(cursor.getColumnIndex(key));
+            return def;
         }
+        if(def instanceof String) {
+            return (T) cursor.getString(cursor.getColumnIndex(key));
+        } else if(def instanceof Long) {
+            return ((T) ((Long) cursor.getLong(cursor.getColumnIndex(key))));
+        } else if(def instanceof Integer) {
+            return ((T) ((Integer) cursor.getInt(cursor.getColumnIndex(key))));
+        } else if(def instanceof Float) {
+            return ((T) ((Float) cursor.getFloat(cursor.getColumnIndex(key))));
+        } else if(def instanceof Double) {
+            return ((T) ((Double) cursor.getDouble(cursor.getColumnIndex(key))));
+        } else if(def instanceof Boolean) {
+            return ((T) ((Boolean) (cursor.getInt(cursor.getColumnIndex(key)) == 1)));
+        } else if(def instanceof Byte[]) {
+            return ((T) cursor.getBlob(cursor.getColumnIndex(key)));
+        } else if(def instanceof byte[]) {
+            return ((T) cursor.getBlob(cursor.getColumnIndex(key)));
+        }
+        return null;
     }
 
     private void initDatabase(SQLiteDatabase db) {

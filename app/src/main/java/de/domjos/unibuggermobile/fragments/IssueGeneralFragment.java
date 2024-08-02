@@ -344,7 +344,7 @@ public final class IssueGeneralFragment extends AbstractFragment {
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         if (this.issue != null) {
             this.txtIssueGeneralSummary.setText(this.issue.getTitle());
             this.txtIssueGeneralCategory.setText(this.issue.getCategory());

@@ -137,7 +137,7 @@ public final class IssueCustomFragment extends AbstractFragment {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void initData() {
+    public void initData() {
         Object pid = MainActivity.GLOBALS.getSettings(getContext()).getCurrentProjectId();
 
         if (this.issue != null) {

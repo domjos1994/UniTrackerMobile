@@ -145,6 +145,9 @@
     <string name="fields_possible_values">Possible Values (separated by |)</string>
 
     <string name="issues">Bug</string>
+    <string name="issues_menu_use_default">Default Template</string>
+    <string name="issues_menu_use_template">Use a Template</string>
+    <string name="issues_menu_use_manage">Manage Template</string>
     <string name="issues_general">General</string>
     <string name="issues_custom">Userdefined</string>
     <string name="issues_general_summary">Summary</string>
@@ -319,6 +322,15 @@
         <item>@string/statistics_bar_user</item>
         <item>@string/statistics_solved_bugs</item>
     </string-array>
+
+    <string name="template_title_choose">Choose template</string>
+    <string name="template_title_manage">Manage templates</string>
+    <string name="template_name">Name</string>
+    <string name="template_default">Set as Default</string>
+    <string name="template_button_select">Choose Template</string>
+    <string name="template_button_save">Save Template</string>
+    <string name="template_button_delete">Delete Template</string>
+    <string name="template_action_success">Action on Template was successfully!</string>
 
     <string name="calendar">Calendar</string>
     <string name="calendar_project">Project</string>

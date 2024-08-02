@@ -225,7 +225,7 @@ public final class IssueNotesFragment extends AbstractFragment {
     }
 
     @Override
-    protected void initData() {
+    public void initData() {
         this.lvIssueNotes.getAdapter().clear();
         for (Object note : this.issue.getNotes()) {
 

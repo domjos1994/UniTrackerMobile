@@ -19,6 +19,8 @@
 package de.domjos.unibuggermobile.activities;
 
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.viewpager2.widget.ViewPager2;
@@ -29,6 +31,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
+import de.domjos.unibuggermobile.dialogs.TemplateDialog;
 import de.domjos.unitrackerlibrary.interfaces.IBugService;
 import de.domjos.unitrackerlibrary.interfaces.IFunctionImplemented;
 import de.domjos.unitrackerlibrary.model.issues.Issue;
@@ -50,6 +53,7 @@ public final class IssueActivity extends AbstractActivity {
     private Issue<?> issue;
     private IBugService<?> bugService;
     private Settings settings;
+    private ViewPager2 viewPager;
 
     public IssueActivity() {
         super(R.layout.issue_activity);
@@ -159,7 +163,7 @@ public final class IssueActivity extends AbstractActivity {
         // init View-Pager
         this.pagerAdapter = new PagerAdapter(this, this.getSupportFragmentManager(), this.getLifecycle());
         this.pagerAdapter.setNotificationId(notificationId);
-        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(this.pagerAdapter);
         viewPager.setCurrentItem(0);
         TabLayout tabs = findViewById(R.id.tabs);
@@ -189,6 +193,45 @@ public final class IssueActivity extends AbstractActivity {
         this.navigationView.getMenu().getItem(4).setEnabled(editMode || !isVisible);
 
         this.pagerAdapter.manageControls(editMode || !isVisible);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_issue, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        TemplateDialog templateDialog = null;
+        if (item.getItemId() == R.id.menIssueDefaultTemplate) {
+            templateDialog = new TemplateDialog(this, true, template -> {
+                if(template != null) {
+                    this.pagerAdapter.setObject(template.getContent());
+                    this.pagerAdapter.initData(this.viewPager.getCurrentItem());
+                }
+            });
+        }
+        if (item.getItemId() == R.id.menIssueUseTemplate) {
+            templateDialog = new TemplateDialog(this, false, template -> {
+               if(template != null) {
+                   Issue<?> tmp = template.getContent();
+                   this.pagerAdapter.setObject(tmp);
+                   this.pagerAdapter.initData(this.viewPager.getCurrentItem());
+               }
+            });
+
+        }
+        if (item.getItemId() == R.id.menIssueManageTemplates) {
+            Issue<?> tmp = (Issue<?>) this.pagerAdapter.getObject();
+            templateDialog = new TemplateDialog(this, tmp);
+        }
+
+        if(templateDialog != null) {
+            templateDialog.show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void hideFieldsOfNavView() {
